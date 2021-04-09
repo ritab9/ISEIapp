@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 import environ
-env = environ.Env()
+env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env()
 
 from pathlib import Path
@@ -28,12 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ['DEBUG']
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS","127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # Application definition
 
@@ -62,8 +62,7 @@ ROOT_URLCONF = 'ISEIapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,15 +81,15 @@ WSGI_APPLICATION = 'ISEIapp.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE","False") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 
 if DEVELOPMENT_MODE is True:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['DATABASE_NAME'],
-            'USER': os.environ['DATABASE_USER'],
-            'PASSWORD': os.environ['DATABASE_PASS'],
+            'NAME': os.getenv('DATABASE_NAME'),
+            'USER': os.getenv('DATABASE_USER'),
+            'PASSWORD': os.getenv('DATABASE_PASS'),
             'HOST': '',
             'PORT': '',
         }
