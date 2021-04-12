@@ -40,6 +40,7 @@ def loginpage(request):
 
         if user is not None:
             login(request, user)
+            print(user)
             if is_in_group(request.user, 'principal'):
                 return redirect('principal_dashboard')
             else:
@@ -48,8 +49,10 @@ def loginpage(request):
                         return redirect('account_settings')
                     else:
                         return redirect('teacher_dashboard')
-                if is_in_group(request.user, 'admin'):
+                elif is_in_group(request.user, 'admin'):
                     return redirect('admin_dashboard')
+                else:
+                    messages.info(request, 'User not assigned to a group. Contact the site administrator!')
         else:
             messages.info(request, 'Username OR password is incorrect')
     context = {}
