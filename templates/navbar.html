@@ -1,0 +1,106 @@
+<!-- html from bootstrap for navigation bar -->
+{% load static %}
+{% load group_tags %}
+
+
+<style>
+  .name-msg{
+    font-size: 18px;
+    color: #FFFFFF;
+    margin-right: 20px;
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+    <img src="{% static '/users/media/logo.png' %}" width="100" height="40" alt="ISEI Logo">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+
+            {% if user.is_authenticated %}
+                            <li><a href="">Logout</a></li>
+                            <li><a href=""
+                                   class="p-r-none">Accounts</a></li>
+
+                {% if request.user|in_group:"admin"%}
+                <div class="admin_dashboard">
+                      <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Home </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Teachers</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">Activities</a>
+                      </li>
+                </div>
+                {% endif %}
+
+
+                {% if request.user|in_group:"principal"%}
+                <div class="principal_dashboard">
+                      <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'principal_dashboard' %}">Home </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'teacher_certification' %}">Teacher Certification</a>
+                      </li>
+                      <li class="nav-item dropdown">
+                          <div class="dropdown">
+                                <button class="dropbtn">Documents and Resources
+                                  <i class="fa fa-caret-down"></i>
+                                </button>
+                                <div class="dropdown-content">
+                                  <a href="#">ISEI Codebook</a>
+                                  <a href="#">Teacher Certification Codebook</a>
+                                  <a href="#">Evaluation Forms</a>
+                                </div>
+                          </div>
+                        <!-- <a class="nav-link" href="{% url 'principal_dashboard' %}">Documents and Resources</a> -->
+                    </li>
+                      <li class="nav-item">
+                            <a class="nav-link" href="{% url 'teacher_dashboard' %}">My Dashboard </a>
+                      </li>
+
+                      <li class="nav-item">
+                            <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">My PD Activities</a>
+                      </li>
+
+                    <li class="nav-item">
+                          <a class="nav-link" href="{% url 'account_settings' %}">Settings</a>
+                      </li>
+                </div>
+                {% endif %}
+
+                {% if request.user|in_group:"teacher"%}
+                <div clss="teacher_dashboard">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'teacher_dashboard' %}">Home </a>
+                    </li>
+                    <!--
+                    <li class="nav-item">
+                        <a class="nav-link" href=" url 'myPDAdashboard' request.user.id %}">PD Activities</a>
+                      </li>
+                     -->
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_settings' %}">Settings</a>
+                      </li>
+
+                </div>
+                {% endif %}
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="" class="p-r-none">Sign Up</a></li>
+
+            {% endif %}
+
+        </ul>
+  </div>
+
+
+  <span class ="name-msg"> {{request.user.first_name}} </span>
+  <span class ="name-msg"> <a href="{% url 'logout' %}">Logout</a> </span>
+</nav>

@@ -1,0 +1,17 @@
+/* the next four are necessary to keep the footer on the bottom of the page*/
+html, body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+.content {
+  flex: 1 0 auto;
+}
+.footer {
+  flex-shrink: 0;
+}
+.navbar-custom {
+  background-color: #2F3E48;
+}

@@ -10,7 +10,6 @@ from .models import Teacher
 # and the Profile is created and matched based on that sign in
 @receiver(post_save, sender=User)
 def create_teacher(sender, instance, created, **kwargs):
-	print('Signal called')
 	if created:
 		group = Group.objects.get(name='teacher')
 		instance.groups.add(group)
