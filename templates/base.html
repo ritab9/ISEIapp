@@ -18,7 +18,7 @@
 
     {% load static %}
     {# icod that appears in the tab along with the title #}
-    <link rel="shortcut icon" type="image/png" href="{% static '/media/favicon.ico' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static '/appfiles/favicon.ico' %}"/>
     {% block head_css %}
     {# stying of this specific file #}
       <link rel="stylesheet" type="text/css" href="{% static '/css/base.css' %}">
@@ -35,7 +35,6 @@
 
     {# The Document Body #}
         <div class="site_content">
-        <h5> Trial content from base.html</h5>
             {% block content %}
                 if you see this, something is wrong!
             {% endblock content %}

@@ -24,5 +24,8 @@ class TeacherForm(ModelForm):
         model = Teacher
         fields = '__all__'
         exclude = ['user']
+        widgets = {
+            'profile_picture': forms.FileInput(attrs={'size': 1}),
+        }
 
 

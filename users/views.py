@@ -7,7 +7,6 @@ from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 
-
 from .models import *
 from .decorators import unauthenticated_user, allowed_users
 from .filters import *
@@ -40,7 +39,6 @@ def loginpage(request):
 
         if user is not None:
             login(request, user)
-            print(user)
             if is_in_group(request.user, 'principal'):
                 return redirect('principal_dashboard')
             else:
