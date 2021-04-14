@@ -1,0 +1,22 @@
+{
+  "name": "iseiapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ritab9/ISEIapp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ritab9/ISEIapp/issues"
+  },
+  "homepage": "https://github.com/ritab9/ISEIapp#readme",
+  "dependencies": {
+    "bootstrap": "^4.6.0"
+  }
+}
