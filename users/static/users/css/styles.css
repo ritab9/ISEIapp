@@ -57,7 +57,7 @@ a, h1,h2 {
 .input_user,
 .input_pass:focus {
       box-shadow: none !important;
-      outline: 0px !important;
+      outline: 0 !important;
     }
 
 #messages{

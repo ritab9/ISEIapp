@@ -1,3 +1,5 @@
+{# base for all other templates #}
+
 <!doctype html>
 
 <html lang="en">
@@ -15,8 +17,10 @@
         <Link rel="stylesheet" href="custom.css">
 
     {% load static %}
+    {# icod that appears in the tab along with the title #}
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
     {% block head_css %}
+    {# stying of this specific file #}
       <link rel="stylesheet" type="text/css" href="{% static '/css/base.css' %}">
     {% endblock head_css %}
 </head>
@@ -27,7 +31,6 @@
     {# Navigation Menu #}
         <header>
             {% include 'navbar.html' %}
-
         </header>
 
     {# The Document Body #}
