@@ -22,7 +22,7 @@
         <ul class="navbar-nav">
             {% if user.is_authenticated %}
                 {% if request.user|in_group:"admin"%}
-                <div class="admin_dashboard">
+
 
                       <li class="nav-item active">
                         <a class="nav-link" href="{% url 'admin_dashboard' %}">Home </a>
@@ -33,7 +33,7 @@
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'admin_dashboard' %}">Activities</a>
                       </li>
-                </div>
+
                 {% endif %}
 
 
