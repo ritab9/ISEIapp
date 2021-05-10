@@ -1,0 +1,112 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+{% if user_not_teacher %} <!--if it will be used by any other user-->
+    {{ pda_record.teacher }}
+{% endif %}
+{{ pda_record.school_year }}
+
+<!-- Table of activities-->
+<div class="row">
+    <div class="card card-body">
+        <table class="table table-sm">
+            <tr>
+                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>ceu</th><th>clock_Hours</th><th>pages</th>
+                <th>Supporting Docs</th>
+                {% if pda_record.principal_signature == None %}
+                    <th>Update</th><th>Remove</th>
+                {% else %}
+                    <th>Approved_CEU</th><th>Comment</th>
+                {% endif %}
+            </tr>
+            {% for p in pda_instance %}
+            <tr>
+                <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                <td>{{p.ceu|default_if_none:""}}</td><td>{{p.clock_hours|default_if_none:""}}</td><td>{{p.pages|default_if_none:""}}</td>
+                <td><a href="{%  static 'media/' %}{{ p.file }}">{{ p.file }}</a></td>
+                {% if pda_record.principal_signature %}
+                    <td>{{ p.approved_ceu }}</td>
+                    <td>{{p.approval_comment}}</td>
+                    {% else %}
+                <td><a class = "btn btn-sm btn-info" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% if pda_record.principal_signature  %}
+<!-- If Activity is aleady submitted to ISEI, show summary and approved CEUs -->
+    <div class="row">
+        <div class="col"> Summary: {{pda_record.summary}}<br></div>
+        <div class ="col-sm-2">
+            {% if pda_record.total_approved_ceus  %}
+             Approved CEUs: {{ pda_record.total_approved_ceus }}
+            {% endif %}
+        </div>
+    </div>
+
+{% else %}
+
+<!-- If Activity is not yet submitted -->
+    <form action=" " method="POST" id="add_activity" enctype="multipart/form-data">
+        <!-- enter new activity-->    
+        <div class="card card-body">
+            <b> Enter new activity:</b><br>
+            {% csrf_token %}        
+            <div class="row">
+            {{ instanceformset.management_form }}
+            {% for f in instanceformset %}
+                <div class="col-sm-3"> {{ f.pda_type|as_crispy_field}}</div>
+                <div class="col-sm-2"> {{ f.description|as_crispy_field}}</div>
+                <div class = "col-sm-2"> {{f.date_completed|as_crispy_field}} </div>               
+                <div class = "col-sm"> {{f.ceu|as_crispy_field}} </div> 
+                <div class = "col-sm-1">{{f.clock_hours|as_crispy_field}}</div>
+                <div class = "col-sm"> {{f.pages|as_crispy_field}} </div>
+                <div class = "col-sm" >
+                    Supporting Documentation: <br>
+                    {{f.file}} <br><br>
+                     <input class = "btn btn-sm btn-default" type="submit" value="Add Activity" name = "add_activity"> </div>
+                {% endfor %}
+            </div>
+
+                
+            <div class="row">                
+           
+            <!-- update summary-->
+                <div class = col-sm-9>
+                <p id="school_year">{{record_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
+                {% csrf_token %}
+                {{ record_form.summary|as_crispy_field }}
+                
+                <div class="col-sm-2">
+                    <input class = "btn btn-sm btn-default" type="submit" value="Update Summary" name = "update_summary">
+                </div>
+                </div>            
+            
+            <div class="col-sm-3" style = "margin-top: 170px">
+                <div class="card card-body" >
+                    <!-- submit record-->
+                    <p id="school_year2">{{record_form.school_year}}</p>
+                    {% csrf_token %}
+                    {{ record_form.date_submitted|as_crispy_field }}<i>*submit only when all activities for this school year have been entered</i> <br>
+                    <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_record">
+                </div>
+            </div> 
+           </div>
+        </div>
+    </form>
+
+{% endif %}
+
+    <script>
+        document.getElementById("school_year").style.display = "none";
+        document.getElementById("school_year2").style.display = "none";
+    </script>
+
+{% endblock %}

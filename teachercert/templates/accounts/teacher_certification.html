@@ -1,0 +1,75 @@
+{%  extends 'base.html' %}
+
+
+{% block content %}
+	<div class="row">
+
+        <div class="col-sm-4">
+        Sign teacher activities
+            <div class="card-body">
+				<table class="table table-sm table-light">
+                  <tbody>
+                    {% for p in pda_record_unsigned %}
+					<tr>
+						<td>{{p.teacher}} </td>
+						<td>{{p.school_year}}</td>
+                        <td>
+                            <form action="{% url 'teacher_certification' p.id %}" method="POST">
+                                {% csrf_token %}
+                                <input  class = "btn btn-sm btn-default" type="submit" value="Sign" name = "sign" >
+                            </form></td>
+                    </tr>
+
+				    <tr>
+                      <td colspan="4">
+                        <table class="table mb-0 table-hover">
+                         <thead class="table-light">
+                            <th>Date Completed</th>
+                            <th>Description</th>
+                            <th>CEUs</th>
+                          </thead>
+                          {% for i in p.pdainstance_set.all %}
+                            <tr>
+						        <td>{{i.date_completed}}</td>
+                                <td>{{i.description}} </td>
+                                <td>{{i.pages|default_if_none:""}}{{ i.clock_hours|default_if_none:"" }}{{ i.ceus|default_if_none:"" }}</td>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      </td>
+                    </tr>
+                     <tr><td colspan="4">{{ p.summary}}</td></tr>
+                        <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="col-sm-3">
+         Signed:
+            <div class="card-body">
+				<table class="table table-sm table-light">
+                  <thead class="table-light">
+                    <th>Teacher</th>
+					<th>SchoolYear</th>
+                  </thead>
+                  <tbody>
+                    {% for p in pda_record_signed%}
+					<tr>
+						<td>{{p.teacher}} </td>
+						<td>{{p.school_year}}</td>
+                    </tr>
+
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock  %}

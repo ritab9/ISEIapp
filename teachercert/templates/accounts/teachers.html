@@ -1,0 +1,59 @@
+{%  extends 'base.html' %}
+
+{% block content %}	
+
+<div class="row">
+	<div class="col">
+		<div class="card card-body">
+			<form method="get">
+				{{my_filter.form}}
+		    	<button class="btn btn-primary" type="submit">Search</button>
+		  	</form>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col">
+		<h5>TEACHERS:</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-default  btn-sm btn-block"  href=""> Add Teacher </a>
+			<table class="table table-sm">
+				<tr>
+					<th></th>
+					<th>Teacher</th>
+					<th>Current Certification</th>
+					<th>School</th>
+				</tr>
+				{% for teacher in teachers %}
+					<tr>
+						<td><a class = "btn btn-sm btn-info" href="{% url 'teacher' teacher.user.id %}">View</a></td>
+						<td>{{teacher}} </td>
+						<td>{{teacher.get_current_certification_display }} </td>
+						<td>{{teacher.school}} </td>
+					</tr>	
+
+				{% endfor %}
+					
+
+			</table>
+		</div>
+	</div>
+
+<div class="row">
+		<div class="col-md-3">
+			<div class="card text-center text-black  mb-3" id="orders-delivered">
+			  	<div class="card-header">
+			  		<h5> class="card-title">Total Teachers</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h5> class="card-title">{{total_teachers}}</h5>
+			  	</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

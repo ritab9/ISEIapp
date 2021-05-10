@@ -37,3 +37,4 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.user.last_name + ', ' + self.user.first_name
+

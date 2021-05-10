@@ -1,0 +1,175 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+{% if user_not_teacher %}
+    {{ teacher }}
+{% endif %}
+
+<!-- filter -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-body">
+                <form method="get">
+                    {% if user_not_teacher %}
+                    {{ instance_filter.form.teacher.label_tag }} {{ instance_filter.form.teacher }}<br>
+                    {% endif %}
+                    {{ instance_filter.form.school_year.label_tag }} {{ instance_filter.form.school_year }}
+                    {{ instance_filter.form.description.label_tag }} {{ instance_filter.form.description }}
+                    {{ instance_filter.form.start_date.label_tag }} {{ instance_filter.form.start_date }}
+                    {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
+                    {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp
+                    <button class="btn btn-default btn-sm" type="submit">Search</button>
+                    <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">>
+        <div class="col">
+        <div class = "row">
+            <!-- dropdowns for activity addition -->
+            <div class="col-sm-2"><br>
+                <div class="dropdown">
+                    <button class="dropbtn" style ="background-color: #68889E; color:#FFF;
+  border-color: #2F3E48;">Add / Submit PDA
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                         {% for ar in active_record %}
+                            <a  href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
+                        {% endfor %}
+                            {%  for n in no_record_school_years %}
+                            <a  href="{%  url 'create_record' teacher.user.id n.id %}"> for {{ n }}</a>
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+                <!-- Comments -->
+                <div class="col">
+                    <div class="card-body">
+                        <!--An activity record for a school year is not considered submitted to ISEI until it is signed by the principal.
+                        -->
+                    </div>
+                </div>
+        </div>
+		<div class="card card-body">
+            <!-- table for active instances-->
+            <table class="table table-sm">
+				<tr>
+                    <th>School Year</th>
+                    <th>Submitted</th>
+                    <th>Date Completed</th>
+					<th>Activity Type</th>
+                    <th>Description</th>
+					<th>CEUs</th>
+					<th>Hours</th>
+					<th>Pages</th>
+                    <th>Principal Signed</th>
+					<th>Update</th>
+					<th>Remove</th>
+				</tr>			
+
+                {% for p in active_instance %}
+					<tr>
+						<td>{{p.pda_record.school_year}} </td>
+                        {% if p.pda_record.date_submitted %}
+                            <td>To Principal</td>
+                        {% else %}
+                            <td style = "color:red;size:40px">Not yet</td>
+                        {% endif %}
+                        <td>{{p.date_completed}} </td>
+						<td>{{p.pda_type.get_category_display}} </td>
+                        <td>{{p.description}} </td>
+                        <td>{{p.ceu|default_if_none:"" }} </td>
+                        <td>{{p.clock_hours|default_if_none:""}} </td>
+						<td>{{p.pages|default_if_none:""}} </td>
+                        {% if p.pda_record.date_submitted %}
+                            <td style = "color:red;size:40px">{{ p.pda_record.principal_signature|yesno:"Yes,Not Yet" }}</td>
+                        {% else %} <td> </td>
+                        {% endif %}
+                        <td><a class = "btn btn-sm btn-info" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+						<td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+					</tr>	
+
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+    </div>
+
+
+    <!-- table for submitted records-->
+    <div class="row">>
+        <div class="col">
+        <!-- dropdowns for activity viewing -->
+        <div class="col-sm-2"><br>
+            <div class="dropdown">
+                <button class="dropbtn" style ="background-color: #68889E; color:#FFF;
+  border-color: #2F3E48;">View PDA submitted to ISEI
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    {% for ar in submitted_record %}
+                        <a  href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+		<div class="card card-body">
+			<table class="table table-sm">
+				<tr>
+                    <th>School Year</th>
+                    <th>Date Submitted</th>
+                    <th>Date Completed</th>
+					<th>Activity Type</th>
+                    <th>Description</th>
+					<th>CEUs</th>
+					<th>Hours</th>
+					<th>Pages</th>
+                    <th>Approved CEUs</th>
+                    <th>Comment</th>
+
+				</tr>
+				{% for p in submitted_instance %}
+					<tr>
+						<td>{{p.pda_record.school_year}} </td>
+                        <td>{{p.pda_record.date_submitted}}</td>
+                        <td>{{p.date_completed}} </td>
+						<td>{{p.pda_type.get_category_display}} </td>
+                        <td>{{p.description}} </td>
+                        <td>{{p.ceu|default_if_none:"" }} </td>
+                        <td>{{p.clock_hours|default_if_none:""}} </td>
+						<td>{{p.pages|default_if_none:""}} </td>
+                        {% if p.approved == 'None' %}
+                            <td>Pending</td>
+                        {% else %}
+                        <td>{{p.approved_ceu|default_if_none:""}} </td>
+                        {% endif %}
+                        <td>{{p.approval_comment|default_if_none:""}} </td>
+					</tr>
+
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+    </div>
+
+    <!-- number of activities-->
+    <div class="row">
+        <div class="col">
+		<div class="col-md-5">
+			<div class="card text-center text-black  mb-3" id="orders-pending">
+			  	<div class="card-header">
+			  		<h8 class="card-title">Total Activities</h8>
+			  	</div>
+			  	<div class="card-body">
+			    	<h8 class="card-title">{{count}}</h8>
+			  	</div>
+			</div>
+		</div>
+	</div>
+    </div>
+{% endblock %}

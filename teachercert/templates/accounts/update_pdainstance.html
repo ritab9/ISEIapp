@@ -1,0 +1,36 @@
+{%  extends 'base.html' %}
+
+{% block content %}	
+{% if user_not_teacher %}
+    {{ teacher }}
+{% endif %}	
+<br>
+    {% load static %}
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+            <form action=" " method="POST" id="update_activity" enctype="multipart/form-data">
+				{% csrf_token %}
+				<p id="teacher">{{form.teacher}}</p>
+				<p>{{form.pda_type.label_tag}}{{form.pda_type}}
+                    {{form.description.label_tag}}{{form.description}}
+                    {{form.date_completed.label_tag}}{{form.date_completed}}
+                </p>
+				<p>{{form.ceu.label_tag}}{{form.ceu}}
+                    {{form.clock_hours.label_tag}}{{form.clock_hours}}
+                    {{form.pages.label_tag}}{{form.pages}}</p>
+                <p>Supporting Documentation:
+                <p><a href="{%  static 'media/' %}{{ form.file }}"></a>
+                {{ form.file }}</p>
+
+                </p>
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+	</div>
+</div>
+    <script>
+        document.getElementById("teacher").style.display = "none";
+    </script>
+
+{% endblock %}
