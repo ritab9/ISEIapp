@@ -14,6 +14,29 @@ from .forms import *
 from users.utils import is_in_group
 from users.models import *
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal'])
+def principaldashboard(request, recID=None):
+    principal = request.user.teacher
+    teachers = Teacher.objects.filter(school=principal.school)
+    pda_record_unsigned = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False,
+                                                   principal_signed=False)
+    pda_record_signed = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False,
+                                                 principal_signed=True)
+
+    if request.method == 'POST':
+        if request.POST.get('sign'):
+            PDARecord.objects.filter(id=recID).update(principal_signed=True)
+            # pda_record = PDARecord.objects.get(id=recID)
+           # pda_record.principal_signed=True
+            # pda_record.save()
+
+    context = dict(teachers=teachers, pda_record_unsigned=pda_record_unsigned, pda_record_signed=pda_record_signed)
+    return render(request, 'accounts/principal_dashboard.html', context)
+
+
+
 #set up only for teachers (exists in users/views. Might fit better there)
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher'])

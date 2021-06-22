@@ -16,7 +16,10 @@ class TeacherInline(admin.StackedInline):
 
 class UserAdmin(AuthUserAdmin):
     inlines = [TeacherInline]
-    list_display = ('id','username', 'first_name', 'last_name')
+    list_display = ('first_name', 'last_name', 'username', 'School', 'id')
+
+    def School(self, obj):
+        return obj.teacher.school
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

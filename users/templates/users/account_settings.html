@@ -6,8 +6,8 @@
 
 <style>
 	.profile-pic{
-		max-width: 50%;
-		max-height: 50%;
+		max-width: 100%;
+		max-height: 100%;
 		margin: 0 auto;
 		border-radius: 50%;
 	}
@@ -45,13 +45,15 @@
                         {{ teacher_form.current_certification|as_crispy_field }}
                         {{ teacher_form.school|as_crispy_field }}
                     </div>
-                    <div class="col">
+                </div>
+            <div class="row">
+                <div class="col">
                         <p style="font-size: 14px">Change Profile Picture</p>
                         {{ teacher_form.profile_picture}}
                     </div>
+                <div class="col">
+                    <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" value="Update">
                 </div>
-            <div class="row">
-			<input class="btn btn-default bg-ISEIblue4 text-light" type="submit" value="Update">
             </div>
             </form>
 		</div>

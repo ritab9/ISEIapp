@@ -8,21 +8,20 @@
 
 <!-- filter -->
     <div class="row">
-        <div class="col">
-            <div class="card card-body">
-                <form method="get">
-                    {% if user_not_teacher %}
+        <div class="card card-body">
+            <form method="get">
+                {% if user_not_teacher %}
                     {{ instance_filter.form.teacher.label_tag }} {{ instance_filter.form.teacher }}<br>
-                    {% endif %}
-                    {{ instance_filter.form.school_year.label_tag }} {{ instance_filter.form.school_year }}
-                    {{ instance_filter.form.description.label_tag }} {{ instance_filter.form.description }}
-                    {{ instance_filter.form.start_date.label_tag }} {{ instance_filter.form.start_date }}
-                    {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
-                    {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp
-                    <button class="btn btn-default btn-sm" type="submit">Search</button>
-                    <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
-                </form>
-            </div>
+                {% endif %}
+                {{ instance_filter.form.school_year.label_tag }} {{ instance_filter.form.school_year }}
+                {{ instance_filter.form.description.label_tag }} {{ instance_filter.form.description }}
+                {{ instance_filter.form.start_date.label_tag }} {{ instance_filter.form.start_date }}
+                {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
+                {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp
+                <br>
+                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button>
+                <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
+            </form>
         </div>
     </div>
 
@@ -32,18 +31,17 @@
             <!-- dropdowns for activity addition -->
             <div class="col-sm-2"><br>
                 <div class="dropdown">
-                    <button class="dropbtn" style ="background-color: #68889E; color:#FFF;
-  border-color: #2F3E48;">Add / Submit PDA
-                        <i class="fa fa-caret-down"></i>
-                    </button>
-                    <div class="dropdown-content">
-                         {% for ar in active_record %}
-                            <a  href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
-                        {% endfor %}
-                            {%  for n in no_record_school_years %}
-                            <a  href="{%  url 'create_record' teacher.user.id n.id %}"> for {{ n }}</a>
-                            {% endfor %}
-                    </div>
+                  <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add / Submit PDA
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                     {% for ar in active_record %}
+                            <a  class="dropdown-item" href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
+                     {% endfor %}
+                     {%  for n in no_record_school_years %}
+                            <a  class="dropdown-item" href="{%  url 'create_record' teacher.user.id n.id %}"> for {{ n }}</a>
+                     {% endfor %}
+                  </div>
                 </div>
             </div>
                 <!-- Comments -->
@@ -89,7 +87,7 @@
                             <td style = "color:red;size:40px">{{ p.pda_record.principal_signature|yesno:"Yes,Not Yet" }}</td>
                         {% else %} <td> </td>
                         {% endif %}
-                        <td><a class = "btn btn-sm btn-info" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                        <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
 						<td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
 					</tr>	
 
@@ -105,16 +103,15 @@
         <div class="col">
         <!-- dropdowns for activity viewing -->
         <div class="col-sm-2"><br>
-            <div class="dropdown">
-                <button class="dropbtn" style ="background-color: #68889E; color:#FFF;
-  border-color: #2F3E48;">View PDA submitted to ISEI
-                    <i class="fa fa-caret-down"></i>
-                </button>
-                <div class="dropdown-content">
+         <div class="dropdown">
+                  <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    View PDA submitted to ISEI
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% for ar in submitted_record %}
                         <a  href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
                     {% endfor %}
-                </div>
+                  </div>
             </div>
         </div>
 
