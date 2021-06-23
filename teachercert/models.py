@@ -101,14 +101,14 @@ class PDAInstance(models.Model):
     # 6 - Record approved, individual instance denied ( isei_reviewed = 1, principal_reviewed = 1, submitted = 0)
     # 15 - Approved by ISEI
 
+    @property
     def suggested_ceu(self):
-        if self.approved:
-            if self.ceu is not None:
-                return self.ceu
-            elif self.pages is not None:
-                return round(self.pages / 100, 2)
-            elif self.clock_hours is not None:
-                return round(self.clock_hours / 10, 2)
+        if self.ceu is not None:
+            return self.ceu
+        elif self.pages is not None:
+            return round(self.pages / 100, 2)
+        elif self.clock_hours is not None:
+            return round(self.clock_hours / 10, 2)
 
     def __str__(self):
         return self.description

@@ -3,71 +3,104 @@
 
 {% block content %}
 	<div class="row">
+    <div class="col-sm-3">
+     Approved:
+        <div class="card-body">
+            <table class="table table-sm table-light">
+              <thead class="table-light">
+                <th>Teacher</th>
+                <th>SchoolYear</th>
+              </thead>
+              <tbody>
+                {% for p in pda_record_signed%}
+                <tr>
+                    <td>{{p.teacher}} </td>
+                    <td>{{p.school_year}}</td>
+                </tr>
 
-        <div class="col-sm-4">
-        Sign teacher activities
-            <div class="card-body">
-				<table class="table table-sm table-light">
-                  <tbody>
-                    {% for p in pda_record_unsigned %}
-					<tr>
-						<td>{{p.teacher}} </td>
-						<td>{{p.school_year}}</td>
-                        <td>
-                            <form action="{% url 'teacher_certification' p.id %}" method="POST">
-                                {% csrf_token %}
-                                <input  class = "btn btn-sm btn-default" type="submit" value="Sign" name = "sign" >
-                            </form></td>
-                    </tr>
-
-				    <tr>
-                      <td colspan="4">
-                        <table class="table mb-0 table-hover">
-                         <thead class="table-light">
-                            <th>Date Completed</th>
-                            <th>Description</th>
-                            <th>CEUs</th>
-                          </thead>
-                          {% for i in p.pdainstance_set.all %}
-                            <tr>
-						        <td>{{i.date_completed}}</td>
-                                <td>{{i.description}} </td>
-                                <td>{{i.pages|default_if_none:""}}{{ i.clock_hours|default_if_none:"" }}{{ i.ceus|default_if_none:"" }}</td>
-                            </tr>
-                          {% endfor %}
-                        </table>
-                      </td>
-                    </tr>
-                     <tr><td colspan="4">{{ p.summary}}</td></tr>
-                        <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
-                    {% endfor %}
-
-                  </tbody>
-                </table>
-            </div>
+                {% endfor %}
+              </tbody>
+            </table>
         </div>
+        Denied:
+        <div class="card-body">
+            <table class="table table-sm table-light">
+              <thead class="table-light">
+                <th>Teacher</th>
+                <th>SchoolYear</th>
+              </thead>
+              <tbody>
+                {% for p in pda_record_denied%}
+                <tr>
+                    <td>{{p.teacher}} </td>
+                    <td>{{p.school_year}}</td>
+                </tr>
 
-
-        <div class="col-sm-3">
-         Signed:
-            <div class="card-body">
-				<table class="table table-sm table-light">
-                  <thead class="table-light">
-                    <th>Teacher</th>
-					<th>SchoolYear</th>
-                  </thead>
-                  <tbody>
-                    {% for p in pda_record_signed%}
-					<tr>
-						<td>{{p.teacher}} </td>
-						<td>{{p.school_year}}</td>
-                    </tr>
-
-                    {% endfor %}
-                  </tbody>
-                </table>
-            </div>
+                {% endfor %}
+              </tbody>
+            </table>
         </div>
+    </div>
+    {% if pda_record_unsigned %}
+    <div class="col-sm">
+        <div class="card-body">
+            Review and approve teacher activities:
+            <table class="table table-sm table-light">
+              <tbody>
+                {% for p in pda_record_unsigned %}
+                <tr>
+                    <td>{{p.teacher}} </td>
+                    <td>{{p.school_year}}</td>
+                </tr>
+                <tr>
+                  <td colspan="4">
+                    <table class="table mb-0 table-hover">
+                     <thead class="table-light">
+                        <th>Date Completed</th>
+                        <th>Description</th>
+                        <th>CEUs</th>
+                        <th>Supporting Documentation</th>
+                      </thead>
+                      {% for i in p.pdainstance_set.all %}
+                        <tr>
+                            <td>{{i.date_completed}}</td>
+                            <td>{{i.description}} </td>
+                            <td>{{ i.suggested_ceu }}</td>
+                            <td>{{ i.file }}</td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                  </td>
+                </tr>
+                    <tr><td colspan="4"> <b>Summary:</b> &nbsp; {{ p.summary}}</td></tr>
+                 <td>
+                        <form action="{% url 'teacher_certification' p.id %}" method="GET">
+                            {% csrf_token %}
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approved" align="right" >
+                           <br>
+                            <font size = "-1"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
+                            </font>
+                        </form>
+                 </td>
+                    <tr><td colspan="4">
+                    <form action="{% url 'teacher_certification' p.id %}" method="GET">
+                            {% csrf_token %}
+                        <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
+
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denied" >
+                        </form>
+                    </td></tr>
+
+                    <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+
+                {% endfor %}
+
+              </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
 
 
     </div>

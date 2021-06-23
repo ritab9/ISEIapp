@@ -38,26 +38,13 @@
 
 
                 {% if request.user|in_group:"principal"%}
-                <div class="principal_dashboard">
                       <li class="nav-item active">
                         <a class="nav-link" href="{% url 'principal_dashboard' %}">Home </a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'teacher_certification' %}">Teacher Certification</a>
                       </li>
-                      <li class="nav-item dropdown">
-                          <div class="dropdown">
-                                <button class="dropbtn">Documents and Resources
-                                  <i class="fa fa-caret-down"></i>
-                                </button>
-                                <div class="dropdown-content">
-                                  <a href="#">ISEI Codebook</a>
-                                  <a href="#">Teacher Certification Codebook</a>
-                                  <a href="#">Evaluation Forms</a>
-                                </div>
-                          </div>
-                        <!-- <a class="nav-link" href="{% url 'principal_dashboard' %}">Documents and Resources</a> -->
-                    </li>
+
                       <li class="nav-item">
                             <a class="nav-link" href="{% url 'teacher_dashboard' %}">My Dashboard </a>
                       </li>
@@ -69,7 +56,6 @@
                     <li class="nav-item">
                           <a class="nav-link" href="{% url 'account_settings' %}">Settings</a>
                       </li>
-                </div>
                 {% endif %}
 
                 {% if request.user|in_group:"teacher"%}
