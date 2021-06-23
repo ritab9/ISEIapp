@@ -97,6 +97,6 @@
 
 {% if user.is_authenticated %}
   <span class ="name-msg"> {{request.user.first_name}} </span>
-  <span class ="name-msg"> <a href="{% url 'logout' %}">Logout</a> </span>
+  <span class ="name-msg"> <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a> </span>
 {% endif %}
 </nav>

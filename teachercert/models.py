@@ -41,7 +41,17 @@ class PDARecord(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
     date_submitted = models.DateField(null=True, blank=True)
-    principal_signed = models.BooleanField(null=False, default=False, blank=True)
+    CHOICES = (
+        ('n', 'Not yet reviewed'),
+        ('a', 'Approved'),
+        ('d', 'Denied'),
+    )
+
+    principal_reviewed = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
+    principal_comment = models.CharField(max_length=300, null=True, blank=True)
+
+    isei_approved = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
+    isei_comment = models.CharField(max_length=300, null=True, blank=True)
     class Meta:
         unique_together = ('teacher', 'school_year',)
         ordering = ['school_year']
@@ -84,11 +94,11 @@ class PDAInstance(models.Model):
         return int(self.submitted == True) + int(self.principal_signed == True) *2 + int(self.isei_reviewed == True)*4 +int(self.approved == True) *8
     # 0 - New instance
     # 1 - Submitted instance
-    # 2 - Denied by the principal (submitted=0, principal_signed = 1)
+    # 2 - Denied by the principal (submitted=0, principal_reviewed = 1)
     # 3 - Signed by the principal
-    # 4 - Summary denied, whole record returned (isei_reviewed = 1, submitted = 0, principal_signed = 0)
-    # 5 - Resubmitted to principal (isei_reviewed = 1, submitted = 1, principal_signed = 0)
-    # 6 - Record approved, individual instance denied ( isei_reviewed = 1, principal_signed = 1, submitted = 0)
+    # 4 - Summary denied, whole record returned (isei_reviewed = 1, submitted = 0, principal_reviewed = 0)
+    # 5 - Resubmitted to principal (isei_reviewed = 1, submitted = 1, principal_reviewed = 0)
+    # 6 - Record approved, individual instance denied ( isei_reviewed = 1, principal_reviewed = 1, submitted = 0)
     # 15 - Approved by ISEI
 
     def suggested_ceu(self):

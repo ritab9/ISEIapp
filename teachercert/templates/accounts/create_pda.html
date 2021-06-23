@@ -30,7 +30,7 @@
                     <td>{{ p.approved_ceu }}</td>
                     <td>{{p.approval_comment}}</td>
                     {% else %}
-                <td><a class = "btn btn-sm btn-info" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
                 <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
                 {% endif %}
             </tr>
@@ -62,42 +62,44 @@
             <div class="row">
             {{ instanceformset.management_form }}
             {% for f in instanceformset %}
-                <div class="col-sm-3"> {{ f.pda_type|as_crispy_field}}</div>
-                <div class="col-sm-2"> {{ f.description|as_crispy_field}}</div>
-                <div class = "col-sm-2"> {{f.date_completed|as_crispy_field}} </div>               
+                <div class="col-sm"> {{ f.pda_type|as_crispy_field}}</div>
+                <div class="col-sm"> {{ f.description|as_crispy_field}}</div>
+                <div class = "col-sm"> {{f.date_completed|as_crispy_field}} </div>
                 <div class = "col-sm"> {{f.ceu|as_crispy_field}} </div> 
-                <div class = "col-sm-1">{{f.clock_hours|as_crispy_field}}</div>
+                <div class = "col-sm">{{f.clock_hours|as_crispy_field}}</div>
                 <div class = "col-sm"> {{f.pages|as_crispy_field}} </div>
                 <div class = "col-sm" >
                     Supporting Documentation: <br>
-                    {{f.file}} <br><br>
-                     <input class = "btn btn-sm btn-default" type="submit" value="Add Activity" name = "add_activity"> </div>
+                    {{f.file}} <br>
+                     <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity"> </div>
                 {% endfor %}
             </div>
 
-                
+
             <div class="row">                
-           
+           <div class="col">
             <!-- update summary-->
-                <div class = col-sm-9>
+                <div class = col-sm-10>
                 <p id="school_year">{{record_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
                 {% csrf_token %}
+                    <br><br>
                 {{ record_form.summary|as_crispy_field }}
                 
                 <div class="col-sm-2">
-                    <input class = "btn btn-sm btn-default" type="submit" value="Update Summary" name = "update_summary">
+                    <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary">
                 </div>
                 </div>            
-            
-            <div class="col-sm-3" style = "margin-top: 170px">
+            </div>
+            <div class="col-sm-3" >
                 <div class="card card-body" >
+                    <br><br><br><br>
                     <!-- submit record-->
                     <p id="school_year2">{{record_form.school_year}}</p>
                     {% csrf_token %}
                     {{ record_form.date_submitted|as_crispy_field }}<i>*submit only when all activities for this school year have been entered</i> <br>
                     <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_record">
                 </div>
-            </div> 
+            </div>
            </div>
         </div>
     </form>

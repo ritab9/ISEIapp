@@ -29,7 +29,7 @@ def principaldashboard(request, recID=None):
         if request.POST.get('sign'):
             PDARecord.objects.filter(id=recID).update(principal_signed=True)
             # pda_record = PDARecord.objects.get(id=recID)
-           # pda_record.principal_signed=True
+           # pda_record.principal_reviewed=True
             # pda_record.save()
 
     context = dict(teachers=teachers, pda_record_unsigned=pda_record_unsigned, pda_record_signed=pda_record_signed)
@@ -90,7 +90,7 @@ def principaldashboard_NOTUSED(request, recID=None):
         if request.POST.get('sign'):
             PDARecord.objects.filter(id=recID).update(principal_signed=True)
             #pda_record = PDARecord.objects.get(id=recID)
-            #pda_record.principal_signed=True
+            #pda_record.principal_reviewed=True
             #pda_record.save()
 
     context = dict(teachers=teachers, pda_record_unsigned=pda_record_unsigned, pda_record_signed=pda_record_signed)
@@ -119,7 +119,7 @@ def teachercertification(request, recID=None):
         if request.POST.get('sign'):
             PDARecord.objects.filter(id=recID).update(principal_signed=True)
             #pda_record = PDARecord.objects.get(id=recID)
-            #pda_record.principal_signed=True
+            #pda_record.principal_reviewed=True
             #pda_record.save()
 
     context = dict(teachers=teachers, pda_record_unsigned=pda_record_unsigned, pda_record_signed=pda_record_signed)
@@ -136,8 +136,8 @@ def myPDAdashboard(request, pk):
     pda_record = PDARecord.objects.filter(teacher=teacher )
     pda_instance = PDAInstance.objects.filter(pda_record__in=pda_record)
 
-    active_record = pda_record.filter(principal_signed=False)
-    submitted_record = pda_record.filter(principal_signed=True)
+    active_record = pda_record.filter(principal_reviewed='n')
+    submitted_record = pda_record.filter(principal_reviewed='a')
 
     instance_filter = PDAInstanceFilter(request.GET, queryset=pda_instance)
     pda_instance = instance_filter.qs
@@ -170,7 +170,7 @@ def createrecord(request, pk, sy):
     pda_record = PDARecord()
     pda_record.teacher = Teacher.objects.get(user__id=pk)
     pda_record.school_year = SchoolYear.objects.get(id=sy)
-    pda_record.principal_signed = False
+
     pda_record.save()
 
     return redirect('create_pda', recId =pda_record.id)
@@ -202,6 +202,9 @@ def createPDA(request, recId):
             record_form = PDARecordForm(request.POST, instance=pda_record)
             if record_form.is_valid():
                 record_form.save()
+                pda_instance = PDAInstance.objects.filter(pda_record=pda_record)
+                pda_instance.update(submitted = True)
+
                 if is_in_group(request.user, 'teacher'):
                     if request.POST.get('submit_record'):
                         return redirect('myPDAdashboard', pk=pda_record.teacher.user.id)
