@@ -6,7 +6,7 @@ def unauthenticated_user(view_func):
     def wrapper_func(request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.groups.filter(name="admin").exists():
-                return redirect('admin_dashboard')
+                return redirect('staffdashboard')
             if request.user.groups.filter(name='teacher').exists():
                 return redirect('teacher_dashboard')
         else:

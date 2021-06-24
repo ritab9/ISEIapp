@@ -54,7 +54,7 @@ def admindashboard_NOTUSED(request):
 
     context = dict( teachers=teachers, activities=activities, total_teachers=total_teachers,
                    total_activities=total_activities)
-    return render(request, 'accounts/admin_dashboard.html', context)
+    return render(request, 'accounts/staff_dashboard.html', context)
 
 #maybe it should be moved to users/views
 @login_required(login_url='login')
@@ -188,7 +188,7 @@ def createPDA(request, recId):
                 instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_record)
 
 
-        if request.POST.get('submit_record','update_summary'): #update summary, stay on page, submit record - go to PDAdashboard
+        if request.POST.get('submit_record'): #update summary, stay on page, submit record - go to PDAdashboard
             record_form = PDARecordForm(request.POST, instance=pda_record)
             if record_form.is_valid():
                 pda_record = record_form.save()
@@ -202,6 +202,10 @@ def createPDA(request, recId):
                     if request.POST.get('submit_record'):
                         return redirect('myPDAdashboard', pk=pda_record.teacher.user.id)
 
+        if request.POST.get('update_summary'):  # update summary, stay on page, submit record - go to PDAdashboard
+            record_form = PDARecordForm(request.POST, instance=pda_record)
+            if record_form.is_valid():
+                pda_record = record_form.save()
 
     if is_in_group(request.user, 'teacher'):
         user_not_teacher = False

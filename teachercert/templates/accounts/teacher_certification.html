@@ -44,19 +44,21 @@
     {% if pda_record_unsigned %}
     <div class="col-sm">
         <div class="card-body">
-            Review and approve teacher activities:
+            <b> Review and approve teacher activities: </b>
             <table class="table table-sm table-light">
               <tbody>
                 {% for p in pda_record_unsigned %}
                 <tr>
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}}</td>
+                    <td>Date Submitted: {{ p.date_submitted }}</td>
                 </tr>
                 <tr>
                   <td colspan="4">
                     <table class="table mb-0 table-hover">
                      <thead class="table-light">
                         <th>Date Completed</th>
+                        <th>Type</th>
                         <th>Description</th>
                         <th>CEUs</th>
                         <th>Supporting Documentation</th>
@@ -64,9 +66,10 @@
                       {% for i in p.pdainstance_set.all %}
                         <tr>
                             <td>{{i.date_completed}}</td>
+                            <td>{{ i.pda_type }}</td>
                             <td>{{i.description}} </td>
                             <td>{{ i.suggested_ceu }}</td>
-                            <td>{{ i.file }}</td>
+                            <td><a href="../../media/{{ i.file }}">{{ i.file }}</td>
                         </tr>
                       {% endfor %}
                     </table>
@@ -74,12 +77,19 @@
                 </tr>
                     <tr><td colspan="4"> <b>Summary:</b> &nbsp; {{ p.summary}}</td></tr>
                  <td>
+                 {% if p.principal_comment %}
+                     <p><b> Previous denial comment: </b>
+                         {{p.principal_comment }}</p>
+                 {% endif %}
+                 <br>
                         <form action="{% url 'teacher_certification' p.id %}" method="GET">
                             {% csrf_token %}
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approved" align="right" >
                            <br>
-                            <font size = "-1"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
+                            <font size = "-1" color="red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
                             </font>
+                            <p><font size="-1">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</font>
+                            </p>
                         </form>
                  </td>
                     <tr><td colspan="4">

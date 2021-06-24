@@ -47,7 +47,7 @@
                 <tr>
                     <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.ceu|default_if_none:"" }} </td><td>{{p.clock_hours|default_if_none:""}} </td><td>{{p.pages|default_if_none:""}} </td>
-                    <td>{{ p.file }}</td>
+                    <td><a href="../../media/{{ p.file }}">{{ p.file }}</td>
                     <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
                     <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
                     <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>

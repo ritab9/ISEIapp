@@ -1,18 +1,15 @@
-from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect
-from django.views.generic.edit import CreateView, UpdateView
-from django.urls import reverse
-
-from .models import *
 from .decorators import unauthenticated_user, allowed_users
-from .filters import *
 from .forms import *
 from .utils import is_in_group
-
+from .filters import *
+from .models import *
+from django.views.generic.edit import CreateView, UpdateView
+from django.urls import reverse
+from django.forms import inlineformset_factory
 
 # authentication functions
 @unauthenticated_user
@@ -47,8 +44,8 @@ def loginpage(request):
                         return redirect('account_settings')
                     else:
                         return redirect('teacher_dashboard')
-                elif is_in_group(request.user, 'admin'):
-                    return redirect('admin_dashboard')
+                elif is_in_group(request.user, 'staff'):
+                    return redirect('staff_dashboard')
                 else:
                     messages.info(request, 'User not assigned to a group. Contact the site administrator!')
         else:
@@ -61,9 +58,9 @@ def logoutuser(request):
     logout(request)
     return redirect('login')
 
-#set up only for teachers now
+#set up only for teachers + principals now
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher'])
+@allowed_users(allowed_roles=['teacher','principal'])
 def accountsettings(request):
     # TODO account settings for different categories of users
     if request.method == 'POST':
@@ -84,22 +81,6 @@ def accountsettings(request):
         'teacher_form': teacher_form
     })
 
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['admin'])
-def admindashboard(request):
-    #teachers = Teacher.objects.all()
-    # TODO redo the dashboard, replace activity references
-    #activities = PDAInstance.objects.all()
-
-    #total_teachers = teachers.count()
-    #total_activities = activities.count()
-
-
-    #context = dict( teachers=teachers, activities=activities, total_teachers=total_teachers,
-     #              total_activities=total_activities)
-    return render(request, 'users/admin_dashboard.html', context=dict())
-
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher'])
 def teacherdashboard(request):
@@ -112,21 +93,22 @@ def teacherdashboard(request):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal'])
-def principaldashboard(request, recID=None):
-  #  principal = request.user.teacher
-  #  teachers = Teacher.objects.filter(school=principal.school)
-  #  pda_record_unsigned = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False,
- #  pda_record_signed = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False,
- #                                                principal_reviewed=True)
+def principaldashboard(request):
+    principal = request.user.teacher
+    teachers = Teacher.objects.filter(school=principal.school)
+    context = dict(teachers=teachers, principal = principal)
 
-   # if request.method == 'POST':
-    #    if request.POST.get('sign'):
-     #       PDARecord.objects.filter(id=recID).update(principal_reviewed=True)
+    return render(request, 'users/principal_dashboard.html', context)
 
-            # pda_record = PDARecord.objects.get(id=recID)
-           # pda_record.principal_reviewed=True
-            # pda_record.save()
 
-    #context = dict(teachers=teachers, pda_record_unsigned=pda_record_unsigned, pda_record_signed=pda_record_signed)
-
-    return render(request, 'users/principal_dashboard.html')
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def staffdashboard(request):
+    # TODO redo the dashboard, replace activity references
+    # teachers = Teacher.objects.all()
+    # activities = PDAInstance.objects.all()
+    # total_teachers = teachers.count()
+    # total_activities = activities.count()
+    # context = dict( teachers=teachers, activities=activities, total_teachers=total_teachers,
+    #              total_activities=total_activities)
+    return render(request, 'users/staff_dashboard.html', context=dict())

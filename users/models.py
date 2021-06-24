@@ -17,7 +17,7 @@ class School(models.Model):
 
 
 # User Model is automatically created by Django and we will extend it to create Teacher Model
-#upload will be automatically under the Media_root, which for us is Media
+# upload will be automatically under the Media_root, which for us is Media
 class Teacher(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, help_text="*Required")
@@ -36,5 +36,5 @@ class Teacher(models.Model):
     current_certification = models.CharField(max_length=1, choices=sorted(CERTIFICATION_TYPES), null=True, blank=True)
 
     def __str__(self):
-        return self.user.last_name + ', ' + self.user.first_name
+        return self.user.first_name + " " + self.user.last_name
 

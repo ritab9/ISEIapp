@@ -16,9 +16,3 @@ def create_teacher(sender, instance, created, **kwargs):
 		Teacher.objects.create(user=instance)
 		print('Profile Created')
 			
-# post_save.connect(teacher_profile, sender = User)
-
-# @receiver(post_save, sender=User)
-# def save_teacher(sender, instance, **kwargs):
-#	if created:
-#		instance.teacher.save()

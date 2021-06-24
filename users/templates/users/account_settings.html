@@ -4,62 +4,55 @@
 
 {% block content %}
 
+<!-- Profile Picture Style -->
 <style>
 	.profile-pic{
-		max-width: 100%;
-		max-height: 100%;
+		max-width: 80%;
+		max-height: 80%;
 		margin: 0 auto;
 		border-radius: 50%;
 	}
 </style>
 
 <br>
-<div class="row">
-	<div class="col-md-2">
-		<div class="card card-body">
-			<!--<a class="btn btn-warning" href="{% url 'teacher_dashboard' %}"> &#8592; Back to HomePage</a>
-			-->
-			<hr>
-			<h5 style="text-align: center">Account Settings</h5>
-			<hr>
+
+
+<div class="card card-body">
+    <div class ="row">
+    <!-- Profile Picture -->
+        <div class="col-sm-2">
             {% if request.user.teacher.profile_picture %}
 			    <img class="profile-pic" src= "{{user.teacher.profile_picture.url}}">
 		    {% endif %}
-		</div>
-	</div>
+	    </div>
 
+    <!-- Teacher Info -->
     <div class="col-md-9">
-		<div class="card card-body">
-			<form method="POST" action="" enctype="multipart/form-data">
-				{% csrf_token %}
-                <div class = "row">
-                    <div class = "col">
-                        {{ user_form.first_name|as_crispy_field }}
-                        {{ user_form.last_name|as_crispy_field }}
-                    </div>
-                    <div class = "col">
-                        {{ user_form.email|as_crispy_field }}
-                        {{ teacher_form.phone_number|as_crispy_field }}
-                    </div>
-                    <div class="col">
-                        {{ teacher_form.current_certification|as_crispy_field }}
-                        {{ teacher_form.school|as_crispy_field }}
-                    </div>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class = "row">
+                <div class = "col">
+                    {{ user_form.first_name|as_crispy_field }}
+                    {{ user_form.last_name|as_crispy_field }} <br>
+                     <p style="font-size: 14px">Change Profile Picture</p>
+                    {{ teacher_form.profile_picture}}
                 </div>
-            <div class="row">
+                <div class = "col">
+                    {{ user_form.email|as_crispy_field }}
+                    {{ teacher_form.phone_number|as_crispy_field }}
+
+                     <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" value="Update" style = "position: relative; top: 25%">
+                </div>
                 <div class="col">
-                        <p style="font-size: 14px">Change Profile Picture</p>
-                        {{ teacher_form.profile_picture}}
-                    </div>
-                <div class="col">
-                    <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" value="Update">
+                    {{ teacher_form.current_certification|as_crispy_field }}
+                    {{ teacher_form.school|as_crispy_field }}
                 </div>
             </div>
             </form>
-		</div>
-			{% for message in messages %}
+            {% for message in messages %}
 	          <p id="messages">{{message}}</p>
 	        {% endfor %}
+    </div>
 	</div>
 </div>
 

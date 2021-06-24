@@ -25,7 +25,7 @@
             <tr>
                 <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.ceu|default_if_none:""}}</td><td>{{p.clock_hours|default_if_none:""}}</td><td>{{p.pages|default_if_none:""}}</td>
-                <td><a href="{%  static 'media/' %}{{ p.file }}">{{ p.file }}</a></td>
+                <td><a href="../../media/{{ p.file }}">{{ p.file }}</a></td>
                 {% if pda_record.principal_signature %}
                     <td>{{ p.approved_ceu }}</td>
                     <td>{{p.approval_comment}}</td>
@@ -94,7 +94,7 @@
                 {%  if pda_record.principal_comment %}
                 <div class ="col-sm-2">
                     <font color="red">Principal denial comment:</font>
-                    {{ pda_record.principal_comment }}
+                    {{ record_form.principal_comment }}
                 </div>
                 {% endif %}
             <div class="col-sm-2" >
