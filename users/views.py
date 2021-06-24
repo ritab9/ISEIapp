@@ -109,3 +109,24 @@ def teacherdashboard(request):
     context = dict(user_in=user_in,teacher=teacher)
     return render(request, 'users/teacher_dashboard.html', context)
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal'])
+def principaldashboard(request, recID=None):
+  #  principal = request.user.teacher
+  #  teachers = Teacher.objects.filter(school=principal.school)
+  #  pda_record_unsigned = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False,
+ #  pda_record_signed = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False,
+ #                                                principal_reviewed=True)
+
+   # if request.method == 'POST':
+    #    if request.POST.get('sign'):
+     #       PDARecord.objects.filter(id=recID).update(principal_reviewed=True)
+
+            # pda_record = PDARecord.objects.get(id=recID)
+           # pda_record.principal_reviewed=True
+            # pda_record.save()
+
+    #context = dict(teachers=teachers, pda_record_unsigned=pda_record_unsigned, pda_record_signed=pda_record_signed)
+
+    return render(request, 'users/principal_dashboard.html')

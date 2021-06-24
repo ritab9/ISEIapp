@@ -5,7 +5,7 @@ from django.conf import settings
 from . import views
 
 urlpatterns = [
-    path('principaldashboard/', views.principaldashboard, name='principal_dashboard'),
+
     #path('', views.loginpage, name='login'),
     # teacher urls
 
