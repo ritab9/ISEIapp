@@ -6,9 +6,8 @@ from . import views
 
 urlpatterns = [
 
-    #path('', views.loginpage, name='login'),
-    # teacher urls
 
+    # teacher urls
     path('myPDAdashboard/<str:pk>', views.myPDAdashboard, name='myPDAdashboard'),
 
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
@@ -20,15 +19,7 @@ urlpatterns = [
     path('create_record/<str:pk>/<str:sy>/', views.createrecord, name='create_record'),
 
     # principal urls
-#    path('principaldashboard/', views.principaldashboard, name='principal_dashboard'),
-    # signs the record with recID
-#    path('principaldashboard/<str:recID>', views.principaldashboard, name='principal_dashboard'),
-
-    path('teachercertification/', views.teachercertification, name='teacher_certification'),
-    # signs the record with recID
-    path('teachercertification/<str:recID>', views.teachercertification, name='teacher_certification'),
-
-    # admin urls
-#    path('admindashboard/', views.admindashboard, name='admin_dashboard'),
+    path('principal_pda_approval/', views.principal_pda_approval, name='principal_pda_approval'),
+    path('principal_pda_approval/<str:recID>', views.principal_pda_approval, name='principal_pda_approval'),
 
 ]

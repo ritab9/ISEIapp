@@ -82,7 +82,7 @@
                          {{p.principal_comment }}</p>
                  {% endif %}
                  <br>
-                        <form action="{% url 'teacher_certification' p.id %}" method="GET">
+                        <form action="{% url 'principal_pda_approval' p.id %}" method="GET">
                             {% csrf_token %}
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approved" align="right" >
                            <br>
@@ -93,7 +93,7 @@
                         </form>
                  </td>
                     <tr><td colspan="4">
-                    <form action="{% url 'teacher_certification' p.id %}" method="GET">
+                    <form action="{% url 'principal_pda_approval' p.id %}" method="GET">
                             {% csrf_token %}
                         <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
 
