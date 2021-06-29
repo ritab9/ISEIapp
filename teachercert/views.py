@@ -24,13 +24,13 @@ def principal_pda_approval(request, recID=None):
     pda_record_signed = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False, principal_reviewed = 'a')
     pda_record_denied = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=True, principal_reviewed = 'd')
 
-    if request.method == 'GET':
-        if request.GET.get('approved'):
+    if request.method == 'POST':
+        if request.POST.get('approved'):
             pda_record = PDARecord.objects.filter(id=recID).update(principal_reviewed='a')
             PDAInstance.objects.filter(pda_record=pda_record).update(principal_signed=True)
 
-    if request.method == 'GET':
-        if request.GET.get('denied'):
+    if request.method == 'POST':
+        if request.POST.get('denied'):
             pda_record = PDARecord.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.GET.get('principal_comment'))
             PDAInstance.objects.filter(pda_record=pda_record).update(principal_signed=False)
             PDAInstance.objects.filter(pda_record=pda_record).update(submitted = False)

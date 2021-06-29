@@ -6,11 +6,13 @@ For more information on this file, see https://docs.djangoproject.com/en/3.2/top
 For the full list of settings and their values, see https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 from pathlib import Path
+import os
 import sys
 import dj_database_url
 from decouple import config
-import os
 import environ
+from django.core.management.utils import get_random_secret_key
+
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env()
 
@@ -21,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # DJANGO_ALLOWED_HOSTS for production
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
@@ -157,7 +159,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
 MEDIAFILES_DIRS = [BASE_DIR / "media",]
 
 # Default primary key field type
