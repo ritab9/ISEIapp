@@ -135,7 +135,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'static' ),
 
 AWS_DEFAULT_ACL = None
@@ -151,8 +150,10 @@ AWS_S3_OBJECT_PARAMETERS = {
 #AWS_LOCATION = 'static'
 #STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 #STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-#DEFAULT_FILE_STORAGE = 'ISEIapp.storage_backends.MediaStorage'
 
+
+if DEVELOPMENT_MODE is False:
+    DEFAULT_FILE_STORAGE = 'ISEIapp.storage_backends.MediaStorage'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
