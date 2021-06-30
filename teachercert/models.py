@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import Teacher
 from django.core.validators import MinLengthValidator
-
+import datetime
 # Create your models here.
 
 class PDAType(models.Model):
@@ -37,6 +37,8 @@ class SchoolYear(models.Model):
 
 
 class PDARecord(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, blank = True)
+    updated_at = models.DateTimeField(auto_now=True, blank = True)
     # entered by teacher at object creation
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
@@ -65,6 +67,9 @@ class PDARecord(models.Model):
 
 class PDAInstance(models.Model):
     # record contains teacher, school-year and summary
+    created_at = models.DateTimeField(auto_now_add=True, blank = True)
+    updated_at = models.DateTimeField(auto_now=True, blank = True)
+
     pda_record = models.ForeignKey(PDARecord, on_delete=models.PROTECT, null=False, blank=False)
     pda_type = models.ForeignKey(PDAType, on_delete=models.PROTECT, null=False, blank=False)
     date_completed = models.DateField(null=False)

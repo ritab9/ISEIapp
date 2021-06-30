@@ -96,7 +96,6 @@
                     <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
                             {% csrf_token %}
                         <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
-
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denied" >
                         </form>
                     </td></tr>
