@@ -75,7 +75,7 @@ class PDAInstance(models.Model):
     clock_hours = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
     pages = models.DecimalField(max_digits=3, decimal_places=0, null=True, blank=True)
 
-    file = models.FileField(upload_to='Supporting_Files/', null=True, blank=True)
+    file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
     date_submitted = models.DateField(null=True, blank=True)
 
     submitted = models.BooleanField(null=False, default=False, blank=True)

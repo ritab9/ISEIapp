@@ -13,7 +13,7 @@
     <div class="card card-body">
         <table class="table table-sm">
             <tr>
-                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>ceu</th><th>clock_Hours</th><th>pages</th>
+                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>CEUs</th><th>Hours</th><th>Pages</th>
                 <th>Supporting Docs</th>
                 {% if pda_record.principal_signature == None %}
                     <th>Update</th><th>Remove</th>
@@ -25,7 +25,7 @@
             <tr>
                 <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.ceu|default_if_none:""}}</td><td>{{p.clock_hours|default_if_none:""}}</td><td>{{p.pages|default_if_none:""}}</td>
-                <td><a href="../../media/{{ p.file }}">{{ p.file }}</a></td>
+                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
                 {% if pda_record.principal_signature %}
                     <td>{{ p.approved_ceu }}</td>
                     <td>{{p.approval_comment}}</td>
