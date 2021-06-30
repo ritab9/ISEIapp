@@ -25,6 +25,7 @@
             <tr>
                 <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.ceu|default_if_none:""}}</td><td>{{p.clock_hours|default_if_none:""}}</td><td>{{p.pages|default_if_none:""}}</td>
+
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
                 {% if pda_record.principal_signature %}
                     <td>{{ p.approved_ceu }}</td>
