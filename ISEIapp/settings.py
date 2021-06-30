@@ -6,16 +6,15 @@ For more information on this file, see https://docs.djangoproject.com/en/3.2/top
 For the full list of settings and their values, see https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
+from decouple import config
 import sys
 import dj_database_url
-from decouple import config
 import os
 import environ
-from django.core.management.utils import get_random_secret_key
 
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env()
-
 
 # Base directory is two levels above settings.py (project name: ISEIapp in this case)
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,7 +41,6 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'teachercert',
-
     'crispy_forms',
     'storages',
 ]
@@ -80,9 +78,7 @@ WSGI_APPLICATION = 'ISEIapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
-
 if DEVELOPMENT_MODE is True:
     DATABASES = {
         'default': {
@@ -123,56 +119,47 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static' ),
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-MEDIAFILES_DIRS = [BASE_DIR / "media",]
 
 if DEVELOPMENT_MODE is False:
-    AWS_LOCATION = 'static'
+    #AWS_LOCATION = 'static'
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-    AWS_S3_OBJECT_PARAMETERS = {
-        'CacheControl': 'max-age=86400',
-    }
-    DEFAULT_FILE_STORAGE = 'ISEIapp.storage_backends.MediaStorage'
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
-    STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder', 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    )
     AWS_DEFAULT_ACL = None
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = { 'CacheControl': 'max-age=86400',}
+    # s3 static settings
+    #STATIC_LOCATION = 'static'
+    #STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+    #STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # s3 media settings
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'ISEIapp.storage_backends.MediaStorage'
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-#STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+MEDIAFILES_DIRS = [BASE_DIR / "media",]
+STATICFILES_FINDERS = ( 'django.contrib.staticfiles.finders.FileSystemFinder', 'django.contrib.staticfiles.finders.AppDirectoriesFinder',)
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGOUT_REDIRECT_URL = '/login/'
-
 
 #the email setup has to use a two step verifcation
 #the password is an app password (found in Account / Security)
