@@ -16,7 +16,7 @@ body {
 }
 
 /* if any changes made here please check login and register templates */
-a,h1,h2 {
+a,h1,h2, h6 {
     color: #084574;
  }
 

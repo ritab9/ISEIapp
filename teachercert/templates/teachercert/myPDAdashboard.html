@@ -5,7 +5,9 @@
 {% if user_not_teacher %}
     {{ teacher }}
 {% endif %}
+
 {% load static %}
+
 <!-- filter -->
 <div class="row">
     <div class="card card-body">
@@ -26,34 +28,66 @@
 </div>
 <br>
 
-<!-- table for denied records-->
-{% if denied_record %} <!-- Check if there are any denied records -->
-    <h6> Principal denied PD Activities </h6>
+<!-- table for principal denied records-->
+{% if principal_denied_record %} <!-- Check if there are any denied records -->
     <div class="card card-body">
+    <h6> Principal denied PD Activities </h6> <br>
         <table class="table table-sm">
             <tr>
                 <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
-                <th>Supporting documentation</th>
-                <th>Principal Approval</th>
+                <th>Supporting documentation</th><th>Denial Date</th>
             </tr>
-            {% for p in denied_instance %}
+            {% for p in principal_denied_instance %}
                 <tr>
                     <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
                         {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
                     </td>
-
-                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
-                    <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
+                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_record.updated_at }}</td>
                 </tr>
             {% endfor %}
         </table>
-        {%  for ar in denied_record  %}
-            <font>Summary: </font> {{ ar.summary }}
-
+        {%  for ar in principal_denied_record  %}
+            <p><b>Summary:</b> {{ ar.summary }}</p>
             <div class="row">
             <div class="col-sm-10">
-                <font color="red"> Reason for denial: </font> {{ ar.principal_comment }}
+                <font color="red">Reason for denial: </font> {{ ar.principal_comment }}
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-ISEIblue3 btn-sm">
+                    <a style="color:white" href="{%  url 'create_pda' ar.id %}"> Update denied activities </a>
+                </button>
+            </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<br>
+
+<!-- table for isei denied records-->
+{% if isei_denied_record %} <!-- Check if there are any denied records -->
+    <div class="card card-body">
+    <h6> ISEI denied PD Activities </h6> <br>
+        <table class="table table-sm">
+            <tr>
+                <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
+                <th>Supporting documentation</th><th>Denial Date</th>
+            </tr>
+            {% for p in isei_denied_instance %}
+                <tr>
+                    <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                    <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
+                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                    </td>
+                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_record.updated_at }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {%  for ar in isei_denied_record  %}
+            <p><b>Summary:</b> {{ ar.summary }}</p>
+            <div class="row">
+            <div class="col-sm-10">
+                <font color="red">Reason for denial: </font> {{ ar.isei_comment }}
             </div>
             <div class="col-sm-2">
                 <button class="btn btn-ISEIblue3 btn-sm">
@@ -65,10 +99,10 @@
     </div>
 {% endif %}
 
-
-
-<!-- dropdowns for activity addition -->
-<div class="col-sm-2"><br>
+<br>
+<div class="card card-body">
+    <h6> ISEI denied PD Activities </h6> <br>
+    <!-- dropdowns for activity addition -->
     <div class="dropdown">
       <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Add / Submit PDA
@@ -82,105 +116,90 @@
          {% endfor %}
       </div>
     </div>
+
+    <!-- table for active instances-->
+     <table class="table table-sm">
+        <tr>
+            <th>School Year</th><th>Submitted to principal</th>
+            <th>Date Completed</th><th>Activity Type</th><th>Description</th><th>Amount</th>
+            <th>Principal Approval</th>
+        </tr>
+
+        {% for p in active_instance %}
+            <tr>
+                <td>{{p.pda_record.school_year}} </td>
+                {% if p.pda_record.date_submitted %}
+                    <td>To Principal</td>
+                {% else %}
+                    <td style = "color:red;size:40px">Not yet</td>
+                {% endif %}
+                <td>{{p.date_completed}} </td>
+                <td>{{p.pda_type.get_category_display}} </td>
+                <td>{{p.description}} </td>
+                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
+                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                </td>
+                {% if p.pda_record.date_submitted %}
+                    <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
+                {% else %} <td> </td>
+                {% endif %}
+               <!--
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>-->
+            </tr>
+        {% endfor %}
+    </table>
 </div>
 
-        <div class="card card-body">
-            <!-- table for active instances-->
-         <table class="table table-sm">
-				<tr>
-                    <th>School Year</th>
-                    <th>Submitted</th>
-                    <th>Date Completed</th>
-					<th>Activity Type</th>
-                    <th>Description</th>
-					<th>Amount</th>
-                    <th>Principal Approval</th>
-					<th>Update</th>
-					<th>Remove</th>
-				</tr>
-
-                {% for p in active_instance %}
-					<tr>
-						<td>{{p.pda_record.school_year}} </td>
-                        {% if p.pda_record.date_submitted %}
-                            <td>To Principal</td>
-                        {% else %}
-                            <td style = "color:red;size:40px">Not yet</td>
-                        {% endif %}
-                        <td>{{p.date_completed}} </td>
-						<td>{{p.pda_type.get_category_display}} </td>
-                        <td>{{p.description}} </td>
-                        <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                        </td>
-                        {% if p.pda_record.date_submitted %}
-                            <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
-                        {% else %} <td> </td>
-                        {% endif %}
-                        <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
-						<td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
-					</tr>
-
-				{% endfor %}
-			</table>
-		</div>
-	</div>
-    </div>
-
+<br>
 
     <!-- table for submitted records-->
-    <div class="row">>
-        <div class="col">
-        <!-- dropdowns for activity viewing -->
-        <div class="col-sm-2"><br>
-         <div class="dropdown">
-                  <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    View PDA submitted to ISEI
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    {% for ar in submitted_record %}
-                        <a  href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
-                    {% endfor %}
-                  </div>
-            </div>
-        </div>
 
-		<div class="card card-body">
-			<table class="table table-sm">
-				<tr>
-                    <th>School Year</th>
-                    <th>Date Submitted</th>
-                    <th>Date Completed</th>
-					<th>Activity Type</th>
-                    <th>Description</th>
-					<th>Amount</th>
-                    <th>Approved CEUs</th>
-                    <th>Comment</th>
-
-				</tr>
-				{% for p in submitted_instance %}
-					<tr>
-						<td>{{p.pda_record.school_year}} </td>
-                        <td>{{p.pda_record.date_submitted}}</td>
-                        <td>{{p.date_completed}} </td>
-						<td>{{p.pda_type.get_category_display}} </td>
-                        <td>{{p.description}} </td>
-                        <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                        </td>
-                        {% if p.approved == 'None' %}
-                            <td>Pending</td>
-                        {% else %}
-                        <td>{{p.approved_ceu|default_if_none:""}} </td>
-                        {% endif %}
-                        <td>{{p.approval_comment|default_if_none:""}} </td>
-					</tr>
-
-				{% endfor %}
-			</table>
-		</div>
-	</div>
+<!-- dropdowns for activity
+<div class="col-sm-2"><br>
+ <div class="dropdown">
+          <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            View PDA submitted to ISEI
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% for ar in submitted_record %}
+                <a  href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
+            {% endfor %}
+          </div>
     </div>
+</div> -->
+<div class="card card-body">
+    <h6> ISEI Submitted Activities </h6> <br>
+    <table class="table table-sm">
+        <tr>
+            <th>School Year</th><th>Date Submitted</th><th>Date Completed</th>
+            <th>Activity Type</th><th>Description</th><th>Amount</th>
+            <th>Approved CEUs</th><th>Comment</th>
+
+        </tr>
+        {% for p in submitted_instance %}
+            <tr>
+                <td>{{p.pda_record.school_year}} </td>
+                <td>{{p.pda_record.date_submitted}}</td>
+                <td>{{p.date_completed}} </td>
+                <td>{{p.pda_type.get_category_display}} </td>
+                <td>{{p.description}} </td>
+                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
+                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                </td>
+                {% if p.approved == 'None' %}
+                    <td>Pending</td>
+                {% else %}
+                <td>{{p.approved_ceu|default_if_none:""}} </td>
+                {% endif %}
+                <td>{{p.approval_comment|default_if_none:""}} </td>
+            </tr>
+
+        {% endfor %}
+    </table>
+</div>
+</div>
+</div>
 
     <!-- number of activities-->
     <div class="row">

@@ -1,3 +1,4 @@
+
 import django_filters
 from django_filters import DateFilter, CharFilter, ChoiceFilter, BooleanFilter, ModelChoiceFilter
 
@@ -10,12 +11,19 @@ class PDAInstanceFilter(django_filters.FilterSet):
     end_date = DateFilter(field_name="date_completed", lookup_expr='lte', label='Completed before:')
     description = CharFilter(field_name='description', lookup_expr='icontains', label='Description')
     #school_year = CharFilter(field_name='pda_record__school_year', label='School Year')
-    school_year = ModelChoiceFilter(field_name='pda_record__school_year', queryset=SchoolYear.objects.all())
+    school_year = ModelChoiceFilter(field_name='pda_record__school_year', queryset=SchoolYear.objects.all(), label = 'School_Year')
+
     CHOICES = (
-        ('True', 'Approved'),
-        ('False', 'Not Approved'),
+        ('n', 'Not ISEI Reviewed'),
+        ('a', 'ISEI Approved'),
+        ('d', 'Not ISEI Approved'),
+        ('', 'Any')
     )
-    approved = ChoiceFilter(null_label= 'Pending', field_name='approved',label='Approved', choices = CHOICES)
+    approved = ChoiceFilter(field_name="isei_reviewed", label ='Approved', choices = CHOICES)
+
+
+
+
 
 #not used yet
 class TeacherFilter(django_filters.FilterSet):
