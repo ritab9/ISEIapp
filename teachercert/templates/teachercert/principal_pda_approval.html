@@ -1,5 +1,5 @@
 {%  extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
 	<div class="row">
@@ -12,7 +12,7 @@
                 <th>SchoolYear</th>
               </thead>
               <tbody>
-                {% for p in pda_record_signed%}
+                {% for p in pda_record_approved%}
                 <tr>
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}}</td>
@@ -41,13 +41,13 @@
             </table>
         </div>
     </div>
-    {% if pda_record_unsigned %}
+    {% if pda_record_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
             <b> Review and approve teacher activities: </b>
             <table class="table table-sm table-light">
               <tbody>
-                {% for p in pda_record_unsigned %}
+                {% for p in pda_record_notreviewed %}
                 <tr>
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}}</td>
@@ -69,7 +69,7 @@
                             <td>{{ i.pda_type }}</td>
                             <td>{{i.description}} </td>
                             <td>{{ i.suggested_ceu }}</td>
-                            <td><a href="../../media/{{ i.file }}">{{ i.file }}</td>
+                            <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
                         </tr>
                       {% endfor %}
                     </table>

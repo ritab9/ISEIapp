@@ -24,7 +24,7 @@ urlpatterns = [
          name="password_reset_complete"),
 
 # dashboard urls
-    path('admindashboard/', views.staffdashboard, name='staff_dashboard'),
+    path('staffdashboard/', views.staffdashboard, name='staff_dashboard'),
     path('teacherdashboard/', views.teacherdashboard, name='teacher_dashboard'),
     path('principaldashboard/', views.principaldashboard, name='principal_dashboard'),
     path('account_settings/', views.accountsettings, name='account_settings'),

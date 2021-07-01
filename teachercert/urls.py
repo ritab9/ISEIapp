@@ -9,7 +9,6 @@ urlpatterns = [
 
     # teacher urls
     path('myPDAdashboard/<str:pk>', views.myPDAdashboard, name='myPDAdashboard'),
-
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
     path('delete_pdainstance/<str:pk>/', views.deletePDAinstance, name="delete_pdainstance"),
 
@@ -22,4 +21,8 @@ urlpatterns = [
     path('principal_pda_approval/', views.principal_pda_approval, name='principal_pda_approval'),
     path('principal_pda_approval/<str:recID>', views.principal_pda_approval, name='principal_pda_approval'),
 
+    # isei staff urls
+    path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
+    path('isei_pda_approval/<str:recID>', views.isei_pda_approval, name='isei_pda_approval'),
+    path('isei_pda_approval/<str:recID>/<str:instID>', views.isei_pda_approval, name='isei_pda_approval'),
 ]

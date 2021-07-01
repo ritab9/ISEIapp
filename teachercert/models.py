@@ -52,7 +52,7 @@ class PDARecord(models.Model):
     principal_reviewed = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
     principal_comment = models.CharField(max_length=300, null=True, blank=True)
 
-    isei_approved = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
+    isei_reviewed = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
     isei_comment = models.CharField(max_length=300, null=True, blank=True)
     class Meta:
         unique_together = ('teacher', 'school_year',)
@@ -81,30 +81,24 @@ class PDAInstance(models.Model):
     pages = models.DecimalField(max_digits=3, decimal_places=0, null=True, blank=True)
 
     file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
-    date_submitted = models.DateField(null=True, blank=True)
 
-    submitted = models.BooleanField(null=False, default=False, blank=True)
-    principal_signed = models.BooleanField(null=False, default=False, blank=True)
-    isei_reviewed = models.BooleanField(null=False, default=False, blank=True)
-    approved = models.BooleanField(null=False, default=False, blank=True)
+    #used only for individual resubmission
+    date_submitted = models.DateField(null=True, blank=True)
+    CHOICES = (
+        ('n', 'Not yet reviewed'),
+        ('a', 'Approved'),
+        ('d', 'Denied'),
+    )
+    principal_reviewed = models.CharField(max_length=1, choices=CHOICES, null=False, default='n')
+    principal_comment = models.CharField(max_length=300, null=True, blank=True)
+    isei_reviewed = models.CharField(max_length=1, choices=CHOICES, null=False, default='n')
+    isei_comment = models.CharField(max_length=300, null=True, blank=True)
 
     approved_ceu = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    approval_comment = models.CharField(max_length=300, null=True, blank=True)
+
 
     class Meta:
         ordering = ['pda_record']
-
-    @property
-    def status(self):
-        return int(self.submitted == True) + int(self.principal_signed == True) *2 + int(self.isei_reviewed == True)*4 +int(self.approved == True) *8
-    # 0 - New instance
-    # 1 - Submitted instance
-    # 2 - Denied by the principal (submitted=0, principal_reviewed = 1)
-    # 3 - Signed by the principal
-    # 4 - Summary denied, whole record returned (isei_reviewed = 1, submitted = 0, principal_reviewed = 0)
-    # 5 - Resubmitted to principal (isei_reviewed = 1, submitted = 1, principal_reviewed = 0)
-    # 6 - Record approved, individual instance denied ( isei_reviewed = 1, principal_reviewed = 1, submitted = 0)
-    # 15 - Approved by ISEI
 
     @property
     def suggested_ceu(self):

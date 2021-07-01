@@ -33,6 +33,10 @@ class PDAInstanceForm(ModelForm):
 PDAInstanceFormSet = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=1,
                                            can_delete=False)
 
+#to be used by ISEI staff to add the approved CEUs and individual deny instances as needed
+PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=0,
+                                           can_delete=False)
+
 #class PDAInstanceFormSetHelper(FormHelper):
 #    def __init__(self, *args, **kwargs):
 #        super().__init__(*args, **kwargs)

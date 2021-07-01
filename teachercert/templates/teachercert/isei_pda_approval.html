@@ -1,0 +1,149 @@
+{%  extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+	<div class="row">
+  <!--    Approved: -->
+    <div class="col-sm-2">
+        <div class="card-body">
+            <table class="table table-sm table-light">
+              <thead class="table-light">
+                <th>Teacher</th>
+                <th>SchoolYear</th>
+              </thead>
+              <tbody>
+                {% for p in pda_record_signed%}
+                <tr>
+                    <td>{{p.teacher}} </td>
+                    <td>{{p.school_year}}</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        Denied:
+        <div class="card-body">
+            <table class="table table-sm table-light">
+              <thead class="table-light">
+                <th>Teacher</th>
+                <th>SchoolYear</th>
+              </thead>
+              <tbody>
+                {% for p in pda_record_denied%}
+                <tr>
+                    <td>{{p.teacher}} </td>
+                    <td>{{p.school_year}}</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div> <!-- -->
+    {% if pda_record_notreviewed %}
+    <div class="col-sm">
+        <div class="card-body">
+            <b> Review submitted teacher activities: </b>
+            <ul>
+                <li>If the submission is accepted (summary is well written and there is supporting documentation):
+                    <ol><li>Enter Approved CEUs and "Approve" each activity.</li>
+                        <li>If there are activities that are incomplete "Deny" them individually. Teachers can resubmit those activities.</li>
+                        <li>"Approve Submission"</li>
+                    </ol>
+                <li>If the submission is not accepted, "Deny Submission". This will send all activities back to the teacher for resubmission.</li>
+            </ul>
+
+            <table class="table table-sm table-light">
+              <tbody>
+                {% for p in pda_record_notreviewed %}
+                <tr>
+                    <td><b>{{p.teacher}}</b> </td>
+                    <td>{{p.school_year}}</td>
+                    <td>Date Submitted: {{ p.date_submitted }}</td>
+                </tr>
+                <tr>
+                  <td colspan="4">
+                    <table class="table mb-0 table-hover">
+                     <thead class="table-light">
+                        <th>Date Completed</th><th>Type</th><th>Description</th>
+                        <th>Amount</th>
+                        <th><font size="-2">Calculated CEUs</font></th>
+                        <th>Supporting Documentation</th>
+                        <th>Approved CEUs</th>
+                      </thead>
+                      {% for i in p.pdainstance_set.all %}
+                        <tr>
+                            <td>{{i.date_completed}}</td><td>{{ i.pda_type }}</td><td>{{i.description}} </td>
+                            <td>{{ i.clock_hours|default_if_none:"" }}{{ i.pages|default_if_none:"" }}{{ i.ceu|default_if_none:""  }}
+                            {% if i.clock_hours %} hours {% elif i.pages %} pages {% elif i.ceu %} CEUs {% endif %}
+                            </td>
+                            <td>{{ i.suggested_ceu }}</td>
+                            <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
+
+                            <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
+                                {% csrf_token %}
+                                <td>
+                                    <div class="row">
+                                    <input type="number" min="0.1" max="9.99" name="approved_ceu" class="form-control" style="width: 3em; height: 25px" required>&nbsp;
+                                    <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approveinst" style = "width: 5em; height: 27px; vertical-align: middle" >
+                                    </div>
+                                </td>
+                            </form>
+                        </tr>
+                        <tr>
+                          <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
+                                {% csrf_token %}
+                                <td colspan="6">
+                                    <input type="text" name="isei_comment" class="form-control"   placeholder="If denied please explain why activity isn't approved." required>&nbsp;
+                                </td>
+                                <td><input  class = "btn btn-sm btn-danger" type="submit" value="Deny" name = "denyinst" style = "width: 5em; height: 27px; vertical-align: middle; horiz-align: right" >
+                                 </td>
+                          </form>
+                          <tr><td colspan="7" style ="background: #95b3c6;" > </td></tr>
+                        </tr>
+
+                      {% endfor %}
+                    </table>
+                  </td>
+                </tr>
+                    <tr><td colspan="4"> <b>Summary:</b> &nbsp; {{ p.summary}}</td></tr>
+                 <td>
+                 {% if p.isei_comment %}
+                     <p><b> Previous denial comment: </b>
+                         {{p.isei_comment }}</p>
+                 {% endif %}
+                 <br>
+                        <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve Submission" name = "approved" align="right" >
+                           <br>
+                            <font size = "-1" color="red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
+                            </font>
+                            <p><font size="-1">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</font>
+                            </p>
+                        </form>
+                 </td>
+                    <tr><td colspan="4">
+                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                        <input type="text" name="isei_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required>
+                            <input  class = "btn btn-sm btn-danger" type="submit" value="Deny Submission" name = "denied" >
+                    </form>
+                    </td></tr>
+
+                    <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+
+                {% endfor %}
+
+              </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+    </div>
+
+{% endblock  %}

@@ -19,6 +19,7 @@ class School(models.Model):
 # User Model is automatically created by Django and we will extend it to create Teacher Model
 # upload will be automatically under the Media_root, which for us is Media
 class Teacher(models.Model):
+    active = models.BooleanField (default=True)
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, help_text="*Required")
     phone_number = models.CharField(max_length=20, null=True, blank=True)
