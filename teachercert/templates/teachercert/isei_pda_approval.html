@@ -1,10 +1,6 @@
 {%  extends 'base.html' %}
 {% load static %}
 
-{% block head_css %}
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-{% endblock %}
 
 {% block content %}
 
@@ -66,10 +62,9 @@
                 <li>If the submission is not accepted, "Deny Submission". This will send all activities back to the teacher for resubmission.</li>
             </ul>
             </span>
-
+             {% for p in pda_record_notreviewed %}
             <table class="table table-sm table-light">
               <tbody>
-                {% for p in pda_record_notreviewed %}
                 <tr>
                     <td><b>{{p.teacher}}</b> </td>
                     <td>{{p.school_year}}</td>
@@ -83,28 +78,15 @@
                              {{p.isei_comment }}</p>
                      {% endif %}
                 </td></tr>
-                <tr><td>
-                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve Submission" name="approved" id='approved' align="right" >
-                            <br>
-                            <span style="font-size: 80%" color="red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
-                            </span>
-                            <p><font size="-1">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</font>
-                            </p>
-                        </form>
-                </td></tr>
-
-                <tr><td colspan="4">
-                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                        <input type="text" name="isei_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required>
-                        <input  class = "btn btn-sm btn-danger" type="submit" value="Deny Submission" name="denied" id="denied" >
-                    </form>
-                    </td></tr>
+                    <tr><td>
+                        <div class ="enablebtn" id='{{ p.id }}'>
+                        <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Enable submission"  id="enablebtn{{ p.id }}"></td></tr>
+                        </div>
                 <tr>
                   <td colspan="4">
-                    <table class="table mb-0 table-hover">
+                    <div class="approvaltable">
+                    <table class="table mb-0 table-hover" id='table{{ p.id }}'>
+                        <tr><td>table{{ p.id }}</td></tr>
                      <thead class="table-light">
                         <th>Date Completed</th><th>Type</th><th>Description</th><th>Amount</th>
                         <th><span style="font-size:80%">Calculated CEUs</span></th><th>Supporting Documentation</th><th>Approved CEUs</th>
@@ -121,7 +103,7 @@
                                 <td>
                                     <div class="row">
                                     <input type="number" step =".01" name="approved_ceu" class="form-control" style="width: 4em; height: 30px" required>&nbsp;
-                                    <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" id="approveinst" name="approveinst" style = "width: 5em; height: 27px; vertical-align: middle" >
+                                    <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Approve" id="approveinst" name="approveinst" style = "width: 5em; height: 27px; vertical-align: middle" >
                                     </div>
                                 </td>
                             </form>
@@ -139,33 +121,61 @@
                           <tr> <td colspan="7" style ="background: #95b3c6;" > </td></tr>
                       {% endfor %}
                     </table>
+                    </div>
                   </td>
                 </tr>
+                <tr><td>
+                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="approvebtn" id="approvebtn{{ p.id }}">
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve Submission" name="approved" id='approved' align="right" >
+                            </div>
+                                <br>
+                            <span style="font-size: 80%" color="red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
+                            </span>
+                            <p><span style="font-size=80%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</span>
+                            </p>
+                        </form>
+                </td></tr>
 
+                <tr><td colspan="4">
+                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                        <input type="text" name="isei_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required>
+                        <div class="denybtn" id="denybtn{{ p.id }}">
+                        <input  class = "btn btn-sm btn-danger" type="submit" value="Deny Submission" name="denied" id="denied" >
+                        </div>
+                    </form>
+                    </td></tr>
                     <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
-                {% endfor %}
-
               </tbody>
-            </table>
+            </table><br>
+             {% endfor %}
         </div>
     </div>
     {% endif %}
     </div>
 
-<input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Click Please"  id="trialclick">
-<input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" id="app" >
 
 
 <script>
 $(document).ready(function() {
-    $("#trialclick").click(function () {
+    $('.approvaltable').find("input","button","textarea").attr('disabled', 'disabled');
+    $('.approvebtn').find("input").attr('disabled', 'disabled');
 
-        $('#trialclick').attr('disabled', 'disabled');
-        $('#app').attr('disabled', 'disabled');
-        $('#denied').attr('disabled', 'disabled');
-        $('#approveinst').attr('disabled', 'disabled');
-        $('#denyinst').attr('disabled', 'disabled');
-
+    $(".enablebtn").click(function () {
+        var recID = $(this).attr('id');
+        if (($('#enablebtn'+recID).attr('value')) == "Enable submission"){
+            $('#table'+ recID).find("input","button","textarea").prop('disabled', false);
+            $('#approvebtn'+recID).find("input").prop('disabled', false);
+            $('#denybtn'+recID).find("input").prop('disabled', 'disabled');
+            $('#enablebtn'+recID).attr('value', "Cancel submission");
+        } else {
+            $('#table'+ recID).find("input","button","textarea").prop('disabled', 'disabled');
+            $('#approvebtn'+recID).find("input").prop('disabled', 'disabled');
+            $('#denybtn'+recID).find("input").prop('disabled', '');
+            $('#enablebtn'+recID).attr('value', "Enable submission");
+        };
     });
 });
 

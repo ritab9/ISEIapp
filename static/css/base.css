@@ -1,5 +1,10 @@
 
 /* the next four are necessary to keep the footer on the bottom of the page*/
+.approvaltable .table{}
+.enablebtn .btn{}
+.approvebtn .btn{}
+.denybtn .btn{}
+
 html, body {
   height: 100%;
 }
