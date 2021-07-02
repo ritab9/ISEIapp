@@ -12,12 +12,16 @@ from .models import *
 class PDARecordForm(ModelForm):
     class Meta:
         model = PDARecord
-        fields = ('school_year', 'date_submitted', 'summary', 'principal_comment')
+        fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment')
         widgets = {
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
         #    'date_submitted': forms.DateField(attrs={'class': 'form-controls', 'placehoder': 'Enter date'}),
              'summary': forms.Textarea(
-                attrs={'class': 'form-controls', 'placehoder': 'Enter summary for combined activities'})
+                attrs={'class': 'form-controls', 'placehoder': 'Enter summary for combined activities', 'rows':10, 'cols':52}),
+             'principal_comment': forms.Textarea(
+                attrs={'class': 'form-controls','rows':4, 'cols':52}),
+            'isei_comment': forms.Textarea(
+                attrs={'class': 'form-controls', 'rows': 4, 'cols': 52})
         }
 
 

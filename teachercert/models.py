@@ -50,18 +50,16 @@ class PDARecord(models.Model):
     )
 
     principal_reviewed = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
-    principal_comment = models.CharField(max_length=300, null=True, blank=True)
+    principal_comment = models.CharField(max_length=500, null=True, blank=True)
 
     isei_reviewed = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
-    isei_comment = models.CharField(max_length=300, null=True, blank=True)
+    isei_comment = models.CharField(max_length=500, null=True, blank=True)
     class Meta:
         unique_together = ('teacher', 'school_year',)
         ordering = ['school_year']
 
     # entered by teacher at object finalization
-    summary = models.CharField(validators=[MinLengthValidator(1)], max_length=3000, blank=True, null=True,
-                               help_text='Summarize what you have learned from the combined activities and how you '
-                                         'plan to apply this learning to your classroom')
+    summary = models.CharField(validators=[MinLengthValidator(1)], max_length=6000, blank=True, null=True)
 
 
 

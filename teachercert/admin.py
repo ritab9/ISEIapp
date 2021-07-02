@@ -24,6 +24,6 @@ class PDAInstanceInline(admin.StackedInline):
 @admin.register(PDARecord)
 class PDARecord(admin.ModelAdmin):
     inlines = [PDAInstanceInline]
-    list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed')
-    list_editable = ('date_submitted', 'principal_reviewed')
-    list_display_links = ('teacher',)
+    list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed', 'isei_reviewed', 'updated_at')
+    list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed')
+    list_display_links = ('teacher','school_year')

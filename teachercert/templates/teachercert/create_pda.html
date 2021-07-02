@@ -3,66 +3,44 @@
 {% block content %}
 {% load static %}
 
-{% if user_not_teacher %} <!--if it will be used by any other user-->
+<!--if it will be used by any other user
+{% if user_not_teacher %}
     {{ pda_record.teacher }}
-{% endif %}
+{% endif %} -->
+
 {{ pda_record.school_year }}
 
-<!-- Table of activities-->
+<!-- Table of added activities-->
 <div class="row">
     <div class="card card-body">
         <table class="table table-sm">
             <tr>
-                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>Amount</th>
-                <th>Supporting Docs</th>
-                {% if pda_record.principal_signature == None %}
-                    <th>Update</th><th>Remove</th>
-                {% else %}
-                    <th>Approved_CEU</th><th>Comment</th>
-                {% endif %}
+                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Supporting Docs</th>
+                <th>Update</th><th>Remove</th>
             </tr>
             {% for p in pda_instance %}
             <tr>
                 <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                </td>
+                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %} </td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
-                {% if pda_record.principal_signature %}
-                    <td>{{ p.approved_ceu }}</td>
-                    <td>{{p.approval_comment}}</td>
-                    {% else %}
                 <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
                 <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
-                {% endif %}
             </tr>
             {% endfor %}
         </table>
     </div>
 </div>
 
+<br>
 
-{% if pda_record.principal_signature  %}
-<!-- If Activity is already submitted to ISEI, show summary and approved CEUs -->
-    <div class="row">
-        <div class="col"> Summary: {{pda_record.summary}}<br></div>
-        <div class ="col-sm-2">
-            {% if pda_record.total_approved_ceus  %}
-             Approved CEUs: {{ pda_record.total_approved_ceus }}
-            {% endif %}
-        </div>
-    </div>
-
-{% else %}
-
-<!-- If Activity is not yet submitted -->
-    <form action=" " method="POST" id="add_activity" enctype="multipart/form-data">
-        <!-- enter new activity-->    
-        <div class="card card-body">
-            <b> Enter new activity:</b><br>
-            {% csrf_token %}        
-            <div class="row">
-            {{ instanceformset.management_form }}
+<form action=" " method="POST" id="add_activity" enctype="multipart/form-data">
+    <!-- enter new activity-->
+    <div class="card card-body">
+        <b> Enter new activity:</b>
+        {% csrf_token %}
+        <div class="row">
+        {{ instanceformset.management_form }}
             {% for f in instanceformset %}
                 <div class="col-sm"> {{ f.pda_type|as_crispy_field}}</div>
                 <div class="col-sm"> {{ f.description|as_crispy_field}}</div>
@@ -70,37 +48,41 @@
                 <div class = "col-sm"> {{f.ceu|as_crispy_field}} </div> 
                 <div class = "col-sm">{{f.clock_hours|as_crispy_field}}</div>
                 <div class = "col-sm"> {{f.pages|as_crispy_field}} </div>
-                <div class = "col-sm" >
-                    Supporting Documentation: <br>
-                    {{f.file}} <br>
-                     <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity"> </div>
-                {% endfor %}
-            </div>
+                <div class = "col-sm" style = "margin-top: 15px"> Supporting Documentation: {{f.file}} </div>
+                <div>
+                     <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
+                </div>
+            {% endfor %}
+        </div>
+    </div><br>
 
-
-            <div class="row">                
-           <div class="col">
+    <div class="card card-body">
+        <div class="row">
+           <div class="col-sm-4">
             <!-- update summary-->
-                <div class = col-sm>
-                <p id="school_year">{{record_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
-                {% csrf_token %}
-                    <br><br>
-                {{ record_form.summary|as_crispy_field }}
-                
-                <div class="col-sm">
-                    <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary">
-                </div>
-
-                </div>
+               <p id="school_year">{{record_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
+               {% csrf_token %}
+               <h6>Summary:</h6>
+               <span style = "font-size:80%">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </span>
+                    {{ record_form.summary}}
+               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary">
             </div>
-                {%  if pda_record.principal_comment %}
-                <div class ="col-sm-2">
-                    <font color="red">Principal denial comment:</font>
-                    {{ record_form.principal_comment }}
-                </div>
-                {% endif %}
-            <div class="col-sm-2" >
-                <div class="card card-body" >
+             <div class ="col-sm-4">
+            {%  if pda_record.principal_comment %}
+                <h6 style = "color:red">Principal denial comment:</h6>
+                <span style = "font-size:80%">*If you would like to add a response to the principal, you can do so in the same windown. Please keep the Principal's comment as well. </span>
+                {{ record_form.principal_comment }}
+            {% endif %}
+            {%  if pda_record.isei_comment %}
+                <h6 style = "color:red">ISEI denial comment:</h6>
+                <span style = "font-size:80%">*If you would like to add a response to ISEI, you can do so in the same windown. Please keep the Principal's comment as well. </span>
+                {{ record_form.isei_comment }}
+            {% endif %}
+            </div>
+
+
+            <div class="col-sm-4" >
+                <div class="card card-body" style="margin-right: 50px; margin-left: 50px; margin-top: 50px">
                     <br><br>
                     <!-- submit record-->
                     <p id="school_year2">{{record_form.school_year}}</p>
@@ -113,7 +95,6 @@
         </div>
     </form>
 
-{% endif %}
 
     <script>
         document.getElementById("school_year").style.display = "none";
