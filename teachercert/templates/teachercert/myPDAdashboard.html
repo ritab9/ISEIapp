@@ -1,5 +1,6 @@
 {%  extends 'base.html' %}
 {% load crispy_forms_tags %}
+
 {% block content %}
 
 {% if user_not_teacher %}
@@ -98,6 +99,33 @@
         {% endfor %}
     </div>
 {% endif %}
+<br>
+<!-- instances denied while the record submission was accepted -->
+{% if isei_denied_independent_instance %}
+<div class="row">
+    <div class="card card-body">
+    <h6> ISEI denied Activities - summary and other submission for this school year have been accepted</h6> <br>
+        <table class="table table-sm">
+            <tr>
+                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Supporting Docs</th>
+                <th>Denial Date</th><th>Update</th><th>Remove</th>
+            </tr>
+            {% for p in isei_denied_independent_instance %}
+            <tr>
+                <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
+                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %} </td>
+                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
+                <td>{{ p.updated_at }}</td>
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+                <tr><td colspan="6"><span style="color:red">Denial Reason:</span>  {{ p.isei_comment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
 
     <br>
 <!-- new activity table -->
@@ -154,6 +182,28 @@
                 <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>-->
             </tr>
         {% endfor %}
+        {% for p in active_independent_instance %}
+            <tr>
+                <td>{{p.pda_record.school_year}} </td>
+                {% if p.pda_record.date_submitted %}
+                    <td>{{ p.pda_record.date_submitted }}</td>
+                {% else %}
+                    <td style = "color:red;size:40px">Not yet</td>
+                {% endif %}
+                <td>{{p.date_completed}} </td>
+                <td>{{p.pda_type.get_category_display}} </td>
+                <td>{{p.description}} </td>
+                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
+                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                </td>
+                {% if p.pda_record.date_submitted %}
+                    <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
+                {% else %} <td> </td>
+                {% endif %}
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+            </tr>
+        {% endfor %}
     </table>
 </div>
 
@@ -175,6 +225,7 @@
     </div>
 </div> --><!-- dropdown to open a record for a certain year ...INACTIVE-->
 
+<!-- submitted to ISEI -->
 {% if submitted_instance %}
 <div class="card card-body">
     <h6> ISEI Submitted Activities - Approval Pending </h6> <br>
@@ -225,7 +276,7 @@
 </div>
 {% endif %}
 <br>
-    <!-- number of activities-->
+    <!-- number of activities
     <div class="row">
         <div class="col">
 		<div class="col-md-5">
@@ -239,5 +290,5 @@
 			</div>
 		</div>
 	</div>
-    </div>
+    </div> -->
 {% endblock %}

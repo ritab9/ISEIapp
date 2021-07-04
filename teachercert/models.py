@@ -81,7 +81,7 @@ class PDAInstance(models.Model):
     file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
 
     #used only for individual resubmission
-    date_submitted = models.DateField(null=True, blank=True)
+    date_resubmitted = models.DateField(null=True, blank=True)
     CHOICES = (
         ('n', 'Not yet reviewed'),
         ('a', 'Approved'),

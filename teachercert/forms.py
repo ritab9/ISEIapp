@@ -28,7 +28,7 @@ class PDARecordForm(ModelForm):
 class PDAInstanceForm(ModelForm):
     class Meta:
         model = PDAInstance
-        fields = ('pda_type','description', 'date_completed',  'pages', 'clock_hours', 'ceu', 'file')
+        fields = ('pda_type','description', 'date_completed',  'pages', 'clock_hours', 'ceu', 'file', 'date_resubmitted')
         widgets = {
             'file': forms.FileInput(attrs={'size': 1}),
         }

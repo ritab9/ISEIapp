@@ -1,5 +1,5 @@
 {%  extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}	
 {% if user_not_teacher %}
     {{ teacher }}
@@ -12,19 +12,25 @@
             <form action=" " method="POST" id="update_activity" enctype="multipart/form-data">
 				{% csrf_token %}
 				<p id="teacher">{{form.teacher}}</p>
-				<p>{{form.pda_type.label_tag}}{{form.pda_type}}
-                    {{form.description.label_tag}}{{form.description}}
-                    {{form.date_completed.label_tag}}{{form.date_completed}}
-                </p>
-				<p>{{form.ceu.label_tag}}{{form.ceu}}
-                    {{form.clock_hours.label_tag}}{{form.clock_hours}}
-                    {{form.pages.label_tag}}{{form.pages}}</p>
-                <p>Supporting Documentation:
-                <p><a href="{%  static 'media/' %}{{ form.file }}"></a>
-                {{ form.file }}</p>
-
-                </p>
-				<input type="submit" value="Submit">
+                <div class = "row">
+                <div class="col-sm">{{form.pda_type|as_crispy_field}}</div>
+                <div class="col-sm">{{form.description|as_crispy_field}}</div>
+                <div class="col-sm">{{form.date_completed|as_crispy_field}}</div>
+                <div class="col-sm">{{form.ceu|as_crispy_field}}</div>
+                <div class="col-sm">{{form.clock_hours|as_crispy_field}}</div>
+                <div class="col-sm">{{form.pages|as_crispy_field}}</div>
+                </div>
+                <div class = "row">
+                    <div class="col-sm"> <br>   Supporting documentation: <br>{{ form.file }}</div>
+                    <div class="col-sm">
+                        {% if resubmit %} <br>
+                            Date resubmitted: <br> {{ form.date_resubmitted}}</div>
+                            <div class="col-sm"><br><br> <input type="submit" name="resubmit" value="Resubmit"></div>
+                        {% else %}
+                            <br><br>
+    	    			<input type="submit" value="Submit" name="submit">
+                        {% endif %}
+                    </div></div>
 			</form>
 		</div>
 	</div>
