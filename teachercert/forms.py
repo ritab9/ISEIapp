@@ -25,6 +25,7 @@ class PDARecordForm(ModelForm):
         }
 
 
+
 class PDAInstanceForm(ModelForm):
     class Meta:
         model = PDAInstance
@@ -38,8 +39,8 @@ PDAInstanceFormSet = inlineformset_factory(PDARecord, PDAInstance, form=PDAInsta
                                            can_delete=False)
 
 #to be used by ISEI staff to add the approved CEUs and individual deny instances as needed
-PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=0,
-                                           can_delete=False)
+#PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=0,
+#                                           can_delete=False)
 
 #class PDAInstanceFormSetHelper(FormHelper):
 #    def __init__(self, *args, **kwargs):
@@ -54,10 +55,10 @@ PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDARecord, PDAInstance, fo
 
 
 
-class DocumentForm(forms.Form): #unused but keeping it just in case
-    name = forms.CharField(max_length=35, min_length=1)
-    docfile = forms.FileField(
-        label='Select a file',
-        help_text='max. 42 megabytes'
-    )
+#class DocumentForm(forms.Form): #unused but keeping it just in case
+#    name = forms.CharField(max_length=35, min_length=1)
+#    docfile = forms.FileField(
+#        label='Select a file',
+#        help_text='max. 42 megabytes'
+#    )
 

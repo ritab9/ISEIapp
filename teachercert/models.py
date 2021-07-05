@@ -17,7 +17,7 @@ class PDAType(models.Model):
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
 
     def __str__(self):
-        return self.get_category_display() + ' - ' + self.description
+        return self.get_category_display() + ' - ' + self.description + '(' + self.evidence + ')'
 
 
 class SchoolYear(models.Model):
@@ -37,8 +37,8 @@ class SchoolYear(models.Model):
 
 
 class PDARecord(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True, blank = True)
-    updated_at = models.DateTimeField(auto_now=True, blank = True)
+    created_at = models.DateField(auto_now_add=True, blank = True)
+    updated_at = models.DateField(auto_now=True, blank = True)
     # entered by teacher at object creation
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)

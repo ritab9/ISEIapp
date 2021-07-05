@@ -9,38 +9,45 @@
     <div class="col-sm-2">
 <!--    Approved: -->
         <div class="card-body">
-        Approved:
-            <table class="table table-sm table-light">
-              <thead class="table-light">
-                <th>Teacher</th>
-                <th>SchoolYear</th>
-              </thead>
+         Approved:
+            <table class="table table-sm table-light" style="font-size: 85%">
+                <thead class="table-light">
+                  <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
+                </thead>
               <tbody>
                 {% for p in pda_record_approved%}
                 <tr>
-                    <td>{{p.teacher}} </td>
-                    <td>{{p.school_year}}</td>
+                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
+                    <td>
+                        <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                        </form>
+                    </td>
                 </tr>
-
                 {% endfor %}
               </tbody>
             </table>
         </div>
- <!-- Denied-->
+
+<!-- Denied-->
         <div class="card-body">
          Denied:
-            <table class="table table-sm table-light">
-              <thead class="table-light">
-                <th>Teacher</th>
-                <th>SchoolYear</th>
-              </thead>
+            <table class="table table-sm table-light" style="font-size: 85%">
+                <thead class="table-light">
+                  <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
+                </thead>
               <tbody>
                 {% for p in pda_record_denied%}
                 <tr>
-                    <td>{{p.teacher}} </td>
-                    <td>{{p.school_year}}</td>
+                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
+                    <td>
+                        <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                        </form>
+                    </td>
                 </tr>
-
                 {% endfor %}
               </tbody>
             </table>
@@ -48,7 +55,6 @@
     </div> <!-- -->
 
     {% if pda_record_notreviewed %}
-
     <div class="col-sm">
         <div class="card-body">
             <b> Review submitted teacher activities: </b>
@@ -63,10 +69,10 @@
             </ul>
             </span>
              {% for p in pda_record_notreviewed %}
-            <table class="table table-sm table-light">
+             <table class="table table-sm table-light">
               <tbody>
                 <tr>
-                    <td><b>{{p.teacher}}</b> </td>
+                    <td><b>{{p.teacher}}, {{ p.teacher.school }}</b> </td>
                     <td>{{p.school_year}}</td>
                     <td>Date Submitted: {{ p.date_submitted }}</td>
                 </tr>
@@ -78,10 +84,12 @@
                              {{p.isei_comment }}</p>
                      {% endif %}
                 </td></tr>
-                    <tr><td>
-                        <div class ="enablebtn" id='{{ p.id }}'>
-                        <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Enable submission"  id="enablebtn{{ p.id }}"></td></tr>
-                        </div>
+                <tr><td>
+                    <div class ="enablebtn" id='{{ p.id }}'>
+                    <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Enable submission"  id="enablebtn{{ p.id }}">
+                    </div>
+                </td></tr>
+
                 <tr>
                   <td colspan="4">
                     <div class="approvaltable">
@@ -90,7 +98,8 @@
                         <th>Date Completed</th><th>Type</th><th>Description</th><th>Amount</th>
                         <th><span style="font-size:80%">Calculated CEUs</span></th><th>Supporting Documentation</th><th>Approved CEUs</th>
                       </thead>
-                      {% for i in p.pdainstance_set.all %}
+                      <tbody>
+                        {% for i in p.pdainstance_set.all %}
 
                           {% if i.isei_reviewed == 'n' %}
                         <tr>
@@ -114,10 +123,9 @@
                           <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
                                 <td colspan="6">
-                                    <input type="text" name="isei_comment" class="form-control"  placeholder="If denied please explain why activity isn't approved." required>&nbsp;
+                                    <input type="text" name="isei_comment" class="form-control"   placeholder="If denied please explain why activity isn't approved." required>&nbsp;
                                 </td>
-                                <td>
-                                    <input  class = "btn btn-sm btn-danger" type="submit" value="Deny" id="denyinst" name="denyinst" style = "width: 5em; height: 27px; vertical-align: middle; horiz-align: right" >
+                                <td><input  class = "btn btn-sm btn-danger" type="submit" value="Deny" name= "denyinst" id="denyinst" style = "width: 5em; height: 27px; vertical-align: middle; horiz-align: right" >
                                  </td>
                           </form>
 
@@ -203,7 +211,6 @@
 
 <script>
 $(document).ready(function() {
-
     $('.approvaltable').find("input","button","textarea").attr('disabled', 'disabled');
     $('.approvebtn').find("input").attr('disabled', 'disabled');
 

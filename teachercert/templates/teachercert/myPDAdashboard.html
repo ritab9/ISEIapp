@@ -3,70 +3,69 @@
 
 {% block content %}
 
-{% if user_not_teacher %}
-    {{ teacher }}
-{% endif %}
+    {% if user_not_teacher %}
+        {{ teacher }}
+    {% endif %}
 
-{% load static %}
+    {% load static %}
 
 <!-- filter -->
-<div class="row">
-    <div class="card card-body">
-        <form method="get">
-            {% if user_not_teacher %}
-                {{ instance_filter.form.teacher.label_tag }} {{ instance_filter.form.teacher }}<br>
-            {% endif %}
-            {{ instance_filter.form.school_year.label_tag }} {{ instance_filter.form.school_year }}
-            {{ instance_filter.form.description.label_tag }} {{ instance_filter.form.description }}
-            {{ instance_filter.form.start_date.label_tag }} {{ instance_filter.form.start_date }}
-            {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
-            {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp
-            <br><br>
-            <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-            <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
-        </form>
-    </div>
-</div>
-<br>
+    <div class="row">
+        <div class="card card-body">
+            <form method="get">
+                {% if user_not_teacher %}
+                    {{ instance_filter.form.teacher.label_tag }} {{ instance_filter.form.teacher }}<br>
+                {% endif %}
+                {{ instance_filter.form.school_year.label_tag }} {{ instance_filter.form.school_year }}
+                {{ instance_filter.form.description.label_tag }} {{ instance_filter.form.description }}
+                {{ instance_filter.form.start_date.label_tag }} {{ instance_filter.form.start_date }}
+                {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
+                {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp <br><br>
+                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
+            </form>
+        </div>
+    </div><br>
 
 <!-- table for principal denied records-->
-{% if principal_denied_record %} <!-- Check if there are any denied records -->
-    <div class="card card-body">
-    <h6> Principal denied PD Activities </h6> <br>
-        <table class="table table-sm">
-            <tr>
-                <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
-                <th>Supporting documentation</th><th>Denial Date</th>
-            </tr>
-            {% for p in principal_denied_instance %}
-                <tr>
-                    <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
-                    <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                    </td>
-                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_record.updated_at }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        {%  for ar in principal_denied_record  %}
-            <p><b>Summary:</b> {{ ar.summary }}</p>
-            <div class="row">
-            <div class="col-sm-10">
-                <font color="red">Reason for denial: </font> {{ ar.principal_comment }}
-            </div>
-            <div class="col-sm-2">
-                <button class="btn btn-ISEIblue3 btn-sm">
-                    <a style="color:white" href="{%  url 'create_pda' ar.id %}"> Update denied activities </a>
-                </button>
-            </div>
-            </div>
+    {% if principal_denied_record %} <!-- Check if there are any denied records -->
+        {% for ar in principal_denied_record%}
+            <div class="card card-body">
+                <h6> Principal denied PD Activities </h6> <br>
+                <table class="table table-sm">
+                    <tr>
+                        <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
+                        <th>Supporting documentation</th><th>Denial Date</th>
+                    </tr>
+                    {% for p in  ar.pdainstance_set.all %}
+                        <tr>
+                            <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                            <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
+                                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                            </td>
+                            <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
+                            <td>{{ p.pda_record.updated_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <p><b>Summary:</b> {{ ar.summary }}</p>
+                <div class="row">
+                    <div class="col-sm-10">
+                        <span style="color:red">Reason for denial: </span> {{ ar.principal_comment }}
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-ISEIblue3 btn-sm">
+                            <a style="color:white" href="{%  url 'create_pda' ar.id %}"> Update denied activities </a>
+                        </button>
+                    </div>
+                </div>
+            </div><br>
         {% endfor %}
-    </div>
-{% endif %}
-<br>
+    {% endif %}<br>
 
 <!-- table for isei denied records-->
 {% if isei_denied_record %} <!-- Check if there are any denied records -->
+    {% for ar in isei_denied_record%}
     <div class="card card-body">
     <h6> ISEI denied PD Activities </h6> <br>
         <table class="table table-sm">
@@ -74,7 +73,7 @@
                 <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
                 <th>Supporting documentation</th><th>Denial Date</th>
             </tr>
-            {% for p in isei_denied_instance %}
+            {% for p in ar.pdainstance_set.all %}
                 <tr>
                     <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
@@ -98,6 +97,7 @@
             </div>
         {% endfor %}
     </div>
+    {% endfor %}
 {% endif %}
 <br>
 <!-- instances denied while the record submission was accepted -->
@@ -174,7 +174,7 @@
                 {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
                 </td>
                 {% if p.pda_record.date_submitted %}
-                    <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
+                    <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
                <!--
@@ -197,7 +197,7 @@
                 {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
                 </td>
                 {% if p.pda_record.date_submitted %}
-                    <td style = "color:red;size:40px">{{ p.pda_record.get_principal_reviewed_display }}</td>
+                    <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
                 <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>

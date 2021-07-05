@@ -7,6 +7,8 @@ from users.utils import is_in_group
 from users.models import *
 from .models import *
 from django.db.models import Q
+from django.db.models.functions import Now
+from datetime import datetime
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
@@ -33,8 +35,6 @@ def createPDA(request, recId):
     pda_instance = PDAInstance.objects.filter(pda_record=pda_record) #list of already entered instances
     instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_record) # entering new activity
     record_form = PDARecordForm(instance = pda_record) #form for editing current record (summary and submission)
-    #upload_form = DocumentForm() #uploading documentation
-    #helper = PDAInstanceFormSetHelper()
 
     if request.method == 'POST':
         if request.POST.get('add_activity'): #add activity and stay on page
@@ -55,8 +55,6 @@ def createPDA(request, recId):
                     pda_instance = PDAInstance.objects.filter(pda_record=pda_record)
                     pda_instance.update(principal_reviewed = 'n')
                     pda_instance.update(isei_reviewed='n')
-                #if is_in_group(request.user, 'teacher'):
-                #    if request.POST.get('submit_record'):
                     return redirect('myPDAdashboard', pk=pda_record.teacher.user.id)
 
         if request.POST.get('update_summary'):  # update summary, stay on page, submit record - go to PDAdashboard
@@ -64,16 +62,14 @@ def createPDA(request, recId):
             if record_form.is_valid():
                 pda_record = record_form.save()
 
-    if is_in_group(request.user, 'teacher'):
-        user_not_teacher = False
-    else:
-        user_not_teacher = True
+    #if is_in_group(request.user, 'teacher'): #if the same template will be used by an other user
+    #    user_not_teacher = False
+    #else:
+    #    user_not_teacher = True
 
-    context = dict(user_not_teacher=user_not_teacher,
-                   pda_instance=pda_instance,
-                   #helper= helper,
-                   pda_record=pda_record,
-                   record_form=record_form, instanceformset=instanceformset)
+    context = dict(pda_instance=pda_instance,pda_record=pda_record, record_form=record_form,
+                   instanceformset=instanceformset,)
+                   #helper= helper, #user_not_teacher=user_not_teacher,
     return render(request, "teachercert/create_pda.html", context)
 
 
@@ -93,7 +89,6 @@ def updatePDAinstance(request, pk):
             form = PDAInstanceForm(request.POST, request.FILES or None, instance=pdainstance)
             if form.is_valid():
                 form.save()
-                print(pdainstance.id, pdainstance.pda_record.id)
                 return redirect('create_pda', pdainstance.pda_record.id)
 
         if request.POST.get('resubmit'):
@@ -113,11 +108,11 @@ def updatePDAinstance(request, pk):
 @allowed_users(allowed_roles=['admin', 'teacher'])
 def deletePDAinstance(request, pk):
     pdainstance = PDAInstance.objects.get(id=pk)
-
+#todo After delete redirect to previous page
     if request.method == "POST":
         pdainstance.delete()
         if is_in_group(request.user, 'teacher'):  # teacher landing page
-            return redirect('myPDAdashboard', pk=pdainstance.pda_record.teacher.user.id)
+           return redirect('myPDAdashboard', pk=pdainstance.pda_record.teacher.user.id)
 
     context = {'item': pdainstance}
     return render(request, 'teachercert/delete_pdainstance.html', context)
@@ -134,6 +129,8 @@ def principal_pda_approval(request, recID=None):
     pda_record_notreviewed = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False, principal_reviewed = 'n').order_by('date_submitted')
     pda_record_approved = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=False, principal_reviewed = 'a')
     pda_record_denied = PDARecord.objects.filter(teacher__school=principal.school, date_submitted__isnull=True, principal_reviewed = 'd')
+    pda_instance_notreviewed = PDAInstance.objects.filter(isei_reviewed='d', date_resubmitted__isnull=False, pda_record__isei_reviewed='a')
+
 
     if request.method == 'POST':
         if request.POST.get('approved'):
@@ -143,10 +140,16 @@ def principal_pda_approval(request, recID=None):
     if request.method == 'POST':
         if request.POST.get('denied'):
             pda_record = PDARecord.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.POST.get('principal_comment'))
-            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed='d',date_submitted = None)
+            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed='d',date_resubmitted = None)
 
+    if request.method == 'POST':
+        if request.POST.get('cancel'):
+            #todo not happy with this random date attachment ...
+            pda_record = PDARecord.objects.filter(id=recID).update(principal_reviewed='n', date_submitted = Now())
+            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed = 'n', date_resubmitted = Now())
 
-    context = dict(teachers=teachers, pda_record_notreviewed=pda_record_notreviewed, pda_record_approved=pda_record_approved, pda_record_denied=pda_record_denied)
+    context = dict(teachers=teachers, pda_record_notreviewed=pda_record_notreviewed, pda_record_approved=pda_record_approved, pda_record_denied=pda_record_denied,
+                   pda_instance_notreviewed = pda_instance_notreviewed)
     return render(request, 'teachercert/principal_pda_approval.html', context)
 
 
@@ -167,7 +170,7 @@ def isei_pda_approval(request, recID=None, instID=None):
     if request.method == 'POST':
         if request.POST.get('denyinst'):
            PDAInstance.objects.filter(id=instID).update(isei_reviewed='d', isei_comment=request.POST.get('isei_comment'),
-                                                        principal_reviewed = 'n', date_submitted = None)
+                                                        principal_reviewed = 'n', date_resubmitted = None)
     if request.method == 'POST':
         if request.POST.get('cancelinst'):
            PDAInstance.objects.filter(id=instID).update(isei_reviewed='n', principal_reviewed = 'a')
@@ -180,7 +183,14 @@ def isei_pda_approval(request, recID=None, instID=None):
     if request.method == 'POST':
         if request.POST.get('denied'):
             pda_record = PDARecord.objects.filter(id=recID).update(isei_reviewed='d', date_submitted = None, principal_reviewed ='n', isei_comment = request.POST.get('isei_comment'))
-            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed='n',isei_reviewed='d',date_submitted = None)
+            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed='n',isei_reviewed='d',date_resubmitted = None)
+
+    if request.method == 'POST':
+        if request.POST.get('cancel'):
+            #todo not happy with this random date attachment ...
+            pda_record = PDARecord.objects.filter(id=recID).update(isei_reviewed='n', date_submitted = Now(), principal_reviewed ='a')
+            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed = 'a', isei_reviewed = 'n', date_resubmitted = Now())
+
 
     context = dict(teachers=teachers, pda_record_notreviewed=pda_record_notreviewed, pda_record_approved=pda_record_approved, pda_record_denied=pda_record_denied,)
     return render(request, 'teachercert/isei_pda_approval.html', context)
@@ -204,12 +214,12 @@ def myPDAdashboard(request, pk):
     pda_instance = instance_filter.qs
 
     active_instance = pda_instance.filter(pda_record__in= active_record)
-    principal_denied_instance = pda_instance.filter(pda_record__in=principal_denied_record)
-    isei_denied_instance = pda_instance.filter(pda_record__in=isei_denied_record)
+
     isei_denied_independent_instance = pda_instance.filter(isei_reviewed = 'd', pda_record__in =approved_record, date_resubmitted=None)
-    active_independent_instance = pda_instance.filter(isei_reviewed = 'd', pda_record__in =approved_record, principal_reviewed = 'n')
+    active_independent_instance = pda_instance.filter(isei_reviewed = 'd', pda_record__in =approved_record, principal_reviewed = 'n', date_resubmitted__isnull = False)
     submitted_independent_instance = pda_instance.filter(isei_reviewed='n', pda_record__in=approved_record,
                                                       principal_reviewed='a')
+
     submitted_instance = pda_instance.filter(pda_record__in=submitted_record)
     approved_instance = pda_instance.filter(isei_reviewed = 'a')
     count = active_instance.count()+submitted_instance.count()
@@ -226,7 +236,6 @@ def myPDAdashboard(request, pk):
                    active_record=active_record, submitted_record=submitted_record,
                    principal_denied_record =principal_denied_record, isei_denied_record = isei_denied_record,
                    active_instance = active_instance, submitted_instance = submitted_instance,
-                   principal_denied_instance= principal_denied_instance, isei_denied_instance=isei_denied_instance,
                    isei_denied_independent_instance = isei_denied_independent_instance,
                    active_independent_instance = active_independent_instance, submitted_independent_instance = submitted_independent_instance,
                    approved_record = approved_record, approved_instance = approved_instance)

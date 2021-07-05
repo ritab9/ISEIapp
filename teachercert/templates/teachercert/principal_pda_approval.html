@@ -4,18 +4,30 @@
 {% block content %}
 	<div class="row">
     <div class="col-sm-3">
+    <p style="font-size: 80%">* Canceling a submission will reset submission date to current date.</p>
      Approved:
         <div class="card-body">
-            <table class="table table-sm table-light">
+            <table class="table table-sm table-light" style="font-size: 85%">
               <thead class="table-light">
-                <th>Teacher</th>
-                <th>SchoolYear</th>
+                <th>Teacher</th><th>SchoolYear</th><th>Submitted</th><th>Approved</th><th>Cancel</th>
               </thead>
               <tbody>
                 {% for p in pda_record_approved%}
                 <tr>
                     <td>{{p.teacher}} </td>
-                    <td>{{p.school_year}}</td>
+                    <td>{{p.school_year}} </td>
+                    <td>{{ p.date_submitted }} </td>
+                    <td>{{ p.updated_at }} </td>
+                    <td>
+                         {% if p.isei_reviewed is 'n' %}
+                        <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                        </form>
+                        {% else %}
+                        ISEI approved
+                        {% endif %}
+                    </td>
                 </tr>
 
                 {% endfor %}
@@ -24,16 +36,27 @@
         </div>
         Denied:
         <div class="card-body">
-            <table class="table table-sm table-light">
+            <table class="table table-sm table-light" style="font-size: 85%">
               <thead class="table-light">
-                <th>Teacher</th>
-                <th>SchoolYear</th>
+                <th>Teacher</th><th>SchoolYear</th>
+                <th>Denied</th><th>Cancel</th>
               </thead>
               <tbody>
                 {% for p in pda_record_denied%}
                 <tr>
-                    <td>{{p.teacher}} </td>
-                    <td>{{p.school_year}}</td>
+                    <td> {{p.teacher}} </span> </td>
+                    <td> {{p.school_year}} </span></td>
+                    <td> {{ p.updated_at }} </span></td>
+                    <td>
+                         {% if p.isei_reviewed is 'n' %}
+                        <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                        </form>
+                        {% else %}
+                        ISEI approved
+                        {% endif %}
+                    </td>
                 </tr>
 
                 {% endfor %}
