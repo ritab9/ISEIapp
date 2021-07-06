@@ -20,6 +20,7 @@ urlpatterns = [
     # principal urls
     path('principal_pda_approval/', views.principal_pda_approval, name='principal_pda_approval'),
     path('principal_pda_approval/<str:recID>', views.principal_pda_approval, name='principal_pda_approval'),
+    path('principal_pda_approval/<str:recID>/<str:instID>', views.principal_pda_approval, name='principal_pda_approval'),
 
     # isei staff urls
     path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
