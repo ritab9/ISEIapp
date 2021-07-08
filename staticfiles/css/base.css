@@ -1,5 +1,22 @@
 
 /* the next four are necessary to keep the footer on the bottom of the page*/
+.approvaltable .table{}
+.enablebtn .btn{}
+.approvebtn .btn{}
+.denybtn .btn{}
+
+
+.error {
+    color:red;
+    font-weight: normal;
+}
+
+.error input, .error select {
+    border: 2px red solid;
+}
+
+
+
 html, body {
   height: 100%;
 }
@@ -16,7 +33,7 @@ body {
 }
 
 /* if any changes made here please check login and register templates */
-a,h1,h2 {
+a,h1,h2, h6 {
     color: #084574;
  }
 
@@ -63,3 +80,16 @@ a,h1,h2 {
     }
 
 /* */
+
+/* to remove increment bars from number boxes*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type='number'] {
+    -moz-appearance:textfield; /* Firefox */
+}
+
