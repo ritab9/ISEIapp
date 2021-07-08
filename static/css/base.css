@@ -6,15 +6,6 @@
 .denybtn .btn{}
 
 
-.error {
-    color:red;
-    font-weight: normal;
-}
-
-.error input, .error select {
-    border: 2px red solid;
-}
-
 
 
 html, body {
