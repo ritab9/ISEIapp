@@ -21,7 +21,8 @@ class PDARecordForm(ModelForm):
              'principal_comment': forms.Textarea(
                 attrs={'class': 'form-controls','rows':4, 'cols':52}),
             'isei_comment': forms.Textarea(
-                attrs={'class': 'form-controls', 'rows': 4, 'cols': 52})
+                attrs={'class': 'form-controls', 'rows': 4, 'cols': 52}),
+            'date_submitted': forms.DateInput(attrs={'placeholder': 'mm/dd/yyyy'}),
         }
 
 
@@ -32,6 +33,7 @@ class PDAInstanceForm(ModelForm):
         fields = ('pda_type','description', 'date_completed',  'pages', 'clock_hours', 'ceu', 'file', 'date_resubmitted')
         widgets = {
             'file': forms.FileInput(attrs={'size': 1}),
+            'date_completed': forms.DateInput (attrs = {'placeholder':'mm/dd/yyyy'}),
         }
 
 

@@ -16,7 +16,7 @@ class TeacherInline(admin.StackedInline):
 
 class UserAdmin(AuthUserAdmin):
     inlines = [TeacherInline]
-    list_display = ('first_name', 'last_name', 'username', 'School', 'id','group')
+    list_display = ('username', 'first_name', 'last_name',  'School', 'id','group')
 
     def School(self, obj):
         return obj.teacher.school
