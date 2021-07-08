@@ -6,7 +6,7 @@ import datetime
 
 class PDAType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
-    evidence = models.CharField(max_length=50, help_text='What kind of evidence is expected for this type of activity', null=True)
+    evidence = models.CharField(max_length=50, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
     CATEGORIES = (
         ('i', 'Independent'),
         ('g', 'Group'),
@@ -17,7 +17,11 @@ class PDAType(models.Model):
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
 
     def __str__(self):
-        return self.get_category_display() + ' - ' + self.description + '(' + self.evidence + ')'
+        if self.evidence:
+            ev = self.evidence
+        else:
+            ev=""
+        return self.get_category_display() + ' - ' + self.description + '(' + ev + ')'
 
 
 class SchoolYear(models.Model):

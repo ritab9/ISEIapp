@@ -43,7 +43,8 @@ def loginpage(request):
                     if user.date_joined.date() == user.last_login.date():
                         return redirect('account_settings')
                     else:
-                        return redirect('teacher_dashboard')
+                        #return redirect('teacher_dashboard') #because dashboard is not yet done
+                        return redirect('myPDAdashboard', user.id)
                 elif is_in_group(request.user, 'staff'):
                     return redirect('staff_dashboard')
                 else:

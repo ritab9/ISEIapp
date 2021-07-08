@@ -9,6 +9,14 @@
 
     {% load static %}
 
+<div class="card card-body">
+    <h6> PROFESSIONAL DEVELOPMENT </h6>
+    <h6> Continuing Education Credit (CEU)</h6>
+    <p></p>
+    <p>*Activities from at least two different categories shall be included in the CEUs submitted during the certification term prior to renewal.</p>
+    <p>1.0 CEU = 10 clock hours,    3-CEU is equivalent to 1-semester credit</p>
+</div><br>
+
 <!-- filter -->
     <div class="row">
         <div class="card card-body">
@@ -25,10 +33,11 @@
                 <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
             </form>
         </div>
-    </div><br>
+    </div>
 
 <!-- table for principal denied records-->
     {% if principal_denied_record %} <!-- Check if there are any denied records -->
+        <br>
         {% for ar in principal_denied_record%}
             <div class="card card-body">
                 <h6> Principal denied PD Activities </h6> <br>
@@ -61,10 +70,11 @@
                 </div>
             </div><br>
         {% endfor %}
-    {% endif %}<br>
+    {% endif %}
 
 <!-- table for isei denied records-->
 {% if isei_denied_record %} <!-- Check if there are any denied records -->
+    <br>
     {% for ar in isei_denied_record%}
     <div class="card card-body">
     <h6> ISEI denied PD Activities </h6> <br>
@@ -99,10 +109,11 @@
     </div>
     {% endfor %}
 {% endif %}
-<br>
+
 
 <!-- instances denied while the record submission was accepted -->
 {% if isei_denied_independent_instance or active_independent_instance %}
+<br>
 <div class="row">
     <div class="card card-body">
     <h6> ISEI denied Activities - summary and other submission for this school year have been accepted</h6> <br>
@@ -136,7 +147,7 @@
     <table class="table table-sm">
         <tr>
             <th>School Year</th><th>Submitted to principal</th>
-            <th>Date Completed</th><th>Activity Type</th><th>Description</th><th>Amount</th>
+            <th>Date Completed</th><th>Category</th><th>Description</th><th>Amount</th>
             <th>Principal Approval</th>
         </tr>
         {% for p in active_independent_instance %}
@@ -198,7 +209,7 @@
      <table class="table table-sm">
         <tr>
             <th>School Year</th><th>Submitted to principal</th>
-            <th>Date Completed</th><th>Activity Type</th><th>Description</th><th>Amount</th>
+            <th>Date Completed</th><th>Category</th><th>Description</th><th>Amount</th>
             <th>Principal Approval</th>
         </tr>
      {% for ar in active_record %}
@@ -231,15 +242,15 @@
 
 
     <!-- table for ISEI submitted records + independent instances-->
-<br>
+
 <!-- submitted to ISEI -->
-{% if submitted_instance %}
+{% if submitted_instance %}<br>
 <div class="card card-body">
     <h6> ISEI Submitted Activities - Approval Pending </h6> <br>
     <table class="table table-sm">
         <tr>
             <th>School Year</th><th>Date Completed</th>
-            <th>Activity Type</th><th>Description</th><th>Amount</th><th>Supporting Documentation</th>
+            <th>Category</th><th>Description</th><th>Amount</th><th>Supporting Documentation</th>
             <th>Submitted to Principal</th><th>Submitted to ISEI</th>
         </tr>
         {% for p in submitted_instance %}
@@ -257,14 +268,14 @@
     </table>
 </div>
 {% endif %}
-<br>
 
-{% if approved_instance %}
+
+{% if approved_instance %}<br>
 <div class="card card-body">
     <h6> Approved Activities </h6> <br>
     <table class="table table-sm">
         <tr>
-            <th>School Year</th><th>Date Completed</th><th>Activity Type</th><th>Description</th>
+            <th>School Year</th><th>Date Completed</th><th>Category</th><th>Description</th>
             <th>Amount</th><th>Approved CEUs</th><th>Approval Date</th>
         </tr>
         {% for p in approved_instance %}
@@ -282,7 +293,7 @@
     </table>
 </div>
 {% endif %}
-<br>
+
     <!-- number of activities
     <div class="row">
         <div class="col">
