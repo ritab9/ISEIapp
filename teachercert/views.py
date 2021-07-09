@@ -137,6 +137,25 @@ def principal_teachercert(request):
                    #pda_instance_notreviewed = pda_instance_notreviewed)
     return render(request, 'teachercert/principal_teachercert.html', context)
 
+# principal's info page about teacher certification
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_teachercert(request):
+    teachers = Teacher.objects.filter(user__is_active = True)
+    #pda_record = PDARecord.objects.filter(teacher__school=principal.school)
+    #pda_record_notreviewed = pda_record.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at')
+    #pda_record_approved = pda_record.filter(date_submitted__isnull=False, principal_reviewed = 'a').order_by('updated_at')
+    #pda_record_denied = pda_record.filter(date_submitted__isnull=True, principal_reviewed = 'd').order_by('updated_at')
+
+    # resubmitted instance that was denied while it's record approved
+    #pda_instance_notreviewed = PDAInstance.objects.filter(pda_record__in=pda_record, pda_record__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
+
+    context = dict(teachers=teachers,)
+                   #pda_record_notreviewed=pda_record_notreviewed, pda_record_approved=pda_record_approved, pda_record_denied=pda_record_denied,
+                   #pda_instance_notreviewed = pda_instance_notreviewed)
+    return render(request, 'teachercert/isei_teachercert.html', context)
+
+
 #principal's approval of teacher activities
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal'])

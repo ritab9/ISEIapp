@@ -49,9 +49,7 @@
                     {% for p in  ar.pdainstance_set.all %}
                         <tr>
                             <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
-                            <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                            </td>
+                            <td>{{p.amount}} {{p.get_units_display}} </td>
                             <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
                             <td>{{ p.pda_record.updated_at }}</td>
                         </tr>
@@ -86,9 +84,7 @@
             {% for p in ar.pdainstance_set.all %}
                 <tr>
                     <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
-                    <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                    </td>
+                    <td>{{p.amount}} {{p.get_units_display}}</td>
                     <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_record.updated_at }}</td>
                 </tr>
             {% endfor %}
@@ -126,8 +122,7 @@
             {% for p in isei_denied_independent_instance %}
             <tr>
                 <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
-                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                        {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %} </td>
+                <td>{{p.amount}} {{p.get_units_display}} </td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
                 <td>{{ p.updated_at }}</td>
                 <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
@@ -161,8 +156,7 @@
                 <td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td>
                 <td>{{p.description}} </td>
-                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                <td>{{p.amount}} {{p.get_units_display}}
                 </td>
                 {% if p.pda_record.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
@@ -224,8 +218,7 @@
                 <td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td>
                 <td>{{p.description}} </td>
-                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                <td>{{p.amount}} {{p.get_units_display}}
                 </td>
                 {% if p.pda_record.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
@@ -257,9 +250,7 @@
             <tr>
                 <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td><td>{{p.description}} </td>
-                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
-                </td>
+                <td>{{p.amount}} {{p.get_units_display}}</td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
                 <td>{{p.pda_record.date_submitted}}</td>
                 <td>{{ p.updated_at }}</td>
@@ -284,8 +275,7 @@
                 <td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td>
                 <td>{{p.description}} </td>
-                <td>{{p.ceu|default_if_none:"" }}{{p.clock_hours|default_if_none:""}}{{p.pages|default_if_none:""}}
-                {% if p.clock_hours %} hours {% elif p.pages %} pages {% elif p.ceu %} CEUs {% endif %}
+                <td>{{p.amount}} {{p.get_units_display}}
                 </td>
                 <td>{{p.approved_ceu}} </td><td>{{ p.updated_at }}</td>
             </tr>

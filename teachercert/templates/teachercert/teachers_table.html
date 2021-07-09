@@ -5,7 +5,7 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
 <!-- Teachers Table (Teacher, Certification, PDA Report Status -->
     <div class="col-sm-6">
     <div class="card-body">
-        <table class="table table-sm table-light table-striped table-bordered">
+        <table class="table table-light table-striped" >
           <thead>
             <tr>
                 <th scope="col">Name</th>
@@ -22,25 +22,31 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                   <td> {{ t.get_current_certification_display }}</td>
                   <td>
                     {% if t.pdarecord_set.all %}
+
                       {% for p in t.pdarecord_set.all%}
                         <p>{{ p.school_year}}:
-                          {% if p.isei_reviewed == 'a' %}
-                            {{ p.approved_ceu }} CEUs approved
-                        {% elif p.principal_reviewed == 'a' %}
-                            ISEI approval pending
-                        {% elif p.date_submitted %}
-                            Principal Approval Pending
-                        {% else %}
-                            Not submitted
-                        {% endif %}
+                            {% if p.isei_reviewed == 'a' %}
+                                {{ p.approved_ceu }} CEUs approved
+                            {% elif p.principal_reviewed == 'a' %}
+                                ISEI approval pending
+                            {% elif p.date_submitted %}
+                                Principal Approval Pending
+                            {% elif p.isei_reviewed == 'd'%}
+                                ISEI denied. Not yet resubmitted.
+                            {% elif p.principal_reviewed == 'd'%}
+                                Principal denied. Not yet resubmitted.
+                            {% else %}
+                                Not submitted
+                            {% endif %}
+                          <br>
+                          <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
                       {% endfor %}
-                  {% else %}
+                    {% else %}
                         Report not yet created
                     {% endif %}
-                        {{ p.updated_at }}
-                      </p>
                     </td>
                 </tr>
+                </p>
             {% endfor %}
           </tbody>
         </table>

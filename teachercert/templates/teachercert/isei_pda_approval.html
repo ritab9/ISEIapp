@@ -104,8 +104,7 @@
                           {% if i.isei_reviewed == 'n' %}
                         <tr>
                             <td>{{i.date_completed}}</td><td>{{ i.pda_type }}</td><td>{{i.description}} </td>
-                            <td>{{ i.clock_hours|default_if_none:"" }}{{ i.pages|default_if_none:"" }}{{ i.ceu|default_if_none:""  }}
-                            {% if i.clock_hours %} hours {% elif i.pages %} pages {% elif i.ceu %} CEUs {% endif %}</td>
+                            <td>{{ i.amount }}{{ i.get_units_display }}
                             <td>{{ i.suggested_ceu }}</td><td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
 
                             <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
