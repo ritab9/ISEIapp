@@ -36,6 +36,14 @@ class PDAInstanceForm(ModelForm):
             'date_completed': forms.DateInput (attrs = {'placeholder':'mm/dd/yyyy'}),
         }
 
+    #def clean(self):
+    #    cleaned_data = super(PDAInstanceForm, self).clean()
+
+#        if (int(bool(self.cleaned_data['ceu']))+int(bool(self.cleaned_data['pages']))+int(bool(self.cleaned_data['pages']))) != 1:
+ #            raise forms.ValidationError ('Fill in only one and only one of the three fields')
+
+  #      return cleaned_data
+
 
 
 PDAInstanceFormSet = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=1,

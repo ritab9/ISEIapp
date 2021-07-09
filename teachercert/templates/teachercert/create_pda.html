@@ -52,13 +52,16 @@
                 </div>
                 <div class = "col-sm">
                     <h6><i>Fill in one of the fields below:</i></h6>
-                    {{f.ceu|as_crispy_field}}
-                    {{f.clock_hours|as_crispy_field}}
-                    {{f.pages|as_crispy_field}} </div>
+                        <div class = 'amount'>
+                            {{f.ceu|as_crispy_field}}
+                            {{f.clock_hours|as_crispy_field}}
+                            {{f.pages|as_crispy_field}} </div>
+                        </div>
                 <div class = "col-sm" style = "margin-top: 15px">
                      <br>
                     Supporting Documentation: {{f.file}} <br>
                      <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
+                    {{ form.errors }}
                 </div>
             {% endfor %}
         </div>
@@ -80,12 +83,12 @@
              <div class ="col-sm-4">
             {%  if pda_record.principal_comment %}
                 <h6 style = "color:red">Principal denial comment:</h6>
-                <span style = "font-size:80%">*If you would like to add a response to the principal, you can do so in the same windown. Please keep the Principal's comment as well. </span>
+                <span style = "font-size:80%">*If you would like to add a response to the principal, you can do so in the same window. Please keep the Principal's comment as well. </span>
                 {{ record_form.principal_comment }}
             {% endif %}
             {%  if pda_record.isei_comment %}
                 <h6 style = "color:red">ISEI denial comment:</h6>
-                <span style = "font-size:80%">*If you would like to add a response to ISEI, you can do so in the same window. Please keep the Principal's comment as well. </span>
+                <span style = "font-size:80%">*If you would like to add a response to ISEI, you can do so in the same window. Please keep ISEI's comment as well. </span>
                 {{ record_form.isei_comment }}
             {% endif %}
             </div>
@@ -98,6 +101,7 @@
                     {% csrf_token %}
                     {{ record_form.date_submitted|as_crispy_field }}<p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
                     <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_record">
+                    {{ record_form.non_field_errors }}
                 </div>
             </div>
            </div>
@@ -108,6 +112,28 @@
     <script>
         document.getElementById("school_year").style.display = "none";
         document.getElementById("school_year2").style.display = "none";
+
+        $("#amount").on("input", function() {
+            alert($(this).val());
+            alert("Something")
+        });
+
+        $("#amount").click(function () {
+            alert("Something")
+            var recID = $(this).attr('id');
+            if (($('#enablebtn'+recID).attr('value')) == "Enable submission"){
+                $('#table'+ recID).find("input","button","textarea").prop('disabled', false);
+                $('#approvebtn'+recID).find("input").prop('disabled', false);
+                $('#denybtn'+recID).find("input").prop('disabled', 'disabled');
+                $('#enablebtn'+recID).attr('value', "Cancel submission");
+            } else {
+                $('#table'+ recID).find("input","button","textarea").prop('disabled', 'disabled');
+                $('#approvebtn'+recID).find("input").prop('disabled', 'disabled');
+                $('#denybtn'+recID).find("input").prop('disabled', '');
+                $('#enablebtn'+recID).attr('value', "Enable submission");
+            };
+        });
+
     </script>
 
 {% endblock %}
