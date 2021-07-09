@@ -112,14 +112,16 @@ class PDAInstance(models.Model):
     class Meta:
         ordering = ['pda_record']
 
-    #@property
-    #def suggested_ceu(self):
-    #    if self.ceu is not None:
-    #        return self.ceu
-    #    elif self.pages is not None:
-    #        return round(self.pages / 100, 2)
-    #    elif self.amount is not None:
-    #        return round(self.amount / 10, 2)
+    @property
+    def suggested_ceu(self):
+        if self.units is 'c':
+            return self.amount
+        elif self.units is 'p':
+            return round(self.amount / 100, 2)
+        elif self.units is 'h':
+            return round(self.amount / 10, 2)
+        elif self.units is 'd':
+            return ('')
 
     def __str__(self):
         return self.description
