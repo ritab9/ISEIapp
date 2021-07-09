@@ -60,7 +60,6 @@ class Migration(migrations.Migration):
                 ('date_completed', models.DateField()),
                 ('description', models.CharField(max_length=3000, validators=[django.core.validators.MinLengthValidator(1)])),
                 ('ceu', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True)),
-                ('clock_hours', models.DecimalField(blank=True, decimal_places=1, max_digits=3, null=True)),
                 ('pages', models.DecimalField(blank=True, decimal_places=0, max_digits=3, null=True)),
                 ('file', models.FileField(blank=True, null=True, upload_to='Supporting_Files/%Y/%m/%d')),
                 ('date_submitted', models.DateField(blank=True, null=True)),

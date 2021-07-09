@@ -83,23 +83,27 @@ class PDAInstance(models.Model):
     date_completed = models.DateField(null=False)
     description = models.CharField(validators=[MinLengthValidator(1)], max_length=3000, blank=False, null=False)
 
-    # OR between those three
-    ceu = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    clock_hours = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
-    pages = models.DecimalField(max_digits=3, decimal_places=0, null=True, blank=True)
+    UNIT_CHOICES = (
+        ('c', 'CEUs'),
+        ('h', 'Clock Hours'),
+        ('d', 'Days'),
+        ('p', 'Pages'),
+    )
+    units = models.CharField(max_length=1, choices=UNIT_CHOICES, null=False, blank = False)
+    amount = models.DecimalField(max_digits=3, decimal_places=1, null=False, blank = False)
 
     file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
 
     #used only for individual resubmission
     date_resubmitted = models.DateField(null=True, blank=True)
-    CHOICES = (
+    REVIEW_CHOICES = (
         ('n', 'Not yet reviewed'),
         ('a', 'Approved'),
         ('d', 'Denied'),
     )
-    principal_reviewed = models.CharField(max_length=1, choices=CHOICES, null=False, default='n')
+    principal_reviewed = models.CharField(max_length=1, choices=REVIEW_CHOICES, null=False, default='n')
     principal_comment = models.CharField(max_length=300, null=True, blank=True)
-    isei_reviewed = models.CharField(max_length=1, choices=CHOICES, null=False, default='n')
+    isei_reviewed = models.CharField(max_length=1, choices=REVIEW_CHOICES, null=False, default='n')
     isei_comment = models.CharField(max_length=300, null=True, blank=True)
 
     approved_ceu = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -108,14 +112,14 @@ class PDAInstance(models.Model):
     class Meta:
         ordering = ['pda_record']
 
-    @property
-    def suggested_ceu(self):
-        if self.ceu is not None:
-            return self.ceu
-        elif self.pages is not None:
-            return round(self.pages / 100, 2)
-        elif self.clock_hours is not None:
-            return round(self.clock_hours / 10, 2)
+    #@property
+    #def suggested_ceu(self):
+    #    if self.ceu is not None:
+    #        return self.ceu
+    #    elif self.pages is not None:
+    #        return round(self.pages / 100, 2)
+    #    elif self.amount is not None:
+    #        return round(self.amount / 10, 2)
 
     def __str__(self):
         return self.description

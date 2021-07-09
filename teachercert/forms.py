@@ -30,7 +30,7 @@ class PDARecordForm(ModelForm):
 class PDAInstanceForm(ModelForm):
     class Meta:
         model = PDAInstance
-        fields = ('pda_type','description', 'date_completed',  'pages', 'clock_hours', 'ceu', 'file', 'date_resubmitted')
+        fields = ('pda_type','description', 'date_completed', 'amount', 'file', 'date_resubmitted')
         widgets = {
             'file': forms.FileInput(attrs={'size': 1}),
             'date_completed': forms.DateInput (attrs = {'placeholder':'mm/dd/yyyy'}),
@@ -60,7 +60,7 @@ PDAInstanceFormSet = inlineformset_factory(PDARecord, PDAInstance, form=PDAInsta
 #        self.layout = Layout(
 #            'pda_type',
 #            'description','date_completed',
-#            'pages', 'clock_hours', 'ceu', 'file'
+#            'pages', 'amount', 'ceu', 'file'
 #        )
 #        self.render_required_fields = True
 
