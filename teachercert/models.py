@@ -90,7 +90,7 @@ class PDAInstance(models.Model):
         ('p', 'Pages'),
     )
     units = models.CharField(max_length=1, choices=UNIT_CHOICES, null=False, blank = False)
-    amount = models.DecimalField(max_digits=3, decimal_places=1, null=False, blank = False)
+    amount = models.DecimalField(max_digits=5, decimal_places=1, null=False, blank = False)
 
     file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
 

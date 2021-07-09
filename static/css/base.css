@@ -10,6 +10,9 @@ textarea {
     box-sizing: border-box;
 }
 
+.form-number {
+width: 5px;
+}
 
 .error {
     color:red;
