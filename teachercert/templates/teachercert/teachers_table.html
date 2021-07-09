@@ -1,0 +1,48 @@
+<!--
+Not to be used independently
+include 'teachercert/teachers_table.html' %} to include in other templates-->
+
+<!-- Teachers Table (Teacher, Certification, PDA Report Status -->
+    <div class="col-sm-6">
+    <div class="card-body">
+        <table class="table table-sm table-light table-striped table-bordered">
+          <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Certification</th>
+                <th scope="col">PDA Report Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in teachers %}
+                <tr>
+                   <td><img class="profile-pic" src= "{{t.profile_picture.url}}" style="width:50px;height:50px;">
+                       {{ t.user.first_name}}  {{t.user.last_name}}
+                   </td>
+                  <td> {{ t.get_current_certification_display }}</td>
+                  <td>
+                    {% if t.pdarecord_set.all %}
+                      {% for p in t.pdarecord_set.all%}
+                        <p>{{ p.school_year}}:
+                          {% if p.isei_reviewed == 'a' %}
+                            {{ p.approved_ceu }} CEUs approved
+                        {% elif p.principal_reviewed == 'a' %}
+                            ISEI approval pending
+                        {% elif p.date_submitted %}
+                            Principal Approval Pending
+                        {% else %}
+                            Not submitted
+                        {% endif %}
+                      {% endfor %}
+                  {% else %}
+                        Report not yet created
+                    {% endif %}
+                        {{ p.updated_at }}
+                      </p>
+                    </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</div>

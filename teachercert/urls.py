@@ -18,6 +18,7 @@ urlpatterns = [
     path('create_record/<str:pk>/<str:sy>/', views.createrecord, name='create_record'),
 
     # principal urls
+    path('principal_teachercert/', views.principal_teachercert, name='principal_teachercert'),
     path('principal_pda_approval/', views.principal_pda_approval, name='principal_pda_approval'),
     path('principal_pda_approval/<str:recID>', views.principal_pda_approval, name='principal_pda_approval'),
     path('principal_pda_approval/<str:recID>/<str:instID>', views.principal_pda_approval, name='principal_pda_approval'),

@@ -66,15 +66,17 @@
 
     <div class="card card-body">
         <div class="row">
-           <div class="col-sm-4">
+           <div class="col-sm-5">
             <!-- update summary-->
                <p id="school_year">{{record_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
                {% csrf_token %}
                <h6>Summary:</h6>
                <span style = "font-size:80%">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </span>
                     {{ record_form.summary}}
-               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary">
+               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary" style ="float:right">
+
             </div>
+
              <div class ="col-sm-4">
             {%  if pda_record.principal_comment %}
                 <h6 style = "color:red">Principal denial comment:</h6>
@@ -88,8 +90,7 @@
             {% endif %}
             </div>
 
-
-            <div class="col-sm-4" >
+            <div class="col-sm-3" ><br>
                 <div class="card card-body" style="margin-right: 50px; margin-left: 50px; margin-top: 50px">
                     <br><br>
                     <!-- submit record-->

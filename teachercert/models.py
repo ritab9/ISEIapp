@@ -65,6 +65,12 @@ class PDARecord(models.Model):
     # entered by teacher at object finalization
     summary = models.CharField(validators=[MinLengthValidator(1)], max_length=6000, blank=True, null=True)
 
+    def approved_ceu(self):
+        approved_ceu=0
+        for i in self.pdainstance_set.all():
+            if i.approved_ceu:
+                approved_ceu=approved_ceu+i.approved_ceu
+        return approved_ceu
 
 
 class PDAInstance(models.Model):

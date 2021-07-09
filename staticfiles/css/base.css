@@ -5,6 +5,11 @@
 .approvebtn .btn{}
 .denybtn .btn{}
 
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 
 .error {
     color:red;

@@ -37,7 +37,8 @@ def loginpage(request):
         if user is not None:
             login(request, user)
             if is_in_group(request.user, 'principal'):
-                return redirect('principal_dashboard')
+                return redirect('principal_teachercert')
+                #return redirect('principal_dashboard')
             else:
                 if is_in_group(request.user, 'teacher'):
                     if user.date_joined.date() == user.last_login.date():

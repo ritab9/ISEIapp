@@ -17,9 +17,9 @@ class PDARecordForm(ModelForm):
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
         #    'date_submitted': forms.DateField(attrs={'class': 'form-controls', 'placehoder': 'Enter date'}),
              'summary': forms.Textarea(
-                attrs={'class': 'form-controls', 'placehoder': 'Enter summary for combined activities', 'rows':10, 'cols':52}),
+                attrs={'class': 'form-controls', 'placehoder': 'Enter summary for combined activities', 'rows':10}),
              'principal_comment': forms.Textarea(
-                attrs={'class': 'form-controls','rows':4, 'cols':52}),
+                attrs={'class': 'form-controls','rows':4 }),
             'isei_comment': forms.Textarea(
                 attrs={'class': 'form-controls', 'rows': 4, 'cols': 52}),
             'date_submitted': forms.DateInput(attrs={'placeholder': 'mm/dd/yyyy'}),
