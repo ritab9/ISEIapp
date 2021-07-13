@@ -1,6 +1,7 @@
 from django.forms import ModelForm, modelformset_factory, ClearableFileInput
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from captcha.fields import CaptchaField
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 # from crispy_forms.helper import FormHelper
@@ -10,9 +11,11 @@ from .models import *
 
 
 class CreateUserForm(UserCreationForm):
+    captcha = CaptchaField()
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'captcha']
+
 
 class UserForm(ModelForm):
     class Meta:

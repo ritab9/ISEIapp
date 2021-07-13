@@ -23,7 +23,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
-    path('', include('teachercert.urls'))
+    path('', include('teachercert.urls')),
+    path('captcha/', include('captcha.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #static files served by the server
