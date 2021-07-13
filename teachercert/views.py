@@ -173,7 +173,8 @@ def principal_pda_approval(request, recID=None, instID=None):
     if request.method == 'POST':
         if request.POST.get('approved'):
             pda_record = PDARecord.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None)
-            PDAInstance.objects.filter(pda_record=pda_record).update(principal_reviewed='a')
+
+            PDAInstance.objects.filter(pda_record = pda_record).update(principal_reviewed='a')
 
     if request.method == 'POST':
         if request.POST.get('denied'):
