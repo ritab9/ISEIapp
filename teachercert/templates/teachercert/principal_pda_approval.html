@@ -2,9 +2,11 @@
 {% load static %}
 
 {% block content %}
-	<div class="row">
-    <div class="col-sm-3">
+{% if pda_record_approved or pda_record_denied %}
     <p style="font-size: 80%">* Canceling a submission will reset submission date to current date.</p>
+	<div class="row">
+        {% if pda_record_approved %}
+        <div class="col-sm">
      Approved:
         <div class="card-body">
             <table class="table table-sm table-light" style="font-size: 85%">
@@ -34,6 +36,10 @@
               </tbody>
             </table>
         </div>
+    </div>
+            {% endif %}
+    {% if pda_record_denied %}
+    <div class="col-sm">
         Denied:
         <div class="card-body">
             <table class="table table-sm table-light" style="font-size: 85%">
@@ -60,9 +66,11 @@
             </table>
         </div>
     </div>
+        {% endif %}
+    </div>
 
-
-
+{% endif %}
+<div class="row">
     <div class="col-sm">
     {% if pda_record_notreviewed %}
         <div class="card-body">

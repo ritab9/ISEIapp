@@ -16,8 +16,11 @@ class TeacherInline(admin.StackedInline):
 
 class UserAdmin(AuthUserAdmin):
     inlines = [TeacherInline]
-    list_display = ('username', 'first_name', 'last_name',  'School', 'id','group', 'is_active')
+    list_display = ('username', 'Name', 'School', 'id','group', 'is_active')
     list_editable = ('is_active',)
+
+    def Name(selfself,obj):
+        return obj.teacher
 
     def School(self, obj):
         return obj.teacher.school

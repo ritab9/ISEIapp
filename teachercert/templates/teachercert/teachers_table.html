@@ -17,7 +17,7 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
             {% for t in teachers %}
                 <tr>
                    <td><img class="profile-pic" src= "{{t.profile_picture.url}}" style="width:50px;height:50px;">
-                       {{ t.user.first_name}}  {{t.user.last_name}}
+                       {{ t.first_name}}  {{t.last_name}}
                    </td>
                   <td> {{ t.get_current_certification_display }}</td>
                   <td>

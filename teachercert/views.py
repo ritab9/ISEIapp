@@ -8,7 +8,7 @@ from users.models import *
 from .models import *
 from django.db.models import Q
 from django.db.models.functions import Now
-from datetime import datetime
+from datetime import datetime, date
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
@@ -173,7 +173,6 @@ def principal_pda_approval(request, recID=None, instID=None):
     if request.method == 'POST':
         if request.POST.get('approved'):
             pda_record = PDARecord.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None)
-
             PDAInstance.objects.filter(pda_record = pda_record).update(principal_reviewed='a')
 
     if request.method == 'POST':
