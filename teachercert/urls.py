@@ -12,10 +12,10 @@ urlpatterns = [
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
     path('delete_pdainstance/<str:pk>/', views.deletePDAinstance, name="delete_pdainstance"),
 
-    # create PDA instances and records. View submitted PDAs
+    # create PDA instances and reports. View submitted PDAs
     # new record: pk - user ID, sy- School-year,  #existing record: recId - record ID
     path('create_pda/<str:recId>/', views.createPDA, name='create_pda'),
-    path('create_record/<str:pk>/<str:sy>/', views.createrecord, name='create_record'),
+    path('create_report/<str:pk>/<str:sy>/', views.createPDAreport, name='create_report'),
 
     # principal urls
     path('principal_teachercert/', views.principal_teachercert, name='principal_teachercert'),
@@ -26,6 +26,6 @@ urlpatterns = [
     # isei staff urls
     path('isei_teachercert/', views.isei_teachercert, name='isei_teachercert'),
     path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
-    path('isei_pda_approval/<str:recID>', views.isei_pda_approval, name='isei_pda_approval'),
-    path('isei_pda_approval/<str:recID>/<str:instID>', views.isei_pda_approval, name='isei_pda_approval'),
+    path('isei_pda_approval/<str:repID>', views.isei_pda_approval, name='isei_pda_approval'),
+    path('isei_pda_approval/<str:repID>/<str:instID>', views.isei_pda_approval, name='isei_pda_approval'),
 ]

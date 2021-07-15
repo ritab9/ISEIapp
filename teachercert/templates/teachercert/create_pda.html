@@ -6,10 +6,10 @@
 
 <!--if it will be used by any other user
 {% if user_not_teacher %}
-    {{ pda_record.teacher }}
+    {{ pda_report.teacher }}
 {% endif %} -->
 
-{{ pda_record.school_year }}
+{{ pda_report.school_year }}
 
 <!-- Table of added activities-->
 <div class="row">
@@ -68,37 +68,37 @@
         <div class="row">
            <div class="col-sm-5">
             <!-- update summary-->
-               <p id="school_year">{{record_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
+               <p id="school_year">{{report_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
                {% csrf_token %}
                <h6>Summary:</h6>
                <span style = "font-size:80%">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </span>
-                    {{ record_form.summary}}
+                    {{ report_form.summary}}
                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary" style ="float:right">
 
             </div>
 
              <div class ="col-sm-4">
-            {%  if pda_record.principal_comment %}
+            {%  if pda_report.principal_comment %}
                 <h6 style = "color:red">Principal denial comment:</h6>
                 <span style = "font-size:80%">*If you would like to add a response to the principal, you can do so in the same window. Please keep the Principal's comment as well. </span>
-                {{ record_form.principal_comment }}
+                {{ report_form.principal_comment }}
             {% endif %}
-            {%  if pda_record.isei_comment %}
+            {%  if pda_report.isei_comment %}
                 <h6 style = "color:red">ISEI denial comment:</h6>
                 <span style = "font-size:80%">*If you would like to add a response to ISEI, you can do so in the same window. Please keep ISEI's comment as well. </span>
-                {{ record_form.isei_comment }}
+                {{ report_form.isei_comment }}
             {% endif %}
             </div>
 
             <div class="col-sm-3" ><br>
                 <div class="card card-body" style="margin-right: 50px; margin-left: 50px; margin-top: 50px">
                     <br><br>
-                    <!-- submit record-->
-                    <p id="school_year2">{{record_form.school_year}}</p>
+                    <!-- submit report-->
+                    <p id="school_year2">{{report_form.school_year}}</p>
                     {% csrf_token %}
-                    {{ record_form.date_submitted|as_crispy_field }}<p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
-                    <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_record">
-                    {{ record_form.non_field_errors }}
+                    {{ report_form.date_submitted|as_crispy_field }}<p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
+                    <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_report">
+                    {{ report_form.non_field_errors }}
                 </div>
             </div>
            </div>

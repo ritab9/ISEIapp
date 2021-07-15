@@ -35,10 +35,10 @@
         </div>
     </div>
 
-<!-- table for principal denied records-->
-    {% if principal_denied_record %} <!-- Check if there are any denied records -->
+<!-- table for principal denied reports-->
+    {% if principal_denied_report %} <!-- Check if there are any denied reports -->
         <br>
-        {% for ar in principal_denied_record%}
+        {% for ar in principal_denied_report%}
             <div class="card card-body">
                 <h6> Principal denied PD Activities </h6> <br>
                 <table class="table table-sm">
@@ -48,10 +48,10 @@
                     </tr>
                     {% for p in  ar.pdainstance_set.all %}
                         <tr>
-                            <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                            <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                             <td>{{p.amount}} {{p.get_units_display}} </td>
                             <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
-                            <td>{{ p.pda_record.updated_at }}</td>
+                            <td>{{ p.pda_report.updated_at }}</td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -70,10 +70,10 @@
         {% endfor %}
     {% endif %}
 
-<!-- table for isei denied records-->
-{% if isei_denied_record %} <!-- Check if there are any denied records -->
+<!-- table for isei denied reports-->
+{% if isei_denied_report %} <!-- Check if there are any denied reports -->
     <br>
-    {% for ar in isei_denied_record%}
+    {% for ar in isei_denied_report%}
     <div class="card card-body">
     <h6> ISEI denied PD Activities </h6> <br>
         <table class="table table-sm">
@@ -83,13 +83,13 @@
             </tr>
             {% for p in ar.pdainstance_set.all %}
                 <tr>
-                    <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                    <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.amount}} {{p.get_units_display}}</td>
-                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_record.updated_at }}</td>
+                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_report.updated_at }}</td>
                 </tr>
             {% endfor %}
         </table>
-        {%  for ar in isei_denied_record  %}
+        {%  for ar in isei_denied_report  %}
             <p><b>Summary:</b> {{ ar.summary }}</p>
             <div class="row">
             <div class="col-sm-10">
@@ -107,7 +107,7 @@
 {% endif %}
 
 
-<!-- instances denied while the record submission was accepted -->
+<!-- instances denied while the report submission was accepted -->
 {% if isei_denied_independent_instance or active_independent_instance %}
 <br>
 <div class="row">
@@ -147,9 +147,9 @@
         </tr>
         {% for p in active_independent_instance %}
             <tr>
-                <td>{{p.pda_record.school_year}} </td>
-                {% if p.pda_record.date_submitted %}
-                    <td>{{ p.pda_record.date_submitted }}</td>
+                <td>{{p.pda_report.school_year}} </td>
+                {% if p.pda_report.date_submitted %}
+                    <td>{{ p.pda_report.date_submitted }}</td>
                 {% else %}
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
@@ -158,7 +158,7 @@
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
-                {% if p.pda_record.date_submitted %}
+                {% if p.pda_report.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
@@ -190,11 +190,11 @@
         Add / Submit PDA
       </button>
       <div class="dropdown-menu"  aria-labelledby="dropdownMenuButton">
-         {% for ar in active_record %}
+         {% for ar in active_report %}
                 <a  class="dropdown-item" href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
          {% endfor %}
-         {%  for n in no_record_school_years %}
-                <a  class="dropdown-item" href="{%  url 'create_record' teacher.user.id n.id %}"> for {{ n }}</a>
+         {%  for n in no_report_school_years %}
+                <a  class="dropdown-item" href="{%  url 'create_report' teacher.user.id n.id %}"> for {{ n }}</a>
          {% endfor %}
       </div>
     </div></div>
@@ -206,12 +206,12 @@
             <th>Date Completed</th><th>Category</th><th>Description</th><th>Amount</th>
             <th>Principal Approval</th>
         </tr>
-     {% for ar in active_record %}
+     {% for ar in active_report %}
         {% for p in ar.pdainstance_set.all%}
             <tr>
-                <td>{{p.pda_record.school_year}} </td>
-                {% if p.pda_record.date_submitted %}
-                    <td>{{ p.pda_record.date_submitted }}</td>
+                <td>{{p.pda_report.school_year}} </td>
+                {% if p.pda_report.date_submitted %}
+                    <td>{{ p.pda_report.date_submitted }}</td>
                 {% else %}
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
@@ -220,7 +220,7 @@
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
-                {% if p.pda_record.date_submitted %}
+                {% if p.pda_report.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
@@ -234,7 +234,7 @@
 </div>
 
 
-    <!-- table for ISEI submitted records + independent instances-->
+    <!-- table for ISEI submitted reports + independent instances-->
 
 <!-- submitted to ISEI -->
 {% if submitted_instance %}<br>
@@ -248,11 +248,11 @@
         </tr>
         {% for p in submitted_instance %}
             <tr>
-                <td>{{p.pda_record.school_year}} </td><td>{{p.date_completed}} </td>
+                <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}</td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
-                <td>{{p.pda_record.date_submitted}}</td>
+                <td>{{p.pda_report.date_submitted}}</td>
                 <td>{{ p.updated_at }}</td>
             </tr>
         {% endfor %}
@@ -271,7 +271,7 @@
         </tr>
         {% for p in approved_instance %}
             <tr>
-                <td>{{p.pda_record.school_year}} </td>
+                <td>{{p.pda_report.school_year}} </td>
                 <td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td>
                 <td>{{p.description}} </td>

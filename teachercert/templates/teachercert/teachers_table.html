@@ -21,9 +21,9 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                    </td>
                   <td> {{ t.get_current_certification_display }}</td>
                   <td>
-                    {% if t.pdarecord_set.all %}
+                    {% if t.PDAReport_set.all %}
 
-                      {% for p in t.pdarecord_set.all%}
+                      {% for p in t.PDAReport_set.all%}
                         <p>{{ p.school_year}}:
                             {% if p.isei_reviewed == 'a' %}
                                 {{ p.approved_ceu }} CEUs approved

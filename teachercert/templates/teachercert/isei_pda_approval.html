@@ -15,7 +15,7 @@
                   <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
                 </thead>
               <tbody>
-                {% for p in pda_record_approved%}
+                {% for p in pda_report_approved%}
                 <tr>
                     <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
                     <td>
@@ -38,7 +38,7 @@
                   <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
                 </thead>
               <tbody>
-                {% for p in pda_record_denied%}
+                {% for p in pda_report_denied%}
                 <tr>
                     <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
                     <td>
@@ -54,7 +54,7 @@
         </div>
     </div> <!-- -->
 
-    {% if pda_record_notreviewed %}
+    {% if pda_report_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
             <b> Review submitted teacher activities: </b>
@@ -68,7 +68,7 @@
                 <li>If the submission is not accepted, "Deny Submission". This will send all activities back to the teacher for resubmission.</li>
             </ul>
             </span>
-             {% for p in pda_record_notreviewed %}
+             {% for p in pda_report_notreviewed %}
              <table class="table table-sm table-light">
               <tbody>
                 <tr>
@@ -214,7 +214,7 @@
               <tbody>
               {% for i in pda_instance_notreviewed %}
                 <tr>
-                    <td>{{i.pda_record.teacher}} </td><td>{{i.pda_record.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
+                    <td>{{i.pda_report.teacher}} </td><td>{{i.pda_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
                 </tr>
                 <tr>
                   <td colspan="4">
@@ -239,7 +239,7 @@
                 <tr><td>
                   <span style = "color:red"> ISEI Comment:</span>  {{ i.isei_comment }} <br>
                   {% if i.principal_comment %}<span style = "color:red"> Principal Comment:</span>  {{ i.principal_comment }}{% endif %}
-                    <form action="{% url 'isei_pda_approval' i.pda_record.id i.id %}" method="POST">
+                    <form action="{% url 'isei_pda_approval' i.pda_report.id i.id %}" method="POST">
                         {% csrf_token %}
                         <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approveinst" align="right" >
                        <br>
@@ -249,7 +249,7 @@
                     </form>
                   </td></tr>
                     <tr><td colspan="4">
-                    <form action="{% url 'isei_pda_approval' i.pda_record.id i.id %}" method="POST">
+                    <form action="{% url 'isei_pda_approval' i.pda_report.id i.id %}" method="POST">
                             {% csrf_token %}
                         <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denyinst" >

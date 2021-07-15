@@ -9,9 +9,9 @@ from crispy_forms.layout import Layout
 from .models import *
 
 
-class PDARecordForm(ModelForm):
+class PDAreportForm(ModelForm):
     class Meta:
-        model = PDARecord
+        model = PDAReport
         fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment')
         widgets = {
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
@@ -47,11 +47,11 @@ class PDAInstanceForm(ModelForm):
 
 
 
-PDAInstanceFormSet = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=1,
+PDAInstanceFormSet = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=1,
                                            can_delete=False)
 
 #to be used by ISEI staff to add the approved CEUs and individual deny instances as needed
-#PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDARecord, PDAInstance, form=PDAInstanceForm, extra=0,
+#PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=0,
 #                                           can_delete=False)
 
 #class PDAInstanceFormSetHelper(FormHelper):

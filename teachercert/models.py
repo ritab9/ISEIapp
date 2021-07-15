@@ -40,7 +40,7 @@ class SchoolYear(models.Model):
             all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
 
-class PDARecord(models.Model):
+class PDAReport(models.Model):
     created_at = models.DateField(auto_now_add=True, blank = True)
     updated_at = models.DateField(auto_now=True, blank = True)
     # entered by teacher at object creation
@@ -74,11 +74,11 @@ class PDARecord(models.Model):
 
 
 class PDAInstance(models.Model):
-    # record contains teacher, school-year and summary
+    # report contains teacher, school-year and summary
     created_at = models.DateTimeField(auto_now_add=True, blank = True)
     updated_at = models.DateTimeField(auto_now=True, blank = True)
 
-    pda_record = models.ForeignKey(PDARecord, on_delete=models.PROTECT, null=False, blank=False)
+    pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
     pda_type = models.ForeignKey(PDAType, on_delete=models.PROTECT, null=False, blank=False)
     date_completed = models.DateField(null=False)
     description = models.CharField(validators=[MinLengthValidator(1)], max_length=3000, blank=False, null=False)
@@ -110,17 +110,17 @@ class PDAInstance(models.Model):
 
 
     class Meta:
-        ordering = ['pda_record']
+        ordering = ['pda_report']
 
     @property
     def suggested_ceu(self):
-        if self.units is 'c':
+        if self.units == 'c':
             return self.amount
-        elif self.units is 'p':
+        elif self.units == 'p':
             return round(self.amount / 100, 2)
-        elif self.units is 'h':
+        elif self.units == 'h':
             return round(self.amount / 10, 2)
-        elif self.units is 'd':
+        elif self.units == 'd':
             return ('')
 
     def __str__(self):

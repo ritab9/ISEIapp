@@ -21,8 +21,8 @@ class PDAInstanceInline(admin.StackedInline):
     extra = 1
 
 
-@admin.register(PDARecord)
-class PDARecord(admin.ModelAdmin):
+@admin.register(PDAReport)
+class PDAReport(admin.ModelAdmin):
     inlines = [PDAInstanceInline]
     list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed', 'isei_reviewed', 'updated_at')
     list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed')
