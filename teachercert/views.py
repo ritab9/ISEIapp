@@ -8,6 +8,18 @@ from users.models import *
 from .models import *
 from django.db.models import Q
 from django.db.models.functions import Now
+
+# for creating the pdf
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from django.http import HttpResponse
+
+#for emailing
+from django.core.mail import EmailMessage
+
 from datetime import datetime, date
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
@@ -142,6 +154,7 @@ def principal_teachercert(request):
 @allowed_users(allowed_roles=['staff'])
 def isei_teachercert(request):
     teachers = Teacher.objects.filter(user__is_active = True)
+    school_year = SchoolYear.objects.get(active_year = True)
     #pda_report = PDAReport.objects.filter(teacher__school=principal.school)
     #pda_report_notreviewed = pda_report.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at')
     #pda_report_approved = pda_report.filter(date_submitted__isnull=False, principal_reviewed = 'a').order_by('updated_at')
@@ -150,7 +163,7 @@ def isei_teachercert(request):
     # resubmitted instance that was denied while it's report approved
     #pda_instance_notreviewed = PDAInstance.objects.filter(pda_report__in=pda_report, pda_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
 
-    context = dict(teachers=teachers,)
+    context = dict(teachers=teachers, school_year=school_year)
                    #pda_report_notreviewed=pda_report_notreviewed, pda_report_approved=pda_report_approved, pda_report_denied=pda_report_denied,
                    #pda_instance_notreviewed = pda_instance_notreviewed)
     return render(request, 'teachercert/isei_teachercert.html', context)
@@ -203,7 +216,7 @@ def principal_pda_approval(request, recID=None, instID=None):
 #principal's approval of teacher activities
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
-def isei_pda_approval(request, recID=None, instID=None):
+def isei_pda_approval(request, repID=None, instID=None):
     teachers = Teacher.objects.filter(active = True)
     pda_report_notreviewed = PDAReport.objects.filter(principal_reviewed ='a', isei_reviewed='n').order_by('date_submitted')
     pda_report_approved = PDAReport.objects.filter(isei_reviewed ='a')
@@ -225,18 +238,18 @@ def isei_pda_approval(request, recID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('approved'):
-            PDAReport.objects.filter(id=recID).update(isei_reviewed='a', isei_comment=None)
+            PDAReport.objects.filter(id=repID).update(isei_reviewed='a', isei_comment=None)
             #PDAInstance.objects.filter(pda_report=pda_report).update(isei_reviewed='a')
 
     if request.method == 'POST':
         if request.POST.get('denied'):
-            pda_report = PDAReport.objects.filter(id=recID).update(isei_reviewed='d', date_submitted = None, principal_reviewed ='n', isei_comment = request.POST.get('isei_comment'))
+            pda_report = PDAReport.objects.filter(id=repID).update(isei_reviewed='d', date_submitted = None, principal_reviewed ='n', isei_comment = request.POST.get('isei_comment'))
             PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed='n',isei_reviewed='d',date_resubmitted = None)
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
             #todo not happy with this random date attachment ...
-            pda_report = PDAReport.objects.filter(id=recID).update(isei_reviewed='n', date_submitted = Now(), principal_reviewed ='a')
+            pda_report = PDAReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted = Now(), principal_reviewed ='a')
             PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed = 'a', isei_reviewed = 'n', date_resubmitted = Now())
 
 
@@ -309,5 +322,64 @@ def teachers_NOTUSED(request):
 
     context = {'teachers': teachers, 'total_teachers': total_teachers, 'my_filter': my_filter}
     return render(request, 'teachercert/unused_teachers.html', context)
+
+
+#create a pdf with approved CEUs
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def approved_pdf(request):
+    #Create a Bytestream buffer
+    buf = io.BytesIO()
+    #Create a canvas
+    c = canvas.Canvas (buf, pagesize = letter, bottomup=0)
+    #Create text object - what will be on the canvas
+    textob = c.beginText()
+    textob.setFont("Helvetica", 12)
+    textob.setTextOrigin(inch, inch)
+
+    #Add text
+    lines = []
+    approved_report = PDAReport.objects.filter(isei_reviewed = 'a')
+    #approved_instance = PDAInstance.objects.filter(isei_reviewed='a')
+    #for a in approved_instance:
+    for a in approved_report:
+        lines.append("")
+        #lines.append(a.pda_report.teacher.first_name +" "+a.pda_report.teacher.last_name)
+        lines.append(a.teacher.first_name + " " + a.teacher.last_name+ ", " + a.school_year.name)
+        lines.append("")
+        for i in a.pdainstance_set.all():
+            categ = i.pda_type.get_category_display()
+            lines.append(categ + " " + str(i.date_completed))
+            lines.append(i.description)
+            lines.append(str(i.approved_ceu))
+
+    for line in lines:
+        textob.textLine(line)
+
+    #Finish up
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    pdf=buf.getvalue()
+    buf.close()
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="mypdf.pdf"'
+    response.write(pdf)
+    return response
+
+    #return pdf
+
+# email a pdf with approved CEUs
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def approved_pdf2(request):
+    email = EmailMessage(
+        'Subject here', 'Here is the message.', 'ritab.isei.life@gmail.com', ['oldagape@yahoo.com'])
+    pdf=create_approved_pdf(request)
+    email.attach("Approved_CEUs.pdf", pdf, 'application/pdf')
+    email.send()
+
+    return render(request, 'teachercert/isei_pda_approval.html')
 
 

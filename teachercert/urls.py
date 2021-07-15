@@ -28,4 +28,7 @@ urlpatterns = [
     path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
     path('isei_pda_approval/<str:repID>', views.isei_pda_approval, name='isei_pda_approval'),
     path('isei_pda_approval/<str:repID>/<str:instID>', views.isei_pda_approval, name='isei_pda_approval'),
+
+    #pdf of approved activities
+    path('approved_pdf/', views.approved_pdf, name='approved_pdf')
 ]
