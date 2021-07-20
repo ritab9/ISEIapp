@@ -1,6 +1,10 @@
 {%  extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+   PDA
+{% endblock %}
+
 {% block content %}
 
     {% if user_not_teacher %}
@@ -10,16 +14,18 @@
     {% load static %}
 
 <div class="card card-body">
-    <h6> PROFESSIONAL DEVELOPMENT </h6>
-    <h6> Continuing Education Credit (CEU)</h6>
-    <p></p>
-    <p>*Activities from at least two different categories shall be included in the CEUs submitted during the certification term prior to renewal.</p>
-    <p>1.0 CEU = 10 clock hours,    3-CEU is equivalent to 1-semester credit</p>
+    <h6> PROFESSIONAL DEVELOPMENT  - Continuing Education Credit (CEU)</h6>
+    <span style = "font-size: 80%">
+        <p></p>
+        <p>Reports are to be submitted by August 15 each school year.</p>
+    </span>
+    <div><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a></div>
 </div><br>
 
 <!-- filter -->
     <div class="row">
         <div class="card card-body">
+            <h6>Filters for activity search:</h6>
             <form method="get">
                 {% if user_not_teacher %}
                     {{ instance_filter.form.teacher.label_tag }} {{ instance_filter.form.teacher }}<br>
@@ -193,9 +199,9 @@
          {% for ar in active_report %}
                 <a  class="dropdown-item" href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
          {% endfor %}
-         {%  for n in no_report_school_years %}
-                <a  class="dropdown-item" href="{%  url 'create_report' teacher.user.id n.id %}"> for {{ n }}</a>
-         {% endfor %}
+         {% for sy in new_school_year %}
+                <a  class="dropdown-item" href="{%  url 'create_report' teacher.user.id sy.id %}"> for {{ sy }}</a>
+        {% endfor %}
       </div>
     </div></div>
     </div><br>

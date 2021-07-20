@@ -11,6 +11,7 @@ urlpatterns = [
     path('myPDAdashboard/<str:pk>', views.myPDAdashboard, name='myPDAdashboard'),
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
     path('delete_pdainstance/<str:pk>/', views.deletePDAinstance, name="delete_pdainstance"),
+    path('ceu_info/', views.ceu_info, name="ceu_info"),
 
     # create PDA instances and reports. View submitted PDAs
     # new record: pk - user ID, sy- School-year,  #existing record: recId - record ID

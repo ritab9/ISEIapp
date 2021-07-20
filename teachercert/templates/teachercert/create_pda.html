@@ -73,7 +73,7 @@
                <h6>Summary:</h6>
                <span style = "font-size:80%">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </span>
                     {{ report_form.summary}}
-               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Summary" name = "update_summary" style ="float:right">
+               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right">
 
             </div>
 
@@ -89,46 +89,54 @@
                 {{ report_form.isei_comment }}
             {% endif %}
             </div>
-
             <div class="col-sm-3" ><br>
-                <div class="card card-body" style="margin-right: 50px; margin-left: 50px; margin-top: 50px">
+                <div class="card card-body" style="margin-right: 50px; margin-left: 50px; margin-top: 0px">
+                <h6> Academic Classes</h6>
+                    <p style="font-size: 80%">{{ report_form.academic_class}} Check if you have taken any academic classes towards certification.</p>
+                <div id = "class_info">
+                    {{ report_form.university |as_crispy_field  }}
+                    {{ report_form.class_name|as_crispy_field }}
+                </div>
+                </div>
+            </div>
+            </div>
+            <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right; width: 200px">
+
+        </div>
+            <div class="col-sm-3" ><br>
+                <div class="card card-body" style="margin-right: 0px; margin-left: 0px; margin-top: 0px">
                     <br><br>
                     <!-- submit report-->
                     <p id="school_year2">{{report_form.school_year}}</p>
                     {% csrf_token %}
-                    {{ report_form.date_submitted|as_crispy_field }}<p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
+                    <h6>{{ report_form.date_submitted|as_crispy_field }}</h6><p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
                     <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_report">
                     {{ report_form.non_field_errors }}
                 </div>
             </div>
-           </div>
-        </div>
+
     </form>
 
 
     <script>
         document.getElementById("school_year").style.display = "none";
         document.getElementById("school_year2").style.display = "none";
-
-        $("#amount").on("input", function() {
-            alert($(this).val());
-            alert("Something")
+        $(document).ready(function() {
+            if ($("#id_academic_class").is(':checked')) {
+                 $("#class_info").show();
+            } else {
+                  $("#class_info").hide();
+           }
         });
 
-        $("#amount").click(function () {
-            alert("Something")
-            var recID = $(this).attr('id');
-            if (($('#enablebtn'+recID).attr('value')) == "Enable submission"){
-                $('#table'+ recID).find("input","button","textarea").prop('disabled', false);
-                $('#approvebtn'+recID).find("input").prop('disabled', false);
-                $('#denybtn'+recID).find("input").prop('disabled', 'disabled');
-                $('#enablebtn'+recID).attr('value', "Cancel submission");
+
+        $("#id_academic_class").change(function() {
+            if ($("#id_academic_class").is(':checked')) {
+                 $("#class_info").show();
             } else {
-                $('#table'+ recID).find("input","button","textarea").prop('disabled', 'disabled');
-                $('#approvebtn'+recID).find("input").prop('disabled', 'disabled');
-                $('#denybtn'+recID).find("input").prop('disabled', '');
-                $('#enablebtn'+recID).attr('value', "Enable submission");
-            };
+                  $("#class_info").hide();
+           }
+
         });
 
     </script>

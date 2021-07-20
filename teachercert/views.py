@@ -69,7 +69,7 @@ def createPDA(request, recId):
                     pda_instance.update(isei_reviewed='n')
                     return redirect('myPDAdashboard', pk=pda_report.teacher.user.id)
 
-        if request.POST.get('update_summary'):  # update summary, stay on page, submit report - go to PDAdashboard
+        if request.POST.get('update_report'):  # update summary, stay on page, submit report - go to PDAdashboard
             report_form = PDAreportForm(request.POST, instance=pda_report)
             if report_form.is_valid():
                 pda_report = report_form.save()
@@ -257,6 +257,9 @@ def isei_pda_approval(request, repID=None, instID=None):
     return render(request, 'teachercert/isei_pda_approval.html', context)
 
 
+def ceu_info(request):
+    return render(request, 'teachercert/ceu_info.html')
+
 # teacher activities for user with id=pk ... some parts not finished
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'admin'])
@@ -274,8 +277,8 @@ def myPDAdashboard(request, pk):
     principal_denied_report = pda_report.filter(Q(principal_reviewed='d'))
     isei_denied_report = pda_report.filter(Q(isei_reviewed='d'))
 
-    #school years for which reports could be created
-    no_report_school_years = SchoolYear.objects.exclude(pdareport__in=pda_report)
+    #new school year if report not yet created
+    new_school_year = SchoolYear.objects.filter(Q(active_year=True), ~Q(pdareport__in=pda_report))
     #reports not reviewed by principal, and not denied by ISEI (those are in a different group)
     active_report = pda_report.filter(Q(principal_reviewed='n'),~Q(isei_reviewed = 'd')) #not reviewed by principal
     submitted_report = pda_report.filter(Q(principal_reviewed='a'), ~Q(isei_reviewed='a'))  # submitted to ISEI
@@ -298,7 +301,7 @@ def myPDAdashboard(request, pk):
     else:
         user_not_teacher = True
     context = dict(teacher=teacher,user_not_teacher=user_not_teacher, instance_filter=instance_filter,
-                   no_report_school_years=no_report_school_years, active_report=active_report,
+                   new_school_year = new_school_year, active_report=active_report,
                    submitted_report=submitted_report,
                    principal_denied_report =principal_denied_report, isei_denied_report = isei_denied_report,
                    submitted_instance = submitted_instance,
@@ -309,6 +312,7 @@ def myPDAdashboard(request, pk):
     return render(request, 'teachercert/myPDAdashboard.html', context)
 # todo create layout in myPDAdashboard template for it to look nicer
 # todo adjust template so that it would allow for the choosing of a different teacher if user_not_teacher
+
 
 # all teachers (for staff)
 @login_required(login_url='login')

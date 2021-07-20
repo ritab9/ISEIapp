@@ -15,6 +15,7 @@ class PDAType(models.Model):
     )
     category = models.CharField(max_length=1, choices=CATEGORIES, help_text="Choose a category", null=False)
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
+    max_cap = models.CharField(max_length=30, null=True, blank = True)
 
     def __str__(self):
         if self.evidence:
@@ -46,6 +47,11 @@ class PDAReport(models.Model):
     # entered by teacher at object creation
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
+
+    academic_class = models.BooleanField(default=False, blank = False)
+    university = models.CharField(max_length=50, blank = True)
+    class_name = models.CharField(max_length=50, blank = True)
+
     date_submitted = models.DateField(null=True, blank=True)
     CHOICES = (
         ('n', 'Not yet reviewed'),
