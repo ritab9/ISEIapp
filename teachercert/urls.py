@@ -11,6 +11,9 @@ urlpatterns = [
     path('myPDAdashboard/<str:pk>', views.myPDAdashboard, name='myPDAdashboard'),
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
     path('delete_pdainstance/<str:pk>/', views.deletePDAinstance, name="delete_pdainstance"),
+    path('update_academic_class/<str:pk>/', views.update_academic_class, name="update_academic_class"),
+    path('delete_academic_class/<str:pk>/', views.delete_academic_class, name="delete_academic_class"),
+
     path('ceu_info/', views.ceu_info, name="ceu_info"),
 
     # create PDA instances and reports. View submitted PDAs

@@ -12,7 +12,7 @@ from .models import *
 class PDAreportForm(ModelForm):
     class Meta:
         model = PDAReport
-        fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment', 'academic_class', 'university', 'class_name')
+        fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment',)
         widgets = {
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
         #    'date_submitted': forms.DateField(attrs={'class': 'form-controls', 'placehoder': 'Enter date'}),
@@ -37,18 +37,22 @@ class PDAInstanceForm(ModelForm):
             'amount': forms.NumberInput (attrs={'style':'width:60px' }),
         }
 
-    #def clean(self):
-    #    cleaned_data = super(PDAInstanceForm, self).clean()
-
-#        if (int(bool(self.cleaned_data['ceu']))+int(bool(self.cleaned_data['pages']))+int(bool(self.cleaned_data['pages']))) != 1:
- #            raise forms.ValidationError ('Fill in only one and only one of the three fields')
-
-  #      return cleaned_data
-
-
 
 PDAInstanceFormSet = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=1,
                                            can_delete=False)
+
+class AcademicClassForm(ModelForm):
+    class Meta:
+        model = AcademicClass
+        fields = ('university','class_name', 'date_completed', 'transcript_requested', 'transcript_received')
+        widgets = {
+            'date_completed': forms.DateInput (attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
+        }
+
+
+AcademicClassFormSet = inlineformset_factory(PDAReport, AcademicClass, form=AcademicClassForm, extra=1,
+                                           can_delete=False)
+
 
 #to be used by ISEI staff to add the approved CEUs and individual deny instances as needed
 #PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=0,
@@ -64,7 +68,6 @@ PDAInstanceFormSet = inlineformset_factory(PDAReport, PDAInstance, form=PDAInsta
 #            'pages', 'amount', 'ceu', 'file'
 #        )
 #        self.render_required_fields = True
-
 
 
 #class DocumentForm(forms.Form): #unused but keeping it just in case

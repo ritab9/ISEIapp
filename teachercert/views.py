@@ -46,6 +46,8 @@ def createPDA(request, recId):
     pda_report = PDAReport.objects.get(id=recId)
     pda_instance = PDAInstance.objects.filter(pda_report=pda_report) #list of already entered instances
     instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) # entering new activity
+    academic_class = AcademicClass.objects.filter(pda_report=pda_report) #list of already entered academic classes
+    academiclassformset = AcademicClassFormSet (queryset=AcademicClass.objects.none(), instance=pda_report) # entering new academic classes
     report_form = PDAreportForm(instance = pda_report) #form for editing current report (summary and submission)
 
     if request.method == 'POST':
@@ -54,6 +56,12 @@ def createPDA(request, recId):
             if instanceformset.is_valid():
                 instanceformset.save()
                 instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report)
+
+        if request.POST.get('add_academic_class'): #add academic clacc and stay on page
+            academiclassformset = AcademicClassFormSet(request.POST, request.FILES or None, instance=pda_report)
+            if academiclassformset.is_valid():
+                academiclassformset.save()
+                academiclassformset = AcademicClassFormSet(queryset=AcademicClass.objects.none(), instance=pda_report)
 
 
         if request.POST.get('submit_report'): #submit report - go to PDAdashboard
@@ -79,8 +87,8 @@ def createPDA(request, recId):
     #else:
     #    user_not_teacher = True
 
-    context = dict(pda_instance=pda_instance, pda_report=pda_report, report_form=report_form,
-                   instanceformset=instanceformset, )
+    context = dict(pda_instance=pda_instance, academic_class= academic_class, pda_report=pda_report,
+                   instanceformset=instanceformset, academiclassformset = academiclassformset, report_form=report_form, )
                    #helper= helper, #user_not_teacher=user_not_teacher,
     return render(request, "teachercert/create_pda.html", context)
 
@@ -125,10 +133,42 @@ def deletePDAinstance(request, pk):
     if request.method == "POST":
         pdainstance.delete()
         if is_in_group(request.user, 'teacher'):  # teacher landing page
-           return redirect('myPDAdashboard', pk=pdainstance.pda_report.teacher.user.id)
+           return redirect('create_pda', pdainstance.pda_report.id)
 
     context = {'item': pdainstance}
     return render(request, 'teachercert/delete_pdainstance.html', context)
+
+# delete academic_class (by id)
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin', 'teacher'])
+def delete_academic_class(request, pk):
+    academic_class = AcademicClass.objects.get(id=pk)
+#todo After delete redirect to previous page
+    if request.method == "POST":
+        academic_class.delete()
+        if is_in_group(request.user, 'teacher'):  # teacher landing page
+           return redirect('create_pda', academic_class.pda_report.id)
+
+    context = {'item': academic_class}
+    return render(request, 'teachercert/delete_academic_class.html', context)
+
+
+# update academic class (by id)
+@login_required(login_url='login')
+def update_academic_class(request, pk):
+    academic_class = AcademicClass.objects.get(id=pk)
+    form = AcademicClassForm(instance=academic_class)
+
+    if request.method == 'POST':
+        if request.POST.get('submit'):
+            form = AcademicClassForm(request.POST, instance=academic_class)
+            if form.is_valid():
+                form.save()
+                return redirect('create_pda', academic_class.pda_report.id)
+
+    context = dict(form=form)
+    return render(request, "teachercert/update_academic_class.html", context)
+
 
 # principal's info page about teacher certification
 @login_required(login_url='login')
@@ -185,27 +225,54 @@ def principal_pda_approval(request, recID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('approved'):
-            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None)
-            PDAInstance.objects.filter(pda_report = pda_report).update(principal_reviewed='a')
+            pda_report = PDAReport.objects.get(id=recID).update(principal_reviewed='a', principal_comment=None, updated_at=Now())
+            PDAInstance.objects.filter(pda_report = pda_report).update(principal_reviewed='a', updated_at=Now())
+            this_report = PDAReport.objects.get(id=recID)
+            email = EmailMessage(
+                'Principal Approval', 'The principal has approved your CEU submission.', 'ritab.isei.life@gmail.com', [this_report.teacher.user.email])
+            email.send()
+
 
     if request.method == 'POST':
         if request.POST.get('denied'):
-            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.POST.get('principal_comment'))
-            PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed='d',date_resubmitted = None)
+            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.POST.get('principal_comment'), updated_at=Now())
+            PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed='d',date_resubmitted = None, updated_at=Now())
+            this_report = PDAReport.objects.get(id=recID)
+            email = EmailMessage(
+                'Principal Denial', 'The principal has denied your CEU submission.', 'ritab.isei.life@gmail.com',
+                [this_report.teacher.user.email])
+            email.send()
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
             #todo not happy with this random date attachment ...
-            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='n', date_submitted = Now())
-            PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed = 'n', date_resubmitted = Now())
+            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='n', date_submitted = Now(), updated_at=Now())
+            PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed = 'n', date_resubmitted = Now(),  updated_at=Now())
+            this_report = PDAReport.objects.get(id=recID)
+            email = EmailMessage(
+                'Principal Retracted Action', 'The principal has canceled the approval/denial of your CEU submission.', 'ritab.isei.life@gmail.com',
+                [this_report.teacher.user.email])
+            email.send()
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
             PDAInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n')
+            this_activity = PDAInstance.objects.get(id=instIDID)
+            email = EmailMessage(
+                'Principal Approval', 'The principal has approved your PDA activity submission.', 'ritab.isei.life@gmail.com',
+                [this_activity.pda_report.teacher.user.email])
+            email.send()
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
             PDAInstance.objects.filter(id=instID).update(principal_reviewed='d',date_resubmitted = None, principal_comment = request.POST.get('principal_comment'))
+            this_activity = PDAInstance.objects.get(id=instID)
+            email = EmailMessage(
+                'Principal Denial', 'The principal has denied your PDA activity submission.',
+                'ritab.isei.life@gmail.com',
+                [this_activity.pda_report.teacher.user.email])
+            email.send()
+
 
     context = dict(teachers=teachers, pda_report_notreviewed=pda_report_notreviewed, pda_report_approved=pda_report_approved, pda_report_denied=pda_report_denied,
                    pda_instance_notreviewed = pda_instance_notreviewed)
@@ -295,6 +362,7 @@ def myPDAdashboard(request, pk):
                                                       principal_reviewed='a'))
     approved_instance = pda_instance.filter(isei_reviewed='a')
 
+    academic_class = AcademicClass.objects.filter(pda_report__in=pda_report)
 
     if is_in_group(request.user, 'teacher'):
         user_not_teacher = False
@@ -307,7 +375,8 @@ def myPDAdashboard(request, pk):
                    submitted_instance = submitted_instance,
                    isei_denied_independent_instance = isei_denied_independent_instance,
                    active_independent_instance = active_independent_instance,
-                   approved_report = approved_report, approved_instance = approved_instance)
+                   approved_report = approved_report, approved_instance = approved_instance,
+                   academic_class=academic_class)
 
     return render(request, 'teachercert/myPDAdashboard.html', context)
 # todo create layout in myPDAdashboard template for it to look nicer

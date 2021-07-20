@@ -18,12 +18,16 @@ class PDAType(admin.ModelAdmin):
 class PDAInstanceInline(admin.StackedInline):
     model = PDAInstance
     can_delete = False
-    extra = 1
+    extra = 0
+
+class AcademicClassInLine(admin.StackedInline):
+    model = AcademicClass
+    extra = 0
 
 
 @admin.register(PDAReport)
 class PDAReport(admin.ModelAdmin):
-    inlines = [PDAInstanceInline]
+    inlines = [PDAInstanceInline, AcademicClassInLine]
     list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed', 'isei_reviewed', 'updated_at')
     list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed')
     list_display_links = ('teacher','school_year')

@@ -12,15 +12,43 @@
     {% endif %}
 
     {% load static %}
+    <div class="row">
+    <div class="col-sm">
+        <!-- Info card -->
+    <div class="card card-body">
+        <h6> PROFESSIONAL DEVELOPMENT  - Continuing Education Credit (CEU)</h6>
+        <span style = "font-size: 80%">
+            <p></p>
+            <p>Reports are to be submitted by August 15 each school year.</p>
+        </span>
+        <div><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a></div>
+    </div></div>
 
-<div class="card card-body">
-    <h6> PROFESSIONAL DEVELOPMENT  - Continuing Education Credit (CEU)</h6>
-    <span style = "font-size: 80%">
-        <p></p>
-        <p>Reports are to be submitted by August 15 each school year.</p>
-    </span>
-    <div><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a></div>
-</div><br>
+    <!-- list of submitted academic classes-->
+        {% if academic_class %}
+        <div class="col-sm">
+            <div class = "card card-body">
+               <h6>Academic classes</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th>
+                    </tr>
+                {% for c in academic_class %}
+                    <tr> <td>{{ c.university }}</td><td>{{c.class_name}}</td><td>{{c.date_completed}}</td>
+                        {% if c.transcript_received %} <td> Received </td>
+                        {% elif c.transcript_requested %} <td> Requested </td>
+                             {% else %} <td> Not requested <a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_academic_class' c.id %}">Update</a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <br>
 
 <!-- filter -->
     <div class="row">
@@ -178,9 +206,6 @@
 </div>
 {% endif %}
 
-
-
-
     <br>
 <!-- new activity table -->
 <div class="card card-body">
@@ -242,7 +267,7 @@
 
     <!-- table for ISEI submitted reports + independent instances-->
 
-<!-- submitted to ISEI -->
+<!-- submitted to ISEI  Activities-->
 {% if submitted_instance %}<br>
 <div class="card card-body">
     <h6> ISEI Submitted Activities - Approval Pending </h6> <br>
@@ -266,7 +291,7 @@
 </div>
 {% endif %}
 
-
+<!-- ISEI approved activities -->
 {% if approved_instance %}<br>
 <div class="card card-body">
     <h6> Approved Activities </h6> <br>
@@ -290,19 +315,4 @@
 </div>
 {% endif %}
 
-    <!-- number of activities
-    <div class="row">
-        <div class="col">
-		<div class="col-md-5">
-			<div class="card text-center text-black  mb-3" id="orders-pending">
-			  	<div class="card-header">
-			  		<h8 class="card-title">Total Activities</h8>
-			  	</div>
-			  	<div class="card-body">
-			    	<h8 class="card-title">{{count}}</h8>
-			  	</div>
-			</div>
-		</div>
-	</div>
-    </div> -->
 {% endblock %}

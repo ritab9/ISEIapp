@@ -1,0 +1,31 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}	
+{% if user_not_teacher %}
+    {{ teacher }}
+{% endif %}	
+<br>
+    {% load static %}
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+            <form action=" " method="POST" id="update_activity" enctype="multipart/form-data">
+				{% csrf_token %}
+				<p id="teacher">{{form.teacher}}</p>
+                <div class = "row">
+                    <div class="col-sm-2">{{form.university|as_crispy_field}}</div>
+                    <div class="col-sm-2">{{form.class_name|as_crispy_field}}</div>
+                    <div class="col-sm-2">{{form.date_completed|as_crispy_field}}</div>
+                    <div class="col-sm-2">{{form.transcript_requested|as_crispy_field}}</div>
+                    <div class="col-sm-2"><input type="submit" value="Submit" name="submit" ></div>
+                </div>
+
+			</form>
+		</div>
+	</div>
+</div>
+    <script>
+        document.getElementById("teacher").style.display = "none";
+    </script>
+
+{% endblock %}

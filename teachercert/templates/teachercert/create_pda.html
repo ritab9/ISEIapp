@@ -12,8 +12,10 @@
 {{ pda_report.school_year }}
 
 <!-- Table of added activities-->
+{% if pda_instance %}
 <div class="row">
     <div class="card card-body">
+    <h6> Added Activities</h6>
         <table class="table table-sm">
             <tr>
                 <th>Category <br> <span style="font-size: 80%">Evidence</span></th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Supporting Docs</th>
@@ -32,13 +34,44 @@
         </table>
     </div>
 </div>
-
 <br>
+{% endif %}
+
+<!-- Table of added academic classes-->
+{% if academic_class %}
+<div class="row">
+    <div class="card card-body">
+        <h6> Added Academic Classes</h6>
+        <table class="table table-sm">
+            <tr>
+                <th>University</th>
+                <th>Class</th>
+                <th>Date Completed</th>
+                <th>Transcript Requested</th>
+                <th>Update</th><th>Remove</th>
+            </tr>
+            {% for a in academic_class %}
+                <td>{{a.university}}</td>
+                <td>{{a.class_name}}</td>
+                <td>{{a.date_completed}} </td>
+                {% if a.transcript_requested %} <td>Yes</td>
+                {% else %} <td>Not yet</td> {% endif %}
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_academic_class' a.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_academic_class' a.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
+<br>
+
 
 <form action=" " method="POST" id="add_activity" enctype="multipart/form-data">
     <!-- enter new activity-->
-    <div class="card card-body">
-        <b> Enter new activity:</b>
+    <input class="btn btn-sm btn-ISEIblue3" id="actaddbtn"  value ="Hide activity entry">
+    <div class="card card-body" id="activity_card_body">
+        <h6> Enter new activity:</h6>
         {% csrf_token %}
         <div class="row">
         {{ instanceformset.management_form }}
@@ -52,17 +85,38 @@
                          {{f.units|as_crispy_field }} &nbsp; &nbsp;
                     </div>
                 </div>
-
                 <div class = "col-sm" style = "margin-top: 15px"><br>
-                    Supporting Documentation: {{f.file}} <br>
+                    Supporting Documentation: {{f.file}} <br><br>
                      <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
                     {{ form.errors }}
                 </div>
             {% endfor %}
         </div>
     </div>
+
+        <br><p></p>
+
+<!-- enter new academic class -->
+<input class="btn btn-sm btn-ISEIblue3" id="classaddbtn"  value ="Hide academic class entry">
+<div class="card card-body" id="class_card_body">
+        <h6> Enter new academic class:</h6>
+        {% csrf_token %}
+        <div class="row">
+        {{ academiclassformset.management_form }}
+            {% for f in academiclassformset %}
+                <div class="col-sm">
+                    <div class="row">{{ f.university|as_crispy_field}} &nbsp;
+                         {{ f.class_name|as_crispy_field}}&nbsp; &nbsp; &nbsp; &nbsp;
+                         {{f.date_completed|as_crispy_field}} &nbsp;</div>
+                </div>
+                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Class" name = "add_academic_class" style = "margin-top: 20px; margin-right: 30px">
+                {{ form.errors }}
+            {% endfor %}
+        </div>
     </div>
-        <br>
+        <br><p></p>
+
+
 
     <div class="card card-body">
         <div class="row">
@@ -74,9 +128,9 @@
                <span style = "font-size:80%">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </span>
                     {{ report_form.summary}}
                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right">
+           </div>
 
-            </div>
-
+            {% if pda_report.principal_comment or pda_report.isei_comment %}
              <div class ="col-sm-4">
             {%  if pda_report.principal_comment %}
                 <h6 style = "color:red">Principal denial comment:</h6>
@@ -89,22 +143,11 @@
                 {{ report_form.isei_comment }}
             {% endif %}
             </div>
-            <div class="col-sm-3" ><br>
-                <div class="card card-body" style="margin-right: 50px; margin-left: 50px; margin-top: 0px">
-                <h6> Academic Classes</h6>
-                    <p style="font-size: 80%">{{ report_form.academic_class}} Check if you have taken any academic classes towards certification.</p>
-                <div id = "class_info">
-                    {{ report_form.university |as_crispy_field  }}
-                    {{ report_form.class_name|as_crispy_field }}
-                </div>
-                </div>
-            </div>
-            </div>
-            <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right; width: 200px">
+                {% else %} <div class="col-sm-1"></div>
+            {% endif %}
 
-        </div>
-            <div class="col-sm-3" ><br>
-                <div class="card card-body" style="margin-right: 0px; margin-left: 0px; margin-top: 0px">
+                <div class="col-sm-3" ><br>
+                <div class="card card-body" style=" margin-top: 50px">
                     <br><br>
                     <!-- submit report-->
                     <p id="school_year2">{{report_form.school_year}}</p>
@@ -114,30 +157,37 @@
                     {{ report_form.non_field_errors }}
                 </div>
             </div>
-
+            </div>
+        </div>
     </form>
 
 
     <script>
         document.getElementById("school_year").style.display = "none";
         document.getElementById("school_year2").style.display = "none";
-        $(document).ready(function() {
-            if ($("#id_academic_class").is(':checked')) {
-                 $("#class_info").show();
-            } else {
-                  $("#class_info").hide();
-           }
+
+        //show and hide activity entry card
+        $('#actaddbtn').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show activity entry") {
+                     $("#activity_card_body").show();
+                     $(this).attr('value',"Hide activity entry"); }
+                 if(value == "Hide activity entry") {
+                     $("#activity_card_body").hide();
+                     $(this).attr('value',"Show activity entry");}
         });
 
-
-        $("#id_academic_class").change(function() {
-            if ($("#id_academic_class").is(':checked')) {
-                 $("#class_info").show();
-            } else {
-                  $("#class_info").hide();
-           }
-
+        //show and hide academic class entry card
+        $('#classaddbtn').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show academic class entry") {
+                     $("#class_card_body").show();
+                     $(this).attr('value',"Hide academic class entry"); }
+                 if(value == "Hide academic class entry") {
+                     $("#class_card_body").hide();
+                     $(this).attr('value',"Show academic class entry");}
         });
+
 
     </script>
 

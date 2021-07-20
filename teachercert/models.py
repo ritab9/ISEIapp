@@ -17,6 +17,9 @@ class PDAType(models.Model):
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
     max_cap = models.CharField(max_length=30, null=True, blank = True)
 
+    class Meta:
+        ordering =('category',)
+
     def __str__(self):
         if self.evidence:
             ev = self.evidence
@@ -47,10 +50,6 @@ class PDAReport(models.Model):
     # entered by teacher at object creation
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
-
-    academic_class = models.BooleanField(default=False, blank = False)
-    university = models.CharField(max_length=50, blank = True)
-    class_name = models.CharField(max_length=50, blank = True)
 
     date_submitted = models.DateField(null=True, blank=True)
     CHOICES = (
@@ -131,3 +130,15 @@ class PDAInstance(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class AcademicClass(models.Model):
+    pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
+    university = models.CharField(max_length=50, blank=False)
+    class_name = models.CharField(max_length=50, blank=False)
+    date_completed = models.DateField (blank=False)
+    transcript_requested = models.BooleanField(default=False)
+    transcript_received = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.class_name
