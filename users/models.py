@@ -40,6 +40,13 @@ class Teacher(models.Model):
     }
     current_certification = models.CharField(max_length=1, choices=sorted(CERTIFICATION_TYPES), null=True, blank=True)
 
+    def name(self):
+        if self.middle_name:
+            name = self.first_name +" " + self.middle_name+ " "+ self.last_name
+        else:
+            name = self.first_name + " " + self.last_name
+        return name
+
     def __str__(self):
         return self.first_name + " " + self.last_name
 

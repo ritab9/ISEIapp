@@ -6,7 +6,6 @@ from . import views
 
 urlpatterns = [
 
-
     # teacher urls
     path('myPDAdashboard/<str:pk>', views.myPDAdashboard, name='myPDAdashboard'),
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
@@ -29,6 +28,8 @@ urlpatterns = [
 
     # isei staff urls
     path('isei_teachercert/', views.isei_teachercert, name='isei_teachercert'),
+    path('isei_PDAreports/', views.isei_PDAreports, name='isei_PDAreports'),
+
     path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
     path('isei_pda_approval/<str:repID>', views.isei_pda_approval, name='isei_pda_approval'),
     path('isei_pda_approval/<str:repID>/<str:instID>', views.isei_pda_approval, name='isei_pda_approval'),

@@ -1,0 +1,148 @@
+{%  extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- filter -->
+    <div class="row">
+        <div class="card card-body">
+            <h6>Filter:</h6>
+            <form method="get">
+                <div class="row">
+                <div class="col-sm">
+                    {{ pda_report_filter.form.school.label_tag }} {{ pda_report_filter.form.school }} <br>
+                    {{ pda_report_filter.form.school_year.label_tag }} {{ pda_report_filter.form.school_year }} <br>
+                    <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                    <a href="{%  url 'isei_PDAreports' %}">Clear all filters</a></div>
+                <div class="col-sm">
+                    {{ pda_report_filter.form.first_name.label_tag}}{{ pda_report_filter.form.first_name}}<br>
+                    {{ pda_report_filter.form.last_name.label_tag}}{{ pda_report_filter.form.last_name}} </div>
+                <div class="col-sm" style = " font-size: 80%">
+                    {{ pda_report_filter.form.start_created.label_tag }} {{ pda_report_filter.form.start_created }}<br>
+                    {{ pda_report_filter.form.end_created.label_tag }} {{ pda_report_filter.form.end_created }}</div>
+                <div class="col-sm" style = " font-size: 80%">
+                    {{ pda_report_filter.form.start_updated.label_tag }} {{ pda_report_filter.form.start_updated }}<br>
+                    {{ pda_report_filter.form.end_updated.label_tag }} {{ pda_report_filter.form.end_updated }}</div>
+                <div class ="col-sm">
+                    {{ pda_report_filter.form.isei_status.label_tag }}{{ pda_report_filter.form.isei_status }} <br>
+                    {{ pda_report_filter.form.principal_status.label_tag }}{{ pda_report_filter.form.principal_status }}</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card-body">
+        <table class="table table-dark" >
+              <thead>
+                <tr>
+                    <th scope="col">School</th><th scope="col">Name</th>
+                    <th scope="col">Certification</th>
+                    <th> School Year </th>
+                    <th scope="col">PDA Report Status</th>
+                    <th>Last activity</th>
+                </tr>
+              </thead>
+            <tbody>
+            {% for p in pda_reports %}
+                <tr>
+                    <td> {{ p.teacher.school }}</td> <td> {{ p.teacher.name}}</td>
+                    <td> {{ p.teacher.get_current_certification_display }}</td>
+                    <td>{{ p.school_year}}</td>
+                    <td>
+                            {% if p.isei_reviewed == 'a' %}
+                                {{ p.approved_ceu }} CEUs approved
+                            {% elif p.principal_reviewed == 'a' %}
+                                ISEI approval pending
+                            {% elif p.date_submitted %}
+                                Principal Approval Pending
+                            {% elif p.isei_reviewed == 'd'%}
+                                ISEI denied. Not yet resubmitted.
+                            {% elif p.principal_reviewed == 'd'%}
+                                Principal denied. Not yet resubmitted.
+                            {% else %}
+                                Not submitted
+                            {% endif %}
+                    </td>
+                    <td>
+                        {% if p.reviewed_at %}
+                            {% if p.updated_at > p.reviewed_at %}
+                                <span style="font-size: 80%"> Updated: {{ p.updated_at }} </span>
+                            {% else %}
+                                <span style="font-size: 80%"> Reviewed: {{ p.reviewed_at }} </span>
+                            {% endif %}
+                            {% else %}
+                                 <span style="font-size: 80%"> Updated: {{ p.updated_at }} </span>
+                        {% endif %}
+                    </td>
+                        <td> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue2" value ="Show Activities" id={{ p.id }}> </td>
+                </tr>
+
+                <tr>
+                    <td colspan="5">
+                        <div class="card card-body" id="details{{ p.id }}" style="display: none;">
+                            <table class="table table-sm table-light">
+                                <tr>
+                                    <th>Date Completed</th><th>Description</th><th>Amount/Approved CEUs</th>
+                                    <th>Supporting documentation</th><th>Last Activity</th>
+                                </tr>
+                                {% for i in p.pdainstance_set.all %}
+                                    <tr>
+                                        <td>{{i.date_completed}} </td><td>{{i.description}} </td>
+                                        <td>{{i.amount}} {{i.get_units_display}}
+                                            {% if i.approved_ceu %}
+                                            {{ i.approved_ceu }}
+                                            {% endif %}
+                                        </td>
+                                        <td><a href={% get_media_prefix %}{{ i.file }}>{{ i.file }}</td>
+                                        <td>
+                                            {% if i.reviewed_at %}
+                                            {% if i.updated_at > i.reviewed_at %}
+                                                <span style="font-size: 80%"> Updated: {{ i.updated_at }} </span>
+                                            {% else %}
+                                                <span style="font-size: 80%"> Reviewed: {{ i.reviewed_at }} </span>
+                                            {% endif %}
+                                            {% else %}
+                                                 <span style="font-size: 80%"> Updated: {{ i.updated_at }} </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="5"> <b>Summary:</b> {{ p.summary }}</td>
+                                </tr>
+                                {% if p.principal_comment %}
+                                    <tr>
+                                        <td colspan="5"> <b>Principal Comment:</b> {{ p.principal_comment }}</td>
+                                    </tr>
+                                {% endif %}
+                                {% if p.isei_comment %}
+                                    <tr>
+                                        <td colspan="5"> <b>Principal Comment:</b> {{ p.isei_comment }}</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+     $('.detailbtn').on("click", function() {
+                 var value = $(this).attr('value');
+                 var id=$(this).attr('id');
+                 if(value == "Show Activities") {
+                     $("#details"+id).show();
+                     $(this).attr('value',"Hide Activities"); }
+                 if(value == "Hide Activities") {
+                     $("#details"+id).hide();
+                     $(this).attr('value',"Show Activities");}
+     });
+
+</script>
+
+{% endblock  %}

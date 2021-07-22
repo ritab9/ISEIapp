@@ -3,7 +3,8 @@
 
 {% block content %}
 {% if pda_report_approved or pda_report_denied %}
-    <p style="font-size: 80%">* Canceling a submission will reset submission date to current date.</p>
+    <!-- <p style="font-size: 80%">* Canceling a submission will reset submission date to current date.</p>
+	-->
 	<div class="row">
         {% if pda_report_approved %}
         <div class="col-sm">
@@ -19,7 +20,7 @@
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}} </td>
                     <td>{{ p.date_submitted }} </td>
-                    <td>{{ p.updated_at }} </td>
+                    <td>{{ p.reviewed_at }} </td>
                     <td>
                          {% if p.isei_reviewed == 'n' %}
                         <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
@@ -52,7 +53,7 @@
                 <tr>
                     <td> {{p.teacher}} </span> </td>
                     <td> {{p.school_year}} </span></td>
-                    <td> {{ p.updated_at }} </span></td>
+                    <td> {{ p.reviewed_at }} </span></td>
                     <td>
                         <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
                             {% csrf_token %}
@@ -81,6 +82,7 @@
                 <tr>
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}}</td>
+                    <td> Date Created: {{ p.created_at }}</td>
                     <td>Date Submitted: {{ p.date_submitted }}</td>
                 </tr>
                 <tr>
@@ -125,7 +127,7 @@
                     <tr><td colspan="4">
                     <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
                             {% csrf_token %}
-                        <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
+                        <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required="True">
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denied" >
                         </form>
                     </td></tr>

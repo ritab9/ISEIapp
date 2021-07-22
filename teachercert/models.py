@@ -4,6 +4,21 @@ from django.core.validators import MinLengthValidator
 import datetime
 # Create your models here.
 
+class SchoolYear(models.Model):
+    name = models.CharField(max_length=9, unique=True)
+    active_year = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ('-name',)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        super(SchoolYear, self).save(*args, **kwargs)
+        if self.active_year:
+            all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
+
 class PDAType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
     evidence = models.CharField(max_length=50, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
@@ -28,30 +43,18 @@ class PDAType(models.Model):
         return self.get_category_display() + ' - ' + self.description + '(' + ev + ')'
 
 
-class SchoolYear(models.Model):
-    name = models.CharField(max_length=9, unique=True)
-    active_year = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ('-name',)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        super(SchoolYear, self).save(*args, **kwargs)
-        if self.active_year:
-            all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
-
-
 class PDAReport(models.Model):
+    #timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
     created_at = models.DateField(auto_now_add=True, blank = True)
     updated_at = models.DateField(auto_now=True, blank = True)
+    reviewed_at = models.DateField(blank=True, null=True)
+
     # entered by teacher at object creation
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
 
     date_submitted = models.DateField(null=True, blank=True)
+
     CHOICES = (
         ('n', 'Not yet reviewed'),
         ('a', 'Approved'),
@@ -80,8 +83,12 @@ class PDAReport(models.Model):
 
 class PDAInstance(models.Model):
     # report contains teacher, school-year and summary
-    created_at = models.DateTimeField(auto_now_add=True, blank = True)
-    updated_at = models.DateTimeField(auto_now=True, blank = True)
+
+    # timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
+    created_at = models.DateField(auto_now_add=True, blank = True)
+    updated_at = models.DateField(auto_now=True, blank = True)
+    reviewed_at = models.DateField(blank=True, null=True)
+
 
     pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
     pda_type = models.ForeignKey(PDAType, on_delete=models.PROTECT, null=False, blank=False)
@@ -126,7 +133,7 @@ class PDAInstance(models.Model):
         elif self.units == 'h':
             return round(self.amount / 10, 2)
         elif self.units == 'd':
-            return ('')
+            return round(self.amount / 2, 2)
 
     def __str__(self):
         return self.description
@@ -142,3 +149,11 @@ class AcademicClass(models.Model):
 
     def __str__(self):
         return self.class_name
+
+class EmailMessages(models.Model):
+    name = models.CharField(max_length=50)
+    message = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
