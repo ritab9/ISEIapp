@@ -11,22 +11,35 @@
 
 {{ pda_report.school_year }}
 
+
 <!-- Table of added activities-->
 {% if pda_instance %}
 <div class="row">
     <div class="card card-body">
     <h6> Added Activities</h6>
+
+    {% if pda_report.reading_ceu > 3 %}
+        <div class="span80red" >
+                 Your submitted reading CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be recorded for those activities.
+        </div>
+    {% endif %}
+    {% if pda_report.travel_ceu > 3 %}
+        <div class="span80red">
+                 Your submitted travel CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be recorded for those activities.
+        </div>
+    {% endif %}
         <table class="table table-sm">
             <tr>
-                <th>Category <br> <span style="font-size: 80%">Evidence</span></th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Supporting Docs</th>
+                <th>Category</th><th><div class="span80"> Activity</div></th><th> <div class="span80blue">Evidence</span></th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Supporting Docs</th>
                 <th>Update</th><th>Remove</th>
             </tr>
             {% for p in pda_instance %}
-                <td>{{p.pda_type.get_category_display}}<br>
-                    <span style="font-size: 80%">{{ p.pda_type.evidence|default_if_none:''}}</span></td>
+                <td>{{p.pda_type.get_category_display}}</td>
+                <td><div class="span80">{{ p.pda_type.description }}</div></td>
+                <td>    <div class="span80blue">{{ p.pda_type.evidence|default_if_none:''}}</span></td>
                 <td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}</td>
-                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
+                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</a></td>
                 <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
                 <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
             </tr>
@@ -100,6 +113,7 @@
 <input class="btn btn-sm btn-ISEIblue3" id="classaddbtn"  value ="Hide academic class entry">
 <div class="card card-body" id="class_card_body">
         <h6> Enter new academic class:</h6>
+    <p> *If you have not yet done so, please request that transcript(s) be sent to jodyv@isei.life</p>
         {% csrf_token %}
         <div class="row">
         {{ academiclassformset.management_form }}
@@ -107,7 +121,9 @@
                 <div class="col-sm">
                     <div class="row">{{ f.university|as_crispy_field}} &nbsp;
                          {{ f.class_name|as_crispy_field}}&nbsp; &nbsp; &nbsp; &nbsp;
-                         {{f.date_completed|as_crispy_field}} &nbsp;</div>
+                         {{f.date_completed|as_crispy_field}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {{ f.transcript_requested|as_crispy_field }}
+                    </div>
                 </div>
                 <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Class" name = "add_academic_class" style = "margin-top: 20px; margin-right: 30px">
                 {{ form.errors }}
@@ -125,7 +141,7 @@
                <p id="school_year">{{report_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
                {% csrf_token %}
                <h6>Summary:</h6>
-               <span style = "font-size:80%">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </span>
+               <div class="span80">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </div>
                     {{ report_form.summary}}
                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right">
            </div>
@@ -134,12 +150,12 @@
              <div class ="col-sm-4">
             {%  if pda_report.principal_comment %}
                 <h6 style = "color:red">Principal denial comment:</h6>
-                <span style = "font-size:80%">*If you would like to add a response to the principal, you can do so in the same window. Please keep the Principal's comment as well. </span>
+                <div class="span80">*If you would like to add a response to the principal, you can do so in the same window. Please keep the Principal's comment as well. </div>
                 {{ report_form.principal_comment }}
             {% endif %}
             {%  if pda_report.isei_comment %}
                 <h6 style = "color:red">ISEI denial comment:</h6>
-                <span style = "font-size:80%">*If you would like to add a response to ISEI, you can do so in the same window. Please keep ISEI's comment as well. </span>
+                <div class="span80">*If you would like to add a response to ISEI, you can do so in the same window. Please keep ISEI's comment as well. </div>
                 {{ report_form.isei_comment }}
             {% endif %}
             </div>

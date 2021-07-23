@@ -26,9 +26,9 @@
 
     <!-- list of submitted academic classes-->
         {% if academic_class %}
-        <div class="col-sm">
-            <div class = "card card-body">
-               <h6>Academic classes</h6>
+        <div class="col-sm" >
+            <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show Academic Classes">
+            <div class = "card card-body" id="details" style="display: none;">
                 <table class="table table-sm">
                     <tr>
                         <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th>
@@ -84,7 +84,7 @@
                         <tr>
                             <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                             <td>{{p.amount}} {{p.get_units_display}} </td>
-                            <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
+                            <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td>
                             <td>{{ p.pda_report.updated_at }}</td>
                         </tr>
                     {% endfor %}
@@ -119,7 +119,7 @@
                 <tr>
                     <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.amount}} {{p.get_units_display}}</td>
-                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td><td>{{ p.pda_report.updated_at }}</td>
+                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td><td>{{ p.pda_report.updated_at }}</td>
                 </tr>
             {% endfor %}
         </table>
@@ -157,7 +157,7 @@
             <tr>
                 <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}} </td>
-                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</a></td>
+                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</a></td>
                 <td>{{ p.updated_at }}</td>
                 <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
                 <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
@@ -282,9 +282,9 @@
                 <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td>
                 <td>{{p.pda_type.get_category_display}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}</td>
-                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.file }}</td>
+                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td>
                 <td>{{p.pda_report.date_submitted}}</td>
-                <td>{{ p.updated_at }}</td>
+                <td>{{ p.pda_report.reviewed_at }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -308,11 +308,25 @@
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
-                <td>{{p.approved_ceu}} </td><td>{{ p.updated_at }}</td>
+                <td>{{p.approved_ceu}} </td><td>{{ p.reviewed_at }}</td>
             </tr>
         {% endfor %}
     </table>
 </div>
 {% endif %}
+
+    <script>
+
+     $('.detailbtn').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show Academic Classes") {
+                     $("#details").show();
+                     $(this).attr('value',"Hide Academic Classes"); }
+                 if(value == "Hide Academic Classes") {
+                     $("#details").hide();
+                     $(this).attr('value',"Show Academic Classes");}
+     });
+
+    </script>
 
 {% endblock %}

@@ -37,7 +37,8 @@ def loginpage(request):
         if user is not None:
             login(request, user)
             if is_in_group(request.user, 'principal'):
-                return redirect('principal_teachercert')
+                #return redirect('principal_teachercert')
+                return redirect('PDAreports')
                 #return redirect('principal_dashboard')
             else:
                 if is_in_group(request.user, 'teacher'):
@@ -47,7 +48,7 @@ def loginpage(request):
                         #return redirect('teacher_dashboard') #because dashboard is not yet done
                         return redirect('myPDAdashboard', user.id)
                 elif is_in_group(request.user, 'staff'):
-                    return redirect('isei_PDAreports')
+                    return redirect('PDAreports')
                     #return redirect('isei_teachercert')
                     #return redirect('staff_dashboard')
                 else:

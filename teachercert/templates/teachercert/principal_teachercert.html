@@ -3,22 +3,24 @@
 
 {% block content %}
 
-<!-- filter -->
+    Under construction
+
+<!-- filter --
     <div class="row">
         <div class="card card-body">
             <h6>Filter:</h6>
             <form method="get">
-                    {{ teachers_filter.form.first_name.label_tag }} {{ teachers_filter.form.first_name }}
-                    {{ teachers_filter.form.last_name.label_tag }} {{ teachers_filter.form.last_name }}
+                    { teachers_filter.form.first_name.label_tag }} { teachers_filter.form.first_name }}
+                    { teachers_filter.form.last_name.label_tag }} { teachers_filter.form.last_name }}
                 <br>
                 <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-                <a href="{%  url 'principal_teachercert' %}">Clear all filters</a>
+                <a href="%  url 'principal_teachercert' %}">Clear all filters</a>
             </form>
         </div>
     </div>
 
 
- {% include 'teachercert/teachers_table.html' %}
+ % include 'teachercert/teachers_table.html' %}
 
-
+--->
 {% endblock  %}

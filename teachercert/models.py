@@ -2,6 +2,7 @@ from django.db import models
 from users.models import Teacher
 from django.core.validators import MinLengthValidator
 import datetime
+import os
 # Create your models here.
 
 class SchoolYear(models.Model):
@@ -80,6 +81,19 @@ class PDAReport(models.Model):
                 approved_ceu=approved_ceu+i.approved_ceu
         return approved_ceu
 
+    def reading_ceu(self):
+        reading_ceu = 0
+        for i in self.pdainstance_set.all():
+            if 'Reading' in i.pda_type.description:
+                reading_ceu = reading_ceu+ i.suggested_ceu
+        return round(reading_ceu,2)
+
+    def travel_ceu(self):
+        travel_ceu = 0
+        for i in self.pdainstance_set.all():
+            if 'Travel' in i.pda_type.description:
+                travel_ceu = travel_ceu+ i.suggested_ceu
+        return round(travel_ceu,2)
 
 class PDAInstance(models.Model):
     # report contains teacher, school-year and summary
@@ -134,6 +148,9 @@ class PDAInstance(models.Model):
             return round(self.amount / 10, 2)
         elif self.units == 'd':
             return round(self.amount / 2, 2)
+
+    def filename(self):
+        return os.path.basename(self.file.name)
 
     def __str__(self):
         return self.description

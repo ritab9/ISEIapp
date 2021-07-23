@@ -5,6 +5,19 @@
 .approvebtn .btn{}
 .denybtn .btn{}
 
+.span80{
+    font-size: 80%;
+}
+
+.span80red {
+    color: darkred;
+    font-size: 80%;
+}
+
+.span80blue {
+    color: #053A64; /*ISEI blue*/
+    font-size: 80%;
+}
 
 textarea {
     width: 100%;

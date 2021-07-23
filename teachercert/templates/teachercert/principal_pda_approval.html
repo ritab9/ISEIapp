@@ -77,7 +77,7 @@
         <div class="card-body">
             <b> Review and approve teacher activities: </b>
             <table class="table table-sm table-light">
-              <tbody>
+                <thead class="table-dark">
                 {% for p in pda_report_notreviewed %}
                 <tr>
                     <td>{{p.teacher}} </td>
@@ -85,9 +85,28 @@
                     <td> Date Created: {{ p.created_at }}</td>
                     <td>Date Submitted: {{ p.date_submitted }}</td>
                 </tr>
+                    </thead>
+                <tbody>
+                    {% if p.academicclass_set.all %}
+                    <tr>
+                        <table class="table table-sm table-light">
+                            <tr>
+                                <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th>
+                            </tr>
+                            {% for c in p.academicclass_set.all %}
+                            <tr> <td>{{ c.university }}</td><td>{{c.class_name}}</td><td>{{c.date_completed}}</td>
+                                 {% if c.transcript_received %} <td> Received </td>
+                                 {% elif c.transcript_requested %} <td> Requested </td>
+                                 {% else %} <td> Not requested </td>
+                                 {% endif %}
+                             </tr>
+                            {% endfor %}
+                        </table>
+                    </tr>
+                    {% endif %}
                 <tr>
                   <td colspan="4">
-                    <table class="table mb-0 table-hover">
+                    <table class="table mb-0 table-light">
                      <thead class="table-light">
                         <th>Date Completed</th>
                         <th>Type</th>

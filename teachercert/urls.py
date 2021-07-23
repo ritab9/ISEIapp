@@ -26,9 +26,11 @@ urlpatterns = [
     path('principal_pda_approval/<str:recID>', views.principal_pda_approval, name='principal_pda_approval'),
     path('principal_pda_approval/<str:recID>/<str:instID>', views.principal_pda_approval, name='principal_pda_approval'),
 
+    # isei staff and principal urls
+    path('PDAreports/', views.PDAreports, name='PDAreports'),
+
     # isei staff urls
     path('isei_teachercert/', views.isei_teachercert, name='isei_teachercert'),
-    path('isei_PDAreports/', views.isei_PDAreports, name='isei_PDAreports'),
 
     path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
     path('isei_pda_approval/<str:repID>', views.isei_pda_approval, name='isei_pda_approval'),

@@ -105,7 +105,17 @@
                     <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Enable submission"  id="enablebtn{{ p.id }}">
                     </div>
                 </td></tr> -->
-
+                <tr><td>{% if p.reading_ceu > 3 %}
+                    <div style="color:red" >
+                             The submitted reading CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be approved for those activities.
+                    </div>
+                {% endif %}
+                {% if p.travel_ceu > 3 %}
+                    <div style="color:red">
+                             The submitted travel CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be approved for those activities.
+                    </div>
+                {% endif %}
+                </td></tr>
                 <tr>
                   <td colspan="4">
                     <div class="approvaltable">
