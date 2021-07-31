@@ -237,7 +237,7 @@ def principal_pda_approval(request, recID=None, instID=None):
             #email the principal and ISEI about the approval
             #Todo workon the email messages
             email = EmailMessage(
-                'Principal Approval', EmailMessages.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com', [this_report.teacher.user.email])
+                'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com', [this_report.teacher.user.email])
             email.send()
             email = EmailMessage(
                 'Principal Approval',
@@ -253,7 +253,7 @@ def principal_pda_approval(request, recID=None, instID=None):
             PDAInstance.objects.filter(pda_report=this_report).update(principal_reviewed='d',date_resubmitted = None, reviewed_at=Now())
             #Todo work on the email messages
             email = EmailMessage(
-                'Principal Denial', EmailMessages.objects.get(name="PrincipalDeniedToTeacher").message, 'ritab.isei.life@gmail.com',
+                'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message, 'ritab.isei.life@gmail.com',
                 [this_report.teacher.user.email])
             email.send()
 
@@ -275,7 +275,7 @@ def principal_pda_approval(request, recID=None, instID=None):
             this_activity = PDAInstance.objects.get(id=instID)
             # Todo work on the email messages
             email = EmailMessage(
-                'Principal Approval', EmailMessages.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com',
+                'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com',
                 [this_activity.pda_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
             email.send()
 
@@ -285,7 +285,7 @@ def principal_pda_approval(request, recID=None, instID=None):
             this_activity = PDAInstance.objects.get(id=instID)
             # Todo work on the email messages
             email = EmailMessage(
-                'Principal Denial', EmailMessages.objects.get(name="PrincipalDeniedToTeacher").message,
+                'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message,
                 'ritab.isei.life@gmail.com',
                 [this_activity.pda_report.teacher.user.email])
             email.send()
@@ -328,7 +328,7 @@ def isei_pda_approval(request, repID=None, instID=None):
                                                         principal_reviewed = 'n', date_resubmitted = None, reviewed_at=Now())
            this_activity = PDAInstance.objects.get(id=instIDID)
            #email = EmailMessage(
-           #    'ISEI Denial', EmailMessages.objects.get(name="ISEIDeniedToTeacher").message,
+           #    'ISEI Denial', EmailMessage.objects.get(name="ISEIDeniedToTeacher").message,
            #    'ritab.isei.life@gmail.com',
            #    [this_activity.pda_report.teacher.user.email])
            #email.send()

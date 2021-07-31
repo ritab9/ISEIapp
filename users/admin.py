@@ -19,7 +19,7 @@ class UserAdmin(AuthUserAdmin):
     list_display = ('username', 'Name', 'School', 'id','group', 'is_active')
     list_editable = ('is_active',)
 
-    def Name(selfself,obj):
+    def Name(self,obj):
         return obj.teacher
 
     def School(self, obj):

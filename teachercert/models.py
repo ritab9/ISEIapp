@@ -20,6 +20,8 @@ class SchoolYear(models.Model):
         if self.active_year:
             all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
+
+#PDA Report Modelst
 class PDAType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
     evidence = models.CharField(max_length=50, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
@@ -42,7 +44,6 @@ class PDAType(models.Model):
         else:
             ev=""
         return self.get_category_display() + ' - ' + self.description + '(' + ev + ')'
-
 
 class PDAReport(models.Model):
     #timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
@@ -155,7 +156,6 @@ class PDAInstance(models.Model):
     def __str__(self):
         return self.description
 
-
 class AcademicClass(models.Model):
     pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
     university = models.CharField(max_length=50, blank=False)
@@ -167,10 +167,69 @@ class AcademicClass(models.Model):
     def __str__(self):
         return self.class_name
 
-class EmailMessages(models.Model):
+class EmailMessage(models.Model):
     name = models.CharField(max_length=50)
     message = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
+
+#General Certification Information Models
+
+class CertificationType(models.Model):
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=1000, null=True, blank=True)
+    years_valid = models.PositiveSmallIntegerField()
+    def __str__(self):
+        return self.name
+
+class Requirement(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=600, null=True, blank=True)
+    CATEGORIES = (
+        ('g', 'General'),
+        ('b', 'Basic'),
+        ('o', 'Other'),
+    )
+    category = models.CharField(max_length=1, choices=CATEGORIES, help_text="Choose a category", null=False)
+    certification_type = models.ManyToManyField(CertificationType)
+    def __str__(self):
+        return self.name
+
+class Renewal(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=600, null=True, blank=True)
+    certification_type = models.ManyToManyField(CertificationType)
+        #models.ForeignKey(CertificationType, on_delete=models.PROTECT, null=False, blank=False)
+    def __str__(self):
+        return self.name
+
+class Endorsement(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=600, null=True, blank=True)
+    def __str__(self):
+        return self.name
+
+class ElementaryMethod(models.Model):
+    name = models.CharField(max_length=30)
+    required = models.BooleanField(default=True)
+    def __str__(self):
+        return self.name
+
+
+#Teacher Certificates Models
+class Certificate(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
+    certification_type = models.ForeignKey(CertificationType, on_delete=models.PROTECT, null=False, blank=False)
+    issue_date = models.DateField(null=False, blank=False)
+    renewal_date = models.DateField(null=False, blank=False)
+    renewal_requirements = models.CharField(max_length = 100, null=False, blank=False)
+    def __str__(self):
+        return self.teacher.name() + "-" + self.certification_type.name
+
+class TeacherEndorsement(models.Model):
+    certificate = models.ForeignKey(Certificate, on_delete=models.PROTECT, null=False, blank=False)
+    endorsement = models.ForeignKey(Endorsement, on_delete=models.PROTECT, null=False, blank=False)
+    def __str__(self):
+        return self.endorsement.name
