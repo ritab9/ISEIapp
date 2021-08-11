@@ -1,0 +1,42 @@
+{%  extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- filter -->
+    <div class="row">
+        <div class="card card-body">
+            <form action="." method="POST" >{% csrf_token %}
+                {{ tcertificate_form.as_table }}
+
+                {{ tendorsement_formset.management_form }}
+
+                {% for form in tendorsement_formset %}
+                    <div class="row form-row spacer">
+                        <div class="col-4">
+                            <div class="input-group">
+                                {{form.as_p}}
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit" name="add_endorsement">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                </form>
+
+                <input type="submit" value="submit" name = "submit_certificate">
+            </form>
+
+        </div>
+    </div>
+
+
+<script type='text/javascript'>
+
+</script>
+
+
+
+{% endblock  %}

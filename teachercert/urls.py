@@ -31,6 +31,7 @@ urlpatterns = [
 
     # isei staff urls
     path('isei_teachercert/', views.isei_teachercert, name='isei_teachercert'),
+    path('manage_tcertificate/', views.manage_tcertificate, name='manage_tcertificate'),
 
     path('isei_pda_approval/', views.isei_pda_approval, name='isei_pda_approval'),
     path('isei_pda_approval/<str:repID>', views.isei_pda_approval, name='isei_pda_approval'),
@@ -38,4 +39,5 @@ urlpatterns = [
 
     #pdf of approved activities
     path('approved_pdf/', views.approved_pdf, name='approved_pdf')
+
 ]

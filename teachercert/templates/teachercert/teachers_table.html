@@ -10,19 +10,32 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
             <tr>
                 <th scope="col">School</th>
                 <th scope="col">Name</th>
-                <th scope="col">Certification</th>
+                <th scope="col">Certificate</th>
+                <th scope="col"> Endorsements </th>
+                <th scope = "col">Expiration Date</th>
                 <th scope="col">PDA Report Status</th>
             </tr>
           </thead>
           <tbody>
             {% for t in teachers %}
+                {% for c in t.tcertificate_set.all %}
                 <tr>
                     <td> {{ t.school }}</td>
-                   <td><img class="profile-pic" src= "{{t.profile_picture.url}}" style="width:50px;height:50px;">
+                    <td>
+                        <!-- <img class="profile-pic" src= "{t.profile_picture.url}}" style="width:50px;height:50px;"> -->
                        {{ t.first_name}}  {{t.last_name}}
-                   </td>
-                  <td> {{ t.get_current_certification_display }}</td>
-                  <td>
+                    </td>
+                    {% if t.tcertificate_set.all %}
+                            <td>{{ c.certification_type.name }}</td>
+                              <td>{% for e in c.tendorsement_set.all %}
+                                {{ e }}
+                                {% endfor %}
+                              </td>
+                              <td>{{ c.renewal_date }}</td>
+                    {% else %}
+                        <td>None</td><td></td><td></td>
+                    {% endif %}
+                    <td>
                     {% if t.pdareport_set.all %}
                       {% for p in t.pdareport_set.all %}
                         <p>{{ p.school_year}}:
@@ -39,6 +52,7 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                             {% else %}
                                 Not submitted
                             {% endif %}
+                        </p>
                           <br>
                           <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
                       {% endfor %}
@@ -47,8 +61,8 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                     {% endif %}
                     </td>
                 </tr>
-                </p>
             {% endfor %}
+           {% endfor %}
           </tbody>
         </table>
     </div>

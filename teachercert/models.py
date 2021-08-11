@@ -219,7 +219,8 @@ class ElementaryMethod(models.Model):
 
 
 #Teacher Certificates Models
-class Certificate(models.Model):
+
+class TCertificate(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     certification_type = models.ForeignKey(CertificationType, on_delete=models.PROTECT, null=False, blank=False)
     issue_date = models.DateField(null=False, blank=False)
@@ -228,8 +229,8 @@ class Certificate(models.Model):
     def __str__(self):
         return self.teacher.name() + "-" + self.certification_type.name
 
-class TeacherEndorsement(models.Model):
-    certificate = models.ForeignKey(Certificate, on_delete=models.PROTECT, null=False, blank=False)
+class TEndorsement(models.Model):
+    certificate = models.ForeignKey(TCertificate, on_delete=models.CASCADE, null=False, blank=False)
     endorsement = models.ForeignKey(Endorsement, on_delete=models.PROTECT, null=False, blank=False)
     def __str__(self):
         return self.endorsement.name

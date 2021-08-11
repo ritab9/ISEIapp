@@ -22,7 +22,7 @@ class PDAreportForm(ModelForm):
                 attrs={'class': 'form-controls','rows':4 }),
             'isei_comment': forms.Textarea(
                 attrs={'class': 'form-controls', 'rows': 4 }),
-            'date_submitted': forms.DateInput(attrs={'placeholder': 'mm/dd/yyyy'}),
+            'date_submitted': forms.DateInput(format ='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
         }
 
 
@@ -33,7 +33,7 @@ class PDAInstanceForm(ModelForm):
         fields = ('pda_type','description', 'date_completed', 'units', 'amount', 'file', 'date_resubmitted')
         widgets = {
             'file': forms.FileInput(attrs={'size': 1}),
-            'date_completed': forms.DateInput (attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
+            'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
             'amount': forms.NumberInput (attrs={'style':'width:60px' }),
         }
 
@@ -46,7 +46,7 @@ class AcademicClassForm(ModelForm):
         model = AcademicClass
         fields = ('university','class_name', 'date_completed', 'transcript_requested', 'transcript_received')
         widgets = {
-            'date_completed': forms.DateInput (attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
+            'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
         }
 
 
@@ -54,6 +54,17 @@ AcademicClassFormSet = inlineformset_factory(PDAReport, AcademicClass, form=Acad
                                            can_delete=False)
 
 
+class TCertificateForm(ModelForm):
+    class Meta:
+        model=TCertificate
+        fields =('__all__')
+
+TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra=1)
+
+
+
+
+#Not Used at the moment
 #to be used by ISEI staff to add the approved CEUs and individual deny instances as needed
 #PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=0,
 #                                           can_delete=False)

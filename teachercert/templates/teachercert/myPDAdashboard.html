@@ -27,7 +27,7 @@
     <!-- list of submitted academic classes-->
         {% if academic_class %}
         <div class="col-sm" >
-            <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show Academic Classes">
+            <input type="button" class="detailbtn btn btn-sm btn-ISEIblue3" value ="Show Academic Classes" >
             <div class = "card card-body" id="details" style="display: none;">
                 <table class="table table-sm">
                     <tr>
@@ -52,6 +52,7 @@
 
 <!-- filter -->
     <div class="row">
+        <div class="col">
         <div class="card card-body">
             <h6>Filters for approved activity search:</h6>
             <form method="get">
@@ -66,6 +67,7 @@
                 <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
                 <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
             </form>
+        </div>
         </div>
     </div>
 

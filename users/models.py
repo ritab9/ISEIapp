@@ -22,6 +22,7 @@ class Teacher(models.Model):
     first_name = models.CharField(max_length=20)
     middle_name = models.CharField(max_length=20, null=True, blank=True)
     last_name = models.CharField(max_length=20)
+    date_of_birth = models.DateField(null=False, blank=False)
     suffix = models.CharField(max_length=10, null= True, blank= True)
     active = models.BooleanField (default=True)
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)

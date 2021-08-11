@@ -79,13 +79,13 @@ class Endorsement(admin.ModelAdmin):
     list_display = ('name',)
 
 
-class TeacherEndorsementInLine(admin.StackedInline):
-    model = TeacherEndorsement
+class TEndorsementInLine(admin.StackedInline):
+    model = TEndorsement
     extra = 0
 
-@admin.register(Certificate)
-class Certificate(admin.ModelAdmin):
-    inlines = [TeacherEndorsementInLine]
+@admin.register(TCertificate)
+class TCertificate(admin.ModelAdmin):
+    inlines = [TEndorsementInLine]
     list_display = ('teacher', 'certification_type', 'issue_date','renewal_date','renewal_requirements')
     list_editable = ('certification_type', 'issue_date','renewal_date', 'renewal_requirements')
     list_display_links = ('teacher',)

@@ -28,12 +28,12 @@
 
 
 <body class="Site">
-    <div class="content">
+ <div class="content">
     {# Navigation Menu #}
         <header>
             {% include 'navbar.html' %}
         </header>
-
+    <div class="container-fluid">
     {# The Document Body #}
         <div class="site_content">
             {% block content %}
@@ -41,6 +41,7 @@
             {% endblock content %}
         </div>
     </div>
+</div>
     {# The Footer #}
     <footer class="footer" >
             <p>@Copyright ISEIapp</p>

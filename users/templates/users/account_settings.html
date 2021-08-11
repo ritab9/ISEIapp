@@ -36,9 +36,11 @@
                     {{ teacher_form.middle_name|as_crispy_field }}
                     {{ teacher_form.last_name|as_crispy_field }}
                     {{ teacher_form.suffix|as_crispy_field }}
+
                 </div>
                 <div class = "col">
-                    {{ user_form.email|as_crispy_field }} <br>
+                    {{ teacher_form.date_of_birth|as_crispy_field }}
+                    {{ user_form.email|as_crispy_field }}
                     {{ teacher_form.phone_number|as_crispy_field }} <br>
                     <div style = "position: absolute; bottom: 0">
                     <p style="font-size: 14px">Change Profile Picture</p>

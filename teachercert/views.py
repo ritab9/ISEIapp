@@ -487,6 +487,43 @@ def approved_pdf2(request):
     return render(request, 'teachercert/isei_pda_approval.html')
 
 
+def manage_tcertificate(request, certID=None):
+    if certID:
+        tcertificate = TCertificate.objects.get(pk=certID)
+    else:
+        tcertificate = TCertificate()
+
+    #if request.method == 'GET':
+        #tcertificate_form = TCertificateForm(request.GET or None)
+        #tendorsement_formset = TEndorsementFormSet(request.GET or None)
+
+    if request.method == "POST":
+        if certID:
+            tcertificate_form = TCertificateForm(request.POST, instance=tcertificate)
+        else:
+            tcertificate_form = TCertificateForm(request.POST)
+
+        tendorsement_formset = TEndorsementFormSet(request.POST)
+
+        if tcertificate_form.is_valid():
+            tcertificate=tcertificate_form.save()
+            print (tcertificate.pk)
+            tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
+
+            if tendorsement_formset.is_valid():
+                tendorsement_formset.save()
+                if request.POST.get('submit_certificate'):
+                    return redirect('isei_teachercert')
+
+    else:
+        tcertificate_form = TCertificateForm(instance=tcertificate)
+        tendorsement_formset = TEndorsementFormSet(instance=tcertificate)
+
+
+    context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset)
+    return render(request, 'teachercert/manage_tcertificate.html', context)
+
+
 
 # principal's info page about teacher certification
 #Todo to be worked on
