@@ -1,36 +1,60 @@
 {%  extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
-    <!-- filter -->
+
     <div class="row">
+        <div class="col-8">
         <div class="card card-body">
-            <form action="." method="POST" >{% csrf_token %}
-                {{ tcertificate_form.as_table }}
+            <form action="." method="POST" >
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
+                            {{ tcertificate_form.certification_type|as_crispy_field }}
+                        </div> <br>
+                        <div class="row">
+                            {{ tcertificate_form.issue_date|as_crispy_field }} &nbsp;
+                            {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
+                            Archived: {{ tcertificate_form.archived }}
+                        </div> <br>
 
-                {{ tendorsement_formset.management_form }}
+                            {{ tcertificate_form.renewal_requirements|as_crispy_field }}
 
-                {% for form in tendorsement_formset %}
-                    <div class="row form-row spacer">
-                        <div class="col-4">
-                            <div class="input-group">
-                                {{form.as_p}}
-                                <div class="input-group-append">
-                                    <button class="btn btn-success" type="submit" name="add_endorsement">+</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                {% endfor %}
+                    <div class="col-5">
 
-                </form>
+                        {{ tendorsement_formset.as_table }}
 
-                <input type="submit" value="submit" name = "submit_certificate">
+
+                        <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
+                    </div>
+                </div>
+                <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
             </form>
+        </div>
+        </div>
 
+        <div class="col-4">
+            <div class="card-body">
+                <h6>Previous/Other certificates:</h6>
+                {% if prev_certificates %}
+                    {% for c in prev_certificates %}<br>
+                        <a href="{%  url 'manage_tcertificate' c.id %}">{{ c.certification_type }}</a><br>
+                        &nbsp; {{ c.issue_date }}-{{ c.renewal_date }} {% if c.expired %} <span style="color:red">Expired</span>{% endif %}<br>
+                        &nbsp; {% if c.archived == False %} <a href="{%  url 'archive_tcertificate' c.id certID %}"> Archive </a> {% else %} <a href="{%  url 'de_archive_tcertificate' c.id certID%}">Retrieve from archive</a> {% endif %} <br>
+                        &nbsp; {% for e in c.tendorsement_set.all %}
+                            {{ e }}{% if not forloop.last %},{% endif %}
+                                {% endfor %}<br>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
+
 
 
 <script type='text/javascript'>

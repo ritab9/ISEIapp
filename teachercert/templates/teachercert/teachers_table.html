@@ -19,6 +19,7 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
           <tbody>
             {% for t in teachers %}
                 {% for c in t.tcertificate_set.all %}
+                {% if c.archived == False %}
                 <tr>
                     <td> {{ t.school }}</td>
                     <td>
@@ -26,9 +27,10 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                        {{ t.first_name}}  {{t.last_name}}
                     </td>
                     {% if t.tcertificate_set.all %}
-                            <td>{{ c.certification_type.name }}</td>
+                            <td><a href="{%  url 'manage_tcertificate' c.id %}">{{ c.certification_type.name }}</a>
+                                {% if c.expired %} <p style="color:red">Expired</p> {% endif %}</td>
                               <td>{% for e in c.tendorsement_set.all %}
-                                {{ e }}
+                                {{ e }}{% if not forloop.last %},{% endif %}
                                 {% endfor %}
                               </td>
                               <td>{{ c.renewal_date }}</td>
@@ -61,6 +63,8 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                     {% endif %}
                     </td>
                 </tr>
+
+                {% endif %}
             {% endfor %}
            {% endfor %}
           </tbody>

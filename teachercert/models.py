@@ -226,6 +226,14 @@ class TCertificate(models.Model):
     issue_date = models.DateField(null=False, blank=False)
     renewal_date = models.DateField(null=False, blank=False)
     renewal_requirements = models.CharField(max_length = 100, null=False, blank=False)
+    archived = models.BooleanField (default = False)
+
+    def expired(self):
+        return self.renewal_date <= datetime.date.today()
+
+    class Meta:
+        unique_together = ['teacher','certification_type', 'issue_date' ]
+
     def __str__(self):
         return self.teacher.name() + "-" + self.certification_type.name
 

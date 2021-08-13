@@ -48,8 +48,8 @@ def loginpage(request):
                         #return redirect('teacher_dashboard') #because dashboard is not yet done
                         return redirect('myPDAdashboard', user.id)
                 elif is_in_group(request.user, 'staff'):
-                    return redirect('PDAreports')
-                    #return redirect('isei_teachercert')
+                    #return redirect('PDAreports')
+                    return redirect('isei_teachercert')
                     #return redirect('staff_dashboard')
                 else:
                     messages.info(request, 'User not assigned to a group. Contact the site administrator!')

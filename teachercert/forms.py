@@ -41,6 +41,13 @@ class PDAInstanceForm(ModelForm):
 PDAInstanceFormSet = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=1,
                                            can_delete=False)
 
+#not used
+class RenewalForm(forms.ModelForm):
+    class Meta:
+        model = Renewal
+        fields =('name', 'description')
+        widgets ={ 'description': forms.Textarea() }
+
 class AcademicClassForm(ModelForm):
     class Meta:
         model = AcademicClass
@@ -58,10 +65,14 @@ class TCertificateForm(ModelForm):
     class Meta:
         model=TCertificate
         fields =('__all__')
+        widgets = {
+            'issue_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'renewal_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'renewal_requirements': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2}),
+        }
 
-TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra=1)
-
-
+TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3)
 
 
 #Not Used at the moment

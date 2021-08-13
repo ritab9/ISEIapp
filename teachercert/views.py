@@ -20,12 +20,14 @@ from django.http import HttpResponse
 #for emailing
 from django.core.mail import EmailMessage
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 from django.forms import inlineformset_factory
 
+
+# PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
 
 #just an info page about the PDA activities
 def ceu_info(request):
@@ -100,7 +102,6 @@ def createPDA(request, recId):
                    instanceformset=instanceformset, academiclassformset = academiclassformset, report_form=report_form, )
 
     return render(request, "teachercert/create_pda.html", context)
-
 
 
 # update PDAinstance (by id)
@@ -297,7 +298,6 @@ def principal_pda_approval(request, recID=None, instID=None):
     return render(request, 'teachercert/principal_pda_approval.html', context)
 
 
-
 #principal's approval of teacher activities
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
@@ -367,8 +367,6 @@ def isei_pda_approval(request, repID=None, instID=None):
 
     context = dict(teachers=teachers, pda_report_notreviewed=pda_report_notreviewed, pda_report_approved=pda_report_approved, pda_report_denied=pda_report_denied, pda_instance_notreviewed = pda_instance_notreviewed)
     return render(request, 'teachercert/isei_pda_approval.html', context)
-
-
 
 
 # teacher activities for user with id=pk ... some parts not finished
@@ -470,9 +468,9 @@ def approved_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="mypdf.pdf"'
     response.write(pdf)
-    return response
-
-    #return pdf
+    #return response
+    return pdf
+    #(to use it with approved_pdf2) comment response and uncomment return pdf
 
 # email a pdf with approved CEUs
 @login_required(login_url='login')
@@ -480,24 +478,34 @@ def approved_pdf(request):
 def approved_pdf2(request):
     email = EmailMessage(
         'Subject here', 'Here is the message.', 'ritab.isei.life@gmail.com', ['oldagape@yahoo.com'])
-    pdf=create_approved_pdf(request)
+    pdf= approved_pdf(request)
     email.attach("Approved_CEUs.pdf", pdf, 'application/pdf')
     email.send()
 
     return render(request, 'teachercert/isei_pda_approval.html')
 
 
+
+
+# TEACHER CERTIFICATE FUNCTIONS
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def manage_tcertificate(request, certID=None):
-    if certID:
+    prev_certificates = None #previous certificates set to NONE
+    #TODO once teacher is selected initialize prev_certificates
+    if certID: # if the certificate already exists
         tcertificate = TCertificate.objects.get(pk=certID)
+        prev_certificates = TCertificate.objects.filter(Q(teacher = tcertificate.teacher), ~Q(id = certID))
     else:
-        tcertificate = TCertificate()
+        tcertificate = TCertificate() #initialize a new certificate
 
-    #if request.method == 'GET':
-        #tcertificate_form = TCertificateForm(request.GET or None)
-        #tendorsement_formset = TEndorsementFormSet(request.GET or None)
+    tcertificate_form = TCertificateForm(instance=tcertificate) #Certificate form, defined in forms.py
+    tendorsement_formset = TEndorsementFormSet(instance = tcertificate) # Endorsement formset, define in forms.py
 
-    if request.method == "POST":
+    if request.method == "POST" and (request.POST.get('add_endorsement') or request.POST.get('submit_certificate')):
+    # if the certificate is modified
         if certID:
             tcertificate_form = TCertificateForm(request.POST, instance=tcertificate)
         else:
@@ -505,25 +513,33 @@ def manage_tcertificate(request, certID=None):
 
         tendorsement_formset = TEndorsementFormSet(request.POST)
 
-        if tcertificate_form.is_valid():
-            tcertificate=tcertificate_form.save()
-            print (tcertificate.pk)
+        if tcertificate_form.is_valid(): #validate the certificate info
+            tcertificate = tcertificate_form.save()
             tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
 
-            if tendorsement_formset.is_valid():
+            if tendorsement_formset.is_valid(): #validate the endorsement info
                 tendorsement_formset.save()
-                if request.POST.get('submit_certificate'):
+                if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
+                    return redirect('manage_tcertificate', certID=tcertificate.id)
+                if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
                     return redirect('isei_teachercert')
 
-    else:
-        tcertificate_form = TCertificateForm(instance=tcertificate)
-        tendorsement_formset = TEndorsementFormSet(instance=tcertificate)
-
-
-    context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset)
+    #certID is used in the template to reload page after previous certificates are archived
+    context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
+                    prev_certificates = prev_certificates, certID=certID)
     return render(request, 'teachercert/manage_tcertificate.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def archive_tcertificate(request, cID, certID):
+    TCertificate.objects.filter(id=cID).update(archived=True)
+    return redirect('manage_tcertificate', certID=certID)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def de_archive_tcertificate(request, cID, certID):
+    TCertificate.objects.filter(id=cID).update(archived=False)
+    return redirect('manage_tcertificate', certID=certID)
 
 # principal's info page about teacher certification
 #Todo to be worked on
