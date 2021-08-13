@@ -5,10 +5,15 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 
 # Register your models here.
+@admin.register(Country)
+class Country(admin.ModelAdmin):
+    list_display = ('name', 'code', 'region')
+    list_editable = ('code', 'region')
+
 @admin.register(School)
 class School(admin.ModelAdmin):
-    list_display = ('name', 'abbreviation', 'address')
-    list_editable = ('abbreviation', 'address')
+    list_display = ('name', 'abbreviation', 'address', 'country')
+    list_editable = ('abbreviation', 'address','country')
 
 class TeacherInline(admin.StackedInline):
     model = Teacher

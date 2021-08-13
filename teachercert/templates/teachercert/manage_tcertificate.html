@@ -21,14 +21,11 @@
                             {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
                             Archived: {{ tcertificate_form.archived }}
                         </div> <br>
-
                             {{ tcertificate_form.renewal_requirements|as_crispy_field }}
-
                     </div>
                     <div class="col-5">
 
                         {{ tendorsement_formset.as_table }}
-
 
                         <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
                     </div>
@@ -53,6 +50,51 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+
+    <br>
+    <div class="row">
+     {% if pdareports %}
+    <table class="table table-light table-striped" >
+          <thead>
+            <tr>
+                <th scope="col">School-Year</th>
+                <th scope="col">School-Year End date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+                  {% for p in pdareports %}
+                    <tr>
+                        <td>{{ p.school_year}} </td>
+                        <td>{{ p.school_year.end_date }}</td>
+                        <td>
+                            {% if p.isei_reviewed == 'a' %}
+                                {{ p.approved_ceu }} CEUs approved
+                            {% elif p.principal_reviewed == 'a' %}
+                                ISEI approval pending
+                            {% elif p.date_submitted %}
+                                Principal Approval Pending
+                            {% elif p.isei_reviewed == 'd'%}
+                                ISEI denied. Not yet resubmitted.
+                            {% elif p.principal_reviewed == 'd'%}
+                                Principal denied. Not yet resubmitted.
+                            {% else %}
+                                Not submitted
+                            {% endif %}
+                        </td>
+                        <td> <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
+                        </td>
+                    </tr>
+                 {% endfor %}
+          </tbody>
+    </table>
+
+    {% else %}
+        Report not yet created
+    {% endif %}
+
     </div>
 
 

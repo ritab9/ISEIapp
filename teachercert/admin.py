@@ -8,8 +8,8 @@ from django import forms
 
 @admin.register(SchoolYear)
 class SchoolYear(admin.ModelAdmin):
-    list_display = ('name','active_year')
-    list_editable = ('active_year',)
+    list_display = ('name','active_year', 'start_date', 'end_date',)
+    list_editable = ('active_year','start_date', 'end_date', )
     list_display_links = ('name',)
 
 #PDA Report Model Registration
@@ -32,8 +32,8 @@ class AcademicClassInLine(admin.StackedInline):
 class PDAReport(admin.ModelAdmin):
     inlines = [PDAInstanceInline, AcademicClassInLine]
     list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed', 'isei_reviewed', 'updated_at')
-    list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed')
-    list_display_links = ('teacher','school_year')
+    list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed', 'school_year')
+    list_display_links = ('teacher',)
     readonly_fields = ['created_at', 'updated_at', ]
 
 @admin.register(EmailMessage)

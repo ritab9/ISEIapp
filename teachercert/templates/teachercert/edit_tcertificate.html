@@ -1,0 +1,25 @@
+{%  extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+    <div class="row">
+        <div class="card card-body">
+            <form action="{%  url 'edit_tcertificate' certID %}" method="POST" >{% csrf_token %}
+                {{ tcertificate_form.as_p }}
+                {{ tendorsement_formset.as_p }}
+                <input type="submit" value="submit">
+            </form>
+
+        </div>
+    </div>
+
+
+<script type='text/javascript'>
+
+</script>
+
+
+
+{% endblock  %}

@@ -1,13 +1,19 @@
 from django.db import models
-from users.models import Teacher
+from users.models import Teacher, Country
 from django.core.validators import MinLengthValidator
 import datetime
+from datetime import datetime, date
 import os
+
 # Create your models here.
+
 
 class SchoolYear(models.Model):
     name = models.CharField(max_length=9, unique=True)
+    start_date = models.DateField(default=date.today)
+    end_date = models.DateField(default=date.today)
     active_year = models.BooleanField(default=False)
+    country = models.ManyToManyField(Country)
 
     class Meta:
         ordering = ('-name',)
@@ -19,6 +25,7 @@ class SchoolYear(models.Model):
         super(SchoolYear, self).save(*args, **kwargs)
         if self.active_year:
             all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
+
 
 
 #PDA Report Modelst
@@ -157,10 +164,11 @@ class PDAInstance(models.Model):
         return self.description
 
 class AcademicClass(models.Model):
+    #TODO remove Academic Class attachment to a report
     pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
     university = models.CharField(max_length=50, blank=False)
     class_name = models.CharField(max_length=50, blank=False)
-    date_completed = models.DateField (blank=False)
+    date_completed = models.DateField(blank=False)
     transcript_requested = models.BooleanField(default=False)
     transcript_received = models.BooleanField(default=False)
 
@@ -229,7 +237,7 @@ class TCertificate(models.Model):
     archived = models.BooleanField (default = False)
 
     def expired(self):
-        return self.renewal_date <= datetime.date.today()
+        return self.renewal_date <= date.today()
 
     class Meta:
         unique_together = ['teacher','certification_type', 'issue_date' ]

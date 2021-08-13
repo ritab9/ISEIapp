@@ -9,6 +9,9 @@ from .models import *
 from django.db.models import Q, F #Q is for queries in filters, F is to update a field using an other field from the model
 from django.db.models.functions import Now
 
+# import custom functions
+from .myfunctions import *
+
 # for creating the pdf
 from django.http import FileResponse
 import io
@@ -495,9 +498,16 @@ def approved_pdf2(request):
 def manage_tcertificate(request, certID=None):
     prev_certificates = None #previous certificates set to NONE
     #TODO once teacher is selected initialize prev_certificates
+    pdareports = None
+
     if certID: # if the certificate already exists
         tcertificate = TCertificate.objects.get(pk=certID)
+        # previous certificates to be listed with current one
         prev_certificates = TCertificate.objects.filter(Q(teacher = tcertificate.teacher), ~Q(id = certID))
+        # filter reports for the ones submitted since this certificate was issued
+        pdareport_ids = [pdareport.id for pdareport in PDAReport.objects.all() if pdareport_belongs_to_certificate(pdareport, tcertificate)]
+        pdareports = PDAReport.objects.filter(id__in=pdareport_ids, teacher = tcertificate.teacher)
+
     else:
         tcertificate = TCertificate() #initialize a new certificate
 
@@ -526,7 +536,7 @@ def manage_tcertificate(request, certID=None):
 
     #certID is used in the template to reload page after previous certificates are archived
     context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
-                    prev_certificates = prev_certificates, certID=certID)
+                    prev_certificates = prev_certificates, certID=certID, pdareports=pdareports)
     return render(request, 'teachercert/manage_tcertificate.html', context)
 
 @login_required(login_url='login')

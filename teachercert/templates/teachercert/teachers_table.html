@@ -12,62 +12,73 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                 <th scope="col">Name</th>
                 <th scope="col">Certificate</th>
                 <th scope="col"> Endorsements </th>
+                <th scope="col"> Issue Date</th>
                 <th scope = "col">Expiration Date</th>
                 <th scope="col">PDA Report Status</th>
             </tr>
           </thead>
+
           <tbody>
             {% for t in teachers %}
+                {% if t.tcertificate_set.all %}
                 {% for c in t.tcertificate_set.all %}
-                {% if c.archived == False %}
-                <tr>
-                    <td> {{ t.school }}</td>
-                    <td>
-                        <!-- <img class="profile-pic" src= "{t.profile_picture.url}}" style="width:50px;height:50px;"> -->
-                       {{ t.first_name}}  {{t.last_name}}
-                    </td>
-                    {% if t.tcertificate_set.all %}
+                    <!-- if it's not an archived certificate -->
+                    {% if c.archived == False %}
+                        <tr>
+                            <td> {{ t.school }}</td> <!-- <img class="profile-pic" src= "{t.profile_picture.url}}" style="width:50px;height:50px;"> -->
+                            <td> {{ t.first_name}}  {{t.last_name}} </td>
+                            <!-- certificate name and link + highlight expired certificates -->
                             <td><a href="{%  url 'manage_tcertificate' c.id %}">{{ c.certification_type.name }}</a>
                                 {% if c.expired %} <p style="color:red">Expired</p> {% endif %}</td>
-                              <td>{% for e in c.tendorsement_set.all %}
-                                {{ e }}{% if not forloop.last %},{% endif %}
-                                {% endfor %}
-                              </td>
-                              <td>{{ c.renewal_date }}</td>
-                    {% else %}
-                        <td>None</td><td></td><td></td>
-                    {% endif %}
-                    <td>
-                    {% if t.pdareport_set.all %}
-                      {% for p in t.pdareport_set.all %}
-                        <p>{{ p.school_year}}:
-                            {% if p.isei_reviewed == 'a' %}
-                                {{ p.approved_ceu }} CEUs approved
-                            {% elif p.principal_reviewed == 'a' %}
-                                ISEI approval pending
-                            {% elif p.date_submitted %}
-                                Principal Approval Pending
-                            {% elif p.isei_reviewed == 'd'%}
-                                ISEI denied. Not yet resubmitted.
-                            {% elif p.principal_reviewed == 'd'%}
-                                Principal denied. Not yet resubmitted.
-                            {% else %}
-                                Not submitted
-                            {% endif %}
-                        </p>
-                          <br>
-                          <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
-                      {% endfor %}
-                    {% else %}
-                        Report not yet created
-                    {% endif %}
-                    </td>
-                </tr>
 
+                            <td>{% for e in c.tendorsement_set.all %}
+                                        {{ e }}{% if not forloop.last %},{% endif %}
+                                {% endfor %} </td>
+
+                            <td>{{ c.issue_date }}</td>
+                            <td>{{ c.renewal_date }}</td>
+
+                            <td>
+                              {% for p in t.pdareport_set.all %}
+                                  {% if p.school_year.end_date > c.issue_date %}
+                                    <p>{{ p.school_year}}:
+                                        {% if p.isei_reviewed == 'a' %}
+                                            {{ p.approved_ceu }} CEUs approved
+                                        {% elif p.principal_reviewed == 'a' %}
+                                            ISEI approval pending
+                                        {% elif p.date_submitted %}
+                                            Principal Approval Pending
+                                        {% elif p.isei_reviewed == 'd'%}
+                                            ISEI denied. Not yet resubmitted.
+                                        {% elif p.principal_reviewed == 'd'%}
+                                            Principal denied. Not yet resubmitted.
+                                        {% else %}
+                                            Not submitted
+                                        {% endif %}
+                                    </p>
+                                      <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
+                                  {% endif %}
+                              {% endfor %}
+
+                            <td>
+
+                           </td>
+
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- if there is no certificate for that teacher -->
+                {% else %}
+                    <tr>
+                        <td> {{ t.school }}</td>
+                        <!-- <img class="profile-pic" src= "{t.profile_picture.url}}" style="width:50px;height:50px;"> -->
+                        <td> {{ t.first_name}}  {{t.last_name}} </td>
+                        <td>None</td><td></td><td></td><td></td><td></td>
+                    </tr>
                 {% endif %}
-            {% endfor %}
            {% endfor %}
           </tbody>
         </table>
     </div>
-</div>
+
