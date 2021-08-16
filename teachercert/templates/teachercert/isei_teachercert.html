@@ -19,9 +19,20 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="card card-body">
+            <h6>Filter:</h6>
+            <form method="get">
+                    {{ tcertificates_filter.form}}
+                <br>
+                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                <a href="{%  url 'isei_teachercert' %}">Clear all filters</a>
+            </form>
+        </div>
+    </div>
 
 
- {% include 'teachercert/teachers_table.html' %}
+ {% include 'teachercert/tcertificates_table.html' %}
 
 
 {% endblock  %}

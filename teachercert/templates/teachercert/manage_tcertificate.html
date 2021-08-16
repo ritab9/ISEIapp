@@ -52,52 +52,21 @@
         </div>
     </div>
 
+
     <br>
-    <div class="row">
-     {% if pdareports %}
-    <table class="table table-light table-striped" >
-          <thead>
-            <tr>
-                <th scope="col">School-Year</th>
-                <th scope="col">School-Year End date</th>
-                <th scope="col">Status</th>
-                <th scope="col">Last Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-                  {% for p in pdareports %}
-                    <tr>
-                        <td>{{ p.school_year}} </td>
-                        <td>{{ p.school_year.end_date }}</td>
-                        <td>
-                            {% if p.isei_reviewed == 'a' %}
-                                {{ p.approved_ceu }} CEUs approved
-                            {% elif p.principal_reviewed == 'a' %}
-                                ISEI approval pending
-                            {% elif p.date_submitted %}
-                                Principal Approval Pending
-                            {% elif p.isei_reviewed == 'd'%}
-                                ISEI denied. Not yet resubmitted.
-                            {% elif p.principal_reviewed == 'd'%}
-                                Principal denied. Not yet resubmitted.
-                            {% else %}
-                                Not submitted
-                            {% endif %}
-                        </td>
-                        <td> <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
-                        </td>
-                    </tr>
-                 {% endfor %}
-          </tbody>
-    </table>
-
+<h6> Academic Classes: </h6>
+    {% if academic_class %}
+        {% include 'teachercert/academic_classes_table.html' %}
     {% else %}
-        Report not yet created
+        <p>No Academic Classes have been submitted yet for this Certification</p>
     {% endif %}
-
-    </div>
-
-
+    <br>
+<h6> Reports: </h6>
+    {% if pda_reports %}
+        {% include 'teachercert/reports_table.html' %}
+    {% else %}
+        <p>No Professional Development Reports have been submitted yet for this Certification</p>
+    {% endif %}
 
 <script type='text/javascript'>
 

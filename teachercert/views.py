@@ -56,9 +56,6 @@ def createPDA(request, recId):
     pda_instance = PDAInstance.objects.filter(pda_report=pda_report) #list of already entered instances
     instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) # entering new activity
 
-    academic_class = AcademicClass.objects.filter(pda_report=pda_report) #list of already entered academic classes
-    academiclassformset = AcademicClassFormSet (queryset=AcademicClass.objects.none(), instance=pda_report) # entering new academic classes
-
     report_form = PDAreportForm(instance = pda_report) #form for editing current report (summary and submission)
 
     if request.method == 'POST':
@@ -67,12 +64,6 @@ def createPDA(request, recId):
             if instanceformset.is_valid():
                 instanceformset.save() #save activity
                 instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) #allow for a new entry
-
-        if request.POST.get('add_academic_class'): #add academic clacc and stay on page
-            academiclassformset = AcademicClassFormSet(request.POST, request.FILES or None, instance=pda_report)
-            if academiclassformset.is_valid():
-                academiclassformset.save() #save academic class
-                academiclassformset = AcademicClassFormSet(queryset=AcademicClass.objects.none(), instance=pda_report) #allow for a new entry
 
 
         if request.POST.get('submit_report'): #submit report - go to PDAdashboard
@@ -101,8 +92,8 @@ def createPDA(request, recId):
             if report_form.is_valid():
                 pda_report = report_form.save()
 
-    context = dict(pda_instance=pda_instance, academic_class= academic_class, pda_report=pda_report,
-                   instanceformset=instanceformset, academiclassformset = academiclassformset, report_form=report_form, )
+    context = dict(pda_instance=pda_instance,  pda_report=pda_report,
+                   instanceformset=instanceformset,  report_form=report_form, )
 
     return render(request, "teachercert/create_pda.html", context)
 
@@ -161,6 +152,31 @@ def deletePDAinstance(request, pk):
     context = {'item': pdainstance}
     return render(request, 'teachercert/delete_pdainstance.html', context)
 
+# teacher activities for user with id=pk ... some parts not finished
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['teacher', 'admin'])
+def my_academic_classes(request, pk):
+
+    teacher = Teacher.objects.get(user=User.objects.get(id=pk))
+    academic_class = AcademicClass.objects.filter(teacher=teacher)
+
+    a_class = AcademicClass(teacher=teacher)
+    form = AcademicClassForm(instance = a_class)
+    if request.method == 'POST':
+        if request.POST.get('submit'):
+            form = AcademicClassForm(request.POST, instance=a_class)
+            if form.is_valid():
+                form.save()
+
+    if is_in_group(request.user, 'teacher'):
+        user_not_teacher = False
+    else:
+        user_not_teacher = True
+
+    context = dict(teacher=teacher, academic_class=academic_class, user_not_teacher= user_not_teacher, form=form)
+
+    return render(request, 'teachercert/my_academic_classes.html', context)
+
 
 # delete academic_class (by id)
 @login_required(login_url='login')
@@ -170,7 +186,7 @@ def delete_academic_class(request, pk):
     if request.method == "POST":
         academic_class.delete()
         #if is_in_group(request.user, 'teacher'):  # teacher landing page
-        return redirect('create_pda', academic_class.pda_report.id)
+        return redirect('my_academic_classes', academic_class.teacher.user.id)
 
     context = {'item': academic_class}
     return render(request, 'teachercert/delete_academic_class.html', context)
@@ -187,23 +203,29 @@ def update_academic_class(request, pk):
             form = AcademicClassForm(request.POST, instance=academic_class)
             if form.is_valid():
                 form.save()
-                return redirect('create_pda', academic_class.pda_report.id)
+                return redirect('my_academic_classes', academic_class.teacher.user.id)
 
     context = dict(form=form)
     return render(request, "teachercert/update_academic_class.html", context)
 
 
+
+
 # isei's info page about all reports with filter
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff','principal'])
+@allowed_users(allowed_roles=['staff','principal', 'teacher'])
 def PDAreports(request):
     if request.user.groups.filter(name='staff').exists(): #ISEI staff has access to all reports
         pda_reports = PDAReport.objects.all()
         is_staff=True
-    else:
+    elif request.user.groups.filter(name='staff').exists():
         principal = request.user.teacher
         pda_reports = PDAReport.objects.filter(teacher__school = principal.school) #principal has access to reports from his/her school
         is_staff=False
+    else:
+        teacher = request.user.teacher
+        pda_reports = PDAReport.objects.filter(teacher=teacher)  # principal has access to reports from his/her school
+        is_staff = False
 
     #is staff is used to show/hide certain sections in the filter and table (school)
     pda_report_filter = PDAReportFilter(request.GET, queryset=pda_reports)
@@ -372,6 +394,7 @@ def isei_pda_approval(request, repID=None, instID=None):
     return render(request, 'teachercert/isei_pda_approval.html', context)
 
 
+
 # teacher activities for user with id=pk ... some parts not finished
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'admin'])
@@ -407,8 +430,6 @@ def myPDAdashboard(request, pk):
                                                       principal_reviewed='a'))
     approved_instance = pda_instance.filter(isei_reviewed='a')
 
-    academic_class = AcademicClass.objects.filter(pda_report__in=pda_report)
-
     if is_in_group(request.user, 'teacher'):
         user_not_teacher = False
     else:
@@ -420,8 +441,7 @@ def myPDAdashboard(request, pk):
                    submitted_instance = submitted_instance,
                    isei_denied_independent_instance = isei_denied_independent_instance,
                    active_independent_instance = active_independent_instance,
-                   approved_report = approved_report, approved_instance = approved_instance,
-                   academic_class=academic_class)
+                   approved_report = approved_report, approved_instance = approved_instance,)
 
     return render(request, 'teachercert/myPDAdashboard.html', context)
 
@@ -498,15 +518,26 @@ def approved_pdf2(request):
 def manage_tcertificate(request, certID=None):
     prev_certificates = None #previous certificates set to NONE
     #TODO once teacher is selected initialize prev_certificates
-    pdareports = None
+    pda_reports = None
+    academic_class = None
 
     if certID: # if the certificate already exists
         tcertificate = TCertificate.objects.get(pk=certID)
         # previous certificates to be listed with current one
         prev_certificates = TCertificate.objects.filter(Q(teacher = tcertificate.teacher), ~Q(id = certID))
-        # filter reports for the ones submitted since this certificate was issued
+        newest_cert = prev_certificates.order_by('-issue_date').first()
+        if tcertificate == newest_cert:
+            newest = True
+        else:
+            newest=False
+
+        # filter reports for the ones submitted since this certificate was issued (see myfunctions.py)
         pdareport_ids = [pdareport.id for pdareport in PDAReport.objects.all() if pdareport_belongs_to_certificate(pdareport, tcertificate)]
-        pdareports = PDAReport.objects.filter(id__in=pdareport_ids, teacher = tcertificate.teacher)
+        pda_reports = PDAReport.objects.filter(id__in=pdareport_ids)
+
+        academic_class_ids = [academic_class.id for academic_class in AcademicClass.objects.all() if
+                         academic_class_belongs_to_certificate(academic_class, tcertificate, newest)]
+        academic_class = AcademicClass.objects.filter(id__in=academic_class_ids)
 
     else:
         tcertificate = TCertificate() #initialize a new certificate
@@ -536,7 +567,8 @@ def manage_tcertificate(request, certID=None):
 
     #certID is used in the template to reload page after previous certificates are archived
     context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
-                    prev_certificates = prev_certificates, certID=certID, pdareports=pdareports)
+                    prev_certificates = prev_certificates, certID=certID,
+                    pda_reports=pda_reports, academic_class=academic_class)
     return render(request, 'teachercert/manage_tcertificate.html', context)
 
 @login_required(login_url='login')
@@ -576,5 +608,10 @@ def isei_teachercert(request):
     teachers_filter = TeacherFilter(request.GET, queryset=teachers)
     teachers = teachers_filter.qs
 
-    context = dict(teachers=teachers, teachers_filter = teachers_filter, school_year=school_year)
+    tcertificates = TCertificate.objects.filter()
+    tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
+    tcertificates = tcertificates_filter.qs
+
+    context = dict(teachers=teachers, teachers_filter = teachers_filter, school_year=school_year,
+                   tcertificates = tcertificates, tcertificates_filter= tcertificates_filter)
     return render(request, 'teachercert/isei_teachercert.html', context)

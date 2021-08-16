@@ -7,6 +7,7 @@ from .forms import *
 from .utils import is_in_group
 from .filters import *
 from .models import *
+from teachercert.models import *
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 from django.forms import inlineformset_factory
@@ -63,6 +64,7 @@ def logoutuser(request):
     logout(request)
     return redirect('login')
 
+
 #set up only for teachers + principals now
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher','principal'])
@@ -86,13 +88,18 @@ def accountsettings(request):
         'teacher_form': teacher_form
     })
 
+
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher'])
 def teacherdashboard(request):
     # TODO teacher dashboard
     teacher = request.user.teacher
     user_in = "teacher"
-    context = dict(user_in=user_in,teacher=teacher)
+
+    # current_certificates
+    tcertificate = TCertificate.objects.filter (teacher = teacher, archived= False)
+
+    context = dict(user_in=user_in, teacher=teacher, tcertificate=tcertificate)
     return render(request, 'users/teacher_dashboard.html', context)
 
 

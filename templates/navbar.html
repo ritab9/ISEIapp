@@ -63,6 +63,10 @@
                             <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">My PD Activities</a>
                       </li>
 
+                    <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">My Academic Classes</a>
+                      </li>
+
                     <li class="nav-item" >
                           <a class="nav-link" href="{% url 'account_settings' %}">Settings</a>
                       </li>
@@ -76,6 +80,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">Professional Development</a>
                       </li>
+
+                    <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Classes</a>
+                    </li>
+
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_settings' %}">Settings</a>
                       </li>

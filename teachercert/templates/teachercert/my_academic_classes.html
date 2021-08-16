@@ -1,0 +1,60 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+   Academic Classes
+{% endblock %}
+
+{% block content %}
+
+    {% if user_not_teacher %}
+        {{ teacher }}
+    {% endif %}
+
+    {% load static %}
+
+    <!-- enter new academic class -->
+<br>
+<div id="add_class" >
+    <div class="card card-body">
+        <div><input type="button" class="btn btn-ISEIblue3" id="classaddbtn"  value ="Enter Academic Classes"></div>
+        <form action=" " method="POST" id="add_academic_class" enctype="multipart/form-data" style = "display: none">
+            {% csrf_token %}
+            <p id="teacher">{{form.teacher}}</p>
+            <div class = "row">
+                <div class="col-sm-2">{{form.university|as_crispy_field}}</div>
+                <div class="col-sm-2">{{form.name|as_crispy_field}}</div>
+                <div class="col-sm-2">{{form.date_completed|as_crispy_field}}</div>
+                <div class="col-sm-2">{{form.transcript_requested|as_crispy_field}}</div>
+                <div class="col-sm-2"><input class="btn-ISEIblue3" type="submit" value="Submit" name="submit" ></div>
+            </div>
+        </form>
+	</div>
+</div>
+
+
+    <br>
+
+{% include 'teachercert/academic_classes_table.html' %}
+
+
+
+
+
+
+    <script>
+        document.getElementById("teacher").style.display = "none";
+
+     $('#classaddbtn').on("click", function() {
+         var value = $(this).attr('value');
+         if(value == "Enter Academic Classes") {
+             $("#add_academic_class").show();
+             $(this).attr('value',"Hide"); }
+         if(value == "Hide") {
+             $("#add_academic_class").hide();
+             $(this).attr('value',"Enter Academic Classes");}
+     });
+
+    </script>
+
+{% endblock %}

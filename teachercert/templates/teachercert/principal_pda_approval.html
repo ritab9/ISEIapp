@@ -94,7 +94,7 @@
                                 <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th>
                             </tr>
                             {% for c in p.academicclass_set.all %}
-                            <tr> <td>{{ c.university }}</td><td>{{c.class_name}}</td><td>{{c.date_completed}}</td>
+                            <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{c.date_completed}}</td>
                                  {% if c.transcript_received %} <td> Received </td>
                                  {% elif c.transcript_requested %} <td> Requested </td>
                                  {% else %} <td> Not requested </td>

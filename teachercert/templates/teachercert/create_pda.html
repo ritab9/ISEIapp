@@ -40,8 +40,8 @@
                 <td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}</td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</a></td>
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+                <td><a class = "btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
+                <td><a class = "btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
             </tr>
             {% endfor %}
         </table>
@@ -49,94 +49,46 @@
 </div>
 <br>
 {% endif %}
-
-<!-- Table of added academic classes-->
-{% if academic_class %}
-<div class="row">
-    <div class="card card-body">
-        <h6> Added Academic Classes</h6>
-        <table class="table table-sm">
-            <tr>
-                <th>University</th>
-                <th>Class</th>
-                <th>Date Completed</th>
-                <th>Transcript Requested</th>
-                <th>Update</th><th>Remove</th>
-            </tr>
-            {% for a in academic_class %}
-                <td>{{a.university}}</td>
-                <td>{{a.class_name}}</td>
-                <td>{{a.date_completed}} </td>
-                {% if a.transcript_requested %} <td>Yes</td>
-                {% else %} <td>Not yet</td> {% endif %}
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_academic_class' a.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_academic_class' a.id %}">Delete</a></td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-</div>
-{% endif %}
-<br>
 
 
 <form action=" " method="POST" id="add_activity" enctype="multipart/form-data">
     <!-- enter new activity-->
-    <input class="btn btn-sm btn-ISEIblue3" id="actaddbtn"  value ="Hide activity entry">
-    <div class="card card-body" id="activity_card_body">
-        <h6> Enter new activity:</h6>
-        {% csrf_token %}
-        <div class="row">
-        {{ instanceformset.management_form }}
-            {% for f in instanceformset %}
-                <div class="col-sm">
-                    <div class="row">{{ f.pda_type|as_crispy_field}}</div><br>
-                    <div class="row">
-                         {{ f.description|as_crispy_field}}&nbsp; &nbsp; &nbsp; &nbsp;
-                         {{f.date_completed|as_crispy_field}} &nbsp; &nbsp; &nbsp; &nbsp;
-                         {{f.amount|as_crispy_field}} &nbsp; &nbsp;
-                         {{f.units|as_crispy_field }} &nbsp; &nbsp;
+    <div class="card card-body" >
+        <div><input type="button" class="btn btn-sm btn-ISEIblue3" id="actaddbtn"  value ="Enter New Activity">
+             <a class = "btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a>
+        </div>
+        <div id="activity_add" style="display: none">
+        <br>
+            <h6> Enter New Activity:</h6>
+            <br>
+            {% csrf_token %}
+            <div class="row">
+            {{ instanceformset.management_form }}
+                {% for f in instanceformset %}
+                    <div class="col-sm">
+                        <div class="row">{{ f.pda_type|as_crispy_field}}</div><br>
+                        <div class="row">
+                             {{ f.description|as_crispy_field}}&nbsp; &nbsp; &nbsp; &nbsp;
+                             {{f.date_completed|as_crispy_field}} &nbsp; &nbsp; &nbsp; &nbsp;
+                             {{f.amount|as_crispy_field}} &nbsp; &nbsp;
+                             {{f.units|as_crispy_field }} &nbsp; &nbsp;
+                        </div>
                     </div>
-                </div>
-                <div class = "col-sm" style = "margin-top: 15px"><br>
-                    Supporting Documentation: {{f.file}} <br><br>
-                     <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
-                    {{ form.errors }}
-                </div>
-            {% endfor %}
+                    <div class = "col-sm" style = "margin-top: 15px"><br>
+                        Supporting Documentation: {{f.file}} <br><br>
+                         <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
+                        {{ form.errors }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
         <br><p></p>
-
-<!-- enter new academic class -->
-<input class="btn btn-sm btn-ISEIblue3" id="classaddbtn"  value ="Hide academic class entry">
-<div class="card card-body" id="class_card_body">
-        <h6> Enter new academic class:</h6>
-    <p> *If you have not yet done so, please request that transcript(s) be sent to jodyv@isei.life</p>
-        {% csrf_token %}
-        <div class="row">
-        {{ academiclassformset.management_form }}
-            {% for f in academiclassformset %}
-                <div class="col-sm">
-                    <div class="row">{{ f.university|as_crispy_field}} &nbsp;
-                         {{ f.class_name|as_crispy_field}}&nbsp; &nbsp; &nbsp; &nbsp;
-                         {{f.date_completed|as_crispy_field}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {{ f.transcript_requested|as_crispy_field }}
-                    </div>
-                </div>
-                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Class" name = "add_academic_class" style = "margin-top: 20px; margin-right: 30px">
-                {{ form.errors }}
-            {% endfor %}
-        </div>
-    </div>
-        <br><p></p>
-
-
 
     <div class="card card-body">
         <div class="row">
-           <div class="col-sm-5">
+           <div class="col-sm-6">
             <!-- update summary-->
                <p id="school_year">{{report_form.school_year}}</p> <!-- hidden with the script below, needed for form submission-->
                {% csrf_token %}
@@ -185,24 +137,14 @@
         //show and hide activity entry card
         $('#actaddbtn').on("click", function() {
                  var value = $(this).attr('value');
-                 if(value == "Show activity entry") {
-                     $("#activity_card_body").show();
-                     $(this).attr('value',"Hide activity entry"); }
-                 if(value == "Hide activity entry") {
-                     $("#activity_card_body").hide();
-                     $(this).attr('value',"Show activity entry");}
+                 if(value == "Enter New Activity") {
+                     $("#activity_add").show();
+                     $(this).attr('value',"Done"); }
+                 if(value == "Done") {
+                     $("#activity_add").hide();
+                     $(this).attr('value',"Enter New Activity");}
         });
 
-        //show and hide academic class entry card
-        $('#classaddbtn').on("click", function() {
-                 var value = $(this).attr('value');
-                 if(value == "Show academic class entry") {
-                     $("#class_card_body").show();
-                     $(this).attr('value',"Hide academic class entry"); }
-                 if(value == "Hide academic class entry") {
-                     $("#class_card_body").hide();
-                     $(this).attr('value',"Show academic class entry");}
-        });
 
 
     </script>

@@ -1,10 +1,12 @@
-
+from django import forms
 import django_filters
 from django_filters import DateFilter, CharFilter, ChoiceFilter, BooleanFilter, ModelChoiceFilter
 
-import users.models
+import users.models, teachercert.models
 from .models import *
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 class PDAInstanceFilter(django_filters.FilterSet):
     teacher = CharFilter(field_name = "pda_report__teacher", label='Teacher')
@@ -41,12 +43,28 @@ class PDAReportFilter(django_filters.FilterSet):
     principal_status = ChoiceFilter(field_name="principal_reviewed", choices=CHOICES, label ='Principal approval')
 
 
-
-
-
 class TeacherFilter(django_filters.FilterSet):
     school = CharFilter(field_name = 'school', lookup_expr = 'icontains')
     class Meta:
         model = Teacher
         fields = '__all__'
         exclude = ['user', 'phone', 'profile_picture']
+
+
+class TCertificateFilter(django_filters.FilterSet):
+    first_name = CharFilter(field_name="teacher__first_name", label='First Name')
+    last_name = CharFilter(field_name="teacher__last_name", label='Last Name')
+    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
+    certificate_type = ModelChoiceFilter(field_name="certification_type", label='Type',
+                                         queryset=teachercert.models.CertificationType.objects.all())
+    issued_after = DateFilter(field_name="issue_date", lookup_expr='gte', label='Issued after:', widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    issued_before = DateFilter(field_name="issue_date", lookup_expr='lte', label='Issued before:',widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    renew_after = DateFilter(field_name="renewal_date", lookup_expr='gte', label='Renew after:', widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    renew_before = DateFilter(field_name="renewal_date", lookup_expr='lte', label='Renew before:', widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+
+    CHOICES = (
+        (False, 'Current'),
+        (True, 'Archived'),
+        (None, 'Any')
+    )
+    archived = ChoiceFilter(field_name="archived", choices=CHOICES, label='Current/Archived')

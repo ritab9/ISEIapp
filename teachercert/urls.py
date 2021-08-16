@@ -8,6 +8,8 @@ urlpatterns = [
 
     # teacher urls
     path('myPDAdashboard/<str:pk>/', views.myPDAdashboard, name='myPDAdashboard'),
+    path('my_academic_classes/<str:pk>/', views.my_academic_classes, name='my_academic_classes'),
+
     path('update_pdainstance/<str:pk>/', views.updatePDAinstance, name="update_pdainstance"),
     path('delete_pdainstance/<str:pk>/', views.deletePDAinstance, name="delete_pdainstance"),
     path('update_academic_class/<str:pk>/', views.update_academic_class, name="update_academic_class"),

@@ -1,6 +1,6 @@
 <!--
 Not to be used independently
-include 'teachercert/teachers_table.html' %} to include in other templates-->
+{ % include 'teachercert/teachers_table.html' %} to include in other templates-->
 
 <!-- Teachers Table (Teacher, Certification, PDA Report Status -->
 
@@ -14,7 +14,8 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                 <th scope="col"> Endorsements </th>
                 <th scope="col"> Issue Date</th>
                 <th scope = "col">Expiration Date</th>
-                <th scope="col">PDA Report Status</th>
+                <th scope="col">PDA Activities</th>
+                <th scope = "col"> Academic classes</th>
             </tr>
           </thead>
 
@@ -59,11 +60,14 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                                       <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
                                   {% endif %}
                               {% endfor %}
+                        </td>
 
-                            <td>
-
-                           </td>
-
+                        <td> {% for a in t.academicclass_set.all %}
+                                  {% if a.date_completed > c.issue_date %}
+                                    {{ a.name}}, {{ a.date_completed }} <br>
+                                  {% endif %}
+                            {% endfor %}
+                        </td>
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -74,7 +78,7 @@ include 'teachercert/teachers_table.html' %} to include in other templates-->
                         <td> {{ t.school }}</td>
                         <!-- <img class="profile-pic" src= "{t.profile_picture.url}}" style="width:50px;height:50px;"> -->
                         <td> {{ t.first_name}}  {{t.last_name}} </td>
-                        <td>None</td><td></td><td></td><td></td><td></td>
+                        <td>None</td><td></td><td></td><td></td><td></td><td></td>
                     </tr>
                 {% endif %}
            {% endfor %}

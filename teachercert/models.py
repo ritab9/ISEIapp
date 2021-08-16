@@ -164,16 +164,15 @@ class PDAInstance(models.Model):
         return self.description
 
 class AcademicClass(models.Model):
-    #TODO remove Academic Class attachment to a report
-    pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
+    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
     university = models.CharField(max_length=50, blank=False)
-    class_name = models.CharField(max_length=50, blank=False)
+    name = models.CharField(max_length=50, blank=False)
     date_completed = models.DateField(blank=False)
     transcript_requested = models.BooleanField(default=False)
     transcript_received = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.class_name
+        return self.name
 
 class EmailMessage(models.Model):
     name = models.CharField(max_length=50)

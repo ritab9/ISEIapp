@@ -1,0 +1,32 @@
+<!--
+Not to be used independently
+{ % include 'teachercert/academic_classes_table.html' %} to include in other templates-->
+
+
+    <!-- list of submitted academic classes-->
+    {% if academic_class %}
+        <div class="row">
+            <div class = "card card-body" id="details" >
+                <table class="table table-sm">
+                    <tr>
+                        <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th><th>Update</th><th>Delete</th>
+                    </tr>
+                {% for c in academic_class %}
+                    <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{c.date_completed}}</td>
+                        {% if c.transcript_received %}
+                            <td> Received </td> <td></td><td></td>
+                        {% else  %}
+                            {% if c.transcript_requested %}
+                                <td> Requested</td>
+                            {% else %}
+                                <td> Not requested</td>
+                            {% endif %}
+                            <td><a class = "btn-sm btn-ISEIblue3" href="{% url 'update_academic_class' c.id %}">Update</a></td>
+                            <td><a class = "btn-sm btn-danger" href="{% url 'delete_academic_class' c.id %}">Delete</a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endif %}

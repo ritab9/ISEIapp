@@ -51,14 +51,14 @@ class RenewalForm(forms.ModelForm):
 class AcademicClassForm(ModelForm):
     class Meta:
         model = AcademicClass
-        fields = ('university','class_name', 'date_completed', 'transcript_requested', 'transcript_received')
+        fields = ('university','name', 'date_completed', 'transcript_requested', 'transcript_received')
         widgets = {
             'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
         }
 
 
-AcademicClassFormSet = inlineformset_factory(PDAReport, AcademicClass, form=AcademicClassForm, extra=1,
-                                           can_delete=False)
+#AcademicClassFormSet = inlineformset_factory(PDAReport, AcademicClass, form=AcademicClassForm, extra=1,
+#                                           can_delete=False)
 
 
 class TCertificateForm(ModelForm):

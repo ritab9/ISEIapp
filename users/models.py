@@ -43,17 +43,6 @@ class Teacher(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, help_text="*Required")
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
-    CERTIFICATION_TYPES = {
-        ('v', 'Vocational'),
-        ('d', 'Designated'),
-        ('c', 'Conditional'),
-        ('e', 'Semi Professional'),
-        ('b', 'Basic'),
-        ('s', 'Standard'),
-        ('p', 'Professional'),
-        ('n', 'None')
-    }
-    current_certification = models.CharField(max_length=1, choices=sorted(CERTIFICATION_TYPES), null=True, blank=True)
 
     class Meta:
         ordering = ('last_name',)

@@ -32,23 +32,25 @@
             {% csrf_token %}
             <div class = "row">
                 <div class = "col">
-                    {{ teacher_form.first_name|as_crispy_field }}
-                    {{ teacher_form.middle_name|as_crispy_field }}
-                    {{ teacher_form.last_name|as_crispy_field }}
-                    {{ teacher_form.suffix|as_crispy_field }}
+                    {{ teacher_form.first_name|as_crispy_field }}  <br>
+                    {{ teacher_form.middle_name|as_crispy_field }}  <br>
+                    {{ teacher_form.last_name|as_crispy_field }}  <br>
+                    {{ teacher_form.suffix|as_crispy_field }} <br>
 
                 </div>
                 <div class = "col">
-                    {{ teacher_form.date_of_birth|as_crispy_field }}
-                    {{ user_form.email|as_crispy_field }}
+                    {{ teacher_form.date_of_birth|as_crispy_field }}  <br>
+                    {{ user_form.email|as_crispy_field }} <br>
                     {{ teacher_form.phone_number|as_crispy_field }} <br>
-                    <div style = "position: absolute; bottom: 0">
-                    <p style="font-size: 14px">Change Profile Picture</p>
-                    {{ teacher_form.profile_picture}}</div>
+
                 </div>
                 <div class="col">
-                    {{ teacher_form.current_certification|as_crispy_field }} <br>
-                    {{ teacher_form.school|as_crispy_field }}
+
+                    {{ teacher_form.school|as_crispy_field }} <br>
+
+                    <p>Change Profile Picture</p>
+                    {{ teacher_form.profile_picture}}
+
                     <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" value="Update" style = "position: absolute; bottom: 0">
 
                      {% for message in messages %}
