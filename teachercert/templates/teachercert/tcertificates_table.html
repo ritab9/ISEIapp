@@ -54,14 +54,16 @@ Not to be used independently
                                         Not submitted
                                     {% endif %}
                                 </p>
-                                  <span style="font-size: 80%"> Last updated: {{ p.updated_at }} </span>
                               {% endif %}
                           {% endfor %}
+
                     </td>
+
+
 
                     <td> {% for a in c.teacher.academicclass_set.all %}
                               {% if a.date_completed > c.issue_date %}
-                                {{ a.name}}, {{ a.date_completed }} <br>
+                                {{ a.name}} <br>
                               {% endif %}
                         {% endfor %}
                     </td>

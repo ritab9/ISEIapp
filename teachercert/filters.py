@@ -52,8 +52,8 @@ class TeacherFilter(django_filters.FilterSet):
 
 
 class TCertificateFilter(django_filters.FilterSet):
-    first_name = CharFilter(field_name="teacher__first_name", label='First Name')
-    last_name = CharFilter(field_name="teacher__last_name", label='Last Name')
+    first_name = CharFilter(field_name="teacher__first_name", lookup_expr='icontains', label='First Name')
+    last_name = CharFilter(field_name="teacher__last_name", lookup_expr='icontains', label='Last Name')
     school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
     certificate_type = ModelChoiceFilter(field_name="certification_type", label='Type',
                                          queryset=teachercert.models.CertificationType.objects.all())

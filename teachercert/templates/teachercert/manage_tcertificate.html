@@ -30,6 +30,12 @@
                         <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col">
+                        {{ tcertificate_form.public_note|as_crispy_field }}</div>
+                    <div class="col">
+                        {{ tcertificate_form.office_note|as_crispy_field }}</div>
+                </div>
                 <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
             </form>
         </div>

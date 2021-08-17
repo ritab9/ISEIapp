@@ -70,6 +70,10 @@ class TCertificateForm(ModelForm):
             'renewal_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
             'renewal_requirements': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2}),
+            'public_note': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2}),
+            'office_note': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2}),
         }
 
 TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3)

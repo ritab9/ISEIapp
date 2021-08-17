@@ -234,6 +234,8 @@ class TCertificate(models.Model):
     renewal_date = models.DateField(null=False, blank=False)
     renewal_requirements = models.CharField(max_length = 100, null=False, blank=False)
     archived = models.BooleanField (default = False)
+    public_note = models.CharField(max_length = 100, null=True, blank=True)
+    office_note = models.CharField(max_length=100, null=True, blank=True)
 
     def expired(self):
         return self.renewal_date <= date.today()
@@ -249,3 +251,6 @@ class TEndorsement(models.Model):
     endorsement = models.ForeignKey(Endorsement, on_delete=models.PROTECT, null=False, blank=False)
     def __str__(self):
         return self.endorsement.name
+
+
+

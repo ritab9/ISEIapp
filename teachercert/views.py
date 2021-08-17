@@ -100,6 +100,7 @@ def createPDA(request, recId):
 
 # update PDAinstance (by id)
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
 def updatePDAinstance(request, pk):
     pdainstance = PDAInstance.objects.get(id=pk)
     form = PDAInstanceForm(instance=pdainstance)
@@ -154,7 +155,7 @@ def deletePDAinstance(request, pk):
 
 # teacher activities for user with id=pk ... some parts not finished
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'admin'])
+@allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
 def my_academic_classes(request, pk):
 
     teacher = Teacher.objects.get(user=User.objects.get(id=pk))
@@ -180,7 +181,7 @@ def my_academic_classes(request, pk):
 
 # delete academic_class (by id)
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['admin', 'teacher'])
+@allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
 def delete_academic_class(request, pk):
     academic_class = AcademicClass.objects.get(id=pk)
     if request.method == "POST":
@@ -194,6 +195,7 @@ def delete_academic_class(request, pk):
 
 # update academic class (by id)
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
 def update_academic_class(request, pk):
     academic_class = AcademicClass.objects.get(id=pk)
     form = AcademicClassForm(instance=academic_class)
@@ -397,7 +399,7 @@ def isei_pda_approval(request, repID=None, instID=None):
 
 # teacher activities for user with id=pk ... some parts not finished
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'admin'])
+@allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
 def myPDAdashboard(request, pk):
     teacher = Teacher.objects.get(user=User.objects.get(id=pk))
 
@@ -525,19 +527,9 @@ def manage_tcertificate(request, certID=None):
         tcertificate = TCertificate.objects.get(pk=certID)
         # previous certificates to be listed with current one
         prev_certificates = TCertificate.objects.filter(Q(teacher = tcertificate.teacher), ~Q(id = certID))
-        newest_cert = prev_certificates.order_by('-issue_date').first()
-        if tcertificate == newest_cert:
-            newest = True
-        else:
-            newest=False
-
-        # filter reports for the ones submitted since this certificate was issued (see myfunctions.py)
-        pdareport_ids = [pdareport.id for pdareport in PDAReport.objects.all() if pdareport_belongs_to_certificate(pdareport, tcertificate)]
-        pda_reports = PDAReport.objects.filter(id__in=pdareport_ids)
-
-        academic_class_ids = [academic_class.id for academic_class in AcademicClass.objects.all() if
-                         academic_class_belongs_to_certificate(academic_class, tcertificate, newest)]
-        academic_class = AcademicClass.objects.filter(id__in=academic_class_ids)
+        #pda_reports and academic classes submitted for this certificate
+        pda_reports = pdareports_for_certificate(tcertificate)
+        academic_class = academic_classes_for_certificate(tcertificate)
 
     else:
         tcertificate = TCertificate() #initialize a new certificate
@@ -563,7 +555,7 @@ def manage_tcertificate(request, certID=None):
                 if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
                     return redirect('manage_tcertificate', certID=tcertificate.id)
                 if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
-                    return redirect('isei_teachercert')
+                    return redirect('manage_tcertificate')
 
     #certID is used in the template to reload page after previous certificates are archived
     context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,

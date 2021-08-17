@@ -1,23 +1,9 @@
 {%  extends 'base.html' %}
 {% load static %}
 
+
 {% block content %}
 
-    <!-- filter -->
-    <div class="row">
-        <div class="card card-body">
-            <h6>Filter:</h6>
-            <form method="get">
-                    {{ teachers_filter.form.school.label_tag }} {{ teachers_filter.form.school }}
-                    {{ teachers_filter.form.current_certification.label_tag }} {{ teachers_filter.form.current_certification }}
-                    {{ teachers_filter.form.first_name.label_tag }} {{ teachers_filter.form.first_name }}
-                    {{ teachers_filter.form.last_name.label_tag }} {{ teachers_filter.form.last_name }}
-                <br>
-                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-                <a href="{%  url 'isei_teachercert' %}">Clear all filters</a>
-            </form>
-        </div>
-    </div>
 
     <div class="row">
         <div class="card card-body">
