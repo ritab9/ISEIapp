@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 
 # Create your models here.
@@ -13,6 +14,7 @@ class Country(models.Model):
         ('n', 'North America'),
     }
     region = models.CharField(max_length=1, choices=sorted(REGIONS), null=False, blank=False)
+
     def __str__(self):
         return self.code
 
@@ -21,9 +23,6 @@ class School(models.Model):
     name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
                             null=False)
     abbreviation = models.CharField(max_length=4, default=" ", help_text=' Enter the abbreviation for this school')
-    address = models.CharField(max_length=50, help_text='Enter the address of the school', blank=True, null=True)
-    country = models.ForeignKey(Country, on_delete = models.PROTECT)
-
     ordering = ['name']
 
     def __str__(self):
@@ -33,13 +32,13 @@ class School(models.Model):
 # User Model is automatically created by Django and we will extend it to create Teacher Model
 # upload will be automatically under the Media_root, which for us is Media
 class Teacher(models.Model):
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     middle_name = models.CharField(max_length=20, null=True, blank=True)
     last_name = models.CharField(max_length=20)
-    date_of_birth = models.DateField(null=False, blank=False)
     suffix = models.CharField(max_length=10, null= True, blank= True)
+    date_of_birth = models.DateField(null=False, blank=False)
     active = models.BooleanField (default=True)
-    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, help_text="*Required")
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
@@ -57,3 +56,86 @@ class Teacher(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+
+class Address(models.Model):
+    address_1 = models.CharField(verbose_name="address", max_length=128)
+    address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
+    city = models.CharField(verbose_name="city", max_length=64, default="")
+    state = models.CharField(verbose_name="state or province", max_length=4, default="")
+    zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+
+    school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
+    teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.city +"," +self.country
+
+
+class College(models.Model):
+    name = models.CharField(max_length=50, unique=True, blank=False,
+                            null=False)
+    address = models.CharField(verbose_name="City, State, Country", max_length=40, default="",)
+    ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+class CollegeAttended(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
+    college = models.ForeignKey(College, on_delete=models.CASCADE, null=True, blank=True,)
+    start_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
+    end_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
+    LEVELS = (
+        ('a', 'Associate degree'),
+        ('b', "Bachelor's degree"),
+        ('m', "Master's degree"),
+        ('d', 'Doctoral degree'),
+    )
+    level = models.CharField(max_length=1, choices=LEVELS, help_text="Degree Level", null=False, blank=False)
+    degree = models.CharField(max_length=40, verbose_name= "Type, Degree Earned", help_text= "BSc, Marketing & Psychology", null= False, blank=False)
+    transcript_requested = models.BooleanField(default= False, verbose_name="Official college transcripts have been requested")
+    transcript_received = models.BooleanField(default= False)
+
+class SchoolOfEmployment(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
+    school = models.CharField(max_length=50, unique=True, blank=False, null=False)
+    address = models.CharField(verbose_name="City, State, Country", max_length=40, default="", )
+    start_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
+    end_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
+    courses = models.CharField(verbose_name="Courses taught", max_length=100, default="", )
+
+class Application(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
+    initial = models.BooleanField(default= True)
+    CLEVELS = (
+        ('v', 'Vocational'),
+        ('s', "Secondary"),
+        ('s', "Elementary"),
+        ('d', 'Designated'),
+    )
+    cert_level = models.CharField(max_length=1, choices=CLEVELS, verbose_name="Certification Level Requested", null=True, blank=True)
+    ELEVELS = (
+        ('e', 'Elementary'),
+        ('s', 'Secondary Subject Area(s)'),
+    )
+    endors_level = models.CharField(max_length=1, choices=ELEVELS, verbose_name="Endorsement Level Requested", null=True, blank=True)
+    subject_areas = models.CharField(max_length=50, blank=True, verbose_name="Subject Areas", help_text = "Chemistry, Bible, Mathematics")
+    CHOICES=(
+        ('y', 'Yes'),
+        ('n','No'),
+        ('a', 'N/A'),
+    )
+    resume = models.BooleanField(max_length= 1, choices = CHOICES, verbose_name = "Resume of work/teaching experience is included (for Designated and Vocational)", default ='a')
+    principal_letter = models.BooleanField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated and Vocational)", default ='a')
+
+    felony = models.BooleanField(verbose_name = "Have you ever been convicted of a felony (including a suspended sentence)?",
+                                 default= False)
+    felony_description =models.CharField( max_length = 300, blank=True, null= True, verbose_name = "If yes, please describe")
+    sexual_offence = models.BooleanField(
+        verbose_name="Have you ever been under investigation for any sexual offense (excluding any charges which were fully cleared)?",
+        default=False)
+    sexual_offence_description = models.CharField(max_length=300, blank=True, null=True, verbose_name="If yes, please describe")
+
+    signature = models.CharField(verbose_name= "Applicant's signature", max_length=50, blank= False, null = False,)
+    date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
