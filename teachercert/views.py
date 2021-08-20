@@ -530,7 +530,6 @@ def manage_tcertificate(request, certID=None):
         #pda_reports and academic classes submitted for this certificate
         pda_reports = pdareports_for_certificate(tcertificate)
         academic_class = academic_classes_for_certificate(tcertificate)
-
     else:
         tcertificate = TCertificate() #initialize a new certificate
 
@@ -545,7 +544,6 @@ def manage_tcertificate(request, certID=None):
             tcertificate_form = TCertificateForm(request.POST)
 
         tendorsement_formset = TEndorsementFormSet(request.POST)
-
         if tcertificate_form.is_valid(): #validate the certificate info
             tcertificate = tcertificate_form.save()
             tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
@@ -555,7 +553,7 @@ def manage_tcertificate(request, certID=None):
                 if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
                     return redirect('manage_tcertificate', certID=tcertificate.id)
                 if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
-                    return redirect('manage_tcertificate')
+                    return redirect('manage_tcertificate',  certID=tcertificate.id )
 
     #certID is used in the template to reload page after previous certificates are archived
     context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
