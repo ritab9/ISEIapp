@@ -1,0 +1,149 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Teacher Certification Application {% endblock title %}
+{% block content %}
+    {% load static %}
+
+    <h4> Teacher Certification Initial Application</h4>
+
+<!-- Certification form -->
+
+    <form method="POST" action="">
+        {% csrf_token %}
+
+ <!-- School of employment and name -->
+        <div class="card card-body">
+              <h7 class="col"> School of Employment: {{ teacher.school }}</h7>
+              <div class="col"> Name: {{ teacher.name }} </div>
+        </div>
+
+        <div class="col">
+        <div class="row">
+ <!-- address -->
+            <div class="col card card-body">
+                 <p> Address:  {{ address.address_1}} {{ address.address_2}}</p>
+                 <p>City:  {{ address.city }}</p>
+                 <p>State:  {{ address.state }}</p>
+                 <p>Zip/Postal Code:  {{ address.zip_code }}</p>
+                 <p>Country: {{ address.country}}</p><br>
+            </div>
+
+ <!-- Teacher Info -->
+            <div class="col card card-body">
+                <p> Date of birth: {{ teacher.date_of_birth }}</p>
+                <p>SSN: ***-**-{{ teacher.ssn|slice:'7:11'}}</p>
+                <p>Email address: {{ user.email }}</p>
+                <p>Phone number: {{ teacher.phone_number }}</p>
+            </div>
+        </div>
+        </div>
+
+<!-- application info -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col"> {{ application_form.cert_level|as_crispy_field }}</div>
+                <div class="col"> {{ application_form.endors_level|as_crispy_field }}</div>
+                <div class="col"> {{ application_form.subject_areas|as_crispy_field }}</div>
+            </div>
+        </div>
+
+<!-- Colleges Attended Table -->
+        <div class="card card-body">
+        <table class="table table-sm">
+             <thead>
+                <tr>
+                  <th scope="col">College Name</th>
+                  <th scope="col">City, Country</th>
+                  <th scope="col">Start Date </th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Degree Level</th>
+                  <th scope="col">Degree Name</th>
+                  <th scope="col">Transcript Status</th>
+                </tr>
+             </thead>
+
+             <tbody class="classlist" >
+                {% for college in college_attended %}
+                    <tr>
+                        <td>{{ college.name }}</td>
+                        <td>{{ college.address }}</td>
+                        <td>{{ college.start_date }}</td>
+                        <td>{{ college.end_date }}</td>
+                        <td>{{ college.get_level_display }}</td>
+                        <td> {{ college.degree }}</td>
+                        <td> {% if college.transcript_requested %}
+                                {% if college.transcript_received %}
+                                    <span style="color:green">Received</span>
+                                {% else %}
+                                    <span style="color:#bf6f33">Requested</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color:red">Not requested</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+             </tbody>
+         </table>
+        </div>
+
+<!-- Schools of Employment Table -->
+        <div class="card card-body">
+             <table class="table">
+                 <thead>
+                    <tr>
+                      <th scope="col">School</th>
+                      <th scope="col">City, Country</th>
+                      <th scope="col">Start Date </th>
+                      <th scope="col">End Date</th>
+                      <th scope="col"> Courses taught</th>
+                    </tr>
+                 </thead>
+
+                 <tbody class="employmentlist" >
+                      {% for school in school_of_employment %}
+                        <tr>
+                            <td>{{ school.name }}</td>
+                            <td>{{ school.address }}</td>
+                            <td>{{ school.start_date }}</td>
+                            <td>{{ school.end_date }}</td>
+                            <td>{{ school.courses }}</td>
+                        </tr>
+                      {% endfor %}
+                 </tbody>
+             </table>
+        </div>
+
+<!-- Check all that apply -->
+        <div class="card card-body">
+            {{ application_form.resume|as_crispy_field }}
+            {{ application_form.principal_letter|as_crispy_field }}
+        </div>
+
+<!-- Disclosure Information -->
+        <div class="card card-body">
+            {{ application_form.felony|as_crispy_field }}
+            {{ application_form.felony_description|as_crispy_field }}
+
+            {{ application_form.sexual_offence|as_crispy_field  }}
+            {{ application_form.sexual_offence_description|as_crispy_field  }}
+        </div>
+
+<!-- Signature -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col">{{ application_form.signature|as_crispy_field  }}</div>
+                <div class="col">{{ application_form.date|as_crispy_field }}</div>
+            </div>
+        </div>
+
+<!-- Submit -->
+        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Submit Application" >
+</form>
+
+{% for message in messages %}
+    <p id="messages" style="color:blue">{{message}}</p>
+{% endfor %}
+
+{% endblock %}

@@ -27,5 +27,11 @@ urlpatterns = [
     path('staffdashboard/', views.staffdashboard, name='staff_dashboard'),
     path('teacherdashboard/', views.teacherdashboard, name='teacher_dashboard'),
     path('principaldashboard/', views.principaldashboard, name='principal_dashboard'),
-    path('account_settings/', views.accountsettings, name='account_settings'),
+
+    path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),
+
+    #pk is teacher ID, appID is the last application ID
+    path('teachercert_application/<str:pk>/<str:appID>/', views.teachercert_application, name='teachercert_application'),
+    path('teachercert_application/<str:pk>/', views.teachercert_application, name='teachercert_application'),
+
 ]

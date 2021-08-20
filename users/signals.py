@@ -13,6 +13,5 @@ def create_teacher(sender, instance, created, **kwargs):
 	if created:
 		group = Group.objects.get(name='teacher')
 		instance.groups.add(group)
-		Teacher.objects.create(user=instance)
-		print('Profile Created')
+		Teacher.objects.create(user=instance, first_name=instance.first_name, last_name = instance.last_name)
 			

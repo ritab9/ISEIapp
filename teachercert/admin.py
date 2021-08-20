@@ -3,7 +3,7 @@ from teachercert.models import *
 from django.utils.html import format_html
 from teachercert.forms import RenewalForm
 from django import forms
-
+from users.models import *
 # Register your models here.
 
 @admin.register(SchoolYear)
@@ -94,3 +94,4 @@ class TCertificate(admin.ModelAdmin):
     list_display = ('teacher', 'certification_type', 'issue_date','renewal_date', 'archived','renewal_requirements')
     list_editable = ('certification_type','archived', 'issue_date','renewal_date', 'renewal_requirements')
     list_display_links = ('teacher',)
+

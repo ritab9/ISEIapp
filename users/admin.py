@@ -10,14 +10,15 @@ class Country(admin.ModelAdmin):
     list_display = ('name', 'code', 'region')
     list_editable = ('code', 'region')
 
-class AddressInLine(admin.StackedInline):
+class SchoolAddressInLine(admin.StackedInline):
     model = Address
     can_delete = True
     extra = 0
+    exclude = ['teacher']
 
 @admin.register(School)
 class School(admin.ModelAdmin):
-    inlines = [AddressInLine,]
+    inlines = [SchoolAddressInLine,]
     list_display = ('name', 'abbreviation',)
     list_editable = ('abbreviation',)
 
@@ -49,8 +50,8 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 
-class ApplicationInLine(admin.StackedInline):
-    model = Application
+class TeacherCertificationApplicationInLine(admin.StackedInline):
+    model = TeacherCertificationApplication
     can_delete = True
     extra=0
 
@@ -64,9 +65,17 @@ class SchoolOfEmploymentInLine(admin.StackedInline):
     can_delete = True
     extra=0
 
+class TeacherAddressInLine(admin.StackedInline):
+    model = Address
+    can_delete = True
+    extra = 0
+    exclude = ['school']
+
 @admin.register(Teacher)
 class Teacher(admin.ModelAdmin):
-    inlines = [AddressInLine, ApplicationInLine,CollegeAttendedInLine, SchoolOfEmploymentInLine]
-
+    inlines = [TeacherAddressInLine, TeacherCertificationApplicationInLine,CollegeAttendedInLine, SchoolOfEmploymentInLine]
+    list_display = ('name', 'school', 'active')
+    list_editable = ('school', 'active')
+    list_display_links = ('name',)
 
 

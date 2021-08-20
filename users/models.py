@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from localflavor.us.models import USSocialSecurityNumberField
 from datetime import date
 
 
@@ -37,20 +38,26 @@ class Teacher(models.Model):
     middle_name = models.CharField(max_length=20, null=True, blank=True)
     last_name = models.CharField(max_length=20)
     suffix = models.CharField(max_length=10, null= True, blank= True)
-    date_of_birth = models.DateField(null=False, blank=False)
+    date_of_birth = models.DateField(null= True)
     active = models.BooleanField (default=True)
-    school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, help_text="*Required")
+    school = models.ForeignKey(School, on_delete=models.PROTECT, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
+    ssn = USSocialSecurityNumberField(null=False, blank=False, default = "111-22-3333")
 
     class Meta:
         ordering = ('last_name',)
 
     def name(self):
-        if self.middle_name:
-            name = self.first_name +" " + self.middle_name+ " "+ self.last_name
+        if self.middle_name and self.suffix:
+            name = self.first_name +" " + self.middle_name+ " "+ self.last_name + " " +self.suffix
         else:
-            name = self.first_name + " " + self.last_name
+            if self.middle_name:
+                name = self.first_name + " " + self.middle_name + " " + self.last_name
+            elif self.suffix:
+                name = self.first_name + " " + self.last_name + "" + self.suffix
+            else:
+                name = self.first_name + " " + self.last_name
         return name
 
     def __str__(self):
@@ -69,7 +76,7 @@ class Address(models.Model):
     teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return self.city +"," +self.country
+        return self.city +"," +self.country.name
 
 
 class College(models.Model):
@@ -83,7 +90,8 @@ class College(models.Model):
 
 class CollegeAttended(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
-    college = models.ForeignKey(College, on_delete=models.CASCADE, null=True, blank=True,)
+    name = models.CharField(max_length=30, verbose_name="College Name", null=False, blank=False,)
+    address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
     start_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
     end_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
     LEVELS = (
@@ -95,17 +103,21 @@ class CollegeAttended(models.Model):
     level = models.CharField(max_length=1, choices=LEVELS, help_text="Degree Level", null=False, blank=False)
     degree = models.CharField(max_length=40, verbose_name= "Type, Degree Earned", help_text= "BSc, Marketing & Psychology", null= False, blank=False)
     transcript_requested = models.BooleanField(default= False, verbose_name="Official college transcripts have been requested")
-    transcript_received = models.BooleanField(default= False)
+    transcript_received = models.BooleanField(default= False, null = False, blank= False)
+    def __str__(self):
+        return self.name
 
 class SchoolOfEmployment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
-    school = models.CharField(max_length=50, unique=True, blank=False, null=False)
-    address = models.CharField(verbose_name="City, State, Country", max_length=40, default="", )
+    name = models.CharField(max_length=50, unique=True, blank=False, null=False)
+    address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
     start_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
     end_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
     courses = models.CharField(verbose_name="Courses taught", max_length=100, default="", )
+    def __str__(self):
+        return self.name
 
-class Application(models.Model):
+class TeacherCertificationApplication(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     initial = models.BooleanField(default= True)
     CLEVELS = (
@@ -126,8 +138,8 @@ class Application(models.Model):
         ('n','No'),
         ('a', 'N/A'),
     )
-    resume = models.BooleanField(max_length= 1, choices = CHOICES, verbose_name = "Resume of work/teaching experience is included (for Designated and Vocational)", default ='a')
-    principal_letter = models.BooleanField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated and Vocational)", default ='a')
+    resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Resume of work/teaching experience is included (for Designated and Vocational)", default ='N/A')
+    principal_letter = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated and Vocational)", default ='N/A')
 
     felony = models.BooleanField(verbose_name = "Have you ever been convicted of a felony (including a suspended sentence)?",
                                  default= False)

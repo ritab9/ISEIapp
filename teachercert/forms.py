@@ -6,7 +6,8 @@ from django.forms.models import inlineformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 # from django.forms.models import BaseInlineFormSet
-from .models import *
+from teachercert.models import *
+
 
 
 class PDAreportForm(ModelForm):
@@ -15,7 +16,6 @@ class PDAreportForm(ModelForm):
         fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment',)
         widgets = {
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
-        #    'date_submitted': forms.DateField(attrs={'class': 'form-controls', 'placehoder': 'Enter date'}),
              'summary': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Enter summary for combined activities', 'rows':10}),
              'principal_comment': forms.Textarea(
@@ -24,7 +24,6 @@ class PDAreportForm(ModelForm):
                 attrs={'class': 'form-controls', 'rows': 4 }),
             'date_submitted': forms.DateInput(format ='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
         }
-
 
 
 class PDAInstanceForm(ModelForm):
@@ -56,11 +55,6 @@ class AcademicClassForm(ModelForm):
             'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
         }
 
-
-#AcademicClassFormSet = inlineformset_factory(PDAReport, AcademicClass, form=AcademicClassForm, extra=1,
-#                                           can_delete=False)
-
-
 class TCertificateForm(ModelForm):
     class Meta:
         model=TCertificate
@@ -79,27 +73,4 @@ class TCertificateForm(ModelForm):
 TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3)
 
 
-#Not Used at the moment
-#to be used by ISEI staff to add the approved CEUs and individual deny instances as needed
-#PDAInstanceFormSetNoExtraRows = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=0,
-#                                           can_delete=False)
-
-#class PDAInstanceFormSetHelper(FormHelper):
-#    def __init__(self, *args, **kwargs):
-#        super().__init__(*args, **kwargs)
-#        self.form_method = 'post'
-#        self.layout = Layout(
-#            'pda_type',
-#            'description','date_completed',
-#            'pages', 'amount', 'ceu', 'file'
-#        )
-#        self.render_required_fields = True
-
-
-#class DocumentForm(forms.Form): #unused but keeping it just in case
-#    name = forms.CharField(max_length=35, min_length=1)
-#    docfile = forms.FileField(
-#        label='Select a file',
-#        help_text='max. 42 megabytes'
-#    )
 
