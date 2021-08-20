@@ -25,7 +25,7 @@ urlpatterns = [
 
 # dashboard urls
     path('staffdashboard/', views.staffdashboard, name='staff_dashboard'),
-    path('teacherdashboard/', views.teacherdashboard, name='teacher_dashboard'),
+    path('teacherdashboard/<str:userID>/', views.teacherdashboard, name='teacher_dashboard'),
     path('principaldashboard/', views.principaldashboard, name='principal_dashboard'),
 
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),

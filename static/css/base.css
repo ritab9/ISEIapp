@@ -7,7 +7,6 @@
 }
 
 
-
 /* used with JS to show/hide elements in reoort table*/
 .approvaltable .table{}
 .enablebtn .btn{}
@@ -66,7 +65,7 @@ body {
 }
 
 /* if any changes made here please check login and register templates */
-a,h1,h2, h6 {
+a,h1,h2,h5,h6 {
     color: #084574;
  }
 

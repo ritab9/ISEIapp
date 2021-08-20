@@ -50,9 +50,8 @@ def loginpage(request):
                 if is_in_group(request.user, 'teacher'):
                     #if user.date_joined.date() == user.last_login.date():
                     if certified(teacher):
-                        return redirect('myPDAdashboard', user.id)
+                        return redirect('teacher_dashboard', user.id)
                     else:
-                        #return redirect('teacher_dashboard') #because dashboard is not yet done
                         return redirect('account_settings', user.id)
                 elif is_in_group(request.user, 'staff'):
                     #return redirect('PDAreports')
@@ -81,9 +80,10 @@ def accountsettings(request, userID):
     teacher = Teacher.objects.get(user=user)
 
     # checking if address already entered for user
-    address = Address.objects.get(teacher=teacher)
+    addresses = Address.objects.filter(teacher=teacher)
+    address = addresses.first()
     if not address:
-        address = Address (initial={'teacher': teacher})
+        address = Address(teacher=teacher)
 
     employment_formset_valid = True
     college_formset_valid = True
@@ -106,9 +106,11 @@ def accountsettings(request, userID):
         teacher_form = TeacherForm(instance=teacher)
 
     if request.method == 'POST' and request.POST.get('address'):
-        address_form = TeacherAddressForm(request.POST)
+        address_form = TeacherAddressForm(request.POST, instance=address)
         if address_form.is_valid():
-            address_form.save()
+            address = address_form.save(commit=False)
+            address.teacher = teacher
+            address.save()
             messages.success(request, 'Your address was successfully updated!')
         else:
             #messages.error(request)
@@ -121,6 +123,7 @@ def accountsettings(request, userID):
             address_form = TeacherAddressForm(instance=address)
         else:
             address_form = TeacherAddressForm(initial={'teacher': teacher})
+            address = Address(teacher=teacher)
 
     if request.method == 'POST' and request.POST.get('school_of_employment'):
         school_of_employment_formset = SchoolOfEmploymentFormSet(request.POST, instance = teacher)
@@ -173,15 +176,18 @@ def accountsettings(request, userID):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', ])
-def teacherdashboard(request):
+def teacherdashboard(request, userID):
     # TODO teacher dashboard
-    teacher = request.user.teacher
-    user_in = "teacher"
+    user=User.objects.get(id=userID)
+    teacher = Teacher.objects.get(user = user)
+    #user_in = "teacher"
 
     # current_certificates
-    tcertificate = TCertificate.objects.filter (teacher = teacher, archived= False)
+    tcertificates = current_certificates(teacher)
 
-    context = dict(user_in=user_in, teacher=teacher, tcertificate=tcertificate)
+    today =get_today()
+
+    context = dict(teacher=teacher, tcertificates=tcertificates, today=today)
     return render(request, 'users/teacher_dashboard.html', context)
 
 

@@ -170,6 +170,7 @@ class AcademicClass(models.Model):
     date_completed = models.DateField(blank=False)
     transcript_requested = models.BooleanField(default=False)
     transcript_received = models.BooleanField(default=False)
+    credits = models.PositiveSmallIntegerField(blank= False, null=False)
 
     def __str__(self):
         return self.name
@@ -232,7 +233,7 @@ class TCertificate(models.Model):
     certification_type = models.ForeignKey(CertificationType, on_delete=models.PROTECT, null=False, blank=False)
     issue_date = models.DateField(null=False, blank=False)
     renewal_date = models.DateField(null=False, blank=False)
-    renewal_requirements = models.CharField(max_length = 100, null=False, blank=False)
+    renewal_requirements = models.CharField(max_length = 400, null=False, blank=False)
     archived = models.BooleanField (default = False)
     public_note = models.CharField(max_length = 100, null=True, blank=True)
     office_note = models.CharField(max_length=100, null=True, blank=True)

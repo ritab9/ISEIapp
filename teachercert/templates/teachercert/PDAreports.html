@@ -1,9 +1,10 @@
 {%  extends 'base.html' %}
 {% load static %}
+{% load group_tags %}
 
 {% block content %}
 
-
+{% if request.user|in_group:"staff" or request.user|in_group:"principal"%}
 <!-- filter -->
     <div class="row">
         <div class="card card-body">
@@ -21,6 +22,7 @@
                 <div class="col-sm">
                     {{ pda_report_filter.form.first_name.label_tag}}{{ pda_report_filter.form.first_name}}<br>
                     {{ pda_report_filter.form.last_name.label_tag}}{{ pda_report_filter.form.last_name}} </div>
+
                 <div class="col-sm span80" >
                     {{ pda_report_filter.form.start_created.label_tag }} {{ pda_report_filter.form.start_created }}<br>
                     {{ pda_report_filter.form.end_created.label_tag }} {{ pda_report_filter.form.end_created }}</div>
@@ -34,7 +36,7 @@
             </form>
         </div>
     </div>
-
+  {% endif %}
     {% include 'teachercert/reports_table.html' %}
 
 

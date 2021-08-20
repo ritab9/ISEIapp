@@ -6,7 +6,7 @@ from . import views
 
 urlpatterns = [
 
-    # teacher urls
+    # teacher urls pk - teacher.id
     path('myPDAdashboard/<str:pk>/', views.myPDAdashboard, name='myPDAdashboard'),
     path('my_academic_classes/<str:pk>/', views.my_academic_classes, name='my_academic_classes'),
 

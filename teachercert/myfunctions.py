@@ -1,4 +1,5 @@
 from .models import *
+from datetime import datetime
 
 
 # The last issued certificate for a teacher
@@ -42,3 +43,7 @@ def academic_classes_for_certificate(tcertificate):
         academic_class_ids = [academic_class.id for academic_class in AcademicClass.objects.filter(teacher=tcertificate.teacher) if
                          academic_class_belongs_to_certificate(academic_class, tcertificate)]
         return AcademicClass.objects.filter(id__in=academic_class_ids)
+
+
+def get_today():
+    return datetime.date.today()

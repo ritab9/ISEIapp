@@ -1,8 +1,109 @@
 {%  extends 'base.html' %}
+{% load static %}
+
+
 
 {% block title %} Teacher {% endblock title %}
 {% block content %}
 
-    <p>{{ teacher }}'s Homepage is Under Construction</p>
+    <div class="">
+        <p>{{ teacher.name }}'s Teacher Certificate(s)</p>
+
+        {% for c in tcertificates %}
+        <div class = "card card-body mb-3">
+  <!-- Certificate Info -->
+            <div class="row">
+                <div class="col-sm">
+            <!-- certificate name and link + highlight expired certificates -->
+                    <h6><b>{{ c.certification_type.name }}</b></h6>
+                    {% if c.expired %} <span style="color:red">Expired</span> {% endif %}
+                </div>
+                 <div class="col col-sm">
+                    <h6> <b>Endorsements:</b></h6>
+                    <ul>{% for e in c.tendorsement_set.all %}
+                        <li>{{ e }} </li>
+                    {% endfor %} </ul>
+                </div>
+                <div class="col-sm"> <p><b>Valid:</b>
+                    {{ c.issue_date }} - {% if c.renewal_date < today %}<span style="color:red">{{ c.renewal_date}}</span> {% else %} {{ c.renewal_date }}{% endif %}
+
+                </p></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                <p><b> Renewal Requirements:</b> {{ c.renewal_requirements }}</p>
+                    {% if c.public_note %}
+                        <p><b>Note:</b> {{ c.public_note }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+             <div class="row mb-3">
+
+<!-- PDA Reports with this certificate -->
+                <div class="col col-sm">
+                <h6><b>CEU Reports</b></h6>
+                    <table class="table">
+                        <tr><th>School Year</th><th>Status</th></tr>
+
+                        {% for p in c.teacher.pdareport_set.all %}
+                            {% if p.school_year.end_date > c.issue_date %}
+                            <tr>
+                                <td><a class="nav-link" href="{% url 'myPDAdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
+                                <td>
+                                    {% if p.isei_reviewed == 'a' %}
+                                        {{ p.approved_ceu }} CEUs approved
+                                    {% elif p.principal_reviewed == 'a' %}
+                                        ISEI approval pending
+                                    {% elif p.date_submitted %}
+                                        Principal Approval Pending
+                                    {% elif p.isei_reviewed == 'd'%}
+                                        ISEI denied. Not yet resubmitted.
+                                    {% elif p.principal_reviewed == 'd'%}
+                                        Principal denied. Not yet resubmitted.
+                                    {% else %}
+                                        Not submitted
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+
+    <!-- Academic classes with this certificate -->
+                {% if c.teacher.academicclass_set.all  %}
+                    <div class="col col-sm">
+                        <h6><b>Academic classes</b></h6>
+
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th>
+                        </tr>
+
+                        {% for a in c.teacher.academicclass_set.all %}
+                            <tr> <td><a class="nav-link" href="{% url 'my_academic_classes' teacher.user.id %}"> {{a.name}}</a></td><td>{{ a.credits }}</td><td>{{a.date_completed}}</td>
+                                {% if a.transcript_received %}
+                                    <td> Received </td> <td></td><td></td>
+                                {% else  %}
+                                    {% if a.transcript_requested %}
+                                        <td> Requested</td>
+                                    {% else %}
+                                        <td> Not requested</td>
+                                    {% endif %}
+                                {% endif %}
+                            </tr>
+                             {% endfor %}
+                     </table>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
 
 {% endblock %}

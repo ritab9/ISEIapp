@@ -10,10 +10,10 @@ Not to be used independently
             <div class = "card card-body" id="details" >
                 <table class="table table-sm">
                     <tr>
-                        <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th><th>Update</th><th>Delete</th>
+                        <th> University</th><th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th><th>Update</th><th>Delete</th>
                     </tr>
                 {% for c in academic_class %}
-                    <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{c.date_completed}}</td>
+                    <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{ c.credits }}</td><td>{{c.date_completed}}</td>
                         {% if c.transcript_received %}
                             <td> Received </td> <td></td><td></td>
                         {% else  %}

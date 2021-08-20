@@ -50,7 +50,7 @@ class RenewalForm(forms.ModelForm):
 class AcademicClassForm(ModelForm):
     class Meta:
         model = AcademicClass
-        fields = ('university','name', 'date_completed', 'transcript_requested', 'transcript_received')
+        fields = ('__all__')
         widgets = {
             'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
         }

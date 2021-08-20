@@ -56,7 +56,7 @@
                         <a class="nav-link" href="{% url 'principal_pda_approval' %}">PDA Approval</a>
                       </li>
                       <li class="nav-item">
-                            <a class="nav-link" href="{% url 'teacher_dashboard' %}">My Dashboard </a>
+                            <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">My Dashboard </a>
                       </li>
                     {% if request.user|certified_tag %}
                       <li class="nav-item">
@@ -75,11 +75,11 @@
                 {% if request.user|in_group:"teacher" and not request.user|in_group:"principal"%}
 
                     <li class="nav-item" >
-                        <a class="nav-link" href="{% url 'teacher_dashboard' %}">Home </a>
+                        <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
                     </li>
                     {% if request.user|certified_tag %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">Professional Development</a>
+                        <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">CEU Reports</a>
                       </li>
 
                     <li class="nav-item">

@@ -75,8 +75,7 @@
 
     <!-- Teacher Info List -->
                     <div class = 'col-sm teacherlist'>
-                        <p> Name: {{ teacher.first_name }} {{ teacher.middle_name }}
-                            {{ teacher.last_name }} {{ teacher.suffix}}</p>
+                        <p> Name: {{ teacher.name }} </p>
                         <p> School: {{ teacher.school.label }}{{ teacher.school }} </p>
                         <p> Date of birth: {{ teacher.date_of_birth }}</p>
                         <p>SSN: ***-**-{{ teacher.ssn|slice:'7:11'}}</p>

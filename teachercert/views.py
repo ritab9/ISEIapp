@@ -353,7 +353,7 @@ def isei_pda_approval(request, repID=None, instID=None):
         if request.POST.get('denyinst'):
            PDAInstance.objects.filter(id=instID).update(isei_reviewed='d', isei_comment=request.POST.get('isei_comment'),
                                                         principal_reviewed = 'n', date_resubmitted = None, reviewed_at=Now())
-           this_activity = PDAInstance.objects.get(id=instIDID)
+           this_activity = PDAInstance.objects.get(id=instID)
            #email = EmailMessage(
            #    'ISEI Denial', EmailMessage.objects.get(name="ISEIDeniedToTeacher").message,
            #    'ritab.isei.life@gmail.com',
