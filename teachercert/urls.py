@@ -22,6 +22,12 @@ urlpatterns = [
     path('create_pda/<str:recId>/', views.createPDA, name='create_pda'),
     path('create_report/<str:pk>/<str:sy>/', views.createPDAreport, name='create_report'),
 
+    #pk is teacher ID, appID is the last application ID
+    path('teachercert_application/<str:pk>/<str:appID>/', views.teachercert_application, name='teachercert_application'),
+    path('teachercert_application/<str:pk>/', views.teachercert_application, name='teachercert_application'),
+    path('teachercert_application_done/<str:pk>/<str:appID>/', views.teachercert_application_done, name='teachercert_application_done'),
+
+
     # principal urls
     path('principal_teachercert/', views.principal_teachercert, name='principal_teachercert'),
     path('principal_pda_approval/', views.principal_pda_approval, name='principal_pda_approval'),
@@ -46,6 +52,8 @@ urlpatterns = [
 
     #pdf of approved activities
     path('approved_pdf/', views.approved_pdf, name='approved_pdf'),
-    path('approved_pdf2/', views.approved_pdf2, name='approved_pdf2')
+    path('approved_pdf2/', views.approved_pdf2, name='approved_pdf2'),
 
+    path('isei_teacher_applications/', views.isei_teacher_applications, name='isei_teacher_applications'),
+    path('isei_manage_application/<str:appID>/',views.isei_manage_application, name = 'isei_manage_application'),
 ]

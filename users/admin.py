@@ -50,10 +50,10 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 
-class TeacherCertificationApplicationInLine(admin.StackedInline):
-    model = TeacherCertificationApplication
-    can_delete = True
-    extra=0
+#class TeacherCertificationApplicationInLine(admin.StackedInline):
+#    model = TeacherCertificationApplication
+#    can_delete = True
+#    extra=0
 
 class CollegeAttendedInLine(admin.StackedInline):
     model = CollegeAttended
@@ -73,7 +73,7 @@ class TeacherAddressInLine(admin.StackedInline):
 
 @admin.register(Teacher)
 class Teacher(admin.ModelAdmin):
-    inlines = [TeacherAddressInLine, TeacherCertificationApplicationInLine,CollegeAttendedInLine, SchoolOfEmploymentInLine]
+    inlines = [TeacherAddressInLine, CollegeAttendedInLine, SchoolOfEmploymentInLine]
     list_display = ('name', 'school', 'active')
     list_editable = ('school', 'active')
     list_display_links = ('name',)

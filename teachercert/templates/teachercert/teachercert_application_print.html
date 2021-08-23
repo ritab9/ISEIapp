@@ -1,50 +1,44 @@
-{%  extends 'base.html' %}
-{% load crispy_forms_tags %}
+<!--
+Not to be used independently
+{ % include 'teachercert/teachercert_application_print.html' %} to include in other templates-->
 
-{% block title %} Teacher Certification Application {% endblock title %}
-{% block content %}
-    {% load static %}
 
-    <h4> Teacher Certification Initial Application</h4>
+
+    <h6> Teacher Certification Initial Application</h6>
 
 <!-- Certification form -->
 
-    <form method="POST" action="">
-        {% csrf_token %}
-
  <!-- School of employment and name -->
         <div class="card card-body">
-              <h7 class="col"> School of Employment: {{ teacher.school }}</h7>
-              <div class="col"> Name: {{ teacher.name }} </div>
+            <h7 class="col"> <b>School of Employment:</b> {{ teacher.school }}</h7>
+            <div class="col"> <b>Name:</b> {{ teacher.name }} </div>
         </div>
 
         <div class="col">
-        <div class="row">
- <!-- address -->
-            <div class="col card card-body">
-                 <p> Address:  {{ address.address_1}} {{ address.address_2}}</p>
-                 <p>City:  {{ address.city }}</p>
-                 <p>State:  {{ address.state }}</p>
-                 <p>Zip/Postal Code:  {{ address.zip_code }}</p>
-                 <p>Country: {{ address.country}}</p><br>
-            </div>
-
- <!-- Teacher Info -->
-            <div class="col card card-body">
-                <p> Date of birth: {{ teacher.date_of_birth }}</p>
-                <p>SSN: ***-**-{{ teacher.ssn|slice:'7:11'}}</p>
-                <p>Email address: {{ user.email }}</p>
-                <p>Phone number: {{ teacher.phone_number }}</p>
-            </div>
-        </div>
-        </div>
-
-<!-- application info -->
-        <div class="card card-body">
             <div class="row">
-                <div class="col"> {{ application_form.cert_level|as_crispy_field }}</div>
-                <div class="col"> {{ application_form.endors_level|as_crispy_field }}</div>
-                <div class="col"> {{ application_form.subject_areas|as_crispy_field }}</div>
+     <!-- address -->
+                <div class="col card card-body">
+                    <p><b> Address:</b>  {{ address.address_1}} {{ address.address_2}}</p>
+                    <p><b>City:</b>  {{ address.city }}</p>
+                    <p><b>State:</b>  {{ address.state }}</p>
+                    <p><b>Zip/Postal Code:</b>  {{ address.zip_code }}</p>
+                    <p><b>Country:</b> {{ address.country}}</p><br>
+                </div>
+
+     <!-- Teacher Info -->
+                <div class="col card card-body">
+                    <p><b>Date of birth:</b> {{ teacher.date_of_birth }}</p>
+                    <p><b>SSN:</b> ***-**-{{ teacher.ssn|slice:'7:11'}}</p>
+                    <p><b>Email address:</b> {{ user.email }}</p>
+                    <p><b>Phone number:</b> {{ teacher.phone_number }}</b></p>
+                </div>
+
+    <!-- application info -->
+                 <div class="col card card-body">
+                     <p> <b>Level of Certification Requested:</b> {{ application.get_cert_level_display}}</p>
+                     <p> <b>Endorsement Level Requested:<br></b> {{ application.get_endors_level_display}} </p>
+                     <p> <b>Subject Area(s):</b> {{ application.subject_areas}}</p>
+                </div>
             </div>
         </div>
 
@@ -117,33 +111,33 @@
 
 <!-- Check all that apply -->
         <div class="card card-body">
-            {{ application_form.resume|as_crispy_field }}
-            {{ application_form.principal_letter|as_crispy_field }}
+            <p><b>Resume of work/teaching experience is included (for Designated and Vocational): </b> &nbsp; {{ application.get_resume_display }}</p>
+            <p><b>Letter of Recommendation from Principal has been sent (for Designated and Vocational): </b> &nbsp; {{ application.get_principal_letter_display }} </p>
         </div>
 
 <!-- Disclosure Information -->
         <div class="card card-body">
-            {{ application_form.felony|as_crispy_field }}
-            {{ application_form.felony_description|as_crispy_field }}
-
-            {{ application_form.sexual_offence|as_crispy_field  }}
-            {{ application_form.sexual_offence_description|as_crispy_field  }}
+            <p><b>Have you ever been convicted of a felony (including a suspended sentence)?</b>
+                {% if application.felony %} Yes.
+                    {{ application.felony_description }}
+                {% else %} No.
+                {% endif %}</p>
+            <p><b>Have you ever been under investigation for any sexual offense (excluding any charges which were fully cleared)?</b>
+                {% if application.sexual_offence %} Yes.
+                    {{ application.sexual_offence_description }}
+                {% else %} No.
+                {% endif %}
+            </p>
         </div>
 
 <!-- Signature -->
         <div class="card card-body">
             <div class="row">
-                <div class="col">{{ application_form.signature|as_crispy_field  }}</div>
-                <div class="col">{{ application_form.date|as_crispy_field }}</div>
+                <div class="col"><b>Signature: </b>{{ application.signature }}</div>
+                <div class="col"><b>Date: </b>{{ application.date }}</div>
             </div>
         </div>
 
-<!-- Submit -->
-        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Submit Application" >
-</form>
-
-{% for message in messages %}
-    <p id="messages" style="color:blue">{{message}}</p>
-{% endfor %}
-
-{% endblock %}
+<!-- Submit
+        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Update Application" >
+-->

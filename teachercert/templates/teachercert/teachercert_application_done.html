@@ -1,0 +1,14 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Teacher Certification Application {% endblock title %}
+{% block content %}
+    {% load static %}
+
+    {% include 'teachercert/teachercert_application_print.html' %}
+
+<!-- Submit
+        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Update Application" >
+-->
+
+{% endblock %}

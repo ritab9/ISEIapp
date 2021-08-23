@@ -30,8 +30,4 @@ urlpatterns = [
 
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),
 
-    #pk is teacher ID, appID is the last application ID
-    path('teachercert_application/<str:pk>/<str:appID>/', views.teachercert_application, name='teachercert_application'),
-    path('teachercert_application/<str:pk>/', views.teachercert_application, name='teachercert_application'),
-
 ]

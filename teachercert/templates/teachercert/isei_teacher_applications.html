@@ -1,0 +1,55 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Teacher Certification Application {% endblock title %}
+{% block content %}
+    {% load static %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Teacher</th>
+                <th>Initial</th>
+                <th>Level</th>
+                <th>Endorsement(s)</th>
+                <th>Date Received</th>
+                <th>Fee Status</th>
+                <th>ISEI Revision Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for app in applications %}
+                <tr>
+                    <td><a href="{% url 'isei_manage_application' app.id %}"> {{app.teacher}}</a></td>
+                    <td>{% if app.initial %} Yes {% else %} No {% endif %}</td>
+                    <td>{{ app.get_cert_level_display }}</td>
+                    <td>{% if app.endors_level == 'e' %} {{ Elementary }} {% else %} {{ app.subject_areas }} {% endif %}</td>
+                    <td>{{ app.date }}</td>
+                    <td> {% if app.fee_paid %} {{ Paid }} {% else %} Not paid {% endif %}</td>
+                    <td> {{ app.isei_revision_date }}</td>
+                </tr>
+                {% if app.public_note or app.isei_note  %}
+                    <tr>
+                        <td colspan="7"> {% if app.public_note %} Public note: {{ app.public_note }}<br> {% endif %}
+                             {% if app.isei_note %} Office use only note: {{ app.public_note }}<br> {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% if app.isei_revision_date <= app.date  %}
+                    <tr>
+                        <td colspan="7">
+                            <span style = "color: green"> Updated by teacher since last ISEI revision.</span>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+<!-- Submit
+        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Update Application" >
+-->
+
+{% endblock %}

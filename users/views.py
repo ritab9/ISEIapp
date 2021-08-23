@@ -2,6 +2,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.db.models import Q
+from datetime import datetime, timedelta
+
 from .decorators import unauthenticated_user, allowed_users
 from .forms import *
 from .utils import is_in_group
@@ -13,6 +16,7 @@ from django.urls import reverse
 from django.forms import inlineformset_factory
 # import custom functions
 from .myfunctions import *
+from teachercert.myfunctions import initial_application, last_application
 
 # authentication functions
 @unauthenticated_user
@@ -44,15 +48,15 @@ def loginpage(request):
             login(request, user)
             if is_in_group(request.user, 'principal'):
                 #return redirect('principal_teachercert')
-                return redirect('PDAreports')
-                #return redirect('principal_dashboard')
+                #return redirect('PDAreports')
+                return redirect('principal_dashboard')
             else:
                 if is_in_group(request.user, 'teacher'):
                     #if user.date_joined.date() == user.last_login.date():
-                    if certified(teacher):
-                        return redirect('teacher_dashboard', user.id)
-                    else:
-                        return redirect('account_settings', user.id)
+                    #if certified(teacher):
+                    return redirect('teacher_dashboard', user.id)
+                    #else:
+                    #    return redirect('account_settings', user.id)
                 elif is_in_group(request.user, 'staff'):
                     #return redirect('PDAreports')
                     return redirect('isei_teachercert')
@@ -183,11 +187,21 @@ def teacherdashboard(request, userID):
     #user_in = "teacher"
 
     # current_certificates
-    tcertificates = current_certificates(teacher)
+    if certified(teacher):
+        tcertificates = current_certificates(teacher)
+    else:
+        tcertificates = None
+
+    #ToDo think on how to deal with teachers whose certification is not valid anymore (expired in longer than a year)
+    # and need to reapply
+    initial_app = initial_application(teacher)
+    last_app = last_application(teacher)
 
     today =get_today()
 
-    context = dict(teacher=teacher, tcertificates=tcertificates, today=today)
+    context = dict(teacher=teacher, tcertificates=tcertificates,
+                   today=today, initial_app = initial_app,
+                   last_app=last_app)
     return render(request, 'users/teacher_dashboard.html', context)
 
 
@@ -195,8 +209,49 @@ def teacherdashboard(request, userID):
 @allowed_users(allowed_roles=['principal'])
 def principaldashboard(request):
     principal = request.user.teacher
-    teachers = Teacher.objects.filter(school=principal.school)
-    context = dict(teachers=teachers, principal = principal)
+
+    teachers = Teacher.objects.filter(school=principal.school, active= True)
+
+#Teacher Certificates Section
+    number_of_teachers = teachers.count()
+    tcertificates = TCertificate.objects.filter(teacher__school = principal.school, archived = False)
+
+    #Valid certificates and certified teachers
+    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in = teachers).order_by('teacher')
+    certified_teachers = teachers.filter(tcertificate__in = valid_tcertificates).distinct()
+    number_of_certified_teachers = certified_teachers.count()
+
+    #expired certificates and teachers with expired certificates
+    expired_tcertificates = tcertificates.filter(renewal_date__lt = date.today()).order_by('teacher')
+    expired_teachers = teachers.filter(tcertificate__in = expired_tcertificates)
+    number_of_expired_teachers = expired_teachers.count()
+
+    #not certified teachers
+    never_certified_teachers = teachers.filter(~Q(tcertificate__in= tcertificates))
+    number_of_never_certified_teachers = never_certified_teachers.count()
+
+    percent_certified = round(number_of_never_certified_teachers * 100 / number_of_teachers)
+
+    today = date.today()
+    in_a_month = today + timedelta (30)
+    a_year_ago = today - timedelta (365)
+
+# Report Approval Section
+    pda_report = PDAReport.objects.filter(teacher__school=principal.school)  # all the reports from this teacher's school
+    pda_report_notreviewed = pda_report.filter(date_submitted__isnull=False, principal_reviewed='n')
+    pda_instance_notreviewed = PDAInstance.objects.filter(pda_report__in=pda_report, pda_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
+    if pda_report_notreviewed or pda_instance_notreviewed:
+        reports_to_review = True
+    else:
+        reports_to_review = False
+
+
+    context = dict( today = today, in_a_month = in_a_month, a_year_ago=a_year_ago, percent_certified = percent_certified,
+                   valid_tcertificates = valid_tcertificates, number_of_certified_teachers = number_of_certified_teachers,
+                   expired_tcertificates = expired_tcertificates, number_of_expired_teachers = number_of_expired_teachers,
+                   never_certified_teachers = never_certified_teachers, number_of_never_certified_teachers = number_of_never_certified_teachers,
+                   number_of_teachers = number_of_teachers,
+                    reports_to_review = reports_to_review)
 
     return render(request, 'users/principal_dashboard.html', context)
 
@@ -212,34 +267,3 @@ def staffdashboard(request):
     # context = dict( teachers=teachers, activities=activities, total_teachers=total_teachers,
     #              total_activities=total_activities)
     return render(request, 'users/staff_dashboard.html', context=dict())
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
-def teachercert_application(request, pk, appID = None):
-# pk - teacher ID, appID - application ID
-
-    teacher = Teacher.objects.get(id=pk)
-    address = Address.objects.get(teacher=teacher)
-
-
-    if request.method == 'POST':
-        application_form = TeacherCertificationApplicationForm(request.POST)
-        if application_form.is_valid():
-            application_form.save()
-            print("application")
-    else:
-        if appID==None: #new application
-            application_form = TeacherCertificationApplicationForm(initial={'teacher': teacher})
-        else: #update existing application
-            application_form = TeacherCertificationApplicationForm(
-                instance=TeacherCertificationApplication.objects.get(id=appID))
-
-
-    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
-    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
-
-    context = dict(teacher = teacher, address = address,
-                   application_form = application_form,
-                   school_of_employment = school_of_employment, college_attended = college_attended,
-                 )
-    return render(request, 'users/teachercert_application.html', context)

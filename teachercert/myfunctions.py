@@ -47,3 +47,16 @@ def academic_classes_for_certificate(tcertificate):
 
 def get_today():
     return datetime.date.today()
+
+
+
+# teacher application received
+def initial_application(teacher):
+    applications = TeacherCertificationApplication.objects.filter(teacher=teacher)
+    first_application = applications.order_by('date').first()
+    return first_application
+
+def last_application(teacher):
+    applications = TeacherCertificationApplication.objects.filter(teacher=teacher)
+    last_application = applications.order_by('date').last()
+    return last_application

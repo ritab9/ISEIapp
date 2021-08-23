@@ -4,6 +4,7 @@ from localflavor.us.models import USSocialSecurityNumberField
 from datetime import date
 
 
+
 # Create your models here.
 
 class Country(models.Model):
@@ -43,7 +44,7 @@ class Teacher(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
-    ssn = USSocialSecurityNumberField(null=False, blank=False, default = "111-22-3333")
+    ssn = USSocialSecurityNumberField(null=True, blank=True)
 
     class Meta:
         ordering = ('last_name',)
@@ -116,38 +117,3 @@ class SchoolOfEmployment(models.Model):
     courses = models.CharField(verbose_name="Courses taught", max_length=100, default="", )
     def __str__(self):
         return self.name
-
-class TeacherCertificationApplication(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
-    initial = models.BooleanField(default= True)
-    CLEVELS = (
-        ('v', 'Vocational'),
-        ('s', "Secondary"),
-        ('s', "Elementary"),
-        ('d', 'Designated'),
-    )
-    cert_level = models.CharField(max_length=1, choices=CLEVELS, verbose_name="Certification Level Requested", null=True, blank=True)
-    ELEVELS = (
-        ('e', 'Elementary'),
-        ('s', 'Secondary Subject Area(s)'),
-    )
-    endors_level = models.CharField(max_length=1, choices=ELEVELS, verbose_name="Endorsement Level Requested", null=True, blank=True)
-    subject_areas = models.CharField(max_length=50, blank=True, verbose_name="Subject Areas", help_text = "Chemistry, Bible, Mathematics")
-    CHOICES=(
-        ('y', 'Yes'),
-        ('n','No'),
-        ('a', 'N/A'),
-    )
-    resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Resume of work/teaching experience is included (for Designated and Vocational)", default ='N/A')
-    principal_letter = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated and Vocational)", default ='N/A')
-
-    felony = models.BooleanField(verbose_name = "Have you ever been convicted of a felony (including a suspended sentence)?",
-                                 default= False)
-    felony_description =models.CharField( max_length = 300, blank=True, null= True, verbose_name = "If yes, please describe")
-    sexual_offence = models.BooleanField(
-        verbose_name="Have you ever been under investigation for any sexual offense (excluding any charges which were fully cleared)?",
-        default=False)
-    sexual_offence_description = models.CharField(max_length=300, blank=True, null=True, verbose_name="If yes, please describe")
-
-    signature = models.CharField(verbose_name= "Applicant's signature", max_length=50, blank= False, null = False,)
-    date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")

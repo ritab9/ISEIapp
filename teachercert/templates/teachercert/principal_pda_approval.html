@@ -76,9 +76,9 @@
     {% if pda_report_notreviewed %}
         <div class="card-body">
             <b> Review and approve teacher activities: </b>
+            {% for p in pda_report_notreviewed %}
             <table class="table table-sm table-light">
                 <thead class="table-dark">
-                {% for p in pda_report_notreviewed %}
                 <tr>
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}}</td>
@@ -137,9 +137,9 @@
                             {% csrf_token %}
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approved" align="right" >
                            <br>
-                            <span style="font-size = 85%" color="red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
+                            <span style="font-size: 85%; color: red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
                             </span>
-                            <p><span style="font-size = 85%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</font>
+                            <p><span style="font-size: 85%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</font>
                             </p>
                         </form>
                  </td>
@@ -147,7 +147,7 @@
                     <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
                             {% csrf_token %}
                         <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required="True">
-                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denied" >
+                            <input  class = "btn btn-sm btn-danger" type="submit" value="Deny" name = "denied" >
                         </form>
                     </td></tr>
 

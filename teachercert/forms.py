@@ -10,6 +10,7 @@ from teachercert.models import *
 
 
 
+
 class PDAreportForm(ModelForm):
     class Meta:
         model = PDAReport
@@ -73,4 +74,28 @@ class TCertificateForm(ModelForm):
 TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3)
 
 
+class TeacherCertificationApplicationForm(ModelForm):
+    class Meta:
+        model = TeacherCertificationApplication
+        fields=('__all__')
+        widgets = {
+            'felony_description': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Felony Description', 'rows': 10}),
+            'sexual_offence_description': forms.Textarea(
+                attrs = {'class': 'form-controls', 'placehoder': 'Sexual Offence Description', 'rows': 10}),
 
+            'date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+        }
+
+class TeacherCertificationApplicationISEIForm(ModelForm):
+    class Meta:
+        model = TeacherCertificationApplication
+        fields = ['public_note', 'isei_note', 'fee_paid', 'closed', 'isei_revision_date']
+        widgets = {
+            'public_note': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Note visible to the teacher and principal', 'rows': 2}),
+            'isei_note': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Office use only', 'rows': 2}),
+
+            'isei_revision_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+        }

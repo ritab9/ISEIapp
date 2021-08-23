@@ -36,6 +36,9 @@ from django.forms import inlineformset_factory
 def ceu_info(request):
     return render(request, 'teachercert/ceu_info.html')
 
+
+# Teacher Views
+
 # create report for user and school year if no report exists. It is called from myPDADashboard - new activity addition
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
@@ -153,6 +156,60 @@ def deletePDAinstance(request, pk):
     context = {'item': pdainstance}
     return render(request, 'teachercert/delete_pdainstance.html', context)
 
+
+# teacher activities for user with id=pk ... some parts not finished
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
+def myPDAdashboard(request, pk):
+    teacher = Teacher.objects.get(user=User.objects.get(id=pk))
+
+    pda_report = PDAReport.objects.filter(teacher=teacher) #all reports of this teacher
+
+    #all instances run through the filter
+    pda_instance = PDAInstance.objects.filter(pda_report__in=pda_report)
+    instance_filter = PDAInstanceFilter(request.GET, queryset=pda_instance)
+    pda_instance = instance_filter.qs
+
+    #instances from denied reports are not filtered
+    principal_denied_report = pda_report.filter(Q(principal_reviewed='d'))
+    isei_denied_report = pda_report.filter(Q(isei_reviewed='d'))
+
+    #new school year if report not yet created
+    new_school_year = SchoolYear.objects.filter(Q(active_year=True), ~Q(pdareport__in=pda_report))
+    #reports not reviewed by principal, and not denied by ISEI (those are in a different group)
+    active_report = pda_report.filter(Q(principal_reviewed='n'),~Q(isei_reviewed = 'd')) #not reviewed by principal
+    submitted_report = pda_report.filter(Q(principal_reviewed='a'), ~Q(isei_reviewed='a'))  # submitted to ISEI
+    approved_report = pda_report.filter(isei_reviewed='a')
+
+    isei_denied_independent_instance = pda_instance.filter(isei_reviewed='d', pda_report__isei_reviewed='a',
+                                                           date_resubmitted=None)
+
+    #resubmitted instance that was denied while it's report approved
+    active_independent_instance = pda_instance.filter(isei_reviewed = 'd', pda_report__isei_reviewed='a', principal_reviewed = 'n', date_resubmitted__isnull = False)
+
+
+    submitted_instance = pda_instance.filter(Q(pda_report__in=submitted_report)|Q(isei_reviewed='n', pda_report__in=approved_report,
+                                                      principal_reviewed='a'))
+    approved_instance = pda_instance.filter(isei_reviewed='a')
+
+    if is_in_group(request.user, 'teacher'):
+        user_not_teacher = False
+    else:
+        user_not_teacher = True
+    context = dict(teacher=teacher,user_not_teacher=user_not_teacher, instance_filter=instance_filter,
+                   new_school_year = new_school_year, active_report=active_report,
+                   submitted_report=submitted_report,
+                   principal_denied_report =principal_denied_report, isei_denied_report = isei_denied_report,
+                   submitted_instance = submitted_instance,
+                   isei_denied_independent_instance = isei_denied_independent_instance,
+                   active_independent_instance = active_independent_instance,
+                   approved_report = approved_report, approved_instance = approved_instance,)
+
+    return render(request, 'teachercert/myPDAdashboard.html', context)
+
+# todo create layout in myPDAdashboard template for it to look nicer
+# todo adjust template so that it would allow for the choosing of a different teacher if user_not_teacher
+
 # teacher activities for user with id=pk ... some parts not finished
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
@@ -212,6 +269,7 @@ def update_academic_class(request, pk):
 
 
 
+# Common views
 
 # isei's info page about all reports with filter
 @login_required(login_url='login')
@@ -220,7 +278,7 @@ def PDAreports(request):
     if request.user.groups.filter(name='staff').exists(): #ISEI staff has access to all reports
         pda_reports = PDAReport.objects.all()
         is_staff=True
-    elif request.user.groups.filter(name='staff').exists():
+    elif request.user.groups.filter(name='principal').exists():
         principal = request.user.teacher
         pda_reports = PDAReport.objects.filter(teacher__school = principal.school) #principal has access to reports from his/her school
         is_staff=False
@@ -236,6 +294,8 @@ def PDAreports(request):
     context = dict(pda_reports = pda_reports, pda_report_filter = pda_report_filter, is_staff=is_staff)
     return render(request, 'teachercert/PDAreports.html', context)
 
+
+#principal views
 
 #principal's approval of teacher activities
 @login_required(login_url='login')
@@ -325,7 +385,9 @@ def principal_pda_approval(request, recID=None, instID=None):
     return render(request, 'teachercert/principal_pda_approval.html', context)
 
 
-#principal's approval of teacher activities
+#isei views
+
+#isei's approval of teacher activities
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_pda_approval(request, repID=None, instID=None):
@@ -396,61 +458,6 @@ def isei_pda_approval(request, repID=None, instID=None):
     return render(request, 'teachercert/isei_pda_approval.html', context)
 
 
-
-# teacher activities for user with id=pk ... some parts not finished
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
-def myPDAdashboard(request, pk):
-    teacher = Teacher.objects.get(user=User.objects.get(id=pk))
-
-    pda_report = PDAReport.objects.filter(teacher=teacher) #all reports of this teacher
-
-    #all instances run through the filter
-    pda_instance = PDAInstance.objects.filter(pda_report__in=pda_report)
-    instance_filter = PDAInstanceFilter(request.GET, queryset=pda_instance)
-    pda_instance = instance_filter.qs
-
-    #instances from denied reports are not filtered
-    principal_denied_report = pda_report.filter(Q(principal_reviewed='d'))
-    isei_denied_report = pda_report.filter(Q(isei_reviewed='d'))
-
-    #new school year if report not yet created
-    new_school_year = SchoolYear.objects.filter(Q(active_year=True), ~Q(pdareport__in=pda_report))
-    #reports not reviewed by principal, and not denied by ISEI (those are in a different group)
-    active_report = pda_report.filter(Q(principal_reviewed='n'),~Q(isei_reviewed = 'd')) #not reviewed by principal
-    submitted_report = pda_report.filter(Q(principal_reviewed='a'), ~Q(isei_reviewed='a'))  # submitted to ISEI
-    approved_report = pda_report.filter(isei_reviewed='a')
-
-    isei_denied_independent_instance = pda_instance.filter(isei_reviewed='d', pda_report__isei_reviewed='a',
-                                                           date_resubmitted=None)
-
-    #resubmitted instance that was denied while it's report approved
-    active_independent_instance = pda_instance.filter(isei_reviewed = 'd', pda_report__isei_reviewed='a', principal_reviewed = 'n', date_resubmitted__isnull = False)
-
-
-    submitted_instance = pda_instance.filter(Q(pda_report__in=submitted_report)|Q(isei_reviewed='n', pda_report__in=approved_report,
-                                                      principal_reviewed='a'))
-    approved_instance = pda_instance.filter(isei_reviewed='a')
-
-    if is_in_group(request.user, 'teacher'):
-        user_not_teacher = False
-    else:
-        user_not_teacher = True
-    context = dict(teacher=teacher,user_not_teacher=user_not_teacher, instance_filter=instance_filter,
-                   new_school_year = new_school_year, active_report=active_report,
-                   submitted_report=submitted_report,
-                   principal_denied_report =principal_denied_report, isei_denied_report = isei_denied_report,
-                   submitted_instance = submitted_instance,
-                   isei_denied_independent_instance = isei_denied_independent_instance,
-                   active_independent_instance = active_independent_instance,
-                   approved_report = approved_report, approved_instance = approved_instance,)
-
-    return render(request, 'teachercert/myPDAdashboard.html', context)
-
-# todo create layout in myPDAdashboard template for it to look nicer
-# todo adjust template so that it would allow for the choosing of a different teacher if user_not_teacher
-
-
 #create a pdf with approved CEUs
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
@@ -515,6 +522,7 @@ def approved_pdf2(request):
 # TEACHER CERTIFICATE FUNCTIONS
 
 
+#ISEI only views
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def manage_tcertificate(request, certID=None):
@@ -573,19 +581,27 @@ def de_archive_tcertificate(request, cID, certID):
     TCertificate.objects.filter(id=cID).update(archived=False)
     return redirect('manage_tcertificate', certID=certID)
 
+
 # principal's info page about teacher certification
 #Todo to be worked on
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal'])
 def principal_teachercert(request):
+
     principal = request.user.teacher
-    teachers = Teacher.objects.filter(school = principal.school, user__is_active = True)
+    teachers = Teacher.objects.filter(user__is_active=True, school= principal.school)
+    school_year = SchoolYear.objects.get(active_year=True)
 
-    teachers_filter = TeacherFilter(request.GET, queryset=teachers)
-    teachers = teachers_filter.qs
 
-    context = dict(teachers=teachers, teachers_filter = teachers_filter)
+    tcertificates = TCertificate.objects.filter()
+    tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
+    tcertificates = tcertificates_filter.qs
+
+    context = dict(teachers=teachers, school_year=school_year,
+                   tcertificates=tcertificates, tcertificates_filter=tcertificates_filter)
+
     return render(request, 'teachercert/principal_teachercert.html', context)
+
 
 # isei's info page about teacher certification
 #Todo to be worked on
@@ -595,13 +611,106 @@ def isei_teachercert(request):
     teachers = Teacher.objects.filter(user__is_active = True)
     school_year = SchoolYear.objects.get(active_year = True)
 
-    teachers_filter = TeacherFilter(request.GET, queryset=teachers)
-    teachers = teachers_filter.qs
-
     tcertificates = TCertificate.objects.filter()
     tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
     tcertificates = tcertificates_filter.qs
 
-    context = dict(teachers=teachers, teachers_filter = teachers_filter, school_year=school_year,
+    context = dict(teachers=teachers, school_year=school_year,
                    tcertificates = tcertificates, tcertificates_filter= tcertificates_filter)
     return render(request, 'teachercert/isei_teachercert.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
+def teachercert_application(request, pk, appID = None):
+# pk - teacher ID, appID - application ID
+
+    teacher = Teacher.objects.get(id=pk)
+    address = Address.objects.get(teacher=teacher)
+
+    if request.method == 'POST':
+        data = request.POST.copy()
+        data['teacher']=teacher
+        application_form = TeacherCertificationApplicationForm(data, request.POST)
+        if application_form.is_valid():
+            application = application_form.save()
+        return redirect ('teachercert_application_done', pk = teacher.id, appID = application.id)
+
+    else:
+        if appID==None: #new application
+            application_form = TeacherCertificationApplicationForm(initial={'teacher': teacher})
+        else: #update existing application
+            application_form = TeacherCertificationApplicationForm(
+                instance=TeacherCertificationApplication.objects.get(id=appID))
+
+
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
+
+    context = dict(teacher = teacher, address = address,
+                   application_form = application_form,
+                   school_of_employment = school_of_employment, college_attended = college_attended,
+                 )
+    return render(request, 'teachercert/teachercert_application.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
+def teachercert_application_done(request, pk, appID ):
+# pk - teacher ID, appID - application ID
+
+    teacher = Teacher.objects.get(id=pk)
+    address = Address.objects.get(teacher=teacher)
+    application = TeacherCertificationApplication.objects.get(id=appID)
+
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
+
+    context = dict(teacher = teacher, address = address,
+                   application= application,
+                   school_of_employment = school_of_employment, college_attended = college_attended,
+                 )
+    return render(request, 'teachercert/teachercert_application_done.html', context)
+
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_teacher_applications(request):
+    applications = TeacherCertificationApplication.objects.filter(closed=False)._by('isei_revision_date')
+    closed_applications =TeacherCertificationApplication.objects.filter(closed=True)
+
+    #closed_applications_filter = ApplicationFilter(request.GET, queryset=applications)
+    #closed_applications = closed_application_filter.qs
+
+
+    context = dict(applications = applications, closed_applications = closed_applications)
+                   #application_filter = teachers_filter )
+    return render(request, 'teachercert/isei_teacher_applications.html', context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_manage_application(request, appID):
+
+    application = TeacherCertificationApplication.objects.get(id=appID)
+
+    teacher = application.teacher
+    address = Address.objects.get(teacher=teacher)
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
+
+    application_form=TeacherCertificationApplicationISEIForm(instance = application)
+
+    if request.method == "POST":
+        application_form = TeacherCertificationApplicationISEIForm(request.POST, instance = application)
+        if application_form.is_valid():
+            print('valid')
+            application_form.save()
+            return redirect('isei_teacher_applications')
+        else:
+            print('not valid')
+
+    context = dict(application = application, application_form = application_form,
+                   teacher=teacher, address= address,
+                   school_of_employment = school_of_employment, college_attended = college_attended)
+    return render(request, 'teachercert/isei_manage_application.html', context)

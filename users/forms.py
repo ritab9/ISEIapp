@@ -47,12 +47,6 @@ class TeacherAddressForm(ModelForm):
         fields =('__all__')
         exclude = ('school',)
 
-class TeacherCertificationApplicationForm(ModelForm):
-    class Meta:
-        model = TeacherCertificationApplication
-        fields=('__all__')
-
-
 
 
 class SchoolOfEmploymentForm(ModelForm):

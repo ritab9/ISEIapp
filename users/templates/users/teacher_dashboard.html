@@ -6,6 +6,9 @@
 {% block title %} Teacher {% endblock title %}
 {% block content %}
 
+{% if tcertificates %}
+
+<!-- Teacher Certificates -->
     <div class="">
         <p>{{ teacher.name }}'s Teacher Certificate(s)</p>
 
@@ -105,5 +108,86 @@
         {% endfor %}
 
     </div>
+
+{% else %}
+
+<!-- If a teacher does not have an ISEI Certification -->
+    {% if last_app %}
+        <div class="card card-body">
+        <div class="row">
+            <div class="col">
+                <p>Your Teacher Certification Application is being processed.</p>
+                <p> Date received: {{ last_app.date_received }} </p>
+                <p>{% if last_app.isei_revision_date %}
+                    ISEI revision date: {{ last_app.isei_revision_date }}
+                    {% if last_app.isei_revision_date <= last_app.date  %}
+                            <p style = "color: red"> Not reviewed by ISEI since your update. </p>
+                    {% endif %}
+                {% endif %}</p>
+
+                {% if not last_app.fee_paid %} <p> Fee not yet paid.</p> {% endif %}
+            </div>
+            <div class="col">
+                {% if last_app.closed %}
+                    <a type="button" class="btn-sm btn-ISEIblue4" href="{% url 'teachercert_application_done' teacher.id last_app.id %}">See application</a>
+                {% else %}
+                    <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application_done' teacher.id last_app.id %}">See application</a> <br>
+                    {% if last_app.public_note %}<br>
+                        <p><b>Note from ISEI office:</b></p><p>{{ last_app.public_note }}</p>
+                        <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application' teacher.id last_app.id %}">Update Application</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        </div>
+
+ <!-- list of colleges with transcript received status -->
+        {% if teacher.collegeattended_set.all %}
+        <div class="card card-body" >
+            <div class="row">
+                <div class="col">
+                    <h6> Colleges Listed for Transcripts</h6>
+                </div>
+                <div clas="col">
+                    <a type ="button" class= "btn btn-ISEIblue4 btn-sm" href="{%  url 'account_settings' teacher.user.id %}">Update Transcript Status</a>
+                </div>
+            </div>
+         <table class="table">
+             <thead>
+                <tr>
+                  <th scope="col">College Name</th>
+                  <th scope="col">Degree Name</th>
+                  <th scope="col">Transcript Status</th>
+                </tr>
+             </thead>
+
+             <tbody class="classlist" >
+                {% for college in teacher.collegeattended_set.all %}
+                    <tr>
+                        <td>{{ college.name }}</td>
+                        <td> {{ college.degree }}</td>
+                        <td> {% if college.transcript_requested %}
+                                {% if college.transcript_received %}
+                                    <span style="color:green">Received</span>
+                                {% else %}
+                                    <span style="color:#bf6f33">Requested</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color:red">Not requested</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+             </tbody>
+         </table>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="card card-body row">
+            Please fill out and submit the <a href="{%  url 'account_settings' teacher.user.id %}">Initial Teacher Certification Application Form</a>
+        </div>
+    {% endif %}
+
+{% endif %}
 
 {% endblock %}

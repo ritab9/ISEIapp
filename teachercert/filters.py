@@ -28,10 +28,10 @@ class PDAReportFilter(django_filters.FilterSet):
     last_name = CharFilter(field_name="teacher__last_name", label='Last Name')
     school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
     school_year = ModelChoiceFilter(field_name='school_year', queryset=SchoolYear.objects.all(), label='School Year')
-    start_created = DateFilter(field_name="created_at", lookup_expr='gte', label='Created after:')
-    end_created = DateFilter(field_name="created_at", lookup_expr='lte', label='Created before:')
-    start_updated = DateFilter(field_name="updated_at", lookup_expr='gte', label='Updated after:')
-    end_updated = DateFilter(field_name="updated_at", lookup_expr='lte', label='Updated before:')
+    start_created = DateFilter(field_name="created_at", lookup_expr='gte', label='Created after:',widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    end_created = DateFilter(field_name="created_at", lookup_expr='lte', label='Created before:',widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    start_updated = DateFilter(field_name="updated_at", lookup_expr='gte', label='Updated after:', widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    end_updated = DateFilter(field_name="updated_at", lookup_expr='lte', label='Updated before:', widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
 
     CHOICES = (
         ('n', 'Not Reviewed'),
@@ -43,12 +43,13 @@ class PDAReportFilter(django_filters.FilterSet):
     principal_status = ChoiceFilter(field_name="principal_reviewed", choices=CHOICES, label ='Principal approval')
 
 
-class TeacherFilter(django_filters.FilterSet):
-    school = CharFilter(field_name = 'school', lookup_expr = 'icontains')
-    class Meta:
-        model = Teacher
-        fields = '__all__'
-        exclude = ['user', 'phone', 'profile_picture']
+#not used
+#class TeacherFilter(django_filters.FilterSet):
+#    school = CharFilter(field_name = 'school', lookup_expr = 'icontains')
+#    class Meta:
+#        model = Teacher
+#        fields = '__all__'
+#        exclude = ['user', 'phone', 'profile_picture']
 
 
 class TCertificateFilter(django_filters.FilterSet):

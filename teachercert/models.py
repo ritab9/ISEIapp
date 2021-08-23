@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Teacher, Country
+from users.models import *
 from django.core.validators import MinLengthValidator
 import datetime
 from datetime import datetime, date
@@ -254,5 +254,48 @@ class TEndorsement(models.Model):
         return self.endorsement.name
 
 
+class TeacherCertificationApplication(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
+    initial = models.BooleanField(default= True)
+    CLEVELS = (
+        ('v', 'Vocational'),
+        ('s', "Secondary"),
+        ('e', "Elementary"),
+        ('d', 'Designated'),
+    )
+    cert_level = models.CharField(max_length=1, choices=CLEVELS, verbose_name="Certification Level Requested", null=True, blank=True)
+    ELEVELS = (
+        ('e', 'Elementary'),
+        ('s', 'Secondary Subject Area(s)'),
+    )
+    endors_level = models.CharField(max_length=1, choices=ELEVELS, verbose_name="Endorsement Level Requested", null=True, blank=True)
+    subject_areas = models.CharField(max_length=50, blank=True, verbose_name="Subject Areas")
+    CHOICES=(
+        ('y', 'Yes'),
+        ('n','No'),
+        ('a', 'N/A'),
+    )
+    resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Resume of work/teaching experience is included (for Designated and Vocational)", default ='a')
+    principal_letter = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated and Vocational)", default ='a')
+
+    felony = models.BooleanField(verbose_name = "Have you ever been convicted of a felony (including a suspended sentence)?",
+                                 default= False)
+    felony_description =models.CharField( max_length = 300, blank=True, null= True, verbose_name = "If yes, please describe")
+    sexual_offence = models.BooleanField(
+        verbose_name="Have you ever been under investigation for any sexual offense (excluding any charges which were fully cleared)?",
+        default=False)
+    sexual_offence_description = models.CharField(max_length=300, blank=True, null=True, verbose_name="If yes, please describe")
+
+    signature = models.CharField(verbose_name= "Applicant's signature", max_length=50, blank= False, null = False,)
+    date = models.DateField(null=False, blank=False)
+
+    #Office use section
+    #date created
+    date_received = models.DateField(auto_now_add=True, blank = True, null = True)
+    fee_paid = models.BooleanField(default = False, blank = False, null = False)
+    public_note = models.CharField(max_length=255, blank=True, null=True)
+    isei_note = models.CharField(max_length=255, blank=True, null=True)
+    isei_revision_date = models.DateField(blank = True, null = True)
+    closed = models.BooleanField(default=False, blank=False, null=False)
 
 

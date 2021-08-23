@@ -11,7 +11,7 @@
             <h6>Filter:</h6>
             <form method="get">
                 <div class="row">
-                <div class="col-sm">
+                <div class="col-sm span80">
                     {% if is_staff%}
                     {{ pda_report_filter.form.school.label_tag }} {{ pda_report_filter.form.school }} <br>
                     {% endif %}
@@ -19,7 +19,7 @@
                     <br>
                     <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
                     <a href="{%  url 'PDAreports' %}">Clear all filters</a></div>
-                <div class="col-sm">
+                <div class="col-sm span80">
                     {{ pda_report_filter.form.first_name.label_tag}}{{ pda_report_filter.form.first_name}}<br>
                     {{ pda_report_filter.form.last_name.label_tag}}{{ pda_report_filter.form.last_name}} </div>
 
@@ -29,7 +29,7 @@
                 <div class="col-sm span80" >
                     {{ pda_report_filter.form.start_updated.label_tag }} {{ pda_report_filter.form.start_updated }}<br>
                     {{ pda_report_filter.form.end_updated.label_tag }} {{ pda_report_filter.form.end_updated }}</div>
-                <div class ="col-sm">
+                <div class ="col-sm span80">
                     {{ pda_report_filter.form.isei_status.label_tag }}{{ pda_report_filter.form.isei_status }} <br>
                     {{ pda_report_filter.form.principal_status.label_tag }}{{ pda_report_filter.form.principal_status }}</div>
                 </div>
