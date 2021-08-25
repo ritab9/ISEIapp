@@ -86,6 +86,7 @@
                         </tr>
 
                         {% for a in c.teacher.academicclass_set.all %}
+                            {% if a.academicclass.date_completed > c.issue_date %}
                             <tr> <td><a class="nav-link" href="{% url 'my_academic_classes' teacher.user.id %}"> {{a.name}}</a></td><td>{{ a.credits }}</td><td>{{a.date_completed}}</td>
                                 {% if a.transcript_received %}
                                     <td> Received </td> <td></td><td></td>
@@ -97,6 +98,7 @@
                                     {% endif %}
                                 {% endif %}
                             </tr>
+                                {% endif %}
                              {% endfor %}
                      </table>
                 </div>
@@ -125,7 +127,7 @@
                     {% endif %}
                 {% endif %}</p>
 
-                {% if not last_app.fee_paid %} <p> Fee not yet paid.</p> {% endif %}
+                {% if last_app.fee_paid %} <p> School billed. </p> {% endif %}
             </div>
             <div class="col">
                 {% if last_app.closed %}

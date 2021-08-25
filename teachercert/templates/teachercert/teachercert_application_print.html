@@ -2,7 +2,7 @@
 Not to be used independently
 { % include 'teachercert/teachercert_application_print.html' %} to include in other templates-->
 
-
+{% load static %}
 
     <h6> Teacher Certification Initial Application</h6>
 
@@ -37,7 +37,7 @@ Not to be used independently
                  <div class="col card card-body">
                      <p> <b>Level of Certification Requested:</b> {{ application.get_cert_level_display}}</p>
                      <p> <b>Endorsement Level Requested:<br></b> {{ application.get_endors_level_display}} </p>
-                     <p> <b>Subject Area(s):</b> {{ application.subject_areas}}</p>
+                     <p> <b>Subject Area(s):</b> {{ application.courses_taught }}</p>
                 </div>
             </div>
         </div>
@@ -112,6 +112,7 @@ Not to be used independently
 <!-- Check all that apply -->
         <div class="card card-body">
             <p><b>Resume of work/teaching experience is included (for Designated and Vocational): </b> &nbsp; {{ application.get_resume_display }}</p>
+            <a href={% get_media_prefix %}{{ application.resume_file }}>{{ application.resume_file }}</a>
             <p><b>Letter of Recommendation from Principal has been sent (for Designated and Vocational): </b> &nbsp; {{ application.get_principal_letter_display }} </p>
         </div>
 

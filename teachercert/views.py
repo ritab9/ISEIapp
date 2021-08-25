@@ -127,14 +127,14 @@ def updatePDAinstance(request, pk):
                 # ToDo Should I set isei_reviewed='n' here???
                 PDAInstance.objects.filter(id=pk).update(principal_reviewed='n', ) # principal reviewed set to no
                 #ToDo work on message to principal
-                principal = Teacher.objects.get(user__groups__name='principal', school=pdainstance.pda_report.teacher.school)
-                if principal: #if principal assigned sent email.
-                    principal_email = principal.user.email
-                    email = EmailMessage(
-                        'Report Submission',
-                        pda_report.teacher.first_name + " " + pda_report.teacher.last_name + " has submitted an activity. Go to www.isei.blablabla to review the submission.",
-                        'ritab.isei.life@gmail.com', [principal_email])
-                    email.send()
+                #principal = Teacher.objects.get(user__groups__name='principal', school=pdainstance.pda_report.teacher.school)
+                #if principal: #if principal assigned sent email.
+                #    principal_email = principal.user.email
+                #    email = EmailMessage(
+                #        'Report Submission',
+                #        pda_report.teacher.first_name + " " + pda_report.teacher.last_name + " has submitted an activity. Go to www.isei.blablabla to review the submission.",
+                #        'ritab.isei.life@gmail.com', [principal_email])
+                #    email.send()
                 #if is_in_group(request.user, 'teacher'):        # teacher landing page
 
                 return redirect('myPDAdashboard', pk=pdainstance.pda_report.teacher.user.id)
@@ -324,14 +324,14 @@ def principal_pda_approval(request, recID=None, instID=None):
             PDAInstance.objects.filter(pda_report = this_report).update(principal_reviewed='a', reviewed_at=Now())
             #email the principal and ISEI about the approval
             #Todo workon the email messages
-            email = EmailMessage(
-                'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com', [this_report.teacher.user.email])
-            email.send()
-            email = EmailMessage(
-                'Principal Approval',
-                principal.last_name + " " + principal.first_name + " from " + principal.school.name + " has approved " + this_report.teacher.first_name + " " + this_report.teacher.last_name + "'s report.",
-                'ritab.isei.life@gmail.com', ['ritab.isei.life@gmail.com'])
-            email.send()
+            #email = EmailMessage(
+            #    'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com', [this_report.teacher.user.email])
+            #email.send()
+            #email = EmailMessage(
+            #    'Principal Approval',
+            #    principal.last_name + " " + principal.first_name + " from " + principal.school.name + " has approved " + this_report.teacher.first_name + " " + this_report.teacher.last_name + "'s report.",
+            #    'ritab.isei.life@gmail.com', ['ritab.isei.life@gmail.com'])
+            #email.send()
 
 
     if request.method == 'POST':
@@ -340,10 +340,10 @@ def principal_pda_approval(request, recID=None, instID=None):
             this_report = PDAReport.objects.get(id=recID) #the above is a query set and we need just the object
             PDAInstance.objects.filter(pda_report=this_report).update(principal_reviewed='d',date_resubmitted = None, reviewed_at=Now())
             #Todo work on the email messages
-            email = EmailMessage(
-                'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message, 'ritab.isei.life@gmail.com',
-                [this_report.teacher.user.email])
-            email.send()
+            #email = EmailMessage(
+            #    'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message, 'ritab.isei.life@gmail.com',
+            #    [this_report.teacher.user.email])
+            #email.send()
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
@@ -351,10 +351,10 @@ def principal_pda_approval(request, recID=None, instID=None):
             this_report = PDAReport.objects.get(id=recID)
             PDAInstance.objects.filter(pda_report=this_report).update(principal_reviewed = 'n', date_resubmitted = F('updated_at') )
             # Todo work on the email messages
-            email = EmailMessage(
-                'Principal Retracted Action', 'The principal has canceled the approval/denial of the PDA submission.', 'ritab.isei.life@gmail.com',
-                [this_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
-            email.send()
+            #email = EmailMessage(
+            #    'Principal Retracted Action', 'The principal has canceled the approval/denial of the PDA submission.', 'ritab.isei.life@gmail.com',
+            #    [this_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
+            #email.send()
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
@@ -362,21 +362,21 @@ def principal_pda_approval(request, recID=None, instID=None):
             PDAInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n', reviewed_at=Now())
             this_activity = PDAInstance.objects.get(id=instID)
             # Todo work on the email messages
-            email = EmailMessage(
-                'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com',
-                [this_activity.pda_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
-            email.send()
+            #email = EmailMessage(
+            #    'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com',
+            #    [this_activity.pda_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
+            #email.send()
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
             PDAInstance.objects.filter(id=instID).update(principal_reviewed='d',date_resubmitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
             this_activity = PDAInstance.objects.get(id=instID)
             # Todo work on the email messages
-            email = EmailMessage(
-                'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message,
-                'ritab.isei.life@gmail.com',
-                [this_activity.pda_report.teacher.user.email])
-            email.send()
+            #email = EmailMessage(
+            #    'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message,
+            #    'ritab.isei.life@gmail.com',
+            #    [this_activity.pda_report.teacher.user.email])
+            #email.send()
 
 
     context = dict(teachers=teachers,
@@ -557,17 +557,29 @@ def manage_tcertificate(request, certID=None):
             tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
 
             if tendorsement_formset.is_valid(): #validate the endorsement info
-                tendorsement_formset.save()
                 if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
                     return redirect('manage_tcertificate', certID=tcertificate.id)
                 if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
                     return redirect('manage_tcertificate',  certID=tcertificate.id )
 
     #certID is used in the template to reload page after previous certificates are archived
-    context = dict( tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
+    context = dict( is_staff= True, tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
                     prev_certificates = prev_certificates, certID=certID,
                     pda_reports=pda_reports, academic_class=academic_class)
     return render(request, 'teachercert/manage_tcertificate.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def delete_tcertificate(request, certID=None):
+    tcertificate = TCertificate.objects.get(id=certID)
+    if request.method == "POST":
+        tcertificate.delete()
+        return redirect('isei_teachercert')
+
+    context =dict (item = tcertificate)
+    return render(request, 'teachercert/delete_tcertificate.html', context)
+
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
@@ -629,12 +641,12 @@ def teachercert_application(request, pk, appID = None):
     address = Address.objects.get(teacher=teacher)
 
     if request.method == 'POST':
-        data = request.POST.copy()
+        data = request.POST.copy(request.FILES or None)
         data['teacher']=teacher
-        application_form = TeacherCertificationApplicationForm(data, request.POST)
+        application_form = TeacherCertificationApplicationForm(data, request.POST, request.FILES or None)
         if application_form.is_valid():
             application = application_form.save()
-        return redirect ('teachercert_application_done', pk = teacher.id, appID = application.id)
+            return redirect ('teachercert_application_done', pk = teacher.id, appID = application.id)
 
     else:
         if appID==None: #new application

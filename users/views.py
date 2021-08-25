@@ -227,13 +227,13 @@ def principaldashboard(request):
     number_of_expired_teachers = expired_teachers.count()
 
     #not certified teachers
-    never_certified_teachers = teachers.filter(~Q(tcertificate__in= tcertificates))
-    number_of_never_certified_teachers = never_certified_teachers.count()
+    non_certified_teachers = teachers.filter(~Q(tcertificate__in= tcertificates))
+    number_of_non_certified_teachers = non_certified_teachers.count()
 
-    percent_certified = round(number_of_never_certified_teachers * 100 / number_of_teachers)
+    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
 
     today = date.today()
-    in_a_month = today + timedelta (30)
+    in_six_months = today + timedelta (183)
     a_year_ago = today - timedelta (365)
 
 # Report Approval Section
@@ -246,10 +246,10 @@ def principaldashboard(request):
         reports_to_review = False
 
 
-    context = dict( today = today, in_a_month = in_a_month, a_year_ago=a_year_ago, percent_certified = percent_certified,
+    context = dict( today = today, in_six_months = in_six_months, a_year_ago=a_year_ago, percent_certified = percent_certified,
                    valid_tcertificates = valid_tcertificates, number_of_certified_teachers = number_of_certified_teachers,
                    expired_tcertificates = expired_tcertificates, number_of_expired_teachers = number_of_expired_teachers,
-                   never_certified_teachers = never_certified_teachers, number_of_never_certified_teachers = number_of_never_certified_teachers,
+                  non_certified_teachers = non_certified_teachers, number_of_non_certified_teachers = number_of_non_certified_teachers,
                    number_of_teachers = number_of_teachers,
                     reports_to_review = reports_to_review)
 

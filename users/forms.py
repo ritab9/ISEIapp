@@ -31,7 +31,6 @@ class TeacherForm(ModelForm):
         widgets = {
             'profile_picture': forms.FileInput(attrs={'size': 1}),
             'date_of_birth': forms.DateInput( format ='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy', 'input-formats':'%m/%d/%Y'}),
-             'ssn': forms.PasswordInput(render_value=True),
         }
 
 class SchoolAddressForm(ModelForm):

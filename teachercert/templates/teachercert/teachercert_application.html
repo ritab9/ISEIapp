@@ -8,8 +8,8 @@
     <h6> Teacher Certification Initial Application</h6>
 
 <!-- Certification form -->
-
-    <form method="POST" action="">
+<div class="card card-body mb-3">
+    <form method="POST" action="" id="my_form" enctype="multipart/form-data">
         {% csrf_token %}
          {{ application_form.non_field_errors }}
          {% for hidden in application_form.hidden_fields %}
@@ -19,34 +19,50 @@
 
  <!-- School of employment and name -->
         <div class="card card-body">
-              <h7 class="col"> School of Employment: {{ teacher.school }}</h7>
-              <div class="col"> Name: {{ teacher.name }} </div>
+            <div class="row"> <b> School of Employment: </b> {{ teacher.school }}</div>
+            <div class="row"> <b>Name:</b> {{ teacher.name }} </div>
         </div>
 
         <div class="col">
         <div class="row">
- <!-- address -->
-            <div class="col card card-body">
-                 <p> Address:  {{ address.address_1}} {{ address.address_2}}</p>
-                 <p>City:  {{ address.city }}</p>
-                 <p>State:  {{ address.state }}</p>
-                 <p>Zip/Postal Code:  {{ address.zip_code }}</p>
-                 <p>Country: {{ address.country}}</p><br>
-            </div>
 
  <!-- Teacher Info -->
             <div class="col card card-body">
-                <p> Date of birth: {{ teacher.date_of_birth }}</p>
-                <p>SSN: ***-**-{{ teacher.ssn|slice:'7:11'}}</p>
-                <p>Email address: {{ user.email }}</p>
-                <p>Phone number: {{ teacher.phone_number }}</p>
+                <p><b> Date of birth: </b> {{ teacher.date_of_birth }}</p>
+                <p><b>ISEI Teacher ID:</b> {{ teacher.iseiteacherid }}</p>
+                <p><b>Email address:</b> {{ user.email }}</p>
+                <p><b>Phone number:</b> {{ teacher.phone_number }}</p>
+            </div>
+
+ <!-- address -->
+            <div class="col card card-body">
+                <p><b>Address:</b>  {{ address.address_1}} {{ address.address_2}}</p>
+                <p><b>City:</b>  {{ address.city }}</p>
+                <p><b>State:</b>  {{ address.state }}</p>
+                <p><b>Zip/Postal Code:</b>  {{ address.zip_code }}</p>
+                <p><b>Country:</b> {{ address.country}}</p><br>
             </div>
 
 <!-- application info -->
              <div class="col card card-body">
-                {{ application_form.cert_level|as_crispy_field }}
+                <div class="">
+                    Certification Level Requested: <br>
+                    <div class = "row">
+                        <div class="col">
+                            {{ application_form.cert_level }}
+                        </div>
+                        <div class="col">
+
+                            <button type="button" class="btn btn-sm btn-ISEIblue1" data-toggle="tooltip" data-placement="top"
+                                    title=" The Designated Teaching Certificate is issued to an experienced individual who has demonstrated expertise in one or more specific areas and who by experience and training can provide a valuable contribution to the educational program.">
+                                <i class="fas fa-info"></i> &nbsp; Designated
+                            </button>
+
+                         </div>
+                     </div>
+                </div>
                 {{ application_form.endors_level|as_crispy_field }}
-                 {{ application_form.subject_areas|as_crispy_field }}
+                 {{ application_form.courses_taught|as_crispy_field }}
             </div>
         </div>
         </div>
@@ -118,23 +134,51 @@
              </table>
         </div>
 
-<!-- Check all that apply -->
-        <div class="card card-body">
-            <div class ="row">{{ application_form.resume.label }}  {{ application_form.resume }}</div>
-            <div class="row">{{ application_form.principal_letter.label}}  {{ application_form.principal_letter}}</div>
+<!-- Resume and Principal Letter -->
+
+        <div class="card card-body" id="resume_and_principal_letter_div_id" >
+            <div class ="row mb-2">
+                <div class="col">{{ application_form.resume.label }}  {{ application_form.resume }}</div>
+                <div class="col">Upload Resume: {{ application_form.resume_file }}</div>
+            </div>
+            <div class="row mb-3">
+                    <button type="button" class="btn btn-sm btn-ISEIblue1 ml-3" data-toggle="tooltip" data-placement="top"
+                            title="Provide verification (resume) of successful experience in the technical skill, trade, or vocation that you are applying for.">
+                        <i class="fas fa-info"></i> &nbsp; Vocational
+                    </button>
+                    <button type="button" class="btn btn-sm btn-ISEIblue1 ml-3" data-toggle="tooltip" data-placement="top"
+                            title="Provide verification (resume) of successful experience in the technical skill or subject that you are applying for.">
+                        <i class="fas fa-info"></i> &nbsp; Designated
+                    </button>
+            </div>
+
+            <div class="row" id="principal_letter_div_id">
+                <div class="col">
+                    {{ application_form.principal_letter.label}}  {{ application_form.principal_letter}}</div>
+                <div class="col">
+                    {{ application_form.principal_letter_file.label }} {{ application_form.principal_letter_file }}
+                </div>
+            </div>
+
         </div>
 
 <!-- Disclosure Information -->
         <div class="card card-body">
-            {{ application_form.felony|as_crispy_field }}
-            {{ application_form.felony_description|as_crispy_field }}
+                {{ application_form.felony|as_crispy_field }}
+            <div id = "felony_description" style = "display:none">
+                {{ application_form.felony_description|as_crispy_field }}
+            </div>
 
             {{ application_form.sexual_offence|as_crispy_field  }}
-            {{ application_form.sexual_offence_description|as_crispy_field  }}
+            <div id = "sexual_offence_description" style = "display:none">
+                {{ application_form.sexual_offence_description|as_crispy_field  }}
+            </div>
         </div>
 
 <!-- Signature -->
         <div class="card card-body">
+            <p>I hereby grant permission to the ISEI to obtain information form local, state, or federal law enforcement agencies and to do a reference and a driver’s record check to help determine my suitability to be granted a teaching certificate. My signature also attests that the information on this application is to my knowledge accurate and true.</p>
+            <p>DISCLAIMER: By typing your name below, you are signing this application electronically. You agree that your electronic signature is the legal equivalent of your manual signature on this application.</p>
             <div class="row">
                 <div class="col">{{ application_form.signature|as_crispy_field }}<span style ='color:red'>{{ application_form.signature.errors }}</span></div>
                 <div class="col">{{ application_form.date|as_crispy_field }}</div>
@@ -144,9 +188,62 @@
 <!-- Submit -->
         <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Submit Application" >
 </form>
+</div>
 
 {% for message in messages %}
     <p id="messages" style="color:blue">{{message}}</p>
 {% endfor %}
+
+<script>
+
+// show /hide principal letter and resume based on selected certificate
+
+    $('#id_cert_level').on("click", function() {
+      var rl = document.getElementById("resume_and_principal_letter_div_id");
+      var l = document.getElementById("principal_letter_div_id");
+      var y = document.getElementById("id_cert_level");
+
+      if ((y.value == 'v') || (y.value =='d')) {
+        rl.style.display = "block";
+        document.getElementById("id_resume").value = 'n';
+        l.style.display = "block";
+        document.getElementById("id_principal_letter").value = 'n';
+        if (y.value == 'v') {
+            l.style.display = "none";
+            document.getElementById("id_principal_letter").value = 'a';
+        };
+      } else {
+        rl.style.display = "none";
+        document.getElementById("id_principal_letter").value = 'a';
+        document.getElementById("id_resume").value = 'a';
+      };
+    });
+
+
+
+    $('#id_felony').on("click", function() {
+      var x = document.getElementById("felony_description");
+      var y = document.getElementById("id_felony");
+      if (y.checked) {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      };
+});
+
+    $('#id_sexual_offence').on("click", function() {
+      var x = document.getElementById("sexual_offence_description");
+      var y = document.getElementById("sexual_offence_felony");
+      if (y.checked) {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      };
+    });
+
+
+
+</script>
+
 
 {% endblock %}

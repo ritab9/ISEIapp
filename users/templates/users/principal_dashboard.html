@@ -5,7 +5,6 @@
 
 {% block content %}
 
-
 <div class = "row">
 <!-- Teacher Certification Status-->
     <div class="col-sm-6 card card-body">
@@ -34,7 +33,7 @@
                     <td> {% for e in c.tendorsement_set.all %}
                         {{ e }}{% if not forloop.last %},{% endif %}
                     {% endfor %} </td>
-                    <td>{% if c.renewal_date > in_a_month %}
+                    <td>{% if c.renewal_date > in_six_months %}
                         {{ c.renewal_date }}
                     {% else %}
                         <span style="color:orange">{{ c.renewal_date }}</span>
@@ -62,9 +61,10 @@
                   <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td>
                 <td>{{ c.certification_type }}</td>
                 <td> {% if c.renewal_date < a_year_ago %}
-                         <span style="color:red"> {{ c.renewal_date }}</span>
+                         <span style="color:red"> {{ c.renewal_date }} Reinstatement Required</span>
+
                     {% else %}
-                        <span style="color:orange">{{ c.renewal_date }}</span>
+                        <span style="color:red">{{ c.renewal_date }} </span>
                     {% endif %}
                 </td>
               </tr>
@@ -75,7 +75,7 @@
 
     <p></p>
     <p><input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id="not_certified">
-        Never Certified Teachers: {{ number_of_never_certified_teachers }}
+        Non Certified Teachers: {{ number_of_non_certified_teachers }}
     </p>
 
         <table class = "table" id="details_not_certified" style="display:none">
@@ -85,7 +85,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for t in never_certified_teachers %}
+                {% for t in non_certified_teachers %}
                   <tr>
                       <td><a href="{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
                   </tr>
@@ -135,7 +135,7 @@
 
 </script>
 
-<!--
+<!-- Reports
 
     <div class="row">
         <div class="col-sm-4">

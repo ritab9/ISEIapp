@@ -83,14 +83,14 @@ class TeacherCertificationApplicationForm(ModelForm):
                 attrs={'class': 'form-controls', 'placehoder': 'Felony Description', 'rows': 10}),
             'sexual_offence_description': forms.Textarea(
                 attrs = {'class': 'form-controls', 'placehoder': 'Sexual Offence Description', 'rows': 10}),
-
             'date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'file': forms.FileInput(attrs={'size': 1}),
         }
 
 class TeacherCertificationApplicationISEIForm(ModelForm):
     class Meta:
         model = TeacherCertificationApplication
-        fields = ['public_note', 'isei_note', 'fee_paid', 'closed', 'isei_revision_date']
+        fields = ['public_note', 'isei_note', 'billed', 'closed', 'isei_revision_date']
         widgets = {
             'public_note': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Note visible to the teacher and principal', 'rows': 2}),

@@ -24,9 +24,9 @@
                     <td><a href="{% url 'isei_manage_application' app.id %}"> {{app.teacher}}</a></td>
                     <td>{% if app.initial %} Yes {% else %} No {% endif %}</td>
                     <td>{{ app.get_cert_level_display }}</td>
-                    <td>{% if app.endors_level == 'e' %} {{ Elementary }} {% else %} {{ app.subject_areas }} {% endif %}</td>
+                    <td>{% if app.endors_level == 'e' %} {{ Elementary }} {% else %} {{ app.courses_taught }} {% endif %}</td>
                     <td>{{ app.date }}</td>
-                    <td> {% if app.fee_paid %} {{ Paid }} {% else %} Not paid {% endif %}</td>
+                    <td> {% if app.billed %} {{ Billed }} {% else %} Not billed {% endif %}</td>
                     <td> {{ app.isei_revision_date }}</td>
                 </tr>
                 {% if app.public_note or app.isei_note  %}

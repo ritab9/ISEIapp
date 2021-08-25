@@ -95,3 +95,9 @@ class TCertificate(admin.ModelAdmin):
     list_editable = ('certification_type','archived', 'issue_date','renewal_date', 'renewal_requirements')
     list_display_links = ('teacher',)
 
+@admin.register(TeacherCertificationApplication)
+class TeacherCertificationApplication(admin.ModelAdmin):
+    model = TeacherCertificationApplication
+    list_display = ('id','teacher', 'initial', 'date', 'billed', 'closed')
+    list_editable = ('initial', 'date', 'billed', 'closed')
+    list_display_links = ('teacher',)

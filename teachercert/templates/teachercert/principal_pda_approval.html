@@ -3,12 +3,10 @@
 
 {% block content %}
 {% if pda_report_approved or pda_report_denied %}
-    <!-- <p style="font-size: 80%">* Canceling a submission will reset submission date to current date.</p>
-	-->
 	<div class="row">
         {% if pda_report_approved %}
         <div class="col-sm">
-     Approved:
+     Comeplete Reports:
         <div class="card-body">
             <table class="table table-sm table-light" style="font-size: 85%">
               <thead class="table-light">
@@ -41,7 +39,7 @@
             {% endif %}
     {% if pda_report_denied %}
     <div class="col-sm">
-        Denied:
+        More infomation needed:
         <div class="card-body">
             <table class="table table-sm table-light" style="font-size: 85%">
               <thead class="table-light">
@@ -75,7 +73,7 @@
     <div class="col-sm">
     {% if pda_report_notreviewed %}
         <div class="card-body">
-            <b> Review and approve teacher activities: </b>
+            <b> Teacher CEU Reports to be reviewed: </b>
             {% for p in pda_report_notreviewed %}
             <table class="table table-sm table-light">
                 <thead class="table-dark">
@@ -135,7 +133,7 @@
                  <br>
                         <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
                             {% csrf_token %}
-                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approved" align="right" >
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Report Complete" name = "approved" align="right" >
                            <br>
                             <span style="font-size: 85%; color: red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
                             </span>
@@ -147,7 +145,7 @@
                     <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
                             {% csrf_token %}
                         <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required="True">
-                            <input  class = "btn btn-sm btn-danger" type="submit" value="Deny" name = "denied" >
+                            <input  class = "btn btn-sm btn-danger" type="submit" value="Additional Information Needed" name = "denied" >
                         </form>
                     </td></tr>
 
@@ -164,7 +162,7 @@
 {% if pda_instance_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
-            <b> Review and approve teacher activities (activities denied by ISEI and resubmitted):  </b>
+            <b> Resubmitted CEU activities </b>
             <table class="table table-sm table-light">
               <tbody>
               {% for i in pda_instance_notreviewed %}
@@ -207,7 +205,7 @@
                     <form action="{% url 'principal_pda_approval' i.pda_report.id i.id %}" method="POST">
                             {% csrf_token %}
                         <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
-                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denyinst" >
+                            <input  class = "btn btn-sm btn-danger" type="submit" value="More information needed" name = "denyinst" >
                         </form>
                     </td></tr>
                     <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>

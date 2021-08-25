@@ -59,8 +59,6 @@ Not to be used independently
 
                     </td>
 
-
-
                     <td> {% for a in c.teacher.academicclass_set.all %}
                               {% if a.date_completed > c.issue_date %}
                                 {{ a.name}} <br>

@@ -34,6 +34,10 @@ class School(models.Model):
 # User Model is automatically created by Django and we will extend it to create Teacher Model
 # upload will be automatically under the Media_root, which for us is Media
 class Teacher(models.Model):
+    #TODO once all data is entered make joined_at auto field
+    #joined_at = models.DateField(auto_now_add=True, blank=True)
+    joined_at = models.DateField()
+
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     middle_name = models.CharField(max_length=20, null=True, blank=True)
@@ -44,7 +48,7 @@ class Teacher(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
-    ssn = USSocialSecurityNumberField(null=True, blank=True)
+
 
     class Meta:
         ordering = ('last_name',)
@@ -60,6 +64,19 @@ class Teacher(models.Model):
             else:
                 name = self.first_name + " " + self.last_name
         return name
+
+    def iseiteacherid(self):
+        l = len(str(self.id))
+        if l==1:
+            teacher_id = "000" + str(self.id)
+        elif l==2:
+            teacher_id = "00"+str(self.id)
+        elif l==3:
+            teacher_id = "0" + str(self.id)
+        else:
+            teacher_id = str(self.id)
+
+        return str(self.joined_at.year) + "-" + teacher_id
 
     def __str__(self):
         return self.first_name + " " + self.last_name
@@ -105,6 +122,7 @@ class CollegeAttended(models.Model):
     degree = models.CharField(max_length=40, verbose_name= "Type, Degree Earned", help_text= "BSc, Marketing & Psychology", null= False, blank=False)
     transcript_requested = models.BooleanField(default= False, verbose_name="Official college transcripts have been requested")
     transcript_received = models.BooleanField(default= False, null = False, blank= False)
+    transcript_processed = models.BooleanField(default=False, null=False, blank= False)
     def __str__(self):
         return self.name
 

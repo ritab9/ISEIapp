@@ -8,6 +8,10 @@
     <div class="row">
         <div class="col-8">
         <div class="card card-body">
+
+            {% if is_staff %}
+
+<!-- staff can edit TCertificate -->
             <form action="." method="POST" >
                 {% csrf_token %}
                 <div class="row">
@@ -38,27 +42,56 @@
                 </div>
                 <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
             </form>
+                <div class = "row mt-3"><div class="col">
+                    <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
+                </div></div>
+
+<!-- Principal and teacher can only view certificate -->
+            {% else %}
+                <p><b>Teacher:</b> {{ tcertificate.teacher }}</p>
+                <p><b>Certification Type:</b> {{ tcertificate.certification_type }}</p>
+                <p><b>Validity:</b> {{ tcertificate.issue_date }} - {{ tcertificate.renewal_date }}</p>
+                {% if tcertificate.archived %} <p style="color:red"> Not current certificate <p> {% endif %}
+                {{ tcertificate.renewal_requirements }}
+                <p><b>Endorsements:</b>
+                    {% for e in tcertificate.tendorsement_set.all %}
+                        {{ e }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                </p>
+                {% if tcertificate.public_note %}
+                    <p><b>Note from ISEI:</b> {{ tcertificate.public_note }} </p>
+                {% endif %}
+            {% endif %}
         </div>
         </div>
 
         <div class="col-4">
             <div class="card-body">
-                <h6>Previous/Other certificates:</h6>
+                <p>Previous/Other certificates:</p>
                 {% if prev_certificates %}
-                    {% for c in prev_certificates %}<br>
-                        <a href="{%  url 'manage_tcertificate' c.id %}">{{ c.certification_type }}</a><br>
-                        &nbsp; {{ c.issue_date }}-{{ c.renewal_date }} {% if c.expired %} <span style="color:red">Expired</span>{% endif %}<br>
-                        &nbsp; {% if c.archived == False %} <a href="{%  url 'archive_tcertificate' c.id certID %}"> Archive </a> {% else %} <a href="{%  url 'de_archive_tcertificate' c.id certID%}">Retrieve from archive</a> {% endif %} <br>
-                        &nbsp; {% for e in c.tendorsement_set.all %}
+                    {% for c in prev_certificates %}
+                        <a href="{%  url 'manage_tcertificate' c.id %}">{{ c.certification_type }}</a>
+                            {% if is_staff %}
+                                {% if c.archived == False %} <a href="{%  url 'archive_tcertificate' c.id certID %}"><span style="color:red"> Archive</span> </a> {% else %} <a href="{%  url 'de_archive_tcertificate' c.id certID%}"><span style="color:green">Retrieve from archive</span></a> {% endif %}
+                        &nbsp;   {% else %}
+                                {% if c.archived %} <span style="color:red"> Not current certificate </span>
+                                {% else %} <span style="color:green"> Latest certificate </span>
+                                {% endif %}
+                            {% endif %}
+
+                        &nbsp; <br>{{ c.issue_date }}-{{ c.renewal_date }} {% if c.expired %} <span style="color:red">Expired</span>{% endif %}<br>
+                        &nbsp;
+                            {% for e in c.tendorsement_set.all %}
                             {{ e }}{% if not forloop.last %},{% endif %}
-                                {% endfor %}<br>
+                                {% endfor %}
+                        <p></p>
                     {% endfor %}
                 {% endif %}
             </div>
         </div>
     </div>
 
-
+{%  if not tcertificate.archived %}
     <br>
 <h6> Academic Classes: </h6>
     {% if academic_class %}
@@ -73,7 +106,7 @@
     {% else %}
         <p>No Professional Development Reports have been submitted yet for this Certification</p>
     {% endif %}
-
+{% endif %}
 <script type='text/javascript'>
 
 </script>

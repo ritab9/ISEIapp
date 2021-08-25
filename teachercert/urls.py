@@ -42,6 +42,8 @@ urlpatterns = [
 
     path('manage_tcertificate/', views.manage_tcertificate, name='manage_tcertificate'),
     path('manage_tcertificate/<str:certID>/', views.manage_tcertificate, name='manage_tcertificate'),
+    path('delete_tcertificate/<str:certID>/', views.delete_tcertificate, name='delete_tcertificate'),
+
 
     path('archive_tcertificate/<str:cID>/<str:certID>/', views.archive_tcertificate, name='archive_tcertificate'),
     path('de_archive_tcertificate/<str:cID>/<str:certID>/', views.de_archive_tcertificate, name='de_archive_tcertificate'),
