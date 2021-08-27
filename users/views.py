@@ -46,23 +46,26 @@ def loginpage(request):
 
         if user is not None:
             login(request, user)
-            if is_in_group(request.user, 'principal'):
-                #return redirect('principal_teachercert')
-                #return redirect('PDAreports')
-                return redirect('principal_dashboard')
+            if request.GET.get('next'):
+                return redirect(request.GET.get('next'))
             else:
-                if is_in_group(request.user, 'teacher'):
-                    #if user.date_joined.date() == user.last_login.date():
-                    #if certified(teacher):
-                    return redirect('teacher_dashboard', user.id)
-                    #else:
-                    #    return redirect('account_settings', user.id)
-                elif is_in_group(request.user, 'staff'):
+                if is_in_group(request.user, 'principal'):
+                    #return redirect('principal_teachercert')
                     #return redirect('PDAreports')
-                    return redirect('isei_teachercert')
-                    #return redirect('staff_dashboard')
+                    return redirect('principal_dashboard')
                 else:
-                    messages.info(request, 'User not assigned to a group. Contact the site administrator!')
+                    if is_in_group(request.user, 'teacher'):
+                        #if user.date_joined.date() == user.last_login.date():
+                        #if certified(teacher):
+                        return redirect('teacher_dashboard', user.id)
+                        #else:
+                        #    return redirect('account_settings', user.id)
+                    elif is_in_group(request.user, 'staff'):
+                        #return redirect('PDAreports')
+                        return redirect('isei_teachercert')
+                        #return redirect('staff_dashboard')
+                    else:
+                        messages.info(request, 'User not assigned to a group. Contact the site administrator!')
         else:
             messages.info(request, 'Username OR password is incorrect')
     context = {}

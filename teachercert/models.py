@@ -5,6 +5,7 @@ import datetime
 from datetime import datetime, date
 import os
 
+
 # Create your models here.
 
 
@@ -26,31 +27,26 @@ class SchoolYear(models.Model):
         if self.active_year:
             all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
+class PDACategory(models.Model):
+    name = models.CharField(max_length=25, null = False, blank=False)
 
+    def __str__(self):
+        return self.name
 
 #PDA Report Modelst
 class PDAType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
-    evidence = models.CharField(max_length=50, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
-    CATEGORIES = (
-        ('i', 'Independent'),
-        ('g', 'Group'),
-        ('c', 'Collaboration'),
-        ('p', 'Presentation & Writing'),
-    )
-    category = models.CharField(max_length=1, choices=CATEGORIES, help_text="Choose a category", null=False)
+    evidence = models.CharField(max_length=100, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
+    pda_category = models.ForeignKey(PDACategory, on_delete=models.PROTECT, help_text="Choose a category", null=False, blank=False)
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
     max_cap = models.CharField(max_length=30, null=True, blank = True)
 
     class Meta:
-        ordering =('category',)
+        ordering =('pda_category',)
 
     def __str__(self):
-        if self.evidence:
-            ev = self.evidence
-        else:
-            ev=""
-        return self.get_category_display() + ' - ' + self.description + '(' + ev + ')'
+        return self.description
+
 
 class PDAReport(models.Model):
     #timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
@@ -112,6 +108,7 @@ class PDAInstance(models.Model):
     reviewed_at = models.DateField(blank=True, null=True)
 
     pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
+    pda_category = models.ForeignKey(PDACategory, on_delete=models.PROTECT, null=True, blank=True)
     pda_type = models.ForeignKey(PDAType, on_delete=models.PROTECT, null=False, blank=False)
     date_completed = models.DateField(null=False)
     description = models.CharField(validators=[MinLengthValidator(1)], max_length=3000, blank=False, null=False)
@@ -125,6 +122,7 @@ class PDAInstance(models.Model):
     units = models.CharField(max_length=1, choices=UNIT_CHOICES, null=False, blank = False)
     amount = models.DecimalField(max_digits=5, decimal_places=1, null=False, blank = False)
 
+    evidence = models.CharField(max_length=300, null=True, blank = True)
     file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
 
     #used only for individual resubmission
@@ -161,6 +159,10 @@ class PDAInstance(models.Model):
 
     def __str__(self):
         return self.description
+
+
+
+
 
 class AcademicClass(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
@@ -269,14 +271,10 @@ class TeacherCertificationApplication(models.Model):
     )
     endors_level = models.CharField(max_length=1, choices=ELEVELS, verbose_name="Endorsement Level Requested", null=True, blank=True)
     courses_taught = models.CharField(max_length=50, blank=True, verbose_name="Courses Taught")
-    CHOICES=(
-        ('y', 'Yes'),
-        ('n','No'),
-        ('a', 'N/A'),
-    )
-    resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Verification of experience (for Designated or Vocational)", default ='a')
+    #CHOICES=( ('y', 'Yes'), ('n','No'),('a', 'N/A'),)
+    #resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Verification of experience (for Designated or Vocational)", default ='a')
     resume_file = models.FileField(upload_to='Applications/Resumes/%Y/%m/%d', null=True, blank=True)
-    principal_letter = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated )", default ='a')
+    #principal_letter = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated )", default ='a')
     principal_letter_file = models.FileField(upload_to='Applications/Principal Letters/%Y/%m/%d', null=True, blank=True)
 
     felony = models.BooleanField(verbose_name = "Check if you have ever been convicted of a felony (including a suspended sentence).",
@@ -299,4 +297,8 @@ class TeacherCertificationApplication(models.Model):
     isei_revision_date = models.DateField(blank = True, null = True)
     closed = models.BooleanField(default=False, blank=False, null=False)
 
+    def principal_letter_filename(self):
+        return os.path.basename(self.principal_letter_file.name)
 
+    def resume_filename(self):
+        return os.path.basename(self.resume_file.name)

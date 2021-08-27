@@ -14,13 +14,22 @@
 .denybtn .btn{}
 
 
-/* defined some text resizing spans */
+/* defined some text and coloring resizing spans */
+
+.spanred {
+   color: red;
+}
+
+.spanblue{
+      color: #053A64; /*ISEI blue*/
+}
+
 .span80{
     font-size: 80%;
 }
 
 .span80red {
-    color: darkred;
+    color: red;
     font-size: 80%;
 }
 

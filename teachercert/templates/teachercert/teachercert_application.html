@@ -137,10 +137,16 @@
 <!-- Resume and Principal Letter -->
 
         <div class="card card-body" id="resume_and_principal_letter_div_id" >
-            <div class ="row mb-2">
-                <div class="col">{{ application_form.resume.label }}  {{ application_form.resume }}</div>
-                <div class="col">Upload Resume: {{ application_form.resume_file }}</div>
+            <div class ="row mb-3">
+                <div class="col">
+                    Upload a resume of work / teaching experience in the technical skill, trade, vocation or subject
+                        that you are / will be teaching and any teaching experience with this age group.
+                </div>
+                <div class="col">
+                    {{ application_form.resume_file }}</p>
+                </div>
             </div>
+            <!-- Unused Toggle buttons
             <div class="row mb-3">
                     <button type="button" class="btn btn-sm btn-ISEIblue1 ml-3" data-toggle="tooltip" data-placement="top"
                             title="Provide verification (resume) of successful experience in the technical skill, trade, or vocation that you are applying for.">
@@ -150,13 +156,12 @@
                             title="Provide verification (resume) of successful experience in the technical skill or subject that you are applying for.">
                         <i class="fas fa-info"></i> &nbsp; Designated
                     </button>
-            </div>
+            </div> -->
 
             <div class="row" id="principal_letter_div_id">
+                <div class="col"> Upload letter of recommendation from the principal: </div>
                 <div class="col">
-                    {{ application_form.principal_letter.label}}  {{ application_form.principal_letter}}</div>
-                <div class="col">
-                    {{ application_form.principal_letter_file.label }} {{ application_form.principal_letter_file }}
+                    {{ application_form.principal_letter_file }}
                 </div>
             </div>
 
@@ -169,7 +174,7 @@
                 {{ application_form.felony_description|as_crispy_field }}
             </div>
 
-            {{ application_form.sexual_offence|as_crispy_field  }}
+                {{ application_form.sexual_offence|as_crispy_field  }}
             <div id = "sexual_offence_description" style = "display:none">
                 {{ application_form.sexual_offence_description|as_crispy_field  }}
             </div>
@@ -199,6 +204,16 @@
 // show /hide principal letter and resume based on selected certificate
 
     $('#id_cert_level').on("click", function() {
+        ShowHideResumeAndLetter();
+    });
+
+    window.onload=function()
+        {
+           ShowHideResumeAndLetter();
+        };
+
+    function ShowHideResumeAndLetter() {
+    //$('#id_cert_level').on("click", function() {
       var rl = document.getElementById("resume_and_principal_letter_div_id");
       var l = document.getElementById("principal_letter_div_id");
       var y = document.getElementById("id_cert_level");
@@ -217,7 +232,7 @@
         document.getElementById("id_principal_letter").value = 'a';
         document.getElementById("id_resume").value = 'a';
       };
-    });
+    };
 
 
 
@@ -233,7 +248,7 @@
 
     $('#id_sexual_offence').on("click", function() {
       var x = document.getElementById("sexual_offence_description");
-      var y = document.getElementById("sexual_offence_felony");
+      var y = document.getElementById("id_sexual_offence");
       if (y.checked) {
         x.style.display = "block";
       } else {

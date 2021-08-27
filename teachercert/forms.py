@@ -28,14 +28,38 @@ class PDAreportForm(ModelForm):
 
 
 class PDAInstanceForm(ModelForm):
+    # Ajax attempt
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pda_type'].queryset = PDAType.objects.none()
+
+        if 'pda_category' in self.data:
+            try:
+                pda_category_id = int(self.data.get('pda_category'))
+                self.fields['pda_type'].queryset = PDAType.objects.filter(pda_category_id=pda_category_id).order_by(
+                    'description')
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty queryset
+        elif self.instance.pk:
+            self.fields['pda_type'].queryset = self.instance.pda_category.pdatype_set.all()
+
     class Meta:
         model = PDAInstance
-        fields = ('pda_type','description', 'date_completed', 'units', 'amount', 'file', 'date_resubmitted')
+        fields = ('pda_category', 'pda_type','description', 'date_completed', 'units', 'amount', 'evidence', 'file', 'date_resubmitted')
         widgets = {
+            #'pda_category': forms.Select (attrs={'class':'category_class'}),
+            #'pda_type': forms.Select(attrs={'class': 'type_class'}),
             'file': forms.FileInput(attrs={'size': 1}),
             'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
             'amount': forms.NumberInput (attrs={'style':'width:60px' }),
+            'description': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Activity Description', 'rows': 1}),
+            'evidence': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Activity Description', 'rows': 1}),
         }
+
+
+
 
 
 PDAInstanceFormSet = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=1,
@@ -77,7 +101,10 @@ TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=(
 class TeacherCertificationApplicationForm(ModelForm):
     class Meta:
         model = TeacherCertificationApplication
-        fields=('__all__')
+        fields =('cert_level','endors_level','courses_taught',
+                 'resume_file','principal_letter_file',
+                 'felony','felony_description','sexual_offence','sexual_offence_description',
+                 'signature', 'date')
         widgets = {
             'felony_description': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Felony Description', 'rows': 10}),

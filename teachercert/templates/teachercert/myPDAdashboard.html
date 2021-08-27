@@ -151,7 +151,7 @@
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
                 <td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_category_display}} </td>
+                <td>{{p.pda_type.get_pda_category_display}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
@@ -212,7 +212,7 @@
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
                 <td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_category_display}} </td>
+                <td>{{p.pda_type.get_pda_category_display}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
@@ -291,7 +291,7 @@
             <tr>
                 <td>{{p.pda_report.school_year}} </td>
                 <td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_category_display}} </td>
+                <td>{{p.pda_type.get_pda_category_display}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>

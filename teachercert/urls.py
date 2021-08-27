@@ -21,6 +21,13 @@ urlpatterns = [
     # new record: pk - user ID, sy- School-year,  #existing record: recId - record ID
     path('create_pda/<str:recId>/', views.createPDA, name='create_pda'),
     path('create_report/<str:pk>/<str:sy>/', views.createPDAreport, name='create_report'),
+# Ajax for dependent dropdowns and info
+    path('ajax/load_PDAtypes/', views.load_PDAtypes, name = 'ajax_load_PDAtypes'),
+    path('ajax/load_evidence/', views.load_evidence, name = 'ajax_load_evidence'),
+
+
+#if we want the add the pdaInstance separately (actually, if we do that we should just reuse update!)
+#    path('add_instance/<str:reportID>/',views.add_instance, name='add_instance'),
 
     #pk is teacher ID, appID is the last application ID
     path('teachercert_application/<str:pk>/<str:appID>/', views.teachercert_application, name='teachercert_application'),

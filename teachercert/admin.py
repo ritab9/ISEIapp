@@ -12,11 +12,19 @@ class SchoolYear(admin.ModelAdmin):
     list_editable = ('active_year','start_date', 'end_date', )
     list_display_links = ('name',)
 
+@admin.register(PDACategory)
+class PDACategory(admin.ModelAdmin):
+    list_display = ('id','name',)
+    #list_editable = ('name',)
+    list_display_links = ('id',)
+
 #PDA Report Model Registration
 @admin.register(PDAType)
 class PDAType(admin.ModelAdmin):
-    list_display = ('category', 'description', 'ceu_value')
-    fields = ['category', 'description','evidence', 'ceu_value']
+    list_display = ('pda_category', 'description', 'ceu_value','evidence')
+    #list_editable = ('ceu_value', 'evidence')
+    list_display_links =('description',)
+
 
 @admin.register(AcademicClass)
 class AcademicClass(admin.ModelAdmin):
@@ -27,7 +35,7 @@ class AcademicClass(admin.ModelAdmin):
 
 class PDAInstanceInline(admin.StackedInline):
     model = PDAInstance
-    can_delete = False
+    can_delete = True
     extra = 0
     readonly_fields = ['created_at', 'updated_at', ]
 

@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'teachercert',
     'crispy_forms',
     'storages',
-    'captcha'
+    'captcha',
+    'jquery',
 ]
 
 MIDDLEWARE = [

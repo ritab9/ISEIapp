@@ -25,6 +25,8 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('teachercert.urls')),
     path('captcha/', include('captcha.urls')),
+
+
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) #static files served by the server

@@ -28,7 +28,7 @@ Not to be used independently
      <!-- Teacher Info -->
                 <div class="col card card-body">
                     <p><b>Date of birth:</b> {{ teacher.date_of_birth }}</p>
-                    <p><b>SSN:</b> ***-**-{{ teacher.ssn|slice:'7:11'}}</p>
+                    <p><b>ISEI Teacher ID:</b> {{ teacher.iseiteacherid|slice:'7:11'}}</p>
                     <p><b>Email address:</b> {{ user.email }}</p>
                     <p><b>Phone number:</b> {{ teacher.phone_number }}</b></p>
                 </div>
@@ -111,19 +111,27 @@ Not to be used independently
 
 <!-- Check all that apply -->
         <div class="card card-body">
-            <p><b>Resume of work/teaching experience is included (for Designated and Vocational): </b> &nbsp; {{ application.get_resume_display }}</p>
-            <a href={% get_media_prefix %}{{ application.resume_file }}>{{ application.resume_file }}</a>
-            <p><b>Letter of Recommendation from Principal has been sent (for Designated and Vocational): </b> &nbsp; {{ application.get_principal_letter_display }} </p>
+            {% if application.cert_level == 'd' %}
+                <p>Resume of work/teaching experience (for Designated and Vocational):
+                    <a href={% get_media_prefix %}{{ application.resume_file }}>{{ application.resume_filename }}</a></p>
+                <p>Letter of Recommendation from Principal has been sent (for Designated and Vocational):
+                    <a href={% get_media_prefix %}{{ application.principal_letter_file }}>{{ application.principal_letter_filename }}</a>
+                </p>
+            {% endif %}
+            {% if application.cert_level == 'v' %}
+                <p>Resume of work/teaching experience (for Designated and Vocational):
+                    <a href={% get_media_prefix %}{{ application.resume_file }}>{{ application.resume_filename }}</a></p>
+            {% endif %}
         </div>
 
 <!-- Disclosure Information -->
         <div class="card card-body">
-            <p><b>Have you ever been convicted of a felony (including a suspended sentence)?</b>
+            <p>Have you ever been convicted of a felony (including a suspended sentence)?
                 {% if application.felony %} Yes.
                     {{ application.felony_description }}
                 {% else %} No.
                 {% endif %}</p>
-            <p><b>Have you ever been under investigation for any sexual offense (excluding any charges which were fully cleared)?</b>
+            <p>Have you ever been under investigation for any sexual offense (excluding any charges which were fully cleared)?
                 {% if application.sexual_offence %} Yes.
                     {{ application.sexual_offence_description }}
                 {% else %} No.

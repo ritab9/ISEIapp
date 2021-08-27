@@ -1,0 +1,6 @@
+<!-- for Ajax pda_types -->
+
+<option value="">---------</option>
+{% for p in pda_types %}
+<option value="{{ p.pk }}">{{ p.description }}</option>
+{% endfor %}

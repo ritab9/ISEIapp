@@ -49,6 +49,30 @@ def createPDAreport(request, pk, sy):
     pda_report.save()
     return redirect('create_pda', recId =pda_report.id)
 
+# Ajax attempt
+def add_instance(request, reportID):
+    pda_instance = PDAInstance(pda_report=PDAReport.objects.get(id=reportID))
+    form = PDAInstanceForm(instance=pda_instance)
+    if request.method == 'POST':
+        form = PDAInstanceForm(request.POST, instance=pda_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('create_pda', recId=reportID)
+    return render(request, 'teachercert/add_instance.html', {'form': form})
+
+
+def load_PDAtypes(request):
+    pda_category_id = request.GET.get('pda_category_id')
+    pda_types = PDAType.objects.filter(pda_category_id = pda_category_id).order_by('description')
+    return render(request, 'teachercert/pda_category_dropdown_list_options.html', {'pda_types': pda_types})
+
+
+def load_evidence(request):
+    pda_type_id = request.GET.get('pda_type_id')
+    pda_type = PDAType.objects.get(id=pda_type_id)
+    evidence = pda_type.evidence
+    return render(request, 'teachercert/ajax_suggested_evidence.html', {'evidence': evidence})
+
 
 # create PDA instance + allows for report submission (for report with matching pk)
 @login_required(login_url='login')
@@ -57,16 +81,18 @@ def createPDA(request, recId):
 
     pda_report = PDAReport.objects.get(id=recId) #report
     pda_instance = PDAInstance.objects.filter(pda_report=pda_report) #list of already entered instances
-    instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) # entering new activity
+    #instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) # entering new activity
 
+    new_instance = PDAInstance (pda_report=pda_report)
+    instance_form = PDAInstanceForm(instance=new_instance)
     report_form = PDAreportForm(instance = pda_report) #form for editing current report (summary and submission)
 
     if request.method == 'POST':
         if request.POST.get('add_activity'): #add activity and stay on page
-            instanceformset = PDAInstanceFormSet(request.POST, request.FILES or None, instance=pda_report)
-            if instanceformset.is_valid():
-                instanceformset.save() #save activity
-                instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) #allow for a new entry
+            instance_form = PDAInstanceForm(request.POST, request.FILES or None, instance=new_instance)
+            if instance_form.is_valid():
+                instance_form.save() #save activity
+                instance_form = PDAInstanceForm(instance= PDAInstance(pda_report=pda_report)) #allow for a new entry
 
 
         if request.POST.get('submit_report'): #submit report - go to PDAdashboard
@@ -81,13 +107,13 @@ def createPDA(request, recId):
                     pda_instance.update(principal_reviewed = 'n', isei_reviewed='n') # set all instances to not reviewed as well
                     #todo work on message to principal
                     principal = Teacher.objects.get(user__groups__name='principal', school=pda_report.teacher.school) # get the principal of this teacher
-                    if principal: #to avoid an error message just in case principal is not set
-                        principal_email = principal.user.email
-                        email = EmailMessage(
-                            'Report Submission',
-                            pda_report.teacher.first_name + " " +pda_report.teacher.last_name + " has submitted a PDA report. Go to www.isei.blablabla to review the submission.",
-                            'ritab.isei.life@gmail.com', [principal_email])
-                        email.send()
+                    #if principal: #to avoid an error message just in case principal is not set
+                    #    principal_email = principal.user.email
+                    #    email = EmailMessage(
+                    #        'Report Submission',
+                    #        pda_report.teacher.first_name + " " +pda_report.teacher.last_name + " has submitted a PDA report. Go to www.isei.blablabla to review the submission.",
+                    #        'ritab.isei.life@gmail.com', [principal_email])
+                    #    email.send()
                     return redirect('myPDAdashboard', pk=pda_report.teacher.user.id) # go back to PDAdashboard
 
         if request.POST.get('update_report'):  # update summary, stay on page
@@ -95,8 +121,10 @@ def createPDA(request, recId):
             if report_form.is_valid():
                 pda_report = report_form.save()
 
+
+
     context = dict(pda_instance=pda_instance,  pda_report=pda_report,
-                   instanceformset=instanceformset,  report_form=report_form, )
+                   instance_form=instance_form,  report_form=report_form, )
 
     return render(request, "teachercert/create_pda.html", context)
 
@@ -105,23 +133,23 @@ def createPDA(request, recId):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
 def updatePDAinstance(request, pk):
-    pdainstance = PDAInstance.objects.get(id=pk)
-    form = PDAInstanceForm(instance=pdainstance)
+    pda_instance = PDAInstance.objects.get(id=pk)
+    form = PDAInstanceForm(instance=pda_instance)
 
     # if the report has been accepted but the instance denied by ISEI, the instance is resubmitted alone
     resubmit = False
-    if ((pdainstance.isei_reviewed == 'd') and (pdainstance.pda_report.isei_reviewed == 'a')):
+    if ((pda_instance.isei_reviewed == 'd') and (pda_instance.pda_report.isei_reviewed == 'a')):
         resubmit = True
 
     if request.method == 'POST':
         if request.POST.get('submit'):  #if it's an update within the report, it is saved and send back to report creation
-            form = PDAInstanceForm(request.POST, request.FILES or None, instance=pdainstance)
+            form = PDAInstanceForm(request.POST, request.FILES or None, instance=pda_instance)
             if form.is_valid():
                 form.save()
-                return redirect('create_pda', pdainstance.pda_report.id)
+                return redirect('create_pda', pda_instance.pda_report.id)
 
         if request.POST.get('resubmit'): #if it is a resubmition
-            form = PDAInstanceForm(request.POST, request.FILES or None, instance=pdainstance)
+            form = PDAInstanceForm(request.POST, request.FILES or None, instance=pda_instance)
             if form.is_valid():
                 form.save()  #save
                 # ToDo Should I set isei_reviewed='n' here???
@@ -137,9 +165,9 @@ def updatePDAinstance(request, pk):
                 #    email.send()
                 #if is_in_group(request.user, 'teacher'):        # teacher landing page
 
-                return redirect('myPDAdashboard', pk=pdainstance.pda_report.teacher.user.id)
+                return redirect('myPDAdashboard', pk=pda_instance.pda_report.teacher.user.id)
 
-    context = dict(form=form, resubmit= resubmit) #if resubmit=True the activity has been denied by ISEI and the report it belongs to accepted
+    context = dict(pda_instance = pda_instance, form=form, resubmit= resubmit) #if resubmit=True the activity has been denied by ISEI and the report it belongs to accepted
     return render(request, "teachercert/update_pdainstance.html", context)
 
 
@@ -482,7 +510,7 @@ def approved_pdf(request):
         lines.append(a.teacher.first_name + " " + a.teacher.last_name+ ", " + a.school_year.name)
         lines.append("")
         for i in a.pdainstance_set.all():
-            categ = i.pda_type.get_category_display()
+            categ = i.pda_type.get_pda_category_display()
             lines.append(categ + " " + str(i.date_completed))
             lines.append(i.description)
             lines.append(str(i.approved_ceu))
@@ -638,26 +666,25 @@ def teachercert_application(request, pk, appID = None):
 # pk - teacher ID, appID - application ID
 
     teacher = Teacher.objects.get(id=pk)
+
+    if appID == None:  # new application
+        application = TeacherCertificationApplication(teacher = teacher)
+    else:  # update existing application
+        application = TeacherCertificationApplication.objects.get(id=appID)
+
     address = Address.objects.get(teacher=teacher)
+    application_form = TeacherCertificationApplicationForm(instance = application)
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
+
 
     if request.method == 'POST':
-        data = request.POST.copy(request.FILES or None)
-        data['teacher']=teacher
-        application_form = TeacherCertificationApplicationForm(data, request.POST, request.FILES or None)
+        application_form = TeacherCertificationApplicationForm(request.POST, request.FILES or None, instance=application)
         if application_form.is_valid():
             application = application_form.save()
             return redirect ('teachercert_application_done', pk = teacher.id, appID = application.id)
 
-    else:
-        if appID==None: #new application
-            application_form = TeacherCertificationApplicationForm(initial={'teacher': teacher})
-        else: #update existing application
-            application_form = TeacherCertificationApplicationForm(
-                instance=TeacherCertificationApplication.objects.get(id=appID))
 
-
-    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
-    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
 
     context = dict(teacher = teacher, address = address,
                    application_form = application_form,
@@ -716,11 +743,9 @@ def isei_manage_application(request, appID):
     if request.method == "POST":
         application_form = TeacherCertificationApplicationISEIForm(request.POST, instance = application)
         if application_form.is_valid():
-            print('valid')
             application_form.save()
             return redirect('isei_teacher_applications')
-        else:
-            print('not valid')
+
 
     context = dict(application = application, application_form = application_form,
                    teacher=teacher, address= address,
