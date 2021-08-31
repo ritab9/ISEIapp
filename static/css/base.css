@@ -15,6 +15,13 @@
 
 
 /* defined some text and coloring resizing spans */
+.spangreen {
+    color:green;
+}
+
+.spanyellow{
+    color: #f1a542;
+}
 
 .spanred {
    color: red;

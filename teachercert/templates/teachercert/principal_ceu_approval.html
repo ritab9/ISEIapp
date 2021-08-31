@@ -2,18 +2,18 @@
 {% load static %}
 
 {% block content %}
-{% if pda_report_approved or pda_report_denied %}
+{% if ceu_report_approved or ceu_report_denied %}
 	<div class="row">
-        {% if pda_report_approved %}
+        {% if ceu_report_approved %}
         <div class="col-sm">
-     Comeplete Reports:
+     Complete Reports:
         <div class="card-body">
             <table class="table table-sm table-light" style="font-size: 85%">
               <thead class="table-light">
                 <th>Teacher</th><th>SchoolYear</th><th>Submitted</th><th>Approved</th><th></th>
               </thead>
               <tbody>
-                {% for p in pda_report_approved%}
+                {% for p in ceu_report_approved%}
                 <tr>
                     <td>{{p.teacher}} </td>
                     <td>{{p.school_year}} </td>
@@ -21,7 +21,7 @@
                     <td>{{ p.reviewed_at }} </td>
                     <td>
                          {% if p.isei_reviewed == 'n' %}
-                        <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
+                        <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
                                 <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
                         </form>
@@ -37,9 +37,9 @@
         </div>
     </div>
             {% endif %}
-    {% if pda_report_denied %}
+    {% if ceu_report_denied %}
     <div class="col-sm">
-        More infomation needed:
+        More information needed:
         <div class="card-body">
             <table class="table table-sm table-light" style="font-size: 85%">
               <thead class="table-light">
@@ -47,13 +47,13 @@
                 <th>Denied</th><th>Cancel</th>
               </thead>
               <tbody>
-                {% for p in pda_report_denied%}
+                {% for p in ceu_report_denied%}
                 <tr>
                     <td> {{p.teacher}} </span> </td>
                     <td> {{p.school_year}} </span></td>
                     <td> {{ p.reviewed_at }} </span></td>
                     <td>
-                        <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
+                        <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
                                 <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
                         </form>
@@ -71,10 +71,10 @@
 {% endif %}
 <div class="row">
     <div class="col-sm">
-    {% if pda_report_notreviewed %}
+    {% if ceu_report_notreviewed %}
         <div class="card-body">
             <b> Teacher CEU Reports to be reviewed: </b>
-            {% for p in pda_report_notreviewed %}
+            {% for p in ceu_report_notreviewed %}
             <table class="table table-sm table-light">
                 <thead class="table-dark">
                 <tr>
@@ -110,15 +110,18 @@
                         <th>Type</th>
                         <th>Description</th>
                         <th>CEUs</th>
-                        <th>Supporting Documentation</th>
+                        <th>Evidence & Supporting Documentation</th>
                       </thead>
-                      {% for i in p.pdainstance_set.all %}
+                      {% for i in p.ceuInstance_set.all %}
                         <tr>
                             <td>{{i.date_completed}}</td>
-                            <td>{{ i.pda_type }}</td>
+                            <td>{{ i.ceu_type }}</td>
                             <td>{{i.description}} </td>
                             <td>{{ i.suggested_ceu }}</td>
-                            <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
+                            <td>{% if i.evidence %}
+                                    {{ i.evidence }}
+                                {% endif %}
+                                <a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
                         </tr>
                       {% endfor %}
                     </table>
@@ -131,7 +134,7 @@
                          {{p.principal_comment }}</p>
                  {% endif %}
                  <br>
-                        <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
+                        <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Report Complete" name = "approved" align="right" >
                            <br>
@@ -142,9 +145,9 @@
                         </form>
                  </td>
                     <tr><td colspan="4">
-                    <form action="{% url 'principal_pda_approval' p.id %}" method="POST">
+                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
-                        <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required="True">
+                        <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control" required="True">
                             <input  class = "btn btn-sm btn-danger" type="submit" value="Additional Information Needed" name = "denied" >
                         </form>
                     </td></tr>
@@ -159,15 +162,15 @@
     {% endif %}
 
 
-{% if pda_instance_notreviewed %}
+{% if ceu_instance_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
             <b> Resubmitted CEU activities </b>
             <table class="table table-sm table-light">
               <tbody>
-              {% for i in pda_instance_notreviewed %}
+              {% for i in ceu_instance_notreviewed %}
                 <tr>
-                    <td>{{i.pda_report.teacher}} </td><td>{{i.pda_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
+                    <td>{{i.ceu_report.teacher}} </td><td>{{i.ceu_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
                 </tr>
                 <tr>
                   <td colspan="4">
@@ -182,7 +185,7 @@
                       <tbody>
                         <tr>
                             <td>{{i.date_completed}}</td>
-                            <td>{{ i.pda_type }}</td>
+                            <td>{{ i.ceu_type }}</td>
                             <td>{{i.description}} </td>
                             <td>{{ i.suggested_ceu }}</td>
                             <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
@@ -192,7 +195,7 @@
                 <tr><td>
                   <span style = "color:red"> ISEI Comment:</span>  {{ i.isei_comment }} <br>
                   {% if i.principal_comment %}<span style = "color:red"> Principal Comment:</span>  {{ i.principal_comment }}{% endif %}
-                    <form action="{% url 'principal_pda_approval' i.pda_report.id i.id %}" method="POST">
+                    <form action="{% url 'principal_ceu_approval' i.ceu_report.id i.id %}" method="POST">
                         {% csrf_token %}
                         <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approveinst" align="right" >
                        <br>
@@ -202,9 +205,9 @@
                     </form>
                   </td></tr>
                     <tr><td colspan="4">
-                    <form action="{% url 'principal_pda_approval' i.pda_report.id i.id %}" method="POST">
+                    <form action="{% url 'principal_ceu_approval' i.ceu_report.id i.id %}" method="POST">
                             {% csrf_token %}
-                        <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
+                        <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control">
                             <input  class = "btn btn-sm btn-danger" type="submit" value="More information needed" name = "denyinst" >
                         </form>
                     </td></tr>

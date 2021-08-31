@@ -8,13 +8,13 @@ def newest_certificate(teacher):
     newest_cert = certificates.order_by('-issue_date').first()
     return newest_cert
 
-def pdareport_belongs_to_certificate(pdareport, tcertificate):
-    if pdareport.school_year.end_date > tcertificate.issue_date:
+def ceureport_belongs_to_certificate(ceureport, tcertificate):
+    if ceureport.school_year.end_date > tcertificate.issue_date:
         #if tcertificate == newest_certificate(tcertificate.teacher):
         if tcertificate.archived == False:
             return True
         else:
-            if pdareport.school_year.end_date < tcertificate.renewal_date:
+            if ceureport.school_year.end_date < tcertificate.renewal_date:
                 return True
     else:
         return False
@@ -33,10 +33,10 @@ def academic_class_belongs_to_certificate(academic_class, tcertificate):
 
 
  # returns all reports submitted since this certificate was issued
-def pdareports_for_certificate(tcertificate):
-        pdareport_ids = [pdareport.id for pdareport in PDAReport.objects.filter(teacher=tcertificate.teacher) if
-                         pdareport_belongs_to_certificate(pdareport, tcertificate)]
-        return PDAReport.objects.filter(id__in=pdareport_ids)
+def ceureports_for_certificate(tcertificate):
+        ceureport_ids = [ceureport.id for ceureport in CEUReport.objects.filter(teacher=tcertificate.teacher) if
+                         ceureport_belongs_to_certificate(ceureport, tcertificate)]
+        return CEUReport.objects.filter(id__in=ceureport_ids)
 
 # returns all academic classes since this certificate was issued
 def academic_classes_for_certificate(tcertificate):

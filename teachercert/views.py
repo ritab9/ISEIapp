@@ -32,193 +32,194 @@ from django.forms import inlineformset_factory
 
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
 
-#just an info page about the PDA activities
+#just an info page about the CEU activities
 def ceu_info(request):
     return render(request, 'teachercert/ceu_info.html')
 
 
 # Teacher Views
 
-# create report for user and school year if no report exists. It is called from myPDADashboard - new activity addition
+# create report for user and school year if no report exists. It is called from myCEUDashboard - new activity addition
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
-def createPDAreport(request, pk, sy):
-    pda_report = PDAReport()
-    pda_report.teacher = Teacher.objects.get(user__id=pk)
-    pda_report.school_year = SchoolYear.objects.get(id=sy)
-    pda_report.save()
-    return redirect('create_pda', recId =pda_report.id)
+def createCEUreport(request, pk, sy):
+    ceu_report = CEUReport()
+    ceu_report.teacher = Teacher.objects.get(user__id=pk)
+    ceu_report.school_year = SchoolYear.objects.get(id=sy)
+    ceu_report.save()
+    return redirect('create_ceu', recId =ceu_report.id)
 
 # Ajax attempt
 def add_instance(request, reportID):
-    pda_instance = PDAInstance(pda_report=PDAReport.objects.get(id=reportID))
-    form = PDAInstanceForm(instance=pda_instance)
+    ceu_instance = CEUInstance(ceu_report=CEUReport.objects.get(id=reportID))
+    form = CEUInstanceForm(instance=ceu_instance)
     if request.method == 'POST':
-        form = PDAInstanceForm(request.POST, instance=pda_instance)
+        form = CEUInstanceForm(request.POST, instance=ceu_instance)
         if form.is_valid():
             form.save()
-            return redirect('create_pda', recId=reportID)
+            return redirect('create_ceu', recId=reportID)
     return render(request, 'teachercert/add_instance.html', {'form': form})
 
 
-def load_PDAtypes(request):
-    pda_category_id = request.GET.get('pda_category_id')
-    pda_types = PDAType.objects.filter(pda_category_id = pda_category_id).order_by('description')
-    return render(request, 'teachercert/pda_category_dropdown_list_options.html', {'pda_types': pda_types})
+def load_CEUtypes(request):
+    ceu_category_id = request.GET.get('ceu_category_id')
+    ceu_types = CEUType.objects.filter(ceu_category_id = ceu_category_id).order_by('description')
+    return render(request, 'teachercert/ceu_category_dropdown_list_options.html', {'ceu_types': ceu_types})
 
 
 def load_evidence(request):
-    pda_type_id = request.GET.get('pda_type_id')
-    pda_type = PDAType.objects.get(id=pda_type_id)
-    evidence = pda_type.evidence
-    return render(request, 'teachercert/ajax_suggested_evidence.html', {'evidence': evidence})
+    ceu_type_id = request.GET.get('ceu_type_id')
+    ceu_type = CEUType.objects.get(id=ceu_type_id)
+    evidence = ceu_type.evidence
+    value = ceu_type.ceu_value
+    return render(request, 'teachercert/ajax_suggested_evidence.html', {'evidence': evidence, 'value':value})
 
 
-# create PDA instance + allows for report submission (for report with matching pk)
+# create CEU instance + allows for report submission (for report with matching pk)
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
-def createPDA(request, recId):
+def createCEU(request, recId):
 
-    pda_report = PDAReport.objects.get(id=recId) #report
-    pda_instance = PDAInstance.objects.filter(pda_report=pda_report) #list of already entered instances
-    #instanceformset = PDAInstanceFormSet(queryset=PDAInstance.objects.none(), instance=pda_report) # entering new activity
+    ceu_report = CEUReport.objects.get(id=recId) #report
+    ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report) #list of already entered instances
+    #instanceformset = CEUInstanceFormSet(queryset=CEUInstance.objects.none(), instance=ceu_report) # entering new activity
 
-    new_instance = PDAInstance (pda_report=pda_report)
-    instance_form = PDAInstanceForm(instance=new_instance)
-    report_form = PDAreportForm(instance = pda_report) #form for editing current report (summary and submission)
+    new_instance = CEUInstance (ceu_report=ceu_report)
+    instance_form = CEUInstanceForm(instance=new_instance)
+    report_form = CEUreportForm(instance = ceu_report) #form for editing current report (summary and submission)
 
     if request.method == 'POST':
         if request.POST.get('add_activity'): #add activity and stay on page
-            instance_form = PDAInstanceForm(request.POST, request.FILES or None, instance=new_instance)
+            instance_form = CEUInstanceForm(request.POST, request.FILES or None, instance=new_instance)
             if instance_form.is_valid():
                 instance_form.save() #save activity
-                instance_form = PDAInstanceForm(instance= PDAInstance(pda_report=pda_report)) #allow for a new entry
+                instance_form = CEUInstanceForm(instance= CEUInstance(ceu_report=ceu_report)) #allow for a new entry
 
 
-        if request.POST.get('submit_report'): #submit report - go to PDAdashboard
-            report_form = PDAreportForm(request.POST, instance=pda_report)
+        if request.POST.get('submit_report'): #submit report - go to CEUdashboard
+            report_form = CEUreportForm(request.POST, instance=ceu_report)
             if report_form.is_valid():
-                pda_report = report_form.save() #save report submission
-                if pda_report.date_submitted: # if the date is entered the report is submitted to the principal for revision
-                    pda_report.principal_reviewed = 'n' #set principal and ISEI revisions to "Not yet" just in case it is a resubmission
-                    pda_report.isei_reviewed = 'n'
-                    pda_report.save()
-                    pda_instance = PDAInstance.objects.filter(pda_report=pda_report)
-                    pda_instance.update(principal_reviewed = 'n', isei_reviewed='n') # set all instances to not reviewed as well
+                ceu_report = report_form.save() #save report submission
+                if ceu_report.date_submitted: # if the date is entered the report is submitted to the principal for revision
+                    ceu_report.principal_reviewed = 'n' #set principal and ISEI revisions to "Not yet" just in case it is a resubmission
+                    ceu_report.isei_reviewed = 'n'
+                    ceu_report.save()
+                    ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report)
+                    ceu_instance.update(principal_reviewed = 'n', isei_reviewed='n') # set all instances to not reviewed as well
                     #todo work on message to principal
-                    principal = Teacher.objects.get(user__groups__name='principal', school=pda_report.teacher.school) # get the principal of this teacher
+                    principal = Teacher.objects.get(user__groups__name='principal', school=ceu_report.teacher.school) # get the principal of this teacher
                     #if principal: #to avoid an error message just in case principal is not set
                     #    principal_email = principal.user.email
                     #    email = EmailMessage(
                     #        'Report Submission',
-                    #        pda_report.teacher.first_name + " " +pda_report.teacher.last_name + " has submitted a PDA report. Go to www.isei.blablabla to review the submission.",
+                    #        ceu_report.teacher.first_name + " " +ceu_report.teacher.last_name + " has submitted a PDA report. Go to www.isei.blablabla to review the submission.",
                     #        'ritab.isei.life@gmail.com', [principal_email])
                     #    email.send()
-                    return redirect('myPDAdashboard', pk=pda_report.teacher.user.id) # go back to PDAdashboard
+                    return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id) # go back to CEUdashboard
 
         if request.POST.get('update_report'):  # update summary, stay on page
-            report_form = PDAreportForm(request.POST, instance=pda_report)
+            report_form = CEUreportForm(request.POST, instance=ceu_report)
             if report_form.is_valid():
-                pda_report = report_form.save()
+                ceu_report = report_form.save()
 
 
 
-    context = dict(pda_instance=pda_instance,  pda_report=pda_report,
+    context = dict(ceu_instance=ceu_instance,  ceu_report=ceu_report,
                    instance_form=instance_form,  report_form=report_form, )
 
-    return render(request, "teachercert/create_pda.html", context)
+    return render(request, "teachercert/create_ceu.html", context)
 
 
-# update PDAinstance (by id)
+# update CEUInstance (by id)
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
-def updatePDAinstance(request, pk):
-    pda_instance = PDAInstance.objects.get(id=pk)
-    form = PDAInstanceForm(instance=pda_instance)
+def updateCEUinstance(request, pk):
+    ceu_instance = CEUInstance.objects.get(id=pk)
+    form = CEUInstanceForm(instance=ceu_instance)
 
     # if the report has been accepted but the instance denied by ISEI, the instance is resubmitted alone
     resubmit = False
-    if ((pda_instance.isei_reviewed == 'd') and (pda_instance.pda_report.isei_reviewed == 'a')):
+    if ((ceu_instance.isei_reviewed == 'd') and (ceu_instance.ceu_report.isei_reviewed == 'a')):
         resubmit = True
 
     if request.method == 'POST':
         if request.POST.get('submit'):  #if it's an update within the report, it is saved and send back to report creation
-            form = PDAInstanceForm(request.POST, request.FILES or None, instance=pda_instance)
+            form = CEUInstanceForm(request.POST, request.FILES or None, instance=ceu_instance)
             if form.is_valid():
                 form.save()
-                return redirect('create_pda', pda_instance.pda_report.id)
+                return redirect('create_ceu', ceu_instance.ceu_report.id)
 
         if request.POST.get('resubmit'): #if it is a resubmition
-            form = PDAInstanceForm(request.POST, request.FILES or None, instance=pda_instance)
+            form = CEUInstanceForm(request.POST, request.FILES or None, instance=ceu_instance)
             if form.is_valid():
                 form.save()  #save
                 # ToDo Should I set isei_reviewed='n' here???
-                PDAInstance.objects.filter(id=pk).update(principal_reviewed='n', ) # principal reviewed set to no
+                CEUInstance.objects.filter(id=pk).update(principal_reviewed='n', ) # principal reviewed set to no
                 #ToDo work on message to principal
-                #principal = Teacher.objects.get(user__groups__name='principal', school=pdainstance.pda_report.teacher.school)
+                #principal = Teacher.objects.get(user__groups__name='principal', school=ceuInstance.ceu_report.teacher.school)
                 #if principal: #if principal assigned sent email.
                 #    principal_email = principal.user.email
                 #    email = EmailMessage(
                 #        'Report Submission',
-                #        pda_report.teacher.first_name + " " + pda_report.teacher.last_name + " has submitted an activity. Go to www.isei.blablabla to review the submission.",
+                #        ceu_report.teacher.first_name + " " + ceu_report.teacher.last_name + " has submitted an activity. Go to www.isei.blablabla to review the submission.",
                 #        'ritab.isei.life@gmail.com', [principal_email])
                 #    email.send()
                 #if is_in_group(request.user, 'teacher'):        # teacher landing page
 
-                return redirect('myPDAdashboard', pk=pda_instance.pda_report.teacher.user.id)
+                return redirect('myCEUdashboard', pk=ceu_instance.ceu_report.teacher.user.id)
 
-    context = dict(pda_instance = pda_instance, form=form, resubmit= resubmit) #if resubmit=True the activity has been denied by ISEI and the report it belongs to accepted
-    return render(request, "teachercert/update_pdainstance.html", context)
+    context = dict(ceu_instance = ceu_instance, form=form, resubmit= resubmit) #if resubmit=True the activity has been denied by ISEI and the report it belongs to accepted
+    return render(request, "teachercert/update_ceuInstance.html", context)
 
 
-# delete PDAinstance (by id)
+# delete CEUInstance (by id)
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
-def deletePDAinstance(request, pk):
-    pdainstance = PDAInstance.objects.get(id=pk)
+def deleteCEUinstance(request, pk):
+    ceuInstance = CEUInstance.objects.get(id=pk)
     if request.method == "POST":
-        pdainstance.delete()
+        ceuInstance.delete()
         #if is_in_group(request.user, 'teacher'):  # teacher landing page
-        return redirect('create_pda', pdainstance.pda_report.id)
+        return redirect('create_ceu', ceuInstance.ceu_report.id)
 
-    context = {'item': pdainstance}
-    return render(request, 'teachercert/delete_pdainstance.html', context)
+    context = {'item': ceuInstance}
+    return render(request, 'teachercert/delete_ceuinstance.html', context)
 
 
 # teacher activities for user with id=pk ... some parts not finished
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
-def myPDAdashboard(request, pk):
+def myCEUdashboard(request, pk):
     teacher = Teacher.objects.get(user=User.objects.get(id=pk))
 
-    pda_report = PDAReport.objects.filter(teacher=teacher) #all reports of this teacher
+    ceu_report = CEUReport.objects.filter(teacher=teacher) #all reports of this teacher
 
     #all instances run through the filter
-    pda_instance = PDAInstance.objects.filter(pda_report__in=pda_report)
-    instance_filter = PDAInstanceFilter(request.GET, queryset=pda_instance)
-    pda_instance = instance_filter.qs
+    ceu_instance = CEUInstance.objects.filter(ceu_report__in=ceu_report)
+    instance_filter = CEUInstanceFilter(request.GET, queryset=ceu_instance)
+    ceu_instance = instance_filter.qs
 
     #instances from denied reports are not filtered
-    principal_denied_report = pda_report.filter(Q(principal_reviewed='d'))
-    isei_denied_report = pda_report.filter(Q(isei_reviewed='d'))
+    principal_denied_report = ceu_report.filter(Q(principal_reviewed='d'))
+    isei_denied_report = ceu_report.filter(Q(isei_reviewed='d'))
 
     #new school year if report not yet created
-    new_school_year = SchoolYear.objects.filter(Q(active_year=True), ~Q(pdareport__in=pda_report))
+    new_school_year = SchoolYear.objects.filter(Q(active_year=True), ~Q(ceureport__in=ceu_report))
     #reports not reviewed by principal, and not denied by ISEI (those are in a different group)
-    active_report = pda_report.filter(Q(principal_reviewed='n'),~Q(isei_reviewed = 'd')) #not reviewed by principal
-    submitted_report = pda_report.filter(Q(principal_reviewed='a'), ~Q(isei_reviewed='a'))  # submitted to ISEI
-    approved_report = pda_report.filter(isei_reviewed='a')
+    active_report = ceu_report.filter(Q(principal_reviewed='n'),~Q(isei_reviewed = 'd')) #not reviewed by principal
+    submitted_report = ceu_report.filter(Q(principal_reviewed='a'), ~Q(isei_reviewed='a'))  # submitted to ISEI
+    approved_report = ceu_report.filter(isei_reviewed='a')
 
-    isei_denied_independent_instance = pda_instance.filter(isei_reviewed='d', pda_report__isei_reviewed='a',
+    isei_denied_independent_instance = ceu_instance.filter(isei_reviewed='d', ceu_report__isei_reviewed='a',
                                                            date_resubmitted=None)
 
     #resubmitted instance that was denied while it's report approved
-    active_independent_instance = pda_instance.filter(isei_reviewed = 'd', pda_report__isei_reviewed='a', principal_reviewed = 'n', date_resubmitted__isnull = False)
+    active_independent_instance = ceu_instance.filter(isei_reviewed = 'd', ceu_report__isei_reviewed='a', principal_reviewed = 'n', date_resubmitted__isnull = False)
 
 
-    submitted_instance = pda_instance.filter(Q(pda_report__in=submitted_report)|Q(isei_reviewed='n', pda_report__in=approved_report,
+    submitted_instance = ceu_instance.filter(Q(ceu_report__in=submitted_report)|Q(isei_reviewed='n', ceu_report__in=approved_report,
                                                       principal_reviewed='a'))
-    approved_instance = pda_instance.filter(isei_reviewed='a')
+    approved_instance = ceu_instance.filter(isei_reviewed='a')
 
     if is_in_group(request.user, 'teacher'):
         user_not_teacher = False
@@ -233,17 +234,18 @@ def myPDAdashboard(request, pk):
                    active_independent_instance = active_independent_instance,
                    approved_report = approved_report, approved_instance = approved_instance,)
 
-    return render(request, 'teachercert/myPDAdashboard.html', context)
+    return render(request, 'teachercert/my_ceu_dashboard.html', context)
 
-# todo create layout in myPDAdashboard template for it to look nicer
+# todo create layout in myCEUdashboard template for it to look nicer
 # todo adjust template so that it would allow for the choosing of a different teacher if user_not_teacher
 
-# teacher activities for user with id=pk ... some parts not finished
+
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
 def my_academic_classes(request, pk):
 
-    teacher = Teacher.objects.get(user=User.objects.get(id=pk))
+    user = User.objects.get(id=pk)
+    teacher = Teacher.objects.get(user=user)
     academic_class = AcademicClass.objects.filter(teacher=teacher)
 
     a_class = AcademicClass(teacher=teacher)
@@ -302,54 +304,54 @@ def update_academic_class(request, pk):
 # isei's info page about all reports with filter
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff','principal', 'teacher'])
-def PDAreports(request):
+def CEUreports(request):
     if request.user.groups.filter(name='staff').exists(): #ISEI staff has access to all reports
-        pda_reports = PDAReport.objects.all()
+        ceu_reports = CEUReport.objects.all()
         is_staff=True
     elif request.user.groups.filter(name='principal').exists():
         principal = request.user.teacher
-        pda_reports = PDAReport.objects.filter(teacher__school = principal.school) #principal has access to reports from his/her school
+        ceu_reports = CEUReport.objects.filter(teacher__school = principal.school) #principal has access to reports from his/her school
         is_staff=False
     else:
         teacher = request.user.teacher
-        pda_reports = PDAReport.objects.filter(teacher=teacher)  # principal has access to reports from his/her school
+        ceu_reports = CEUReport.objects.filter(teacher=teacher)  # principal has access to reports from his/her school
         is_staff = False
 
     #is staff is used to show/hide certain sections in the filter and table (school)
-    pda_report_filter = PDAReportFilter(request.GET, queryset=pda_reports)
-    pda_reports = pda_report_filter.qs
+    ceu_report_filter = CEUReportFilter(request.GET, queryset=ceu_reports)
+    ceu_reports = ceu_report_filter.qs
 
-    context = dict(pda_reports = pda_reports, pda_report_filter = pda_report_filter, is_staff=is_staff)
-    return render(request, 'teachercert/PDAreports.html', context)
+    context = dict(ceu_reports = ceu_reports, ceu_report_filter = ceu_report_filter, is_staff=is_staff)
+    return render(request, 'teachercert/ceu_reports.html', context)
 
 
 #principal views
 
 #principal's approval of teacher activities
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal'])
-def principal_pda_approval(request, recID=None, instID=None):
+@allowed_users(allowed_roles=['principal', 'staff'])
+def principal_ceu_approval(request, recID=None, instID=None):
     principal = request.user.teacher
     teachers = Teacher.objects.filter(school = principal.school, active= True)
 
-    pda_report = PDAReport.objects.filter(teacher__school=principal.school) #all the reports from this teacher's school
-    pda_report_notreviewed = pda_report.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at') #submitted reports to the principal, not yet reviewed
+    ceu_report = CEUreport.objects.filter(teacher__school=principal.school) #all the reports from this teacher's school
+    ceu_report_notreviewed = ceu_report.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at') #submitted reports to the principal, not yet reviewed
 
-    #pda_reports approved or denied within a year
+    #ceu_reports approved or denied within a year
     year_ago = datetime.today() - timedelta(days=366)
-    pda_report_approved = pda_report.filter(date_submitted__isnull=False, principal_reviewed = 'a', reviewed_at__gt=year_ago).order_by('reviewed_at')
-    pda_report_denied = pda_report.filter(date_submitted__isnull=True, principal_reviewed = 'd', reviewed_at__gt=year_ago).order_by('reviewed_at')
+    ceu_report_approved = ceu_report.filter(date_submitted__isnull=False, principal_reviewed = 'a', reviewed_at__gt=year_ago).order_by('reviewed_at')
+    ceu_report_denied = ceu_report.filter(date_submitted__isnull=True, principal_reviewed = 'd', reviewed_at__gt=year_ago).order_by('reviewed_at')
 
     # resubmitted instance that was denied while it's report approved
     #Todo would this be enough to filter on isei_reviewed ='n', date_resubmitted not null ? (If yes, set isei_reviewed='n' at resubmission (up in PDA_update)
-    pda_instance_notreviewed = PDAInstance.objects.filter(pda_report__in=pda_report, pda_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
+    ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report, ceu_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
 
 
     if request.method == 'POST':
         if request.POST.get('approved'): #update report and instances as approved by the principal
-            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None, reviewed_at=Now())
-            this_report = PDAReport.objects.get(id=recID) #the above is a query set and we need just the object
-            PDAInstance.objects.filter(pda_report = this_report).update(principal_reviewed='a', reviewed_at=Now())
+            ceu_report = CEUreport.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None, reviewed_at=Now())
+            this_report = CEUreport.objects.get(id=recID) #the above is a query set and we need just the object
+            CEUInstance.objects.filter(ceu_report = this_report).update(principal_reviewed='a', reviewed_at=Now())
             #email the principal and ISEI about the approval
             #Todo workon the email messages
             #email = EmailMessage(
@@ -364,9 +366,9 @@ def principal_pda_approval(request, recID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('denied'):
-            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
-            this_report = PDAReport.objects.get(id=recID) #the above is a query set and we need just the object
-            PDAInstance.objects.filter(pda_report=this_report).update(principal_reviewed='d',date_resubmitted = None, reviewed_at=Now())
+            ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
+            this_report = CEUReport.objects.get(id=recID) #the above is a query set and we need just the object
+            CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed='d',date_resubmitted = None, reviewed_at=Now())
             #Todo work on the email messages
             #email = EmailMessage(
             #    'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message, 'ritab.isei.life@gmail.com',
@@ -375,9 +377,9 @@ def principal_pda_approval(request, recID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
-            pda_report = PDAReport.objects.filter(id=recID).update(principal_reviewed='n', date_submitted = F('updated_at') )
-            this_report = PDAReport.objects.get(id=recID)
-            PDAInstance.objects.filter(pda_report=this_report).update(principal_reviewed = 'n', date_resubmitted = F('updated_at') )
+            ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='n', date_submitted = F('updated_at') )
+            this_report = CEUReport.objects.get(id=recID)
+            CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed = 'n', date_resubmitted = F('updated_at') )
             # Todo work on the email messages
             #email = EmailMessage(
             #    'Principal Retracted Action', 'The principal has canceled the approval/denial of the PDA submission.', 'ritab.isei.life@gmail.com',
@@ -386,31 +388,31 @@ def principal_pda_approval(request, recID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
-            #todo if pda_instance_notreviewed filtering can be simplified, isei_reviewed ='n' doesn't need to be here
-            PDAInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n', reviewed_at=Now())
-            this_activity = PDAInstance.objects.get(id=instID)
+            #todo if ceu_instance_notreviewed filtering can be simplified, isei_reviewed ='n' doesn't need to be here
+            CEUInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n', reviewed_at=Now())
+            this_activity = CEUInstance.objects.get(id=instID)
             # Todo work on the email messages
             #email = EmailMessage(
             #    'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com',
-            #    [this_activity.pda_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
+            #    [this_activity.ceu_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
             #email.send()
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
-            PDAInstance.objects.filter(id=instID).update(principal_reviewed='d',date_resubmitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
-            this_activity = PDAInstance.objects.get(id=instID)
+            CEUInstance.objects.filter(id=instID).update(principal_reviewed='d',date_resubmitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
+            this_activity = CEUInstance.objects.get(id=instID)
             # Todo work on the email messages
             #email = EmailMessage(
             #    'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message,
             #    'ritab.isei.life@gmail.com',
-            #    [this_activity.pda_report.teacher.user.email])
+            #    [this_activity.ceu_report.teacher.user.email])
             #email.send()
 
 
     context = dict(teachers=teachers,
-                   pda_report_notreviewed=pda_report_notreviewed, pda_report_approved=pda_report_approved, pda_report_denied=pda_report_denied,
-                   pda_instance_notreviewed = pda_instance_notreviewed,)
-    return render(request, 'teachercert/principal_pda_approval.html', context)
+                   ceu_report_notreviewed=ceu_report_notreviewed, ceu_report_approved=ceu_report_approved, ceu_report_denied=ceu_report_denied,
+                   ceu_instance_notreviewed = ceu_instance_notreviewed,)
+    return render(request, 'teachercert/principal_ceu_approval.html', context)
 
 
 #isei views
@@ -418,47 +420,47 @@ def principal_pda_approval(request, recID=None, instID=None):
 #isei's approval of teacher activities
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
-def isei_pda_approval(request, repID=None, instID=None):
+def isei_ceu_approval(request, repID=None, instID=None):
     teachers = Teacher.objects.filter(active = True)
-    pda_report_notreviewed = PDAReport.objects.filter(principal_reviewed ='a', isei_reviewed='n').order_by('date_submitted')
+    ceu_report_notreviewed = CEUReport.objects.filter(principal_reviewed ='a', isei_reviewed='n').order_by('date_submitted')
 
-    # pda_reports approved or denied within a year
+    # ceu_reports approved or denied within a year
     year_ago = datetime.today() - timedelta(days=366)
-    pda_report_approved = PDAReport.objects.filter(isei_reviewed ='a', reviewed_at__gt= year_ago).order_by("reviewed_at")
-    pda_report_denied = PDAReport.objects.filter(isei_reviewed ='d', reviewed_at__gt= year_ago).order_by("reviewed_at")
-    pda_instance_notreviewed = PDAInstance.objects.filter(pda_report__in=pda_report_approved, isei_reviewed='n', date_resubmitted__isnull=False, principal_reviewed='a')
+    ceu_report_approved = CEUReport.objects.filter(isei_reviewed ='a', reviewed_at__gt= year_ago).order_by("reviewed_at")
+    ceu_report_denied = CEUReport.objects.filter(isei_reviewed ='d', reviewed_at__gt= year_ago).order_by("reviewed_at")
+    ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report_approved, isei_reviewed='n', date_resubmitted__isnull=False, principal_reviewed='a')
 
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
-           PDAInstance.objects.filter(id=instID).update(isei_reviewed='a', approved_ceu=request.POST.get('approved_ceu'), reviewed_at=Now())
-           #this_activity = PDAInstance.objects.get(id=instID)
+           CEUInstance.objects.filter(id=instID).update(isei_reviewed='a', approved_ceu=request.POST.get('approved_ceu'), reviewed_at=Now())
+           #this_activity = CEUInstance.objects.get(id=instID)
            #email = EmailMessage(
            #    'ISEI Approval', "Your submission has been rejected by ISEI. Go to www.blablabla",
            #    'ritab.isei.life@gmail.com',
-           #    [this_activity.pda_report.teacher.user.email])
+           #    [this_activity.ceu_report.teacher.user.email])
            #email.send()
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
-           PDAInstance.objects.filter(id=instID).update(isei_reviewed='d', isei_comment=request.POST.get('isei_comment'),
+           CEUInstance.objects.filter(id=instID).update(isei_reviewed='d', isei_comment=request.POST.get('isei_comment'),
                                                         principal_reviewed = 'n', date_resubmitted = None, reviewed_at=Now())
-           this_activity = PDAInstance.objects.get(id=instID)
+           this_activity = CEUInstance.objects.get(id=instID)
            #email = EmailMessage(
            #    'ISEI Denial', EmailMessage.objects.get(name="ISEIDeniedToTeacher").message,
            #    'ritab.isei.life@gmail.com',
-           #    [this_activity.pda_report.teacher.user.email])
+           #    [this_activity.ceu_report.teacher.user.email])
            #email.send()
 
     if request.method == 'POST':
         if request.POST.get('cancelinst'):
-           PDAInstance.objects.filter(id=instID).update(isei_reviewed='n', principal_reviewed = 'a', date_resubmitted = F('updated_at'))
+           CEUInstance.objects.filter(id=instID).update(isei_reviewed='n', principal_reviewed = 'a', date_resubmitted = F('updated_at'))
 
     if request.method == 'POST':
         if request.POST.get('approved'):
-            pda_report = PDAReport.objects.filter(id=repID).update(isei_reviewed='a', isei_comment=None, reviewed_at=Now())
-            PDAInstance.objects.filter(pda_report=pda_report).update(isei_reviewed='a', reviewed_at=Now())
-            this_report=PDAReport.objects.get(id=repID)
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='a', isei_comment=None, reviewed_at=Now())
+            CEUInstance.objects.filter(ceu_report=ceu_report).update(isei_reviewed='a', reviewed_at=Now())
+            this_report=CEUReport.objects.get(id=repID)
             email = EmailMessage(
                 'ISEI Approval', "ISEI has approved your PDA submission. Go to www.blabla for details",
                 'ritab.isei.life@gmail.com',
@@ -467,9 +469,9 @@ def isei_pda_approval(request, repID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('denied'):
-            pda_report = PDAReport.objects.filter(id=repID).update(isei_reviewed='d', date_submitted = None, principal_reviewed ='n', isei_comment = request.POST.get('isei_comment'), reviewed_at=Now())
-            PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed='n',isei_reviewed='d',date_resubmitted = None, reviewed_at=Now())
-            this_report = PDAReport.objects.get(id=repID)
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='d', date_submitted = None, principal_reviewed ='n', isei_comment = request.POST.get('isei_comment'), reviewed_at=Now())
+            CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed='n',isei_reviewed='d',date_resubmitted = None, reviewed_at=Now())
+            this_report = CEUReport.objects.get(id=repID)
             email = EmailMessage(
                 'ISEI Denial', "ISEI has approved your PDA submission. Go to www.blabla for details",
                 'ritab.isei.life@gmail.com',
@@ -478,12 +480,12 @@ def isei_pda_approval(request, repID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
-            pda_report = PDAReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted = F('updated_at'), principal_reviewed ='a')
-            PDAInstance.objects.filter(pda_report=pda_report).update(principal_reviewed = 'a', isei_reviewed = 'n', date_resubmitted = Now())
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted = F('updated_at'), principal_reviewed ='a')
+            CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed = 'a', isei_reviewed = 'n', date_resubmitted = Now())
 
 
-    context = dict(teachers=teachers, pda_report_notreviewed=pda_report_notreviewed, pda_report_approved=pda_report_approved, pda_report_denied=pda_report_denied, pda_instance_notreviewed = pda_instance_notreviewed)
-    return render(request, 'teachercert/isei_pda_approval.html', context)
+    context = dict(teachers=teachers, ceu_report_notreviewed=ceu_report_notreviewed, ceu_report_approved=ceu_report_approved, ceu_report_denied=ceu_report_denied, ceu_instance_notreviewed = ceu_instance_notreviewed)
+    return render(request, 'teachercert/isei_ceu_approval.html', context)
 
 
 #create a pdf with approved CEUs
@@ -501,16 +503,16 @@ def approved_pdf(request):
 
     #Add text
     lines = []
-    approved_report = PDAReport.objects.filter(isei_reviewed = 'a')
-    #approved_instance = PDAInstance.objects.filter(isei_reviewed='a')
+    approved_report = CEUReport.objects.filter(isei_reviewed = 'a')
+    #approved_instance = CEUInstance.objects.filter(isei_reviewed='a')
     #for a in approved_instance:
     for a in approved_report:
         lines.append("")
-        #lines.append(a.pda_report.teacher.first_name +" "+a.pda_report.teacher.last_name)
+        #lines.append(a.ceu_report.teacher.first_name +" "+a.ceu_report.teacher.last_name)
         lines.append(a.teacher.first_name + " " + a.teacher.last_name+ ", " + a.school_year.name)
         lines.append("")
-        for i in a.pdainstance_set.all():
-            categ = i.pda_type.get_pda_category_display()
+        for i in a.ceuinstance_set.all():
+            categ = i.ceu_type.get_ceu_category_display()
             lines.append(categ + " " + str(i.date_completed))
             lines.append(i.description)
             lines.append(str(i.approved_ceu))
@@ -542,7 +544,7 @@ def approved_pdf2(request):
     email.attach("Approved_CEUs.pdf", pdf, 'application/pdf')
     email.send()
 
-    return render(request, 'teachercert/isei_pda_approval.html')
+    return render(request, 'teachercert/isei_ceu_approval.html')
 
 
 
@@ -556,15 +558,15 @@ def approved_pdf2(request):
 def manage_tcertificate(request, certID=None):
     prev_certificates = None #previous certificates set to NONE
     #TODO once teacher is selected initialize prev_certificates
-    pda_reports = None
+    ceu_reports = None
     academic_class = None
 
     if certID: # if the certificate already exists
         tcertificate = TCertificate.objects.get(pk=certID)
         # previous certificates to be listed with current one
         prev_certificates = TCertificate.objects.filter(Q(teacher = tcertificate.teacher), ~Q(id = certID))
-        #pda_reports and academic classes submitted for this certificate
-        pda_reports = pdareports_for_certificate(tcertificate)
+        #ceu_reports and academic classes submitted for this certificate
+        ceu_reports = ceureports_for_certificate(tcertificate)
         academic_class = academic_classes_for_certificate(tcertificate)
     else:
         tcertificate = TCertificate() #initialize a new certificate
@@ -593,7 +595,7 @@ def manage_tcertificate(request, certID=None):
     #certID is used in the template to reload page after previous certificates are archived
     context = dict( is_staff= True, tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
                     prev_certificates = prev_certificates, certID=certID,
-                    pda_reports=pda_reports, academic_class=academic_class)
+                    ceu_reports=ceu_reports, academic_class=academic_class)
     return render(request, 'teachercert/manage_tcertificate.html', context)
 
 

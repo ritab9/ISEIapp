@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-   Academic Classes
+   Academic Courses
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
 <br>
 <div id="add_class" >
     <div class="card card-body">
-        <div><input type="button" class="btn btn-ISEIblue3" id="classaddbtn"  value ="Enter Academic Classes"></div>
+        <div><input type="button" class="btn btn-ISEIblue3" id="classaddbtn"  value ="Enter New Academic Course"></div>
         <form action=" " method="POST" id="add_academic_class" enctype="multipart/form-data" style = "display: none">
             {% csrf_token %}
             <p id="teacher">{{form.teacher}}</p>
@@ -41,19 +41,17 @@
 
 
 
-
-
     <script>
         document.getElementById("teacher").style.display = "none";
 
      $('#classaddbtn').on("click", function() {
          var value = $(this).attr('value');
-         if(value == "Enter Academic Classes") {
+         if(value == "Enter New Academic Course") {
              $("#add_academic_class").show();
              $(this).attr('value',"Hide"); }
          if(value == "Hide") {
              $("#add_academic_class").hide();
-             $(this).attr('value',"Enter Academic Classes");}
+             $(this).attr('value',"Enter New Academic Course");}
      });
 
     </script>

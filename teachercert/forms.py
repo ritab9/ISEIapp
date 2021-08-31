@@ -11,9 +11,9 @@ from teachercert.models import *
 
 
 
-class PDAreportForm(ModelForm):
+class CEUreportForm(ModelForm):
     class Meta:
-        model = PDAReport
+        model = CEUReport
         fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment',)
         widgets = {
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
@@ -27,28 +27,28 @@ class PDAreportForm(ModelForm):
         }
 
 
-class PDAInstanceForm(ModelForm):
-    # Ajax attempt
+class CEUInstanceForm(ModelForm):
+    # Ajax
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['pda_type'].queryset = PDAType.objects.none()
+        self.fields['ceu_type'].queryset = CEUType.objects.none()
 
-        if 'pda_category' in self.data:
+        if 'ceu_category' in self.data:
             try:
-                pda_category_id = int(self.data.get('pda_category'))
-                self.fields['pda_type'].queryset = PDAType.objects.filter(pda_category_id=pda_category_id).order_by(
+                ceu_category_id = int(self.data.get('ceu_category'))
+                self.fields['ceu_type'].queryset = CEUType.objects.filter(ceu_category_id=ceu_category_id).order_by(
                     'description')
             except (ValueError, TypeError):
                 pass  # invalid input from the client; ignore and fallback to empty queryset
         elif self.instance.pk:
-            self.fields['pda_type'].queryset = self.instance.pda_category.pdatype_set.all()
+            self.fields['ceu_type'].queryset = self.instance.ceu_category.ceutype_set.all()
 
     class Meta:
-        model = PDAInstance
-        fields = ('pda_category', 'pda_type','description', 'date_completed', 'units', 'amount', 'evidence', 'file', 'date_resubmitted')
+        model = CEUInstance
+        fields = ('ceu_category', 'ceu_type','description', 'date_completed', 'units', 'amount', 'evidence', 'file', 'date_resubmitted')
         widgets = {
-            #'pda_category': forms.Select (attrs={'class':'category_class'}),
-            #'pda_type': forms.Select(attrs={'class': 'type_class'}),
+            #'ceu_category': forms.Select (attrs={'class':'category_class'}),
+            #'ceu_type': forms.Select(attrs={'class': 'type_class'}),
             'file': forms.FileInput(attrs={'size': 1}),
             'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
             'amount': forms.NumberInput (attrs={'style':'width:60px' }),
@@ -62,7 +62,7 @@ class PDAInstanceForm(ModelForm):
 
 
 
-PDAInstanceFormSet = inlineformset_factory(PDAReport, PDAInstance, form=PDAInstanceForm, extra=1,
+CEUInstanceFormSet = inlineformset_factory(CEUReport, CEUInstance, form=CEUInstanceForm, extra=1,
                                            can_delete=False)
 
 #not used

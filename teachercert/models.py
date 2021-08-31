@@ -27,28 +27,28 @@ class SchoolYear(models.Model):
         if self.active_year:
             all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
-class PDACategory(models.Model):
+class CEUCategory(models.Model):
     name = models.CharField(max_length=25, null = False, blank=False)
 
     def __str__(self):
         return self.name
 
-#PDA Report Modelst
-class PDAType(models.Model):
+#ceu Report Modelst
+class CEUType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
     evidence = models.CharField(max_length=100, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
-    pda_category = models.ForeignKey(PDACategory, on_delete=models.PROTECT, help_text="Choose a category", null=False, blank=False)
+    ceu_category = models.ForeignKey(CEUCategory, on_delete=models.PROTECT, help_text="Choose a category", null=False, blank=False)
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
     max_cap = models.CharField(max_length=30, null=True, blank = True)
 
     class Meta:
-        ordering =('pda_category',)
+        ordering =('ceu_category',)
 
     def __str__(self):
         return self.description
 
 
-class PDAReport(models.Model):
+class CEUReport(models.Model):
     #timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
     created_at = models.DateField(auto_now_add=True, blank = True)
     updated_at = models.DateField(auto_now=True, blank = True)
@@ -80,26 +80,32 @@ class PDAReport(models.Model):
 
     def approved_ceu(self):
         approved_ceu=0
-        for i in self.pdainstance_set.all():
+        for i in self.ceuinstance_set.all():
             if i.approved_ceu:
                 approved_ceu=approved_ceu+i.approved_ceu
         return approved_ceu
 
     def reading_ceu(self):
         reading_ceu = 0
-        for i in self.pdainstance_set.all():
-            if 'Reading' in i.pda_type.description:
+        for i in self.ceuinstance_set.all():
+            if 'Reading' in i.ceu_type.description:
                 reading_ceu = reading_ceu+ i.suggested_ceu
         return round(reading_ceu,2)
 
     def travel_ceu(self):
         travel_ceu = 0
-        for i in self.pdainstance_set.all():
-            if 'Travel' in i.pda_type.description:
-                travel_ceu = travel_ceu+ i.suggested_ceu
+        for i in self.ceuinstance_set.all():
+            if 'Travel' in i.ceu_type.description:
+                travel_ceu = travel_ceu + i.suggested_ceu
         return round(travel_ceu,2)
 
-class PDAInstance(models.Model):
+    def __str__(self):
+        return self.teacher.name() + "," + self.school_year.name + " CEU Report"
+
+
+
+
+class CEUInstance(models.Model):
     # report contains teacher, school-year and summary
 
     # timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
@@ -107,9 +113,9 @@ class PDAInstance(models.Model):
     updated_at = models.DateField(auto_now=True, blank = True)
     reviewed_at = models.DateField(blank=True, null=True)
 
-    pda_report = models.ForeignKey(PDAReport, on_delete=models.PROTECT, null=False, blank=False)
-    pda_category = models.ForeignKey(PDACategory, on_delete=models.PROTECT, null=True, blank=True)
-    pda_type = models.ForeignKey(PDAType, on_delete=models.PROTECT, null=False, blank=False)
+    ceu_report = models.ForeignKey(CEUReport, on_delete=models.PROTECT, null=False, blank=False)
+    ceu_category = models.ForeignKey(CEUCategory, on_delete=models.PROTECT, null=True, blank=True)
+    ceu_type = models.ForeignKey(CEUType, on_delete=models.PROTECT, null=False, blank=False)
     date_completed = models.DateField(null=False)
     description = models.CharField(validators=[MinLengthValidator(1)], max_length=3000, blank=False, null=False)
 
@@ -141,7 +147,7 @@ class PDAInstance(models.Model):
 
 
     class Meta:
-        ordering = ['pda_report']
+        ordering = ['ceu_report']
 
     @property
     def suggested_ceu(self):
@@ -159,8 +165,6 @@ class PDAInstance(models.Model):
 
     def __str__(self):
         return self.description
-
-
 
 
 

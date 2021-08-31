@@ -6,24 +6,24 @@
 
         <!--if it will be used by any other user
         {% if user_not_teacher %}
-            {{ pda_report.teacher }}
+            {{ ceu_report.teacher }}
         {% endif %} -->
 
-        {{ pda_report.school_year }}
+        {{ ceu_report.school_year }}
 
 
 <!-- Table of added activities-->
-    {% if pda_instance %}
+    {% if ceu_instance %}
 <div class="row">
     <div class="card card-body">
     <h6> Added Activities</h6>
 
-    {% if pda_report.reading_ceu > 3 %}
+    {% if ceu_report.reading_ceu > 3 %}
         <div class="span80red" >
                  Your submitted reading CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be recorded for those activities.
         </div>
     {% endif %}
-    {% if pda_report.travel_ceu > 3 %}
+    {% if ceu_report.travel_ceu > 3 %}
         <div class="span80red">
                  Your submitted travel CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be recorded for those activities.
         </div>
@@ -35,10 +35,10 @@
                 <th>Evidence & Supporting Docs</th>
                 <th>Update</th><th>Remove</th>
             </tr>
-            {% for p in pda_instance %}
-                <td>{{p.pda_category}}</td>
-                <td><div class="span80">{{ p.pda_type.description }}</div>
-                    <div class="span80blue">{{ p.pda_type.evidence|default_if_none:''}}</div></td>
+            {% for p in ceu_instance %}
+                <td>{{p.ceu_category}}</td>
+                <td><div class="span80">{{ p.ceu_type.description }}</div>
+                    <div class="span80blue">{{ p.ceu_type.evidence|default_if_none:''}}</div></td>
                 <td>{{p.date_completed}} </td><td>{{p.description}} </td> <td>{{p.amount}} {{p.get_units_display}}</td>
                 <td>
                     {% if p.evidence or p.file %}
@@ -47,8 +47,8 @@
                     {% else %}
                         <div class = "span80red">None - see suggested evidence</div>
                     {% endif %}
-                <td><a class = "btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
-                <td><a class = "btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+                <td><a class = "btn-sm btn-ISEIblue3" href="{% url 'update_ceuinstance' p.id %}">Update</a></td>
+                <td><a class = "btn-sm btn-danger" href="{% url 'delete_ceuinstance' p.id %}">Delete</a></td>
             </tr>
             {% endfor %}
         </table>
@@ -59,7 +59,7 @@
 
 <!-- If we want to add instance in a separate window -->
 <!--
- <a class = "btn-sm btn-danger" href="{ % url 'add_instance' pda_report.id %}">Add Instance</a></td>
+ <a class = "btn-sm btn-danger" href="{ % url 'add_instance' ceu_report.id %}">Add Instance</a></td>
 -->
 
 <form action=" " method="POST" id="add_activity" enctype="multipart/form-data">
@@ -75,8 +75,8 @@
             <div class="row">
                     <div class="col-sm">
                         <div class="row">
-                            {{ instance_form.pda_category|as_crispy_field }}
-                            {{ instance_form.pda_type|as_crispy_field}}
+                            {{ instance_form.ceu_category|as_crispy_field }}
+                            {{ instance_form.ceu_type|as_crispy_field}}
 
                         </div><br>
                         <div class="row">
@@ -111,14 +111,14 @@
                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right">
            </div>
 
-            {% if pda_report.principal_comment or pda_report.isei_comment %}
+            {% if ceu_report.principal_comment or ceu_report.isei_comment %}
              <div class ="col-sm-4">
-            {%  if pda_report.principal_comment %}
+            {%  if ceu_report.principal_comment %}
                 <h6 style = "color:red">Principal denial comment:</h6>
                 <div class="span80">*If you would like to add a response to the principal, you can do so in the same window. Please keep the Principal's comment as well. </div>
                 {{ report_form.principal_comment }}
             {% endif %}
-            {%  if pda_report.isei_comment %}
+            {%  if ceu_report.isei_comment %}
                 <h6 style = "color:red">ISEI denial comment:</h6>
                 <div class="span80">*If you would like to add a response to ISEI, you can do so in the same window. Please keep ISEI's comment as well. </div>
                 {{ report_form.isei_comment }}
@@ -142,8 +142,9 @@
         </div>
     </form>
 
- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-</script>
+    <!--
+ <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+
     <script>
         document.getElementById("school_year").style.display = "none";
         document.getElementById("school_year2").style.display = "none";
@@ -161,35 +162,35 @@
 
 
 
- /*     Ajax PDA Type Load based on Category */
-        $("#id_pda_category").click(function () {
-            var url = "{% url 'ajax_load_PDAtypes' %}";
-            //var url = $("#add_activity").attr("data-pda_categories-url");  // get the url of the `load_PDAtypes` view
+ /*     Ajax CEU Type Load based on Category */
+        $("#id_ceu_category").click(function () {
+            var url = "{% url 'ajax_load_CEUtypes' %}";
+            //var url = $("#add_activity").attr("data-ceu_categories-url");  // get the url of the `load_CEUtypes` view
             var categoryId = $(this).val();  // get the selected category ID from the HTML input
             $.ajax({
-                  url: url, // set the url of the request (= localhost:8000/hr/ajax/load_PDAtypes/)
+                  url: url, // set the url of the request (= localhost:8000/hr/ajax/load_CEUtypes/)
                   data: {
-                        'pda_category_id': categoryId       // add the category id to the GET parameters
+                        'ceu_category_id': categoryId       // add the category id to the GET parameters
                   },
-                  success: function (data) {   // `data` is the return of the `load_PDAtyples` view function
-                      $("#id_pda_type").html(data);  // replace the contents of the pda_type input with the data that came from the server
+                  success: function (data) {   // `data` is the return of the `load_CEUtyples` view function
+                      $("#id_ceu_type").html(data);  // replace the contents of the ceu_type input with the data that came from the server
                   }
               })
         });
 
 //Ajax Suggested Evidence Load based on Type
 
-        $("#id_pda_type").click(function () {
+        $("#id_ceu_type").click(function () {
             var url = "{% url 'ajax_load_evidence' %}";
-            //var url = $("#add_activity").attr("data-pda_categories-url");  get the url of the `load_PDAtypes` view
+            //var url = $("#add_activity").attr("data-ceu_categories-url");  get the url of the `load_CEUtypes` view
             var typeID = $(this).val();  // get the selected category ID from the HTML input
             $.ajax({
-                  url: url, // set the url of the request (= localhost:8000/hr/ajax/load_PDAtypes/)
+                  url: url, // set the url of the request (= localhost:8000/hr/ajax/load_CEUtypes/)
                   data: {
-                        'pda_type_id': typeID      // add the category id to the GET parameters
+                        'ceu_type_id': typeID      // add the category id to the GET parameters
                   },
-                  success: function (data) {   // `data` is the return of the `load_PDAtyples` view function
-                     $("#id_suggested_evidence").html(data);  // replace the contents of the pda_type input with the data that came from the server
+                  success: function (data) {   // `data` is the return of the `load_CEUtyples` view function
+                     $("#id_suggested_evidence").html(data);  // replace the contents of the ceu_type input with the data that came from the server
                   }
               })
         });

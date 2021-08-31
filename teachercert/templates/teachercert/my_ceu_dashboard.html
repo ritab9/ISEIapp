@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-   PDA
+   CEU
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,7 @@
         </div>
 
         <div class="col-sm-2">
-            <a class="btn btn btn-ISEIblue3" href="{% url 'PDAreports' %}">See all reports</a>
+            <a class="btn btn btn-ISEIblue3" href="{% url 'CEUreports' %}">See all reports</a>
         </div>
     </div>
     </div>
@@ -43,12 +43,12 @@
                         <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
                         <th>Supporting documentation</th><th>Denial Date</th>
                     </tr>
-                    {% for p in  ar.pdainstance_set.all %}
+                    {% for p in  ar.ceuInstance_set.all %}
                         <tr>
-                            <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                            <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                             <td>{{p.amount}} {{p.get_units_display}} </td>
                             <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td>
-                            <td>{{ p.pda_report.updated_at }}</td>
+                            <td>{{ p.ceu_report.updated_at }}</td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -59,7 +59,7 @@
                     </div>
                     <div class="col-sm-2">
                         <button class="btn btn-ISEIblue3 btn-sm">
-                            <a style="color:white" href="{%  url 'create_pda' ar.id %}"> Update denied activities </a>
+                            <a style="color:white" href="{%  url 'create_ceu' ar.id %}"> Update denied activities </a>
                         </button>
                     </div>
                 </div>
@@ -78,11 +78,11 @@
                 <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
                 <th>Supporting documentation</th><th>Denial Date</th>
             </tr>
-            {% for p in ar.pdainstance_set.all %}
+            {% for p in ar.ceuInstance_set.all %}
                 <tr>
-                    <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                    <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.amount}} {{p.get_units_display}}</td>
-                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td><td>{{ p.pda_report.updated_at }}</td>
+                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td><td>{{ p.ceu_report.updated_at }}</td>
                 </tr>
             {% endfor %}
         </table>
@@ -94,7 +94,7 @@
             </div>
             <div class="col-sm-2">
                 <button class="btn btn-ISEIblue3 btn-sm">
-                    <a style="color:white" href="{%  url 'create_pda' ar.id %}"> Update denied activities </a>
+                    <a style="color:white" href="{%  url 'create_ceu' ar.id %}"> Update denied activities </a>
                 </button>
             </div>
             </div>
@@ -118,12 +118,12 @@
             </tr>
             {% for p in isei_denied_independent_instance %}
             <tr>
-                <td>{{p.pda_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
+                <td>{{p.ceu_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}} </td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</a></td>
                 <td>{{ p.updated_at }}</td>
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuInstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuInstance' p.id %}">Delete</a></td>
                 <tr><td colspan="6"><span style="color:red">ISEI Denial Reason:</span>  {{ p.isei_comment }}</td>
                 {% if p.principal_comment %}
                 <tr><td colspan="6"><span style="color:red">Principal Denial Reason:</span>  {{ p.principal_comment }}</td>
@@ -144,23 +144,23 @@
         </tr>
         {% for p in active_independent_instance %}
             <tr>
-                <td>{{p.pda_report.school_year}} </td>
-                {% if p.pda_report.date_submitted %}
-                    <td>{{ p.pda_report.date_submitted }}</td>
+                <td>{{p.ceu_report.school_year}} </td>
+                {% if p.ceu_report.date_submitted %}
+                    <td>{{ p.ceu_report.date_submitted }}</td>
                 {% else %}
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
                 <td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_pda_category_display}} </td>
+                <td>{{p.ceu_type.get_ceu_category_display}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
-                {% if p.pda_report.date_submitted %}
+                {% if p.ceu_report.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuInstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuInstance' p.id %}">Delete</a></td>
             </tr>
         {% endfor %}
     </table>
@@ -186,7 +186,7 @@
       </button>
         <div class="dropdown-menu"  aria-labelledby="dropdownMenuButton">
              {% for ar in active_report %}
-                    <a  class="dropdown-item" href="{%  url 'create_pda' ar.id %}"> for {{ ar.school_year }} </a>
+                    <a  class="dropdown-item" href="{%  url 'create_ceu' ar.id %}"> for {{ ar.school_year }} </a>
              {% endfor %}
              {% for sy in new_school_year %}
                     <a  class="dropdown-item" href="{%  url 'create_report' teacher.user.id sy.id %}"> for {{ sy }}</a>
@@ -203,26 +203,26 @@
             <th>Principal Approval</th>
         </tr>
      {% for ar in active_report %}
-        {% for p in ar.pdainstance_set.all%}
+        {% for p in ar.ceuinstance_set.all%}
             <tr>
-                <td>{{p.pda_report.school_year}} </td>
-                {% if p.pda_report.date_submitted %}
-                    <td>{{ p.pda_report.date_submitted }}</td>
+                <td>{{p.ceu_report.school_year}} </td>
+                {% if p.ceu_report.date_submitted %}
+                    <td>{{ p.ceu_report.date_submitted }}</td>
                 {% else %}
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
                 <td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_pda_category_display}} </td>
+                <td>{{p.ceu_type.get_ceu_category_display}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
-                {% if p.pda_report.date_submitted %}
+                {% if p.ceu_report.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
                <!--
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_pdainstance' p.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_pdainstance' p.id %}">Delete</a></td>-->
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuinstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuinstance' p.id %}">Delete</a></td>-->
             </tr>
         {% endfor %}
      {% endfor %}
@@ -246,7 +246,7 @@
                 {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
                 {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp <br><br>
                 <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-                <a href="{%  url 'myPDAdashboard' teacher.user.id %}">Clear all filters</a>
+                <a href="{%  url 'myCEUdashboard' teacher.user.id %}">Clear all filters</a>
             </form>
         </div>
     </div>
@@ -266,12 +266,12 @@
         </tr>
         {% for p in submitted_instance %}
             <tr>
-                <td>{{p.pda_report.school_year}} </td><td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_category_display}} </td><td>{{p.description}} </td>
+                <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td>
+                <td>{{p.ceu_type.get_category_display}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}</td>
                 <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td>
-                <td>{{p.pda_report.date_submitted}}</td>
-                <td>{{ p.pda_report.reviewed_at }}</td>
+                <td>{{p.ceu_report.date_submitted}}</td>
+                <td>{{ p.ceu_report.reviewed_at }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -289,9 +289,9 @@
         </tr>
         {% for p in approved_instance %}
             <tr>
-                <td>{{p.pda_report.school_year}} </td>
+                <td>{{p.ceu_report.school_year}} </td>
                 <td>{{p.date_completed}} </td>
-                <td>{{p.pda_type.get_pda_category_display}} </td>
+                <td>{{p.ceu_type.get_ceu_category_display}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>

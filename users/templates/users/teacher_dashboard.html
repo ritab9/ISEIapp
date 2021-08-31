@@ -44,16 +44,16 @@
 
              <div class="row mb-3">
 
-<!-- PDA Reports with this certificate -->
+<!-- CEU Reports with this certificate -->
                 <div class="col col-sm">
                 <h6><b>CEU Reports</b></h6>
                     <table class="table">
                         <tr><th>School Year</th><th>Status</th></tr>
 
-                        {% for p in c.teacher.pdareport_set.all %}
+                        {% for p in c.teacher.ceureport_set.all %}
                             {% if p.school_year.end_date > c.issue_date %}
                             <tr>
-                                <td><a class="nav-link" href="{% url 'myPDAdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
+                                <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
                                 <td>
                                     {% if p.isei_reviewed == 'a' %}
                                         {{ p.approved_ceu }} CEUs approved
@@ -62,9 +62,11 @@
                                     {% elif p.date_submitted %}
                                         Principal Approval Pending
                                     {% elif p.isei_reviewed == 'd'%}
-                                        ISEI denied. Not yet resubmitted.
+                                        Returned by ISEI: CEU report not complete.
+                                        <div class="spanred"> Please resubmit. </div>
                                     {% elif p.principal_reviewed == 'd'%}
-                                        Principal denied. Not yet resubmitted.
+                                        Returned by principal: CEU report not complete.
+                                        <div class="spanred"> Please resubmit. </div>
                                     {% else %}
                                         Not submitted
                                     {% endif %}
@@ -78,7 +80,7 @@
     <!-- Academic classes with this certificate -->
                 {% if c.teacher.academicclass_set.all  %}
                     <div class="col col-sm">
-                        <h6><b>Academic classes</b></h6>
+                        <h6><b>Academic Courses Completed</b></h6>
 
                     <table class="table table-sm">
                         <tr>
@@ -86,15 +88,15 @@
                         </tr>
 
                         {% for a in c.teacher.academicclass_set.all %}
-                            {% if a.academicclass.date_completed > c.issue_date %}
+                            {% if a.date_completed > c.issue_date %}
                             <tr> <td><a class="nav-link" href="{% url 'my_academic_classes' teacher.user.id %}"> {{a.name}}</a></td><td>{{ a.credits }}</td><td>{{a.date_completed}}</td>
                                 {% if a.transcript_received %}
-                                    <td> Received </td> <td></td><td></td>
+                                    <td><span style="color:green"> Received</span> </td> <td></td><td></td>
                                 {% else  %}
                                     {% if a.transcript_requested %}
-                                        <td> Requested</td>
+                                        <td><span style="color:#f1a542"> Requested</span></td>
                                     {% else %}
-                                        <td> Not requested</td>
+                                        <td><div class="spanred"> Not requested </div></td>
                                     {% endif %}
                                 {% endif %}
                             </tr>

@@ -149,10 +149,10 @@
 
 <!-- Colleges attended -->
 <div class = "card card-body">
-    <h5>Colleges Attended List </h5>
+    <h5> <input type="button" class="btn btn-sm btn-ISEIblue4" id="showclass"  value ="Update"> Colleges Attended List </h5>
 
      <div class="card card-body" >
-         <table class="table">
+         <table class="table classlist">
              <thead>
                 <tr>
                   <th scope="col">College Name</th>
@@ -165,10 +165,7 @@
                 </tr>
              </thead>
 
-             <tbody class="classlist" >
-                <tr> <td>
-                    <input type="button" class="btn btn-sm btn-ISEIblue4" id="showclass"  value ="Update"> </td>
-                </tr>
+             <tbody>
                 {% for college in college_attended %}
                     <tr>
                         <td>{{ college.name }}</td>
@@ -189,14 +186,26 @@
                         </td>
                     </tr>
                 {% endfor %}
-             </tbody>
 
-             <tbody class="classform">
+             </tbody>
+         </table>
+         <table class="table classform">
+             <thead>
+                <tr>
+                  <th scope="col">College Name</th>
+                  <th scope="col">City, Country</th>
+                  <th scope="col">Start Date </th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Degree Level</th>
+                  <th scope="col">Degree Name</th>
+                  <th scope="col">Transcript Status</th>
+                </tr>
+             </thead>
+             <tbody>
                 <form method="POST" action="" enctype="multipart/form-data">
                      {% csrf_token %}
                         {{ college_attended_formset.management_data }}
                         {{ college_attended_formset.management_form }}
-
                   {% for form in college_attended_formset %}
                       {{ form.non_field_errors }}
                     <tr>
@@ -206,7 +215,7 @@
                         <td>{{ form.end_date }}<span style ='color:red'>{{ form.end_date.errors }}</span></td>
                         <td>{{ form.level }}<span style ='color:red'>{{ form.level.errors }}</span></td>
                         <td> {{ form.degree }}<span style ='color:red'>{{ form.degree.errors }}</span></td>
-                        <td> {{ form.transcript_requested }}<span style ='color:red'>{{ form.transcript_requested.errors }}</span></td>
+                        <td>{{ form.transcript_requested }}<span style ='color:red'>{{ form.transcript_requested.errors }}</span></td>
                     </tr>
                       {% for hidden in form.hidden_fields %}
                          {{ hidden }}
@@ -228,9 +237,11 @@
 
  <!-- Schools of employment-->
 <div class = "card card-body">
-    <h5> Schools of Employment List</h5>
+    <h5> <input type="button" class="btn btn-sm btn-ISEIblue4" id="showemployment"  value ="Update">
+        Schools of Employment List</h5>
        <div class="card card-body">
-            <table class="table">
+   <!-- Schools of Employment List -->
+            <table class="table employmentlist">
                 <thead>
                     <tr>
                       <th scope="col">School</th>
@@ -240,11 +251,8 @@
                       <th scope="col"> Courses taught</th>
                     </tr>
                 </thead>
- <!-- Schools of Employment List -->
-                <tbody class="employmentlist" >
-                    <tr><td>
-                        <input type="button" class="btn btn-sm btn-ISEIblue4" id="showemployment"  value ="Update">
-                    </td></tr>
+
+                <tbody >
                       {% for school in school_of_employment %}
                         <tr>
                             <td>{{ school.name }}</td>
@@ -255,32 +263,43 @@
                         </tr>
                       {% endfor %}
                 </tbody>
- <!-- School of Employment Form -->
-                <tbody class="employmentform" >
-                    <form method="POST" action="" enctype="multipart/form-data">
-                        {% csrf_token %}
-                          {{ school_of_employment_formset.management_data }}
-                          {{ school_of_employment_formset.management_form }}
-
-                            {% for form in school_of_employment_formset %}
-                              {{ form.non_field_errors }}
-                                    <tr>
-                                        <td>{{ form.name }}<span style ='color:red'>{{ form.name.errors }}</span></td>
-                                        <td>{{ form.address }}<span style ='color:red'>{{ form.address.errors }}</span></td>
-                                        <td>{{ form.start_date }}<span style ='color:red'>{{ form.start_date.errors }}</span></td>
-                                        <td>{{ form.end_date }}<span style ='color:red'>{{ form.end_date.errors }}</span></td>
-                                        <td>{{ form.courses }}<span style ='color:red'>{{ form.courses.errors }}</span></td>
-                                    </tr>
-                                {% for hidden in form.hidden_fields %}
-                                 {{ hidden }}
-                                {% endfor %}
-                            {% endfor %}
-                                <tr><td colspan="2">
-                                    <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" name="school_of_employment" value="Update Employment School List" >
-                                </td></tr>
-                    </form>
-                </tbody>
             </table>
+ <!-- School of Employment Form -->
+            <form method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                  {{ school_of_employment_formset.management_data }}
+                  {{ school_of_employment_formset.management_form }}
+
+                <table class="table employmentform">
+                        <thead>
+                            <tr>
+                              <th scope="col">School</th>
+                              <th scope="col">City, Country</th>
+                              <th scope="col">Start Date </th>
+                              <th scope="col">End Date</th>
+                              <th scope="col"> Courses taught</th>
+                            </tr>
+                        </thead>
+                    {% for form in school_of_employment_formset %}
+                      {{ form.non_field_errors }}
+                        <tbody>
+                            <tr>
+                                <td>{{ form.name }}<div class="spanred" >{{ form.name.errors }}</div></td>
+                                <td>{{ form.address }}<span style ='color:red'>{{ form.address.errors }}</span></td>
+                                <td>{{ form.start_date }}<span style ='color:red'>{{ form.start_date.errors }}</span></td>
+                                <td>{{ form.end_date }}<span style ='color:red'>{{ form.end_date.errors }}</span></td>
+                                <td>{{ form.courses }}<span style ='color:red'>{{ form.courses.errors }}</span></td>
+                            </tr>
+                        </tbody>
+                            {% for hidden in form.hidden_fields %}
+                             {{ hidden }}
+                            {% endfor %}
+                    {% endfor %}
+                        <tr><td colspan="2">
+                            <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" name="school_of_employment" value="Update Employment School List" >
+                        </td></tr>
+                </table>
+            </form>
     </div>
 </div>
 

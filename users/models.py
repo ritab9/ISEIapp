@@ -51,7 +51,7 @@ class Teacher(models.Model):
 
 
     class Meta:
-        ordering = ('last_name',)
+        ordering = ('school','last_name',)
 
     def name(self):
         if self.middle_name and self.suffix:

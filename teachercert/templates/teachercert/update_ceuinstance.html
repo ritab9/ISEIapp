@@ -9,12 +9,12 @@
 <div class="row">
 	<div class="col-md">
 		<div class="card card-body">
-            <form action=" " method="POST" id="update_activity" enctype="multipart/form-data" data-pda_categories-url="{% url 'ajax_load_PDAtypes' %}">
+            <form action=" " method="POST" id="update_activity" enctype="multipart/form-data" data-ceu_categories-url="{% url 'ajax_load_CEUtypes' %}">
 				{% csrf_token %}
 				<p id="teacher">{{form.teacher}}</p>
                 <div class = "row">
-                <div class="col-sm">{{form.pda_category|as_crispy_field}}</div>
-                <div class="col-sm">{{form.pda_type|as_crispy_field}}</div>
+                <div class="col-sm">{{form.ceu_category|as_crispy_field}}</div>
+                <div class="col-sm">{{form.ceu_type|as_crispy_field}}</div>
                 <div class="col-sm">{{form.date_completed|as_crispy_field}}</div>
                 <div class="col-sm">{{form.amount|as_crispy_field}}</div>
                 <div class="col-sm">{{form.units|as_crispy_field}}</div>
@@ -25,7 +25,7 @@
                 <div class = "row"><br>
                     <div class="col-sm-7"><br> {{ form.evidence|as_crispy_field }}
 
-                        <div id="id_suggested_evidence"> </div>Suggested Evidence: <span style="color:green">{{ pda_instance.pda_type.evidence }}</span></div>
+                        <div id="id_suggested_evidence"> </div>Suggested Evidence: <span style="color:green">{{ ceu_report.ceu_type.evidence }}</span></div>
                     <div class="col-sm-3"> <br>   Supporting documentation: <br> {{ form.file }}</div>
                     <div class="col-sm-2">
                         {% if resubmit %} <br>
@@ -45,48 +45,48 @@
 
 
 $(document).ready(function () {
-    $("#id_pda_category").click(function (e) {
+    // $("#id_ceu_category").click(function (e) {
         e.preventDefault();
-        const url = $("#update_activity").attr("data-pda_categories-url");  // get the url of the `load_cities` view
-        const pda_categoryId = $(this).val();  // get the selected country ID from the HTML input
+        const url = $("#update_activity").attr("data-ceu_categories-url");  // get the url of the `load_cities` view
+        const ceu_categoryId = $(this).val();  // get the selected country ID from the HTML input
 
        $.ajax({                //initialize an AJAX request
             url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
             data: {
-                'pda_category_id': pda_categoryId       // add the country id to the GET parameters
+                'ceu_category_id': ceu_categoryId       // add the country id to the GET parameters
             },
             success: function (data) { // `data` is the return of the `load_cities` view function
-                $("#id_pda_type").html(data);  // replace the contents of the pda_type input with the data that came from the server
+                $("#id_ceu_type").html(data);  // replace the contents of the ceu_type input with the data that came from the server
             },
                 /*
                 let html_data = '<option value="">---------</option>';
                 data.forEach(function (city) {
-                    html_data += `<option value="${pda_type.id}">${pda_type.description}</option>`
+                    html_data += `<option value="${ceu_type.id}">${ceu_type.description}</option>`
                 });
                 console.log(html_data);
-                $("#id_pda_type").html(html_data); * /
+                $("#id_ceu_type").html(html_data); * /
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(errorThrown);
             }; */
         });
-    });
+    // });
 });
 
 
 //Ajax Suggested Evidence Load based on Type
 
-        $("#id_pda_type").click(function () {
+        $("#id_ceu_type").click(function () {
             var url = "{% url 'ajax_load_evidence' %}";
-            //var url = $("#add_activity").attr("data-pda_categories-url");  get the url of the `load_PDAtypes` view
+            //var url = $("#add_activity").attr("data-ceu_categories-url");  get the url of the `load_CEUtypes` view
             var typeID = $(this).val();  // get the selected category ID from the HTML input
             $.ajax({
-                  url: url, // set the url of the request (= localhost:8000/hr/ajax/load_PDAtypes/)
+                  url: url, // set the url of the request (= localhost:8000/hr/ajax/load_CEUtypes/)
                   data: {
-                        'pda_type_id': typeID      // add the category id to the GET parameters
+                        'ceu_type_id': typeID      // add the category id to the GET parameters
                   },
-                  success: function (data) {   // `data` is the return of the `load_PDAtyples` view function
-                     $("#id_suggested_evidence").html(data);  // replace the contents of the pda_type input with the data that came from the server
+                  success: function (data) {   // `data` is the return of the `load_CEUtyples` view function
+                     $("#id_suggested_evidence").html(data);  // replace the contents of the ceu_type input with the data that came from the server
                   }
               })
         });

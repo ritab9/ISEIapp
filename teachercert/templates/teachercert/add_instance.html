@@ -5,7 +5,7 @@
 {% load static %}
 
 
-<form method="post" id="pdaInstanceForm" data-pda_categories-url="{% url 'ajax_load_PDAtypes' %}">
+<form method="post" id="ceuInstanceForm" data-ceu_categories-url="{% url 'ajax_load_CEUtypes' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit">
@@ -16,26 +16,26 @@
 <script>
 
 $(document).ready(function () {
-    $("#id_pda_category").click(function (e) {
+    $("#id_ceu_category").click(function (e) {
         e.preventDefault();
-        const url = $("#pdaInstanceForm").attr("data-pda_categories-url");  // get the url of the `load_cities` view
-        const pda_categoryId = $(this).val();  // get the selected country ID from the HTML input
+        const url = $("#ceuInstanceForm").attr("data-ceu_categories-url");  // get the url of the `load_cities` view
+        const ceu_categoryId = $(this).val();  // get the selected country ID from the HTML input
 
        $.ajax({                //initialize an AJAX request
             url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
             data: {
-                'pda_category_id': pda_categoryId       // add the country id to the GET parameters
+                'ceu_category_id': ceu_categoryId       // add the country id to the GET parameters
             },
             success: function (data) { // `data` is the return of the `load_cities` view function
-                $("#id_pda_type").html(data);  // replace the contents of the pda_type input with the data that came from the server
+                $("#id_ceu_type").html(data);  // replace the contents of the ceu_type input with the data that came from the server
             },
                 /*
                 let html_data = '<option value="">---------</option>';
                 data.forEach(function (city) {
-                    html_data += `<option value="${pda_type.id}">${pda_type.description}</option>`
+                    html_data += `<option value="${ceu_type.id}">${ceu_type.description}</option>`
                 });
                 console.log(html_data);
-                $("#id_pda_type").html(html_data); * /
+                $("#id_ceu_type").html(html_data); * /
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(errorThrown);

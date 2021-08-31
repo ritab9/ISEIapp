@@ -7,7 +7,7 @@
 
 <div class="row">
 <!-- Instructions for activity revision -->
-{% if pda_report_notreviewed %}
+{% if ceu_report_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
             <b> Review submitted teacher activities: </b>
@@ -25,7 +25,7 @@
     </div>
 {% endif %}
 <!-- Approved and Denied list -->
-{% if pda_report_approved %}
+{% if ceu_report_approved %}
     <div class="col-sm-3">
 <!--    Approved: -->
         <div class="card-body">
@@ -35,11 +35,11 @@
                   <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
                 </thead>
               <tbody>
-                {% for p in pda_report_approved%}
+                {% for p in ceu_report_approved%}
                 <tr>
                     <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
                     <td>
-                        <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                        <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
                                 <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
                         </form>
@@ -52,7 +52,7 @@
     </div>
 {% endif %}
 <!-- Denied-->
-{% if pda_report_denied %}
+{% if ceu_report_denied %}
     <div class="col-sm-3">
         <div class="card-body">
          Denied:
@@ -61,11 +61,11 @@
                   <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
                 </thead>
               <tbody>
-                {% for p in pda_report_denied%}
+                {% for p in ceu_report_denied%}
                 <tr>
                     <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
                     <td>
-                        <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                        <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
                                 <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
                         </form>
@@ -80,10 +80,10 @@
 </div>
 <div class ="row">
 
-    {% if pda_report_notreviewed %}
+    {% if ceu_report_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
-             {% for p in pda_report_notreviewed %}
+             {% for p in ceu_report_notreviewed %}
              <table class="table table-sm table-light">
               <tbody>
                 <tr>
@@ -125,15 +125,15 @@
                         <th>Supporting Documentation</th><th>Approved CEUs</th>
                       </thead>
                       <tbody>
-                        {% for i in p.pdainstance_set.all %}
+                        {% for i in p.ceuinstance_set.all %}
 
                           {% if i.isei_reviewed == 'n' %}
                         <tr>
-                            <td>{{i.date_completed}}</td><td>{{ i.pda_type }}</td><td>{{i.description}} </td>
+                            <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.amount }}{{ i.get_units_display }}
                             <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
 
-                            <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
+                            <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
                                 <td>
                                     <div class="row">
@@ -145,7 +145,7 @@
                         </tr>
 
                         <tr>
-                          <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
+                          <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
                                 <td colspan="6">
                                     <input type="text" name="isei_comment" class="form-control"   placeholder="If denied please explain why activity isn't approved." required>&nbsp;
@@ -158,11 +158,11 @@
                           <!--approved instances-->
                           {% if i.isei_reviewed == 'a' %}
                         <tr>
-                            <td>{{i.date_completed}}</td><td>{{ i.pda_type }}</td><td>{{i.description}} </td>
+                            <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.amount }}{{ i.get_units_display }}</td>
                             <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td><td>{{ i.approved_ceu}}</td>
 
-                            <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
+                            <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
                                 <td>
                                     <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancelinst" name="cancelinst" style = "width: 5em; height: 27px; bottom: 0px" >
@@ -174,13 +174,13 @@
 <!--denied instances--><!-- denied instances-->
                           {% if i.isei_reviewed == 'd' %}
                         <tr>
-                            <td>{{i.date_completed}}</td><td>{{ i.pda_type }}</td><td>{{i.description}} </td>
+                            <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.clock_hours|default_if_none:"" }}{{ i.pages|default_if_none:"" }}{{ i.ceu|default_if_none:""  }}
                             {% if i.clock_hours %} hours {% elif i.pages %} pages {% elif i.ceu %} CEUs {% endif %}</td>
                             <td>{{ i.suggested_ceu }}</td><td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td><td>Not approved</td>
                         </tr>
                               <tr> <td colspan="7">{{ i.isei_comment }}</td>
-                            <form action="{% url 'isei_pda_approval' p.id i.id %}" method="POST">
+                            <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
                                 <td>
                                     <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancelinst" name="cancelinst" style = "width: 5em; height: 27px; vertical-align: middle" >
@@ -198,7 +198,7 @@
                   </td>
                 </tr>
                 <tr><td>
-                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                    <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
                             <div class="approvebtn" id="approvebtn{{ p.id }}">
                                 <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve Submission" name="approved" id='approved' align="right" >
@@ -212,9 +212,9 @@
                 </td></tr>
 
                 <tr><td colspan="4">
-                    <form action="{% url 'isei_pda_approval' p.id %}" method="POST">
+                    <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
-                        <input type="text" name="isei_comment" placeholder="If denied please explain why submission isn't approved." class="form-control" required>
+                        <input type="text" name="isei_comment" placeholder="  " class="form-control" required>
                         <div class="denybtn" id="denybtn{{ p.id }}">
                         <input  class = "btn btn-sm btn-danger" type="submit" value="Deny Submission" name="denied" id="denied" >
                         </div>
@@ -229,15 +229,15 @@
         {% endif %}
 
   <!-- independent activities submitted for approval -->
- {% if pda_instance_notreviewed %}
+ {% if ceu_instance_notreviewed %}
     <div class="col-sm">
         <div class="card-body">
             <b> Review and approve teacher activities (activities denied by ISEI and resubmitted):  </b>
             <table class="table table-sm table-light">
               <tbody>
-              {% for i in pda_instance_notreviewed %}
+              {% for i in ceu_instance_notreviewed %}
                 <tr>
-                    <td>{{i.pda_report.teacher}} </td><td>{{i.pda_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
+                    <td>{{i.ceu_report.teacher}} </td><td>{{i.ceu_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
                 </tr>
                 <tr>
                   <td colspan="4">
@@ -252,7 +252,7 @@
                       <tbody>
                         <tr>
                             <td>{{i.date_completed}}</td>
-                            <td>{{ i.pda_type }}</td>
+                            <td>{{ i.ceu_type }}</td>
                             <td>{{i.description}} </td>
                             <td>{{ i.suggested_ceu }}</td>
                             <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
@@ -262,7 +262,7 @@
                 <tr><td>
                   <span style = "color:red"> ISEI Comment:</span>  {{ i.isei_comment }} <br>
                   {% if i.principal_comment %}<span style = "color:red"> Principal Comment:</span>  {{ i.principal_comment }}{% endif %}
-                    <form action="{% url 'isei_pda_approval' i.pda_report.id i.id %}" method="POST">
+                    <form action="{% url 'isei_ceu_approval' i.ceu_report.id i.id %}" method="POST">
                         {% csrf_token %}
                         <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approveinst" align="right" >
                        <br>
@@ -272,9 +272,9 @@
                     </form>
                   </td></tr>
                     <tr><td colspan="4">
-                    <form action="{% url 'isei_pda_approval' i.pda_report.id i.id %}" method="POST">
+                    <form action="{% url 'isei_ceu_approval' i.ceu_report.id i.id %}" method="POST">
                             {% csrf_token %}
-                        <input type="text" name="principal_comment" placeholder="If denied please explain why submission isn't approved." class="form-control">
+                        <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control">
                             <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Deny" name = "denyinst" >
                         </form>
                     </td></tr>

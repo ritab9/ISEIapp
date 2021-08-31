@@ -8,9 +8,9 @@
 # https://docs.djangoproject.com/en/1.11/howto/custom-template-tags/
 
 #@register.filter
-#def pda_reports_certificate(tcertificate):
-#    return pdareports_for_certificate(tcertificate)
+#def ceu_reports_certificate(tcertificate):
+#    return ceureports_for_certificate(tcertificate)
 
 #@register.filter
-#def pda_reports_certificate(tcertificate):
+#def ceu_reports_certificate(tcertificate):
 #    return academic_classes_for_certificate(tcertificate)

@@ -13,12 +13,12 @@ Not to be used independently
                     {% endif %}
                     <th scope="col">Name</th>
                     <th> School Year </th>
-                    <th scope="col">PDA Report Status</th>
+                    <th scope="col">CEU Report Status</th>
                     <th>Last activity</th>
                 </tr>
               </thead>
             <tbody>
-            {% for p in pda_reports %}
+            {% for p in ceu_reports %}
                 <tr>
                     {% if is_staff %}
                     <td> {{ p.teacher.school }}</td>
@@ -62,7 +62,7 @@ Not to be used independently
                                     <th>Date Completed</th><th>Description</th><th>Amount/Approved CEUs</th>
                                     <th>Supporting documentation</th><th>Last Activity</th>
                                 </tr>
-                                {% for i in p.pdainstance_set.all %}
+                                {% for i in p.ceuinstance_set.all %}
                                     <tr>
                                         <td>{{i.date_completed}} </td><td>{{i.description}} </td>
                                         <td>{{i.amount}} {{i.get_units_display}}

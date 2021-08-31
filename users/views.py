@@ -42,7 +42,6 @@ def loginpage(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        teacher = Teacher.objects.get(user=user)
 
         if user is not None:
             login(request, user)
@@ -51,8 +50,8 @@ def loginpage(request):
             else:
                 if is_in_group(request.user, 'principal'):
                     #return redirect('principal_teachercert')
-                    #return redirect('PDAreports')
-                    return redirect('principal_dashboard')
+                    #return redirect('CEUreports')
+                    return redirect('principal_dashboard', user.id)
                 else:
                     if is_in_group(request.user, 'teacher'):
                         #if user.date_joined.date() == user.last_login.date():
@@ -61,7 +60,7 @@ def loginpage(request):
                         #else:
                         #    return redirect('account_settings', user.id)
                     elif is_in_group(request.user, 'staff'):
-                        #return redirect('PDAreports')
+                        #return redirect('CEUreports')
                         return redirect('isei_teachercert')
                         #return redirect('staff_dashboard')
                     else:
@@ -96,6 +95,9 @@ def accountsettings(request, userID):
     college_formset_valid = True
     teacher_form_valid = True
     address_form_valid= True
+
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
 
     if request.method == 'POST' and request.POST.get('teacher_info'):
         user_form = UserForm(request.POST, instance=user)
@@ -164,9 +166,6 @@ def accountsettings(request, userID):
         application_submitted = False
         last_application_id = None
 
-    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
-    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
-
 
     context = dict(teacher=teacher, address = address, user = user, school_of_employment =school_of_employment, college_attended = college_attended,
                    teacher_form_valid = teacher_form_valid, address_form_valid = address_form_valid,
@@ -210,8 +209,9 @@ def teacherdashboard(request, userID):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal'])
-def principaldashboard(request):
-    principal = request.user.teacher
+def principaldashboard(request, userID):
+
+    principal = User.objects.get(id=userID).teacher
 
     teachers = Teacher.objects.filter(school=principal.school, active= True)
 
@@ -240,10 +240,10 @@ def principaldashboard(request):
     a_year_ago = today - timedelta (365)
 
 # Report Approval Section
-    pda_report = PDAReport.objects.filter(teacher__school=principal.school)  # all the reports from this teacher's school
-    pda_report_notreviewed = pda_report.filter(date_submitted__isnull=False, principal_reviewed='n')
-    pda_instance_notreviewed = PDAInstance.objects.filter(pda_report__in=pda_report, pda_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
-    if pda_report_notreviewed or pda_instance_notreviewed:
+    ceu_report = CEUReport.objects.filter(teacher__school=principal.school)  # all the reports from this teacher's school
+    ceu_report_notreviewed = ceu_report.filter(date_submitted__isnull=False, principal_reviewed='n')
+    ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report, ceu_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
+    if ceu_report_notreviewed or ceu_instance_notreviewed:
         reports_to_review = True
     else:
         reports_to_review = False
@@ -264,7 +264,7 @@ def principaldashboard(request):
 def staffdashboard(request):
     # TODO redo the dashboard, replace activity references
     # teachers = Teacher.objects.all()
-    # activities = PDAInstance.objects.all()
+    # activities = CEUInstance.objects.all()
     # total_teachers = teachers.count()
     # total_activities = activities.count()
     # context = dict( teachers=teachers, activities=activities, total_teachers=total_teachers,

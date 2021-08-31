@@ -36,10 +36,10 @@
                         <a class="nav-link" href = "{% url 'manage_tcertificate' %}"> Add Certificate</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'PDAreports' %}">PDA Reports</a>
+                        <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'isei_pda_approval' %}">PDA Approval</a>
+                        <a class="nav-link" href="{% url 'isei_ceu_approval' %}">CEU Approval</a>
                       </li>
 
                 {% endif %}
@@ -49,16 +49,16 @@
 
                     <!-- <div class="principal_links" > -->
                       <li class="nav-item ">
-                        <a class="nav-link" href="{% url 'principal_dashboard' %}" >Home </a>
+                        <a class="nav-link" href="{% url 'principal_dashboard' request.user.id %}" >Home </a>
                       </li>
                       <li class="nav-item" >
                         <a class="nav-link" href="{% url 'principal_teachercert' %}">Teacher Certification</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'PDAreports' %}">PDA Reports</a>
+                        <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
                       </li>
                       <li class="nav-item" style ="border-right:solid 1px #fff;">
-                        <a class="nav-link" href="{% url 'principal_pda_approval' %}">PDA Approval</a>
+                        <a class="nav-link" href="{% url 'principal_ceu_approval' %}">CEU Reports Approval</a>
                       </li>
                     <!-- </div> -->
   <!-- teacher links for principal -->
@@ -69,11 +69,11 @@
 
                     {% if request.user|certified_tag %}
                       <li class="nav-item">
-                            <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">My CEU Reporting</a>
+                            <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">My CEU Reporting</a>
                       </li>
 
                     <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">My Academic Classes</a>
+                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">My Academic Courses</a>
                       </li>
                     {% endif %}
                     <li class="nav-item" >
@@ -92,11 +92,11 @@
                     </li>
                     {% if request.user|certified_tag %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myPDAdashboard' request.user.id %}">CEU Reporting</a>
+                        <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
                       </li>
 
                     <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Classes</a>
+                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
                     </li>
                     {% endif %}
                       <li class="nav-item">

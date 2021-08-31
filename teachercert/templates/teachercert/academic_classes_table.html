@@ -15,12 +15,12 @@ Not to be used independently
                 {% for c in academic_class %}
                     <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{ c.credits }}</td><td>{{c.date_completed}}</td>
                         {% if c.transcript_received %}
-                            <td> Received </td> <td></td><td></td>
+                            <td><div class="spangreen"> Received</div> </td> <td></td><td></td>
                         {% else  %}
                             {% if c.transcript_requested %}
-                                <td> Requested</td>
+                                <td><div class="spanyellow"> Requested</div></td>
                             {% else %}
-                                <td> Not requested</td>
+                                <td><div class="red"> Not requested</div></td>
                             {% endif %}
                             <td><a class = "btn-sm btn-ISEIblue3" href="{% url 'update_academic_class' c.id %}">Update</a></td>
                             <td><a class = "btn-sm btn-danger" href="{% url 'delete_academic_class' c.id %}">Delete</a></td>

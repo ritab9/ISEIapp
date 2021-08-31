@@ -8,12 +8,12 @@ from .models import *
 class DateInput(forms.DateInput):
     input_type = 'date'
 
-class PDAInstanceFilter(django_filters.FilterSet):
-    teacher = CharFilter(field_name = "pda_report__teacher", label='Teacher')
+class CEUInstanceFilter(django_filters.FilterSet):
+    teacher = CharFilter(field_name = "ceu_report__teacher", label='Teacher')
     start_date = DateFilter(field_name="date_completed", lookup_expr='gte', label='Completed after:')
     end_date = DateFilter(field_name="date_completed", lookup_expr='lte', label='Completed before:')
     description = CharFilter(field_name='description', lookup_expr='icontains', label='Description')
-    school_year = ModelChoiceFilter(field_name='pda_report__school_year', queryset=SchoolYear.objects.all(), label = 'School_Year')
+    school_year = ModelChoiceFilter(field_name='ceu_report__school_year', queryset=SchoolYear.objects.all(), label = 'School_Year')
 
     CHOICES = (
         ('n', 'Not ISEI Reviewed'),
@@ -23,7 +23,7 @@ class PDAInstanceFilter(django_filters.FilterSet):
     )
     approved = ChoiceFilter(field_name="isei_reviewed", label ='Approved', choices = CHOICES)
 
-class PDAReportFilter(django_filters.FilterSet):
+class CEUReportFilter(django_filters.FilterSet):
     first_name = CharFilter(field_name="teacher__first_name", label='First Name')
     last_name = CharFilter(field_name="teacher__last_name", label='Last Name')
     school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )

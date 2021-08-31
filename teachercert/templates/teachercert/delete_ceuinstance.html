@@ -7,13 +7,10 @@
 <div class="row">
 	<div class="col-md-6">
 		<div class="card card-body">
-
 			<p> Are you sure you want to delete "{{item}}"? The operation can not be undone.</p>
-			<form action="{% url 'delete_pdainstance' item.id %}" method="POST">
+			<form action="{% url 'delete_ceuinstance' item.id %}" method="POST">
 				{% csrf_token %}
-
-					<a class="btn btn-warning" href="{%  url 'create_pda' item.pda_report.id %}">Cancel</a>
-
+					<a class="btn btn-warning" href="{%  url 'create_ceu' item.ceu_report.id %}">Cancel</a>
 					<input class="btn btn-danger" type='submit' value ='Confirm'>
 			</form>
 		</div>

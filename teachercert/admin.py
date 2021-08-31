@@ -12,16 +12,16 @@ class SchoolYear(admin.ModelAdmin):
     list_editable = ('active_year','start_date', 'end_date', )
     list_display_links = ('name',)
 
-@admin.register(PDACategory)
-class PDACategory(admin.ModelAdmin):
+@admin.register(CEUCategory)
+class CEUCategory(admin.ModelAdmin):
     list_display = ('id','name',)
     #list_editable = ('name',)
     list_display_links = ('id',)
 
-#PDA Report Model Registration
-@admin.register(PDAType)
-class PDAType(admin.ModelAdmin):
-    list_display = ('pda_category', 'description', 'ceu_value','evidence')
+
+@admin.register(CEUType)
+class CEUType(admin.ModelAdmin):
+    list_display = ('ceu_category', 'description', 'ceu_value','evidence')
     #list_editable = ('ceu_value', 'evidence')
     list_display_links =('description',)
 
@@ -33,15 +33,15 @@ class AcademicClass(admin.ModelAdmin):
     list_display_links = ('name',)
     list_editable = ('university', 'date_completed', 'transcript_requested', 'transcript_received')
 
-class PDAInstanceInline(admin.StackedInline):
-    model = PDAInstance
+class CEUInstanceInline(admin.StackedInline):
+    model = CEUInstance
     can_delete = True
     extra = 0
     readonly_fields = ['created_at', 'updated_at', ]
 
-@admin.register(PDAReport)
-class PDAReport(admin.ModelAdmin):
-    inlines = [PDAInstanceInline,]
+@admin.register(CEUReport)
+class CEUReport(admin.ModelAdmin):
+    inlines = [CEUInstanceInline,]
     list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed', 'isei_reviewed', 'updated_at')
     list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed', 'school_year')
     list_display_links = ('teacher',)

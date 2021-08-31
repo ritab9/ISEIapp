@@ -2,7 +2,7 @@
 Not to be used independently
 { % include 'teachercert/tcertificates_table.html' %} to include in other templates-->
 
-<!-- Teachers Table (Teacher, Certification, PDA Report Status -->
+<!-- Teachers Table (Teacher, Certification, CEU Report Status -->
 
     <div class="card-body">
         <table class="table table-light table-striped" >
@@ -14,7 +14,7 @@ Not to be used independently
                 <th scope="col"> Endorsements </th>
                 <th scope="col"> Issue Date</th>
                 <th scope = "col">Expiration Date</th>
-                <th scope="col">PDA Activities</th>
+                <th scope="col">CEU Activities</th>
                 <th scope = "col"> Academic classes</th>
             </tr>
           </thead>
@@ -37,7 +37,7 @@ Not to be used independently
                         <td>{{ c.renewal_date }}</td>
 
                         <td>
-                          {% for p in c.teacher.pdareport_set.all %}
+                          {% for p in c.teacher.ceureport_set.all %}
                               {% if p.school_year.end_date > c.issue_date %}
                                 <p>{{ p.school_year}}:
                                     {% if p.isei_reviewed == 'a' %}
