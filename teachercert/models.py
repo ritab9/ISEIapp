@@ -258,7 +258,6 @@ class TEndorsement(models.Model):
     def __str__(self):
         return self.endorsement.name
 
-
 class TeacherCertificationApplication(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     initial = models.BooleanField(default= True)
@@ -306,3 +305,5 @@ class TeacherCertificationApplication(models.Model):
 
     def resume_filename(self):
         return os.path.basename(self.resume_file.name)
+
+#class BasicRequirements

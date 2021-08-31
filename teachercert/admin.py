@@ -57,7 +57,14 @@ class EmailMessage(admin.ModelAdmin):
 #teacher Certification Model Registration
 @admin.register(Requirement)
 class Requirement(admin.ModelAdmin):
-    list_display = ('name', 'category')
+    list_display = ('name', 'category', )
+    #def certification_types(self, obj):
+    #    certification_types =[]
+    #    for c in obj.certification_type_set.all():
+    #        certification_types.append(c.name)
+    #        certification_types.append('<br>')
+    #    return format_html("".join(certification_types))
+
 
 @admin.register(Renewal)
 class Renewal(admin.ModelAdmin):
