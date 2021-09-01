@@ -133,12 +133,12 @@
             </div>
             <div class="col">
                 {% if last_app.closed %}
-                    <a type="button" class="btn-sm btn-ISEIblue4" href="{% url 'teachercert_application_done' teacher.id last_app.id %}">See application</a>
+                    <a type="button" class="btn-sm btn-ISEIblue4" href="{% url 'teachercert_application_done' teacher.id  %}">See application</a>
                 {% else %}
-                    <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application_done' teacher.id last_app.id %}">See application</a> <br>
+                    <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application_done' teacher.id  %}">See application</a> <br>
                     {% if last_app.public_note %}<br>
                         <p><b>Note from ISEI office:</b></p><p>{{ last_app.public_note }}</p>
-                        <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application' teacher.id last_app.id %}">Update Application</a>
+                        <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application' teacher.id %}">Update Application</a>
                     {% endif %}
                 {% endif %}
             </div>

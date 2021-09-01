@@ -71,11 +71,13 @@ class TeacherAddressInLine(admin.StackedInline):
     extra = 0
     exclude = ['school']
 
+
 @admin.register(Teacher)
 class Teacher(admin.ModelAdmin):
-    inlines = [TeacherAddressInLine, CollegeAttendedInLine, SchoolOfEmploymentInLine]
-    list_display = ('name', 'school', 'active')
-    list_editable = ('school', 'active')
+    inlines = [TeacherAddressInLine, CollegeAttendedInLine, SchoolOfEmploymentInLine,]
+    list_display = ('name', 'school',)
+    list_editable = ('school', )
     list_display_links = ('name',)
+
 
 

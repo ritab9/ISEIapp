@@ -69,3 +69,18 @@ class TCertificateFilter(django_filters.FilterSet):
         (None, 'Any')
     )
     archived = ChoiceFilter(field_name="archived", choices=CHOICES, label='Current/Archived')
+
+
+class TeacherCertificationApplicationFilter(django_filters.FilterSet):
+    school = CharFilter(field_name = 'teacher__school',label = "School", lookup_expr = 'icontains')
+    teacher = CharFilter(field_name = 'teacher',label = "Teacher", lookup_expr = 'icontains')
+    CHOICES = (
+        (False, 'Processing'),
+        (True, 'Finalized'),
+        (None, 'Any')
+    )
+    billed = ChoiceFilter(field_name="billed", choices=CHOICES, label='Billed')
+    closed = ChoiceFilter(field_name="closed", choices=CHOICES, label='Status')
+
+
+

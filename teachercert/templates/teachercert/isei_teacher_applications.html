@@ -5,41 +5,55 @@
 {% block title %} Teacher Certification Application {% endblock title %}
 {% block content %}
 
+    <div class="row">
+        <div class="card card-body">
+            <form method="get">
+                    {{ application_filter.form}}
+                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                <a href="{%  url 'isei_teacher_applications' %}">Clear all filters</a>
+            </form>
+        </div>
+    </div>
 
     <table class="table">
         <thead>
             <tr>
+                <th>School</th>
                 <th>Teacher</th>
-                <th>Initial</th>
                 <th>Level</th>
-                <th>Endorsement(s)</th>
-                <th>Date Received</th>
+                <th>Date Submitted</th>
                 <th>Fee Status</th>
-                <th>ISEI Revision Date</th>
+                <th>ISEI Revision</th>
+                <th>Status</th>
             </tr>
         </thead>
 
         <tbody>
             {% for app in applications %}
                 <tr>
+                    <td> {{ app.teacher.school }}</td>
                     <td><a href="{% url 'isei_manage_application' app.id %}"> {{app.teacher}}</a></td>
-                    <td>{% if app.initial %} Yes {% else %} No {% endif %}</td>
                     <td>{{ app.get_cert_level_display }}</td>
-                    <td>{% if app.endors_level == 'e' %} {{ Elementary }} {% else %} {{ app.courses_taught }} {% endif %}</td>
                     <td>{{ app.date }}</td>
-                    <td> {% if app.billed %} {{ Billed }} {% else %} Not billed {% endif %}</td>
-                    <td> {{ app.isei_revision_date }}</td>
+                    <td> {% if app.billed %} Billed {% else %}<div class="spanred"> Not billed</div> {% endif %}</td>
+                    <td> {% if app.isei_revision_date %} {{ app.isei_revision_date }}
+                          {% else %} <div class="spanred">Not reviewed yet</div>
+                          {% endif %}
+                    </td>
+                    <td>{% if app.closed %} Finalized {% else %} Processing {% endif %}</td>
                 </tr>
                 {% if app.public_note or app.isei_note  %}
                     <tr>
-                        <td colspan="7"> {% if app.public_note %} Public note: {{ app.public_note }}<br> {% endif %}
+                        <td></td>
+                        <td colspan="6"> {% if app.public_note %} Public note: {{ app.public_note }}<br> {% endif %}
                              {% if app.isei_note %} Office use only note: {{ app.public_note }}<br> {% endif %}
                         </td>
                     </tr>
                 {% endif %}
                 {% if app.isei_revision_date <= app.date  %}
                     <tr>
-                        <td colspan="7">
+                        <td></td>
+                        <td colspan="6">
                             <span style = "color: green"> Updated by teacher since last ISEI revision.</span>
                         </td>
                     </tr>

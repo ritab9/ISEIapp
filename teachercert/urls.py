@@ -29,10 +29,9 @@ urlpatterns = [
 #if we want the add the ceuInstance separately (actually, if we do that we should just reuse update!)
 #    path('add_instance/<str:reportID>/',views.add_instance, name='add_instance'),
 
-    #pk is teacher ID, appID is the last application ID
-    path('teachercert_application/<str:pk>/<str:appID>/', views.teachercert_application, name='teachercert_application'),
+    #pk is teacher ID
     path('teachercert_application/<str:pk>/', views.teachercert_application, name='teachercert_application'),
-    path('teachercert_application_done/<str:pk>/<str:appID>/', views.teachercert_application_done, name='teachercert_application_done'),
+    path('teachercert_application_done/<str:pk>/', views.teachercert_application_done, name='teachercert_application_done'),
 
 
     # principal urls

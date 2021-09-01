@@ -332,7 +332,7 @@ def CEUreports(request):
 @allowed_users(allowed_roles=['principal', 'staff'])
 def principal_ceu_approval(request, recID=None, instID=None):
     principal = request.user.teacher
-    teachers = Teacher.objects.filter(school = principal.school, active= True)
+    teachers = Teacher.objects.filter(school = principal.school, user__is_active= True)
 
     ceu_report = CEUreport.objects.filter(teacher__school=principal.school) #all the reports from this teacher's school
     ceu_report_notreviewed = ceu_report.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at') #submitted reports to the principal, not yet reviewed
@@ -421,7 +421,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_ceu_approval(request, repID=None, instID=None):
-    teachers = Teacher.objects.filter(active = True)
+    teachers = Teacher.objects.filter(user__is_active = True)
     ceu_report_notreviewed = CEUReport.objects.filter(principal_reviewed ='a', isei_reviewed='n').order_by('date_submitted')
 
     # ceu_reports approved or denied within a year
@@ -679,27 +679,33 @@ def isei_teachercert(request):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
-def teachercert_application(request, pk, appID = None):
-# pk - teacher ID, appID - application ID
+def teachercert_application(request, pk):
+# pk - teacher ID
 
     teacher = Teacher.objects.get(id=pk)
-
-    if appID == None:  # new application
+    application = TeacherCertificationApplication.objects.get(teacher=teacher)
+    if not application:
         application = TeacherCertificationApplication(teacher = teacher)
-    else:  # update existing application
-        application = TeacherCertificationApplication.objects.get(id=appID)
+
+
+    #if appID == None:  # new application
+    #    application = TeacherCertificationApplication(teacher = teacher)
+    #else:  # update existing application
+    #    application = TeacherCertificationApplication.objects.get(id=appID)
 
     address = Address.objects.get(teacher=teacher)
     application_form = TeacherCertificationApplicationForm(instance = application)
     school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
     college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
 
-
     if request.method == 'POST':
         application_form = TeacherCertificationApplicationForm(request.POST, request.FILES or None, instance=application)
         if application_form.is_valid():
+            application = application_form.save(commit= False)
+            if application.date_initial == None:
+                application.date_initial = application.date
             application = application_form.save()
-            return redirect ('teachercert_application_done', pk = teacher.id, appID = application.id)
+            return redirect ('teachercert_application_done', pk = teacher.id )
 
 
 
@@ -712,12 +718,12 @@ def teachercert_application(request, pk, appID = None):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
-def teachercert_application_done(request, pk, appID ):
-# pk - teacher ID, appID - application ID
+def teachercert_application_done(request, pk):
+# pk - teacher ID
 
     teacher = Teacher.objects.get(id=pk)
     address = Address.objects.get(teacher=teacher)
-    application = TeacherCertificationApplication.objects.get(id=appID)
+    application = TeacherCertificationApplication.objects.get(teacher=teacher)
 
     school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
     college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
@@ -729,20 +735,24 @@ def teachercert_application_done(request, pk, appID ):
     return render(request, 'teachercert/teachercert_application_done.html', context)
 
 
-
+#list of applications from current teachers
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_teacher_applications(request):
-    applications = TeacherCertificationApplication.objects.filter(closed=False).order_by('isei_revision_date')
-    closed_applications =TeacherCertificationApplication.objects.filter(closed=True)
 
-    #closed_applications_filter = ApplicationFilter(request.GET, queryset=applications)
-    #closed_applications = closed_application_filter.qs
+    #TODO seperate closed and open applications
+    applications = TeacherCertificationApplication.objects.all().order_by('-date')
+    #closed_applications = TeacherCertificationApplication.objects.filter(closed=True)
 
+    application_filter = TeacherCertificationApplicationFilter (request.GET, queryset=applications)
+    applications = application_filter.qs
 
-    context = dict(applications = applications, closed_applications = closed_applications)
-                   #application_filter = teachers_filter )
+    context = dict(applications = applications, application_filter = application_filter )
+                   #closed_applications = closed_applications,
+
     return render(request, 'teachercert/isei_teacher_applications.html', context)
+
+
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])

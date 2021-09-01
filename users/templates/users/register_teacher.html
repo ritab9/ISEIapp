@@ -4,14 +4,7 @@
 
 {% block head_css %}
 	{% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-	<Link rel="stylesheet" href="{%  static 'scss/custom.css' %}">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
-
-
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 {% endblock head_css %}
 
 {% block content %}
@@ -39,13 +32,25 @@
 							</div>
 							{{form.last_name}}
 						</div>
-						
-						<div class="input-group mb-2">
+                        <div class="input-group mb-2">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="fas fa-envelope-square"></i></span>
 							</div>
 							{{form.email}}
-						</div>
+						</div><br>
+
+                        <div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text">Birth Year:</span>
+							</div>
+                             <input type="text" id="birth_year" name="birth_year">
+                        </div>
+                        <div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text">Joined at: </span>
+							</div>
+                             <input type="date" id="joined_at" name="joined_at">
+                        </div><br>
 
 						<div class="input-group mb-3">
 							<div class="input-group-append">
@@ -66,12 +71,14 @@
 							</div>
 							{{form.password2}}
 						</div>
+
+                        <!--
                         <div class="input-group mb-2">
 							Type the characters below to proceed.
                             <div class="input-group-append">
-                            {{ form.captcha }}
+                            { { form.captcha }}
                             </div>
-                        </div>
+                        </div> -->
 
 				   		<div class="d-flex justify-content-center mt-3 login_container">
 				 			<input class="btn btn-block text-light bg-ISEIblue4" type="submit" value="Register Account">
@@ -100,14 +107,28 @@
 		var form_fields = document.getElementsByTagName('input')
 		form_fields[1].placeholder='First Name..';
 		form_fields[2].placeholder='Last Name..';
-		form_fields[3].placeholder='Email..';
-		form_fields[4].placeholder='Username..';
-		form_fields[5].placeholder='Enter password...';
-		form_fields[6].placeholder='Re-enter Password...';
+		form_fields[3].placeholder= 'Email..';;
+		form_fields[4].placeholder= 'yyyy'
+		//form_fields[5].placeholder=
+		form_fields[6].placeholder='Username..';
+		form_fields[7].placeholder='Enter password...';
+		form_fields[8].placeholder='Re-enter Password...';
+
 	
 
 		for (var field in form_fields){	
 			form_fields[field].className += ' form-control'
-		}
+		};
+
+		$('#birth_year').focusout (function() {
+            var first_name = $('#id_first_name').val();
+            var last_name = $('#id_last_name').val();
+            var birth_year = $(this).val();
+            $('#id_username').val(first_name + "." + last_name);
+            $('#id_password1').val("ISEIapp" + birth_year);
+            $('#id_password2').val("ISEIapp" + birth_year);
+        });
+
+
 	</script>
 {% endblock content %}

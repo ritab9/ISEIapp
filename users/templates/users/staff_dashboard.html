@@ -4,11 +4,145 @@
 
 {% block content %}
 
-    <h3>ISEI Staff dashboard</h3>
-    <ul>
-    {% for t in teachers %}
+    <div class = "card card-body">
+        <div class="col">
+            <a class= "btn btn-ISEIblue4" href="{% url 'register_teacher' %}"> Add new teacher</a>
+        </div>
+    </div>
 
-        <li>  <a class="nav-link" href = "{% url 'manage_tcertificate' t.id %}">{{ t.name }}</a></li>
-    {% endfor %}
-    <ul>
+
+<div class = "row">
+<!-- Teacher Certification Status-->
+    <div class="col-sm-6 card card-body">
+
+        <h5> Teacher Certification Status</h5>
+        <!-- Percent of registered teachers -->
+            <p> <p>Percent of registered teachers certified:
+                {% if percent_certified < 80 %}<span style="color:red">{{ percent_certified }}%</span>
+                {% else %}<span style="color:green">{{ percent_certified }}%</span>{% endif %}
+            </p></p>
+
+        <!-- Certified Teachers -->
+            <p> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id=certified>
+                Certified Teachers: {{ number_of_certified_teachers }}</p>
+
+                <table class = "table" id="details_certified" style="display:none" >
+                    <thead>
+                        <tr>
+                            <th>School</th><th>Teacher</th><th>Certification</th><th>Endorsement</th><th>Renewal Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in valid_tcertificates %}
+                          <tr>
+                              <td>{{ c.teacher.school }}</td>
+                              <td> <a class="nav-link" href = "{% url 'account_settings' c.teacher.user.id %}">{{ c.teacher.name }}</a></td>
+                              <td><a class="nav-link" href = "{% url 'manage_tcertificate' c.teacher.id %}">{{ c.certification_type }}</a></td>
+                              <td> {% for e in c.tendorsement_set.all %}
+                                    {{ e }}{% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                              </td>
+                              <td>{% if c.renewal_date > in_six_months %}
+                                    {{ c.renewal_date }}
+                                  {% else %}
+                                    <span style="color:orange">{{ c.renewal_date }}</span>
+                                  {% endif %}
+                              </td>
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            <p></p>
+            <p> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id=expired>
+                Teachers with Expired Certificates: {{ number_of_expired_teachers}} </p>
+
+                <table class = "table" id="details_expired" style="display:none">
+                    <thead>
+                        <tr>
+                            <th>School</th>
+                            <th>Teacher</th>
+                            <th>Certification</th>
+                            <th>Expiration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in expired_tcertificates %}
+                          <tr>
+                                <td>{{ c.teacher.school }}</td>
+                              <td><a href="{% url 'account_settings' c.teacher.user.id %}">{{c.teacher}}</a></td>
+                              <td><a class="nav-link" href = "{% url 'manage_tcertificate' c.teacher.id %}">{{ c.certification_type }}</a></td>
+                              <td> {% if c.renewal_date < a_year_ago %}
+                                     <span style="color:red"> {{ c.renewal_date }} Reinstatement Required</span>
+                                {% else %}
+                                    <span style="color:red">{{ c.renewal_date }} </span>
+                                {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+
+            <p></p>
+            <p><input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id="not_certified">
+                Non Certified Teachers: {{ number_of_non_certified_teachers }}
+            </p>
+
+                <table class = "table" id="details_not_certified" style="display:none">
+                    <thead>
+                        <tr>
+                            <th>School</th><th>Teacher</th><th>Application Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in non_certified_teachers %}
+                          <tr>
+                              <td>{{ t.school}}</td>
+                              <td><a class="nav-link" href = "{% url 'account_settings' t.user.id %}">{{t.name}}</a></td>
+                             {% if t.teachercertificationapplication %}
+                                 <td><a class="nav-link spanred" href = "{% url 'isei_manage_application' t.teachercertificationapplication.id %}">Needs to be processed</a></td>
+                                {%  else %}
+                              <td>Not Submitted</td>
+                                {% endif %}
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+            </table>
+    </div>
+</div>
+
+<script>
+    $('#certified').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show List") {
+                     $("#details_certified").show();
+                     $(this).attr('value',"Hide List"); }
+                     if(value == "Hide List") {
+                     $("#details_certified").hide();
+                     $(this).attr('value',"Show List");}
+    });
+    $('#expired').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show List") {
+                     $("#details_expired").show();
+                     $(this).attr('value',"Hide List"); }
+                     if(value == "Hide List") {
+                     $("#details_expired").hide();
+                     $(this).attr('value',"Show List");}
+    });
+    $('#not_certified').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show List") {
+                     $("#details_not_certified").show();
+                     $(this).attr('value',"Hide List"); }
+                     if(value == "Hide List") {
+                     $("#details_not_certified").hide();
+                     $(this).attr('value',"Show List");}
+    });
+
+</script>
+
+
+
 {% endblock %}

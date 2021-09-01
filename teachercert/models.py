@@ -37,7 +37,7 @@ class CEUCategory(models.Model):
 class CEUType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
     evidence = models.CharField(max_length=100, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
-    ceu_category = models.ForeignKey(CEUCategory, on_delete=models.PROTECT, help_text="Choose a category", null=False, blank=False)
+    ceu_category = models.ForeignKey(CEUCategory, on_delete=models.CASCADE, help_text="Choose a category", null=False, blank=False)
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
     max_cap = models.CharField(max_length=30, null=True, blank = True)
 
@@ -55,7 +55,7 @@ class CEUReport(models.Model):
     reviewed_at = models.DateField(blank=True, null=True)
 
     # entered by teacher at object creation
-    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
 
     date_submitted = models.DateField(null=True, blank=True)
@@ -113,7 +113,7 @@ class CEUInstance(models.Model):
     updated_at = models.DateField(auto_now=True, blank = True)
     reviewed_at = models.DateField(blank=True, null=True)
 
-    ceu_report = models.ForeignKey(CEUReport, on_delete=models.PROTECT, null=False, blank=False)
+    ceu_report = models.ForeignKey(CEUReport, on_delete=models.CASCADE, null=False, blank=False)
     ceu_category = models.ForeignKey(CEUCategory, on_delete=models.PROTECT, null=True, blank=True)
     ceu_type = models.ForeignKey(CEUType, on_delete=models.PROTECT, null=False, blank=False)
     date_completed = models.DateField(null=False)
@@ -169,7 +169,7 @@ class CEUInstance(models.Model):
 
 
 class AcademicClass(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     university = models.CharField(max_length=50, blank=False)
     name = models.CharField(max_length=50, blank=False)
     date_completed = models.DateField(blank=False)
@@ -234,7 +234,7 @@ class ElementaryMethod(models.Model):
 #Teacher Certificates Models
 
 class TCertificate(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, null=False, blank=False)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     certification_type = models.ForeignKey(CertificationType, on_delete=models.PROTECT, null=False, blank=False)
     issue_date = models.DateField(null=False, blank=False)
     renewal_date = models.DateField(null=False, blank=False)
@@ -259,8 +259,8 @@ class TEndorsement(models.Model):
         return self.endorsement.name
 
 class TeacherCertificationApplication(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
-    initial = models.BooleanField(default= True)
+    date_initial = models.DateField(blank=True, null=True)
+    teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     CLEVELS = (
         ('v', 'Vocational'),
         ('s', "Secondary"),
@@ -292,8 +292,7 @@ class TeacherCertificationApplication(models.Model):
     date = models.DateField(null=False, blank=False)
 
     #Office use section
-    #date created
-    date_received = models.DateField(auto_now_add=True, blank = True, null = True)
+
     billed = models.BooleanField(default = False, blank = False, null = False)
     public_note = models.CharField(max_length=255, blank=True, null=True)
     isei_note = models.CharField(max_length=255, blank=True, null=True)

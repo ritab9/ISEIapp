@@ -6,6 +6,7 @@
     {% load static %}
 
     <h6> Teacher Certification Initial Application</h6>
+                <p><a class="btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id %}">Update Teacher Info</a></p>
 
 <!-- Certification form -->
 <div class="card card-body mb-3">
@@ -21,6 +22,7 @@
         <div class="card card-body">
             <div class="row"> <b> School of Employment: </b> {{ teacher.school }}</div>
             <div class="row"> <b>Name:</b> {{ teacher.name }} </div>
+
         </div>
 
         <div class="col">
@@ -30,7 +32,7 @@
             <div class="col card card-body">
                 <p><b> Date of birth: </b> {{ teacher.date_of_birth }}</p>
                 <p><b>ISEI Teacher ID:</b> {{ teacher.iseiteacherid }}</p>
-                <p><b>Email address:</b> {{ user.email }}</p>
+                <p><b>Email address:</b> {{ teacher.user.email }}</p>
                 <p><b>Phone number:</b> {{ teacher.phone_number }}</p>
             </div>
 

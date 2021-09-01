@@ -36,7 +36,7 @@ class School(models.Model):
 class Teacher(models.Model):
     #TODO once all data is entered make joined_at auto field
     #joined_at = models.DateField(auto_now_add=True, blank=True)
-    joined_at = models.DateField()
+    joined_at = models.DateField(null=True, blank=True)
 
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
@@ -44,14 +44,13 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=20)
     suffix = models.CharField(max_length=10, null= True, blank= True)
     date_of_birth = models.DateField(null= True)
-    active = models.BooleanField (default=True)
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
 
 
     class Meta:
-        ordering = ('school','last_name',)
+        ordering = ('last_name',)
 
     def name(self):
         if self.middle_name and self.suffix:
@@ -66,15 +65,15 @@ class Teacher(models.Model):
         return name
 
     def iseiteacherid(self):
-        l = len(str(self.id))
+        l = len(str(self.user.id))
         if l==1:
-            teacher_id = "000" + str(self.id)
+            teacher_id = "000" + str(self.user.id)
         elif l==2:
-            teacher_id = "00"+str(self.id)
+            teacher_id = "00"+str(self.user.id)
         elif l==3:
-            teacher_id = "0" + str(self.id)
+            teacher_id = "0" + str(self.user.id)
         else:
-            teacher_id = str(self.id)
+            teacher_id = str(self.user.id)
 
         return str(self.joined_at.year) + "-" + teacher_id
 
@@ -108,18 +107,19 @@ class College(models.Model):
 
 class CollegeAttended(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
-    name = models.CharField(max_length=30, verbose_name="College Name", null=False, blank=False,)
+    name = models.CharField(max_length=35, verbose_name="College Name", null=False, blank=False,)
     address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
-    start_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
-    end_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
+    start_date = models.CharField(max_length= 10, null=False, blank=False, help_text="mm/dd/yyyy or yyyy")
+    end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy or yyyy")
     LEVELS = (
         ('a', 'Associate degree'),
         ('b', "Bachelor's degree"),
         ('m', "Master's degree"),
         ('d', 'Doctoral degree'),
+        ('n', 'None')
     )
     level = models.CharField(max_length=1, choices=LEVELS, help_text="Degree Level", null=False, blank=False)
-    degree = models.CharField(max_length=40, verbose_name= "Type, Degree Earned", help_text= "BSc, Marketing & Psychology", null= False, blank=False)
+    degree = models.CharField(max_length=40, verbose_name= "Type, Degree Earned", help_text= "BSc, Marketing & Psychology", null= True, blank=True)
     transcript_requested = models.BooleanField(default= False, verbose_name="Official college transcripts have been requested")
     transcript_received = models.BooleanField(default= False, null = False, blank= False)
     transcript_processed = models.BooleanField(default=False, null=False, blank= False)

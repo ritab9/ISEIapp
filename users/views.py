@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.db.models import Q
@@ -19,21 +20,25 @@ from .myfunctions import *
 from teachercert.myfunctions import initial_application, last_application
 
 # authentication functions
-@unauthenticated_user
-def registerpage(request):
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def register_teacher(request):
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
-            # signal create_teacher is activated by post_save, User
-            #TODO Should the action in signals.py be brought back here?
+            new_user = form.save()
+            joined_at = request.POST['joined_at']
+            group = Group.objects.get(name='teacher')
+            new_user.groups.add(group)
+            Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, joined_at=joined_at )
             username = form.cleaned_data.get('username')
             # flash message (only appears once)
             messages.success(request, 'Account was created for ' + username)
-            return redirect('login')
+            return redirect('account_settings', userID = new_user.id)
+
     context = {'form': form}
-    return render(request, 'users/register.html', context)
+    return render(request, 'users/register_teacher.html', context)
 
 
 @unauthenticated_user
@@ -53,7 +58,7 @@ def loginpage(request):
                     #return redirect('CEUreports')
                     return redirect('principal_dashboard', user.id)
                 else:
-                    if is_in_group(request.user, 'teacher'):
+                    if is_in_group(request.user, 'teacher') and request.user.is_active == True:
                         #if user.date_joined.date() == user.last_login.date():
                         #if certified(teacher):
                         return redirect('teacher_dashboard', user.id)
@@ -64,7 +69,7 @@ def loginpage(request):
                         #return redirect('isei_teachercert')
                         return redirect('staff_dashboard')
                     else:
-                        messages.info(request, 'User not assigned to a group. Contact the site administrator!')
+                        messages.info(request, 'User not assigned to a group or not currently active. Please contact the site administrator.')
         else:
             messages.info(request, 'Username OR password is incorrect')
     context = {}
@@ -78,7 +83,7 @@ def logoutuser(request):
 
 #set up only for teachers + principals now
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher','principal'])
+@allowed_users(allowed_roles=['teacher','principal', 'staff'])
 def accountsettings(request, userID):
 
     # TODO account settings for different categories of users
@@ -213,7 +218,7 @@ def principaldashboard(request, userID):
 
     principal = User.objects.get(id=userID).teacher
 
-    teachers = Teacher.objects.filter(school=principal.school, active= True)
+    teachers = Teacher.objects.filter(school=principal.school,user__is_active= True)
 
 #Teacher Certificates Section
     number_of_teachers = teachers.count()
@@ -263,9 +268,40 @@ def principaldashboard(request, userID):
 @allowed_users(allowed_roles=['staff'])
 def staffdashboard(request):
     # TODO redo the dashboard, replace activity references
-    teachers = Teacher.objects.filter(active=True)
-    # activities = CEUInstance.objects.all()
-    # total_teachers = teachers.count()
-    # total_activities = activities.count()
-    context = dict( teachers=teachers,)
+    teachers = Teacher.objects.filter(user__is_active=True)
+
+    # Teacher Certificates Section
+    number_of_teachers = teachers.count()
+    tcertificates = TCertificate.objects.filter(archived=False)
+
+    # Valid certificates and certified teachers
+    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers).order_by('teacher')
+    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct()
+    number_of_certified_teachers = certified_teachers.count()
+
+    # expired certificates and teachers with expired certificates
+    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today()).order_by('teacher')
+    expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
+    number_of_expired_teachers = expired_teachers.count()
+
+    # not certified teachers
+    non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates))
+    number_of_non_certified_teachers = non_certified_teachers.count()
+
+    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+
+    today = date.today()
+    in_six_months = today + timedelta(183)
+    a_year_ago = today - timedelta(365)
+
+
+
+    context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago, percent_certified=percent_certified,
+                   valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
+                   expired_tcertificates=expired_tcertificates, number_of_expired_teachers=number_of_expired_teachers,
+                   non_certified_teachers=non_certified_teachers,
+                   number_of_non_certified_teachers=number_of_non_certified_teachers,
+                   number_of_teachers=number_of_teachers,
+                   )
+
     return render(request, 'users/staff_dashboard.html', context)

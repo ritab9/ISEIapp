@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
 # authentication urls + landing page url (landing is by default the login-page)
     path('', views.loginpage, name='login'),
-    path('register/', views.registerpage, name='register'),
+    path('register_teacher/', views.register_teacher, name='register_teacher'),
     path('login/', views.loginpage, name='login'),
     path('logout/', views.logoutuser, name='logout'),
 

@@ -1,7 +1,7 @@
 from django.forms import ModelForm, modelformset_factory, ClearableFileInput
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 # from crispy_forms.helper import FormHelper
@@ -12,10 +12,10 @@ from localflavor.us.forms import USStateField
 
 
 class CreateUserForm(UserCreationForm):
-    captcha = CaptchaField()
+    #captcha = CaptchaField()
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'captcha']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', ]
 
 
 class UserForm(ModelForm):
@@ -27,7 +27,7 @@ class TeacherForm(ModelForm):
     class Meta:
         model = Teacher
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user','joined_at']
         widgets = {
             'profile_picture': forms.FileInput(attrs={'size': 1}),
             'date_of_birth': forms.DateInput( format ='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy', 'input-formats':'%m/%d/%Y'}),
