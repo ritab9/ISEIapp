@@ -47,8 +47,8 @@ urlpatterns = [
     # isei staff urls
     path('isei_teachercert/', views.isei_teachercert, name='isei_teachercert'),
 
-    path('manage_tcertificate/', views.manage_tcertificate, name='manage_tcertificate'),
-    path('manage_tcertificate/<str:certID>/', views.manage_tcertificate, name='manage_tcertificate'),
+    path('manage_tcertificate/<str:pk>/', views.manage_tcertificate, name='manage_tcertificate'),
+    path('manage_tcertificate/<str:pk>/<str:certID>/', views.manage_tcertificate, name='manage_tcertificate'),
     path('delete_tcertificate/<str:certID>/', views.delete_tcertificate, name='delete_tcertificate'),
 
 

@@ -1,7 +1,7 @@
 from django.forms import ModelForm, modelformset_factory, ClearableFileInput
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, modelformset_factory
 # from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
@@ -60,8 +60,6 @@ class CEUInstanceForm(ModelForm):
 
 
 
-
-
 CEUInstanceFormSet = inlineformset_factory(CEUReport, CEUInstance, form=CEUInstanceForm, extra=1,
                                            can_delete=False)
 
@@ -96,6 +94,14 @@ class TCertificateForm(ModelForm):
         }
 
 TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3)
+
+
+class TeacherBasicRequirementForm (forms.ModelForm):
+    class Meta:
+        model= TeacherBasicRequirement
+        fields = ('met',)
+
+TeacherBasicRequirementFormSet = modelformset_factory(TeacherBasicRequirement, form = TeacherBasicRequirementForm, extra=0)
 
 
 class TeacherCertificationApplicationForm(ModelForm):

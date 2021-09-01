@@ -306,4 +306,10 @@ class TeacherCertificationApplication(models.Model):
     def resume_filename(self):
         return os.path.basename(self.resume_file.name)
 
-#class BasicRequirements
+class TeacherBasicRequirement(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete= models.CASCADE, blank=False, null=False)
+    basic_requirement = models.ForeignKey(Requirement, on_delete=models.PROTECT, blank=False, null=False)
+    met = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.basic_requirement.name

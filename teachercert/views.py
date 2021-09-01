@@ -555,24 +555,32 @@ def approved_pdf2(request):
 #ISEI only views
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
-def manage_tcertificate(request, certID=None):
-    prev_certificates = None #previous certificates set to NONE
-    #TODO once teacher is selected initialize prev_certificates
+def manage_tcertificate(request, pk, certID=None):
+
+    teacher = Teacher.objects.get(id=pk)
+    prev_certificates = TCertificate.objects.filter(Q(teacher=teacher), ~Q(id=certID))
     ceu_reports = None
     academic_class = None
 
     if certID: # if the certificate already exists
         tcertificate = TCertificate.objects.get(pk=certID)
-        # previous certificates to be listed with current one
-        prev_certificates = TCertificate.objects.filter(Q(teacher = tcertificate.teacher), ~Q(id = certID))
         #ceu_reports and academic classes submitted for this certificate
         ceu_reports = ceureports_for_certificate(tcertificate)
         academic_class = academic_classes_for_certificate(tcertificate)
     else:
-        tcertificate = TCertificate() #initialize a new certificate
+        tcertificate = TCertificate(teacher=teacher) #initialize a new certificate
+        basics = Requirement.objects.filter(category='b')
+        if teacher.teacherbasicrequirement_set.all():
+            basic_requirements=TeacherBasicRequirement.objects.filter(teacher=teacher)
+        else:
+            for basic in basics:
+                TeacherBasicRequirement(basic_requirement= basic, teacher = teacher)
+            basic_requirements = TeacherBasicRequirement.objects.filter(teacher=teacher)
+
 
     tcertificate_form = TCertificateForm(instance=tcertificate) #Certificate form, defined in forms.py
     tendorsement_formset = TEndorsementFormSet(instance = tcertificate) # Endorsement formset, define in forms.py
+    tbasic_requirement_formset = TeacherBasicRequirementFormSet (queryset= basic_requirements)
 
     if request.method == "POST" and (request.POST.get('add_endorsement') or request.POST.get('submit_certificate')):
     # if the certificate is modified
@@ -582,9 +590,11 @@ def manage_tcertificate(request, certID=None):
             tcertificate_form = TCertificateForm(request.POST)
 
         tendorsement_formset = TEndorsementFormSet(request.POST)
+
         if tcertificate_form.is_valid(): #validate the certificate info
             tcertificate = tcertificate_form.save()
             tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
+            tbasic_requirement_formset = TeacherBasicRequirementFormSet(request.POST)
 
             if tendorsement_formset.is_valid(): #validate the endorsement info
                 if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
