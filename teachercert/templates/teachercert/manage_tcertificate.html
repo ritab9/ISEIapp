@@ -6,7 +6,7 @@
 
 
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
         <div class="card card-body">
 
             {% if is_staff %}
@@ -15,30 +15,83 @@
             <form action="." method="POST" >
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
-                            {{ tcertificate_form.certification_type|as_crispy_field }}
-                        </div> <br>
-                        <div class="row">
-                            {{ tcertificate_form.issue_date|as_crispy_field }} &nbsp;
-                            {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
-                            Archived: {{ tcertificate_form.archived }}
-                        </div> <br>
-                            {{ tcertificate_form.renewal_requirements|as_crispy_field }}
-                    </div>
-                    <div class="col-5">
+                <div class = "col-8">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
+                                {{ tcertificate_form.certification_type|as_crispy_field }}
+                            </div> <br>
+                            <div class="row">
+                                {{ tcertificate_form.issue_date|as_crispy_field }} &nbsp;
+                                {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
+                                Archived: {{ tcertificate_form.archived }}
+                            </div> <br>
+                                {{ tcertificate_form.renewal_requirements|as_crispy_field }}
+                        </div>
+                        <div class="col-4">
 
-                        {{ tendorsement_formset.as_table }}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td>Endorsement</td>
+                                        <td>Delete</td>
+                                    </tr>
+                                </thead>
 
-                        <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
+                              <tbody>
+                                {{ tendorsement_formset.management_data }}
+                                {{ tendorsement_formset.management_form }}
+                                {% for form in tendorsement_formset %}
+                                  {{ form.non_field_errors }}
+                                <tr>
+                                    <td>{{ form.endorsement}}<span style ='color:red'>{{ form.basic_requirement.errors }}</span></td>
+                                    <td>{{ form.DELETE }}<span style ='color:red'>{{ form.met.errors }}</span></td>
+                                </tr>
+                                  {% for hidden in form.hidden_fields %}
+                                     {{ hidden }}
+                                  {% endfor %}
+                                {% endfor %}
+                              </tbody>
+                    </table>
+
+
+
+                            <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
+                        </div>
                     </div>
-                </div>
-                <div class="row">
+                    <div class="row">
                     <div class="col">
                         {{ tcertificate_form.public_note|as_crispy_field }}</div>
                     <div class="col">
                         {{ tcertificate_form.office_note|as_crispy_field }}</div>
+                </div>
+                </div>
+                <div class="col-4">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Basic Requirement</td>
+                                <td>Met</td>
+                            </tr>
+                        </thead>
+
+                      <tbody>
+                        {{ tbasic_requirement_formset.management_data }}
+                        {{ tbasic_requirement_formset.management_form }}
+                        {% for form in tbasic_requirement_formset %}
+                          {{ form.non_field_errors }}
+                        <tr>
+                            <td>{{ form.basic_requirement}}<span style ='color:red'>{{ form.basic_requirement.errors }}</span></td>
+                            <td>{{ form.met }}<span style ='color:red'>{{ form.met.errors }}</span></td>
+                        </tr>
+                          {% for hidden in form.hidden_fields %}
+                             {{ hidden }}
+                          {% endfor %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                </div>
                 </div>
                 <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
             </form>
@@ -70,7 +123,7 @@
                 <p>Previous/Other certificates:</p>
                 {% if prev_certificates %}
                     {% for c in prev_certificates %}
-                        <a href="{%  url 'manage_tcertificate' c.id %}">{{ c.certification_type }}</a>
+                        <a href="{%  url 'manage_tcertificate' pk c.id %}">{{ c.certification_type }}</a>
                             {% if is_staff %}
                                 {% if c.archived == False %} <a href="{%  url 'archive_tcertificate' c.id certID %}"><span style="color:red"> Archive</span> </a> {% else %} <a href="{%  url 'de_archive_tcertificate' c.id certID%}"><span style="color:green">Retrieve from archive</span></a> {% endif %}
                         &nbsp;   {% else %}

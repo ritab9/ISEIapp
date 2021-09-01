@@ -5,5 +5,10 @@
 {% block content %}
 
     <h3>ISEI Staff dashboard</h3>
+    <ul>
+    {% for t in teachers %}
 
+        <li>  <a class="nav-link" href = "{% url 'manage_tcertificate' t.id %}">{{ t.name }}</a></li>
+    {% endfor %}
+    <ul>
 {% endblock %}

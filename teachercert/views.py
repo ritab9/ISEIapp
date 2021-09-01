@@ -569,14 +569,16 @@ def manage_tcertificate(request, pk, certID=None):
         academic_class = academic_classes_for_certificate(tcertificate)
     else:
         tcertificate = TCertificate(teacher=teacher) #initialize a new certificate
-        basics = Requirement.objects.filter(category='b')
-        if teacher.teacherbasicrequirement_set.all():
-            basic_requirements=TeacherBasicRequirement.objects.filter(teacher=teacher)
-        else:
-            for basic in basics:
-                TeacherBasicRequirement(basic_requirement= basic, teacher = teacher)
-            basic_requirements = TeacherBasicRequirement.objects.filter(teacher=teacher)
 
+
+    if teacher.teacherbasicrequirement_set.all():
+        basic_requirements=TeacherBasicRequirement.objects.filter(teacher=teacher)
+    else:
+        basics = Requirement.objects.filter(category='b')
+        for basic in basics:
+            b = TeacherBasicRequirement(basic_requirement= basic, teacher = teacher)
+            b.save()
+        basic_requirements = TeacherBasicRequirement.objects.filter(teacher=teacher)
 
     tcertificate_form = TCertificateForm(instance=tcertificate) #Certificate form, defined in forms.py
     tendorsement_formset = TEndorsementFormSet(instance = tcertificate) # Endorsement formset, define in forms.py
@@ -595,15 +597,18 @@ def manage_tcertificate(request, pk, certID=None):
             tcertificate = tcertificate_form.save()
             tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
             tbasic_requirement_formset = TeacherBasicRequirementFormSet(request.POST)
+            tbasic_requirement_formset.save()
 
             if tendorsement_formset.is_valid(): #validate the endorsement info
-                if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
-                    return redirect('manage_tcertificate', certID=tcertificate.id)
-                if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
-                    return redirect('manage_tcertificate',  certID=tcertificate.id )
+                tendorsement_formset.save()
+                #if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
+                    #return redirect('manage_tcertificate', pk = pk,  certID=tcertificate.id)
+                #if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
+                    #return redirect('manage_tcertificate',  pk =pk, certID=tcertificate.id )
 
     #certID is used in the template to reload page after previous certificates are archived
-    context = dict( is_staff= True, tcertificate_form = tcertificate_form, tendorsement_formset = tendorsement_formset,
+    context = dict( pk = pk, is_staff= True, tcertificate_form = tcertificate_form,
+                    tendorsement_formset = tendorsement_formset, tbasic_requirement_formset = tbasic_requirement_formset,
                     prev_certificates = prev_certificates, certID=certID,
                     ceu_reports=ceu_reports, academic_class=academic_class)
     return render(request, 'teachercert/manage_tcertificate.html', context)

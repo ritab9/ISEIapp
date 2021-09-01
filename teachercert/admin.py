@@ -116,3 +116,10 @@ class TeacherCertificationApplication(admin.ModelAdmin):
     list_display = ('id','teacher', 'initial', 'date', 'billed', 'closed')
     list_editable = ('initial', 'date', 'billed', 'closed')
     list_display_links = ('teacher',)
+
+
+
+@admin.register(TeacherBasicRequirement)
+class TeacherBasicRequirement(admin.ModelAdmin):
+    list_display = ('teacher', 'basic_requirement', 'met')
+    list_editable = ('met',)

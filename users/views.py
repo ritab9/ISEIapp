@@ -61,8 +61,8 @@ def loginpage(request):
                         #    return redirect('account_settings', user.id)
                     elif is_in_group(request.user, 'staff'):
                         #return redirect('CEUreports')
-                        return redirect('isei_teachercert')
-                        #return redirect('staff_dashboard')
+                        #return redirect('isei_teachercert')
+                        return redirect('staff_dashboard')
                     else:
                         messages.info(request, 'User not assigned to a group. Contact the site administrator!')
         else:
@@ -263,10 +263,9 @@ def principaldashboard(request, userID):
 @allowed_users(allowed_roles=['staff'])
 def staffdashboard(request):
     # TODO redo the dashboard, replace activity references
-    # teachers = Teacher.objects.all()
+    teachers = Teacher.objects.filter(active=True)
     # activities = CEUInstance.objects.all()
     # total_teachers = teachers.count()
     # total_activities = activities.count()
-    # context = dict( teachers=teachers, activities=activities, total_teachers=total_teachers,
-    #              total_activities=total_activities)
-    return render(request, 'users/staff_dashboard.html', context=dict())
+    context = dict( teachers=teachers,)
+    return render(request, 'users/staff_dashboard.html', context)

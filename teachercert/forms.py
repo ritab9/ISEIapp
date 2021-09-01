@@ -93,13 +93,13 @@ class TCertificateForm(ModelForm):
                 attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2}),
         }
 
-TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3)
+TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3, can_delete=True)
 
 
 class TeacherBasicRequirementForm (forms.ModelForm):
     class Meta:
         model= TeacherBasicRequirement
-        fields = ('met',)
+        fields = ('basic_requirement','met',)
 
 TeacherBasicRequirementFormSet = modelformset_factory(TeacherBasicRequirement, form = TeacherBasicRequirementForm, extra=0)
 

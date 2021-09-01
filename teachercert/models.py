@@ -311,5 +311,8 @@ class TeacherBasicRequirement(models.Model):
     basic_requirement = models.ForeignKey(Requirement, on_delete=models.PROTECT, blank=False, null=False)
     met = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('teacher', 'basic_requirement')
+
     def __str__(self):
         return self.basic_requirement.name
