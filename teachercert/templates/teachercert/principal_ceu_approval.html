@@ -44,7 +44,7 @@
                     <table class="table table-sm table-light" style="font-size: 85%">
                       <thead class="table-light">
                           <tr>
-                            <th>Teacher</th><th>SchoolYear</th><th>Denied</th><th>Cancel</th>
+                            <th>Teacher</th><th>SchoolYear</th><th>More Info Needed</th><th>Cancel</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -120,7 +120,7 @@
                             <th>Evidence & Supporting Documentation</th>
                           </thead>
                              <tbody>
-                                  {% for i in p.ceuInstance_set.all %}
+                                  {% for i in p.ceuinstance_set.all %}
                                     <tr>
                                         <td>{{i.date_completed}}</td>
                                         <td>{{ i.ceu_type }}</td>
@@ -128,8 +128,11 @@
                                         <td>{{ i.suggested_ceu }}</td>
                                         <td>{% if i.evidence %}
                                                 {{ i.evidence }}
+                                            {% elif i.file %}
+                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% else %}
+                                                <div class="spanred">None</div>
                                             {% endif %}
-                                            <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
                                         </td>
                                     </tr>
                                   {% endfor %}

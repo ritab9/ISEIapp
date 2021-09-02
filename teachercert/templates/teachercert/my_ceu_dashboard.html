@@ -1,5 +1,6 @@
 {%  extends 'base.html' %}
 {% load crispy_forms_tags %}
+{%  load group_tags %}
 
 {% block title %}
    CEU
@@ -7,7 +8,7 @@
 
 {% block content %}
 
-    {% if user_not_teacher %}
+    {% if request.user|in_group:"principal" or request.user|in_group:"staff" %}
         {{ teacher }}
     {% endif %}
 
@@ -37,17 +38,23 @@
         <br>
         {% for ar in principal_denied_report%}
             <div class="card card-body">
-                <h6> Principal denied PD Activities </h6> <br>
+                <h6> Additional Information Needed </h6> <br>
                 <table class="table table-sm">
                     <tr>
                         <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
-                        <th>Supporting documentation</th><th>Denial Date</th>
+                        <th>Evidence / Supporting documentation</th><th>Review Date</th>
                     </tr>
-                    {% for p in  ar.ceuInstance_set.all %}
+                    {% for p in  ar.ceuinstance_set.all %}
                         <tr>
                             <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                             <td>{{p.amount}} {{p.get_units_display}} </td>
-                            <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td>
+                            <td>{% if p.evidence %}
+                                                {{ p.evidence }}
+                                            {% elif p.file %}
+                                                <a href="{% get_media_prefix %}{{ p.file }}"> {{ p.file }}</a>
+                                            {% else %}
+                                                <div class="spanred">None</div>
+                                            {% endif %}</td>
                             <td>{{ p.ceu_report.updated_at }}</td>
                         </tr>
                     {% endfor %}
@@ -55,11 +62,11 @@
                 <p><b>Summary:</b> {{ ar.summary }}</p>
                 <div class="row">
                     <div class="col-sm-10">
-                        <span style="color:red">Reason for denial: </span> {{ ar.principal_comment }}
+                        <span style="color:red">Principal Comment: </span> {{ ar.principal_comment }}
                     </div>
                     <div class="col-sm-2">
                         <button class="btn btn-ISEIblue3 btn-sm">
-                            <a style="color:white" href="{%  url 'create_ceu' ar.id %}"> Update denied activities </a>
+                            <a style="color:white" href="{%  url 'create_ceu' ar.id %}"> Update CEU Report </a>
                         </button>
                     </div>
                 </div>
@@ -72,17 +79,25 @@
     <br>
     {% for ar in isei_denied_report%}
     <div class="card card-body">
-    <h6> ISEI denied PD Activities </h6> <br>
+    <h6> Additional Information Needed </h6> <br>
         <table class="table table-sm">
             <tr>
                 <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
-                <th>Supporting documentation</th><th>Denial Date</th>
+                <th>Evidence / Supporting documentation</th><th>Review Date</th>
             </tr>
-            {% for p in ar.ceuInstance_set.all %}
+            {% for p in ar.ceuinstance_set.all %}
                 <tr>
                     <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.amount}} {{p.get_units_display}}</td>
-                    <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td><td>{{ p.ceu_report.updated_at }}</td>
+                    <td>
+                        {% if p.evidence %}
+                            {{ p.evidence }}
+                        {% elif p.file %}
+                                <a href="{% get_media_prefix %}{{ p.file }}"> {{ p.file }}</a>
+                        {% else %}
+                                <div class="spanred">None</div>
+                        {% endif %}</td>
+                    <td>{{ p.ceu_report.updated_at }}</td>
                 </tr>
             {% endfor %}
         </table>
@@ -90,11 +105,11 @@
             <p><b>Summary:</b> {{ ar.summary }}</p>
             <div class="row">
             <div class="col-sm-10">
-                <font color="red">Reason for denial: </font> {{ ar.isei_comment }}
+                <div class="spanred">ISEI comment: </div> {{ ar.isei_comment }}
             </div>
             <div class="col-sm-2">
                 <button class="btn btn-ISEIblue3 btn-sm">
-                    <a style="color:white" href="{%  url 'create_ceu' ar.id %}"> Update denied activities </a>
+                    <a style="color:white" href="{%  url 'create_ceu' ar.id %}"> Update CEU Report </a>
                 </button>
             </div>
             </div>
@@ -109,24 +124,30 @@
 <br>
 <div class="row">
     <div class="card card-body">
-    <h6> ISEI denied Activities - summary and other submission for this school year have been accepted</h6> <br>
         {% if isei_denied_independent_instance %}
+            <h6> Additional information needed for this CEU activity</h6> <br>
         <table class="table table-sm">
             <tr>
-                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Supporting Docs</th>
-                <th>Denial Date</th><th>Update</th><th>Remove</th>
+                <th>Activity Type</th><th>Date Completed</th><th>Description</th><th>Amount</th> <th>Evidence/Supporting Docs</th>
+                <th>Review Date</th><th>Update</th><th>Remove</th>
             </tr>
             {% for p in isei_denied_independent_instance %}
             <tr>
                 <td>{{p.ceu_type}}</td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}} </td>
-                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</a></td>
+                <td>{% if p.evidence %}
+                            {{ p.evidence }}
+                        {% elif p.file %}
+                                <a href="{% get_media_prefix %}{{ p.file }}"> {{ p.file }}</a>
+                        {% else %}
+                                <div class="spanred">None</div>
+                        {% endif %}</td>
                 <td>{{ p.updated_at }}</td>
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuInstance' p.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuInstance' p.id %}">Delete</a></td>
-                <tr><td colspan="6"><span style="color:red">ISEI Denial Reason:</span>  {{ p.isei_comment }}</td>
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuinstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuinstance' p.id %}">Delete</a></td>
+                <tr><td colspan="6"><span style="color:red">ISEI Comment:</span>  {{ p.isei_comment }}</td>
                 {% if p.principal_comment %}
-                <tr><td colspan="6"><span style="color:red">Principal Denial Reason:</span>  {{ p.principal_comment }}</td>
+                <tr><td colspan="6"><span style="color:red">Principal Comment:</span>  {{ p.principal_comment }}</td>
                 </tr>
                 {% endif %}
             {% endfor %}
@@ -135,11 +156,12 @@
 
         <!-- active independent instances (submitted to principal)-->
   {% if active_independent_instance %}
-      Active independent Instance
+      <h6> Waiting for Principal Revision of this CEU activity</h6> <br>
     <table class="table table-sm">
         <tr>
             <th>School Year</th><th>Submitted to principal</th>
             <th>Date Completed</th><th>Category</th><th>Description</th><th>Amount</th>
+            <th>Evidence / Supporting Documentation</th>
             <th>Principal Approval</th>
         </tr>
         {% for p in active_independent_instance %}
@@ -151,16 +173,25 @@
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
                 <td>{{p.date_completed}} </td>
-                <td>{{p.ceu_type.get_ceu_category_display}} </td>
+                <td>{{p.ceu_category}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
+                </td>
+                <td>
+                    {% if p.evidence %}
+                            {{ p.evidence }}
+                        {% elif p.file %}
+                                <a href="{% get_media_prefix %}{{ p.file }}"> {{ p.file }}</a>
+                        {% else %}
+                                <div class="spanred">None</div>
+                        {% endif %}
                 </td>
                 {% if p.ceu_report.date_submitted %}
                     <td style = "color:red;size:40px">{{ p.get_principal_reviewed_display }}</td>
                 {% else %} <td> </td>
                 {% endif %}
-                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuInstance' p.id %}">Update</a></td>
-                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuInstance' p.id %}">Delete</a></td>
+                <td><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'update_ceuinstance' p.id %}">Update</a></td>
+                <td><a class = "btn btn-sm btn-danger" href="{% url 'delete_ceuinstance' p.id %}">Delete</a></td>
             </tr>
         {% endfor %}
     </table>
@@ -212,7 +243,7 @@
                     <td style = "color:red;size:40px">Not yet</td>
                 {% endif %}
                 <td>{{p.date_completed}} </td>
-                <td>{{p.ceu_type.get_ceu_category_display}} </td>
+                <td>{{p.ceu_category}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>
@@ -269,9 +300,16 @@
         {% for p in submitted_instance %}
             <tr>
                 <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td>
-                <td>{{p.ceu_type.get_category_display}} </td><td>{{p.description}} </td>
+                <td>{{p.ceu_category}} </td><td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}</td>
-                <td><a href={% get_media_prefix %}{{ p.file }}>{{ p.filename }}</td>
+                <td>{% if p.evidence %}
+                            {{ p.evidence }}
+                        {% elif p.file %}
+                                <a href="{% get_media_prefix %}{{ p.file }}"> {{ p.file }}</a>
+                        {% else %}
+                                <div class="spanred">None</div>
+                        {% endif %}
+                </td>
                 <td>{{p.ceu_report.date_submitted}}</td>
                 <td>{{ p.ceu_report.reviewed_at }}</td>
             </tr>
@@ -293,7 +331,7 @@
             <tr>
                 <td>{{p.ceu_report.school_year}} </td>
                 <td>{{p.date_completed}} </td>
-                <td>{{p.ceu_type.get_ceu_category_display}} </td>
+                <td>{{p.ceu_category}} </td>
                 <td>{{p.description}} </td>
                 <td>{{p.amount}} {{p.get_units_display}}
                 </td>

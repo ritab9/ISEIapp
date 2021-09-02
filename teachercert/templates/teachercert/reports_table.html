@@ -68,9 +68,20 @@ Not to be used independently
                                         <td>{{i.amount}} {{i.get_units_display}}
                                             {% if i.approved_ceu %}
                                             / {{ i.approved_ceu }} CEUs
+                                            {% else %}
+                                                <span style="color:red">/ None yet</span>
                                             {% endif %}
                                         </td>
-                                        <td><a href={% get_media_prefix %}{{ i.file }}>{{ i.filename }}</td>
+                                        <td><div class="span80">
+                                             {% if i.evidence %}
+                                                {{ i.evidence }}
+                                            {% elif i.file %}
+                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% else %}
+                                                <div class="spanred">None</div>
+                                            {% endif %}</div>
+
+                                        </td>
                                         <td>
                                             {% if i.reviewed_at %}
                                             {% if i.updated_at > i.reviewed_at %}

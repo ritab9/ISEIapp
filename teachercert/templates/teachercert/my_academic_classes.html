@@ -1,5 +1,6 @@
 {%  extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load group_tags %}
 
 {% block title %}
    Academic Courses
@@ -7,9 +8,10 @@
 
 {% block content %}
 
-    {% if user_not_teacher %}
-        {{ teacher }}
+    {% if request.user|in_group:"principal" or request.user|in_group:"staff" %}
+        {{teacher }}
     {% endif %}
+
 
     {% load static %}
 

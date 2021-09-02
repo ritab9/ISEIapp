@@ -3,13 +3,16 @@
 
 {% block content %}
 
-<a href="{% url 'approved_pdf2' %}" > Approved PDF </a>
+<!--
+<a href="{ % url 'approved_pdf2' %}" > Approved PDF </a>
+ -->
+
 
 <div class="row">
 <!-- Instructions for activity revision -->
 {% if ceu_report_notreviewed %}
-    <div class="col-sm">
-        <div class="card-body">
+    <div class="col-sm-10">
+        <div class="card card-body">
             <b> Review submitted teacher activities: </b>
             <span style ="font-size:80%">
             <ul>
@@ -23,7 +26,12 @@
             </span>
         </div>
     </div>
+    <div class="col-sm-2">
+           <br> <a class = "btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
+    </div>
+
 {% endif %}
+
 <!-- Approved and Denied list -->
 {% if ceu_report_approved %}
     <div class="col-sm-3">
@@ -101,7 +109,7 @@
                 </td></tr>
                 <!--
                 <tr><td>
-                    <div class ="enablebtn" id='{{ p.id }}'>
+                    <div class ="enablebtn" id='{ { p.id }}'>
                     <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Enable submission"  id="enablebtn{{ p.id }}">
                     </div>
                 </td></tr> -->
@@ -122,7 +130,7 @@
                     <table class="table mb-0 table-hover" id='table{{ p.id }}'>
                      <thead class="table-light">
                         <th>Date Completed</th><th>Type</th><th>Description</th><th>Amount</th>
-                        <th>Supporting Documentation</th><th>Approved CEUs</th>
+                        <th><div class="span80">Evidence / Supporting Documentation</div></th><th>Approved CEUs</th>
                       </thead>
                       <tbody>
                         {% for i in p.ceuinstance_set.all %}
@@ -131,7 +139,16 @@
                         <tr>
                             <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.amount }}{{ i.get_units_display }}
-                            <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
+                            <td><div class = "span80">
+                                            {% if i.evidence %}
+                                                {{ i.evidence }}
+                                            {% elif i.file %}
+                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% else %}
+                                                <div class="spanred">None</div>
+                                            {% endif %}
+                                </div>
+                            </td>
 
                             <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
@@ -160,7 +177,16 @@
                         <tr>
                             <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.amount }}{{ i.get_units_display }}</td>
-                            <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td><td>{{ i.approved_ceu}}</td>
+                            <td><div class="span80">
+                                {% if i.evidence %}
+                                                {{ i.evidence }}
+                                            {% elif i.file %}
+                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% else %}
+                                                <div class="spanred">None</div>
+                                {% endif %}</div>
+                            </td>
+                            <td>{{ i.approved_ceu}}</td>
 
                             <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">
                                 {% csrf_token %}
@@ -174,10 +200,18 @@
 <!--denied instances--><!-- denied instances-->
                           {% if i.isei_reviewed == 'd' %}
                         <tr>
-                            <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
-                            <td>{{ i.clock_hours|default_if_none:"" }}{{ i.pages|default_if_none:"" }}{{ i.ceu|default_if_none:""  }}
-                            {% if i.clock_hours %} hours {% elif i.pages %} pages {% elif i.ceu %} CEUs {% endif %}</td>
-                            <td>{{ i.suggested_ceu }}</td><td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td><td>Not approved</td>
+                            <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}}</td>
+                            <td>{{ i.amount }}</td>
+                            <td><div class="span80">
+                                {% if i.evidence %}
+                                                {{ i.evidence }}
+                                            {% elif i.file %}
+                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% else %}
+                                                <div class="spanred">None</div>
+                                {% endif %}</div></td>
+
+                            <td><div class="spanred"> Not approved</div></td>
                         </tr>
                               <tr> <td colspan="7">{{ i.isei_comment }}</td>
                             <form action="{% url 'isei_ceu_approval' p.id i.id %}" method="POST">

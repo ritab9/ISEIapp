@@ -14,7 +14,7 @@ from teachercert.models import *
 class CEUReportForm(ModelForm):
     class Meta:
         model = CEUReport
-        fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment',)
+        fields = ('date_submitted', 'summary', 'principal_comment', 'isei_comment',)
         widgets = {
         #    'school_year': forms.TextInput(attrs={'class': 'form-controls', 'placehoder': 'Enter school year'}),
              'summary': forms.Textarea(

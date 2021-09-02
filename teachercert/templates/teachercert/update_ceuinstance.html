@@ -26,7 +26,9 @@
                     <div class="col-sm-7"><br> {{ form.evidence|as_crispy_field }}
 
                         <div id="id_suggested_evidence"> </div>Suggested Evidence: <span style="color:green">{{ ceu_report.ceu_type.evidence }}</span></div>
-                    <div class="col-sm-3"> <br>   Supporting documentation: <br> {{ form.file }}</div>
+                    <div class="col-sm-3">
+                        <br>   Supporting documentation: <br> {{ form.file }}
+                    </div>
                     <div class="col-sm-2">
                         {% if resubmit %} <br>
                             Date resubmitted: <br> {{ form.date_resubmitted}}</div>

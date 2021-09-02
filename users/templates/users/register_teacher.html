@@ -41,9 +41,9 @@
 
                         <div class="input-group mb-2">
 							<div class="input-group-append">
-								<span class="input-group-text">Birth Year:</span>
+								<span class="input-group-text">Last 4 digits of phone number:</span>
 							</div>
-                             <input type="text" id="birth_year" name="birth_year">
+                             <input type="text" id="phone_dig" name="phone_dig">
                         </div>
                         <div class="input-group mb-2">
 							<div class="input-group-append">
@@ -108,7 +108,7 @@
 		form_fields[1].placeholder='First Name..';
 		form_fields[2].placeholder='Last Name..';
 		form_fields[3].placeholder= 'Email..';;
-		form_fields[4].placeholder= 'yyyy'
+		form_fields[4].placeholder= 'xxxx'
 		//form_fields[5].placeholder=
 		form_fields[6].placeholder='Username..';
 		form_fields[7].placeholder='Enter password...';
@@ -120,13 +120,13 @@
 			form_fields[field].className += ' form-control'
 		};
 
-		$('#birth_year').focusout (function() {
+		$('#phone_dig').focusout (function() {
             var first_name = $('#id_first_name').val();
             var last_name = $('#id_last_name').val();
-            var birth_year = $(this).val();
+            var phone_dig = $(this).val();
             $('#id_username').val(first_name + "." + last_name);
-            $('#id_password1').val("ISEIapp" + birth_year);
-            $('#id_password2').val("ISEIapp" + birth_year);
+            $('#id_password1').val("ISEIapp" + phone_dig);
+            $('#id_password2').val("ISEIapp" + phone_dig);
         });
 
 

@@ -25,7 +25,6 @@ urlpatterns = [
     path('ajax/load_CEUtypes/', views.load_CEUtypes, name = 'ajax_load_CEUtypes'),
     path('ajax/load_evidence/', views.load_evidence, name = 'ajax_load_evidence'),
 
-
 #if we want the add the ceuInstance separately (actually, if we do that we should just reuse update!)
 #    path('add_instance/<str:reportID>/',views.add_instance, name='add_instance'),
 
@@ -35,7 +34,7 @@ urlpatterns = [
 
 
     # principal urls
-    path('principal_teachercert/', views.principal_teachercert, name='principal_teachercert'),
+    #path('principal_teachercert/', views.principal_teachercert, name='principal_teachercert'),
     path('principal_ceu_approval/', views.principal_ceu_approval, name='principal_ceu_approval'),
     path('principal_ceu_approval/<str:recID>/', views.principal_ceu_approval, name='principal_ceu_approval'),
     path('principal_ceu_approval/<str:recID>/<str:instID>/', views.principal_ceu_approval, name='principal_ceu_approval'),

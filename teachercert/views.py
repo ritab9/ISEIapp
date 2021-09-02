@@ -80,6 +80,9 @@ def load_evidence(request):
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
 def createCEU(request, recId):
 
+
+    print("function called")
+
     ceu_report = CEUReport.objects.get(id=recId) #report
     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report) #list of already entered instances
     #instanceformset = CEUInstanceFormSet(queryset=CEUInstance.objects.none(), instance=ceu_report) # entering new activity
@@ -107,7 +110,7 @@ def createCEU(request, recId):
                     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report)
                     ceu_instance.update(principal_reviewed = 'n', isei_reviewed='n') # set all instances to not reviewed as well
                     #todo work on message to principal
-                    principal = Teacher.objects.get(user__groups__name='principal', school=ceu_report.teacher.school) # get the principal of this teacher
+                    #principal = Teacher.objects.get(user__groups__name='principal', school=ceu_report.teacher.school) # get the principal of this teacher
                     #if principal: #to avoid an error message just in case principal is not set
                     #    principal_email = principal.user.email
                     #    email = EmailMessage(
@@ -118,11 +121,10 @@ def createCEU(request, recId):
                     return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id) # go back to CEUdashboard
 
         if request.POST.get('update_report'):  # update summary, stay on page
+            print("Update Report")
             report_form = CEUReportForm(request.POST, instance=ceu_report)
             if report_form.is_valid():
                 ceu_report = report_form.save()
-
-
 
     context = dict(ceu_instance=ceu_instance,  ceu_report=ceu_report,
                    instance_form=instance_form,  report_form=report_form, )
@@ -156,7 +158,7 @@ def updateCEUinstance(request, pk):
                 # ToDo Should I set isei_reviewed='n' here???
                 CEUInstance.objects.filter(id=pk).update(principal_reviewed='n', ) # principal reviewed set to no
                 #ToDo work on message to principal
-                #principal = Teacher.objects.get(user__groups__name='principal', school=ceuInstance.ceu_report.teacher.school)
+                #principal = Teacher.objects.get(user__groups__name='principal', school=ceuinstance.ceu_report.teacher.school)
                 #if principal: #if principal assigned sent email.
                 #    principal_email = principal.user.email
                 #    email = EmailMessage(
@@ -169,7 +171,7 @@ def updateCEUinstance(request, pk):
                 return redirect('myCEUdashboard', pk=ceu_instance.ceu_report.teacher.user.id)
 
     context = dict(ceu_instance = ceu_instance, form=form, resubmit= resubmit) #if resubmit=True the activity has been denied by ISEI and the report it belongs to accepted
-    return render(request, "teachercert/update_ceuInstance.html", context)
+    return render(request, "teachercert/update_ceuinstance.html", context)
 
 
 # delete CEUInstance (by id)
@@ -391,7 +393,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
     if request.method == 'POST':
         if request.POST.get('approveinst'):
             #todo if ceu_instance_notreviewed filtering can be simplified, isei_reviewed ='n' doesn't need to be here
-            CEUInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n', reviewed_at=Now())
+            CEUInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n', reviewed_at=Now(), principal_comment=None)
             this_activity = CEUInstance.objects.get(id=instID)
             # Todo work on the email messages
             #email = EmailMessage(
@@ -435,7 +437,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
-           CEUInstance.objects.filter(id=instID).update(isei_reviewed='a', approved_ceu=request.POST.get('approved_ceu'), reviewed_at=Now())
+           CEUInstance.objects.filter(id=instID).update(isei_reviewed='a', approved_ceu=request.POST.get('approved_ceu'), reviewed_at=Now(), isei_comment = None)
            #this_activity = CEUInstance.objects.get(id=instID)
            #email = EmailMessage(
            #    'ISEI Approval', "Your submission has been rejected by ISEI. Go to www.blablabla",
@@ -514,7 +516,7 @@ def approved_pdf(request):
         lines.append(a.teacher.first_name + " " + a.teacher.last_name+ ", " + a.school_year.name)
         lines.append("")
         for i in a.ceuinstance_set.all():
-            categ = i.ceu_type.get_ceu_category_display()
+            categ = i.ceu_category
             lines.append(categ + " " + str(i.date_completed))
             lines.append(i.description)
             lines.append(str(i.approved_ceu))
@@ -647,23 +649,23 @@ def de_archive_tcertificate(request, cID, certID):
 
 # principal's info page about teacher certification
 #Todo to be worked on
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['principal'])
-def principal_teachercert(request):
-
-    principal = request.user.teacher
-    teachers = Teacher.objects.filter(user__is_active=True, school= principal.school)
-    school_year = SchoolYear.objects.get(active_year=True)
-
-
-    tcertificates = TCertificate.objects.filter()
-    tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
-    tcertificates = tcertificates_filter.qs
-
-    context = dict(teachers=teachers, school_year=school_year,
-                   tcertificates=tcertificates, tcertificates_filter=tcertificates_filter)
-
-    return render(request, 'teachercert/principal_teachercert.html', context)
+#@login_required(login_url='login')
+#@allowed_users(allowed_roles=['principal'])
+#def principal_teachercert(request):
+    #
+    # principal = request.user.teacher
+    # teachers = Teacher.objects.filter(user__is_active=True, school= principal.school)
+    # school_year = SchoolYear.objects.get(active_year=True)
+    #
+    #
+    # tcertificates = TCertificate.objects.filter()
+    # tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
+    # tcertificates = tcertificates_filter.qs
+    #
+    # context = dict(teachers=teachers, school_year=school_year,
+    #                tcertificates=tcertificates, tcertificates_filter=tcertificates_filter)
+    #
+    # return render(request, 'teachercert/principal_teachercert.html', context)
 
 
 # isei's info page about teacher certification
@@ -690,6 +692,13 @@ def teachercert_application(request, pk):
 
     teacher = Teacher.objects.get(id=pk)
     application = TeacherCertificationApplication.objects.get(teacher=teacher)
+#When application is started reset the fields below to default. If not submitted, this changes will not be saved.
+
+    application.closed = False
+    application.billed = False
+    application.date = None
+    application.signature = None
+
     if not application:
         application = TeacherCertificationApplication(teacher = teacher)
 
