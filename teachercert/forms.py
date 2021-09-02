@@ -11,7 +11,7 @@ from teachercert.models import *
 
 
 
-class CEUreportForm(ModelForm):
+class CEUReportForm(ModelForm):
     class Meta:
         model = CEUReport
         fields = ('school_year', 'date_submitted', 'summary', 'principal_comment', 'isei_comment',)

@@ -5,70 +5,71 @@
 {% if ceu_report_approved or ceu_report_denied %}
 	<div class="row">
         {% if ceu_report_approved %}
-        <div class="col-sm">
-     Complete Reports:
-        <div class="card-body">
-            <table class="table table-sm table-light" style="font-size: 85%">
-              <thead class="table-light">
-                <th>Teacher</th><th>SchoolYear</th><th>Submitted</th><th>Approved</th><th></th>
-              </thead>
-              <tbody>
-                {% for p in ceu_report_approved%}
-                <tr>
-                    <td>{{p.teacher}} </td>
-                    <td>{{p.school_year}} </td>
-                    <td>{{ p.date_submitted }} </td>
-                    <td>{{ p.reviewed_at }} </td>
-                    <td>
-                         {% if p.isei_reviewed == 'n' %}
-                        <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
-                        </form>
-                        {% else %}
-                            {{ p.get_isei_reviewed_display }} by ISEI
-                        {% endif %}
-                    </td>
-                </tr>
+            <div class="col-sm">
+                Complete Reports:
+                <div class="card-body">
+                    <table class="table table-sm table-light" style="font-size: 85%">
+                    <thead class="table-light">
+                        <th>Teacher</th><th>SchoolYear</th><th>Submitted</th><th>Approved</th><th></th>
+                    </thead>
+                    <tbody>
+                        {% for p in ceu_report_approved%}
+                            <tr>
+                                <td>{{p.teacher}}</td>
+                                <td>{{p.school_year}}</td>
+                                <td>{{ p.date_submitted }}</td>
+                                <td>{{ p.reviewed_at }}</td>
+                                <td>
+                                 {% if p.isei_reviewed == 'n' %}
+                                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+                                        {% csrf_token %}
+                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle">
+                                    </form>
+                                {% else %}
+                                    {{ p.get_isei_reviewed_display }} by ISEI
+                                {% endif %}
+                            </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        {% endif %}
 
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
-    </div>
-            {% endif %}
-    {% if ceu_report_denied %}
-    <div class="col-sm">
-        More information needed:
-        <div class="card-body">
-            <table class="table table-sm table-light" style="font-size: 85%">
-              <thead class="table-light">
-                <th>Teacher</th><th>SchoolYear</th>
-                <th>Denied</th><th>Cancel</th>
-              </thead>
-              <tbody>
-                {% for p in ceu_report_denied%}
-                <tr>
-                    <td> {{p.teacher}} </span> </td>
-                    <td> {{p.school_year}} </span></td>
-                    <td> {{ p.reviewed_at }} </span></td>
-                    <td>
-                        <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
-                        </form>
-                    </td>
-                </tr>
-
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
-    </div>
+        {% if ceu_report_denied %}
+            <div class="col-sm">
+                More information needed:
+                <div class="card-body">
+                    <table class="table table-sm table-light" style="font-size: 85%">
+                      <thead class="table-light">
+                          <tr>
+                            <th>Teacher</th><th>SchoolYear</th><th>Denied</th><th>Cancel</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                        {% for p in ceu_report_denied%}
+                            <tr>
+                                <td> {{p.teacher}} </td>
+                                <td> {{p.school_year}} </td>
+                                <td> {{ p.reviewed_at }} </td>
+                                <td>
+                                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+                                        {% csrf_token %}
+                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                </div>
+             </div>
         {% endif %}
     </div>
-
 {% endif %}
+
+
 <div class="row">
     <div class="col-sm">
     {% if ceu_report_notreviewed %}
@@ -77,150 +78,172 @@
             {% for p in ceu_report_notreviewed %}
             <table class="table table-sm table-light">
                 <thead class="table-dark">
-                <tr>
-                    <td>{{p.teacher}} </td>
-                    <td>{{p.school_year}}</td>
-                    <td> Date Created: {{ p.created_at }}</td>
-                    <td>Date Submitted: {{ p.date_submitted }}</td>
-                </tr>
-                    </thead>
+                    <tr>
+                        <td>{{p.teacher}} </td>
+                        <td>{{p.school_year}}</td>
+                        <td> Date Created: {{ p.created_at }}</td>
+                        <td>Date Submitted: {{ p.date_submitted }}</td>
+                    </tr>
+                </thead>
                 <tbody>
+
                     {% if p.academicclass_set.all %}
                     <tr>
                         <table class="table table-sm table-light">
-                            <tr>
-                                <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th>
-                            </tr>
-                            {% for c in p.academicclass_set.all %}
-                            <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{c.date_completed}}</td>
-                                 {% if c.transcript_received %} <td> Received </td>
-                                 {% elif c.transcript_requested %} <td> Requested </td>
-                                 {% else %} <td> Not requested </td>
-                                 {% endif %}
-                             </tr>
-                            {% endfor %}
+                            <thead>
+                                <tr>
+                                    <th> University</th><th>Class Name</th><th>Date Completed</th><th>Transcript status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in p.academicclass_set.all %}
+                                    <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{c.date_completed}}</td>
+                                         {% if c.transcript_received %} <td> Received </td>
+                                         {% elif c.transcript_requested %} <td> Requested </td>
+                                         {% else %} <td> Not requested </td>
+                                         {% endif %}
+                                     </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </tr>
                     {% endif %}
-                <tr>
-                  <td colspan="4">
-                    <table class="table mb-0 table-light">
-                     <thead class="table-light">
-                        <th>Date Completed</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>CEUs</th>
-                        <th>Evidence & Supporting Documentation</th>
-                      </thead>
-                      {% for i in p.ceuInstance_set.all %}
-                        <tr>
-                            <td>{{i.date_completed}}</td>
-                            <td>{{ i.ceu_type }}</td>
-                            <td>{{i.description}} </td>
-                            <td>{{ i.suggested_ceu }}</td>
-                            <td>{% if i.evidence %}
-                                    {{ i.evidence }}
-                                {% endif %}
-                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
-                            </td>
-                        </tr>
-                      {% endfor %}
-                    </table>
-                  </td>
-                </tr>
+
+                    <tr>
+                      <td colspan="4">
+                        <table class="table mb-0 table-light">
+                         <thead class="table-light">
+                            <th>Date Completed</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>CEUs</th>
+                            <th>Evidence & Supporting Documentation</th>
+                          </thead>
+                             <tbody>
+                                  {% for i in p.ceuInstance_set.all %}
+                                    <tr>
+                                        <td>{{i.date_completed}}</td>
+                                        <td>{{ i.ceu_type }}</td>
+                                        <td>{{i.description}} </td>
+                                        <td>{{ i.suggested_ceu }}</td>
+                                        <td>{% if i.evidence %}
+                                                {{ i.evidence }}
+                                            {% endif %}
+                                            <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                        </td>
+                                    </tr>
+                                  {% endfor %}
+                             </tbody>
+                        </table>
+                      </td>
+                    </tr>
+
                     <tr><td colspan="4"> <b>Summary:</b> &nbsp; {{ p.summary}}</td></tr>
-                 <td>
-                 {% if p.principal_comment %}
-                     <p><b> Previous denial comment: </b>
-                         {{p.principal_comment }}</p>
-                 {% endif %}
-                 <br>
-                        <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+
+                    <tr>
+                        <td>
+                         {% if p.principal_comment %}
+                             <p><b> Previous denial comment: </b>
+                                 {{p.principal_comment }}</p>
+                         {% endif %}
+                         <br>
+                                <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Report Complete" name = "approved" align="right" >
+                                    <br>
+                                    <span style="font-size: 85%; color: red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.</span>
+                                    <p><span style="font-size: 85%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</span>
+                                    </p>
+                                </form>
+                         </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4">
+                            <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+                                {% csrf_token %}
+                                <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control" required="True">
+                                <input  class = "btn btn-sm btn-danger" type="submit" value="Additional Information Needed" name = "denied" >
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    {% if ceu_instance_notreviewed %}
+        <div class="col-sm">
+            <div class="card-body">
+                <b> Resubmitted CEU activities </b>
+                <table class="table table-sm table-light">
+                  <tbody>
+                  {% for i in ceu_instance_notreviewed %}
+                    <tr>
+                        <td>{{i.ceu_report.teacher}} </td><td>{{i.ceu_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="4">
+                        <table class="table mb-0 table-hover">
+                         <thead class="table-light">
+                            <th>Date Completed</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>CEUs</th>
+                            <th>Supporting Documentation</th>
+                          </thead>
+                          <tbody>
+                            <tr>
+                                <td>{{i.date_completed}}</td>
+                                <td>{{ i.ceu_type }}</td>
+                                <td>{{i.description}} </td>
+                                <td>{{ i.suggested_ceu }}</td>
+                                <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+
+                      <tr>
+                        <td>
+
+                      <span style = "color:red"> ISEI Comment:</span>  {{ i.isei_comment }} <br>
+                      {% if i.principal_comment %}<span style = "color:red"> Principal Comment:</span>  {{ i.principal_comment }}{% endif %}
+                        <form action="{% url 'principal_ceu_approval' i.ceu_report.id i.id %}" method="POST">
                             {% csrf_token %}
-                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Report Complete" name = "approved" align="right" >
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approveinst" align="right" >
                            <br>
-                            <span style="font-size: 85%; color: red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
-                            </span>
-                            <p><span style="font-size: 85%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</font>
+                            <span style="font-size: 85%" color="red"> *Before approval please ensure that supporting documentation has been submitted.</span>
+                            <p><span style="font-size=85%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</span>
                             </p>
                         </form>
-                 </td>
-                    <tr><td colspan="4">
-                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                        <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control" required="True">
-                            <input  class = "btn btn-sm btn-danger" type="submit" value="Additional Information Needed" name = "denied" >
-                        </form>
-                    </td></tr>
 
-                    <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+                     </td></tr>
 
-                {% endfor %}
 
-              </tbody>
-            </table>
+                      <tr><td colspan="4">
+                            <form action="{% url 'principal_ceu_approval' i.ceu_report.id i.id %}" method="POST">
+                                    {% csrf_token %}
+                                <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control">
+                                <input  class = "btn btn-sm btn-danger" type="submit" value="More information needed" name = "denyinst" >
+                            </form>
+                      </td></tr>
+
+                      <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
         </div>
     {% endif %}
 
-
-{% if ceu_instance_notreviewed %}
-    <div class="col-sm">
-        <div class="card-body">
-            <b> Resubmitted CEU activities </b>
-            <table class="table table-sm table-light">
-              <tbody>
-              {% for i in ceu_instance_notreviewed %}
-                <tr>
-                    <td>{{i.ceu_report.teacher}} </td><td>{{i.ceu_report.school_year}}</td><td>Date Submitted: {{ i.date_resubmitted }}</td>
-                </tr>
-                <tr>
-                  <td colspan="4">
-                    <table class="table mb-0 table-hover">
-                     <thead class="table-light">
-                        <th>Date Completed</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>CEUs</th>
-                        <th>Supporting Documentation</th>
-                      </thead>
-                      <tbody>
-                        <tr>
-                            <td>{{i.date_completed}}</td>
-                            <td>{{ i.ceu_type }}</td>
-                            <td>{{i.description}} </td>
-                            <td>{{ i.suggested_ceu }}</td>
-                            <td><a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                <tr><td>
-                  <span style = "color:red"> ISEI Comment:</span>  {{ i.isei_comment }} <br>
-                  {% if i.principal_comment %}<span style = "color:red"> Principal Comment:</span>  {{ i.principal_comment }}{% endif %}
-                    <form action="{% url 'principal_ceu_approval' i.ceu_report.id i.id %}" method="POST">
-                        {% csrf_token %}
-                        <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve" name = "approveinst" align="right" >
-                       <br>
-                        <span style="font-size: 85%" color="red"> *Before approval please ensure that supporting documentation has been submitted.
-                        <p><span style="font-size=85%">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</span>
-                        </p>
-                    </form>
-                  </td></tr>
-                    <tr><td colspan="4">
-                    <form action="{% url 'principal_ceu_approval' i.ceu_report.id i.id %}" method="POST">
-                            {% csrf_token %}
-                        <input type="text" name="principal_comment" placeholder="Please explain what information is missing." class="form-control">
-                            <input  class = "btn btn-sm btn-danger" type="submit" value="More information needed" name = "denyinst" >
-                        </form>
-                    </td></tr>
-                    <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
     </div>
-    {% endif %}
-
-    </div>
-    </div>
+</div>
 
 {% endblock  %}

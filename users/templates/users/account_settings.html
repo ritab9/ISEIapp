@@ -46,11 +46,12 @@
     <div class="row">
     <div class = "col">
         {% if application_submitted %}
-            <!-- <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'teachercert_application' teacher.id last_application_id %}">ISEI Renewal Teacher Certification Application</a> -->
+            <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">Renewal Teacher Certification Application</a>
+            <p> *Before reapplying for Teacher Certification please ensure that ALL the information on this page is accurate and up to date, and that the renewal requirements have been met. (See Certification page) </p>
         {% else %}
             {% if address.address_1 %}
                 <p><a class="btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">ISEI Initial Teacher Certification Application</a></p>
-                <p> *Before applying / reapplying for an ISEI Teacher Certification please ensure that ALL the information on this page is accurate and up to date. </p>
+                <p> *Before applying ISEI Teacher Certification please ensure that ALL the information on this page is accurate and up to date. </p>
             {% else %}
                 <button class="btn btn-sm btn-ISEIblue4" %}" disabled >ISEI Initial Teacher Certification Application</button><br>
                 <span style = "color:red"> *Please fill out the information below, including Teacher Info and Address</span>

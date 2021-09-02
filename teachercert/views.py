@@ -86,7 +86,7 @@ def createCEU(request, recId):
 
     new_instance = CEUInstance (ceu_report=ceu_report)
     instance_form = CEUInstanceForm(instance=new_instance)
-    report_form = CEUreportForm(instance = ceu_report) #form for editing current report (summary and submission)
+    report_form = CEUReportForm(instance = ceu_report) #form for editing current report (summary and submission)
 
     if request.method == 'POST':
         if request.POST.get('add_activity'): #add activity and stay on page
@@ -97,7 +97,7 @@ def createCEU(request, recId):
 
 
         if request.POST.get('submit_report'): #submit report - go to CEUdashboard
-            report_form = CEUreportForm(request.POST, instance=ceu_report)
+            report_form = CEUReportForm(request.POST, instance=ceu_report)
             if report_form.is_valid():
                 ceu_report = report_form.save() #save report submission
                 if ceu_report.date_submitted: # if the date is entered the report is submitted to the principal for revision
@@ -118,7 +118,7 @@ def createCEU(request, recId):
                     return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id) # go back to CEUdashboard
 
         if request.POST.get('update_report'):  # update summary, stay on page
-            report_form = CEUreportForm(request.POST, instance=ceu_report)
+            report_form = CEUReportForm(request.POST, instance=ceu_report)
             if report_form.is_valid():
                 ceu_report = report_form.save()
 
@@ -336,7 +336,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
     principal = request.user.teacher
     teachers = Teacher.objects.filter(school = principal.school, user__is_active= True)
 
-    ceu_report = CEUreport.objects.filter(teacher__school=principal.school) #all the reports from this teacher's school
+    ceu_report = CEUReport.objects.filter(teacher__school=principal.school) #all the reports from this teacher's school
     ceu_report_notreviewed = ceu_report.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at') #submitted reports to the principal, not yet reviewed
 
     #ceu_reports approved or denied within a year
@@ -351,8 +351,8 @@ def principal_ceu_approval(request, recID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('approved'): #update report and instances as approved by the principal
-            ceu_report = CEUreport.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None, reviewed_at=Now())
-            this_report = CEUreport.objects.get(id=recID) #the above is a query set and we need just the object
+            ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None, reviewed_at=Now())
+            this_report = CEUReport.objects.get(id=recID) #the above is a query set and we need just the object
             CEUInstance.objects.filter(ceu_report = this_report).update(principal_reviewed='a', reviewed_at=Now())
             #email the principal and ISEI about the approval
             #Todo workon the email messages
