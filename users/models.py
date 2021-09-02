@@ -130,8 +130,8 @@ class SchoolOfEmployment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=50, unique=True, blank=False, null=False)
     address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
-    start_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
-    end_date = models.DateField(null=False, blank=False, help_text="mm/dd/yyyy")
+    start_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy")
+    end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy or to date")
     courses = models.CharField(verbose_name="Courses taught", max_length=100, default="", )
     def __str__(self):
         return self.name

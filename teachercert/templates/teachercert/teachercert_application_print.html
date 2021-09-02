@@ -29,8 +29,8 @@ Not to be used independently
                 <div class="col card card-body">
                     <p><b>Date of birth:</b> {{ teacher.date_of_birth }}</p>
                     <p><b>ISEI Teacher ID:</b> {{ teacher.iseiteacherid|slice:'7:11'}}</p>
-                    <p><b>Email address:</b> {{ user.email }}</p>
-                    <p><b>Phone number:</b> {{ teacher.phone_number }}</b></p>
+                    <p><b>Email address:</b> {{ teacher.user.email }}</p>
+                    <p><b>Phone number:</b> {{ teacher.phone_number }} </p>
                 </div>
 
     <!-- application info -->

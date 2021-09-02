@@ -9,10 +9,12 @@
         <form action="" method="post">
             {% csrf_token %}
              {{ application_form }}
-          <input type="submit" class ="btn btn-ISEIblue4" value="Submit">
+          <input type="submit" class ="btn btn-sm btn-ISEIblue4" value="Submit">
         </form>
+        <div class="col">
+            <a class ="btn btn-sm btn-ISEIblue4" href="{% url "manage_tcertificate" teacher.id %}">Add Certificate</a>
+        </div>
     </div>
-
     {% include 'teachercert/teachercert_application_print.html' %}
 
 {% endblock %}

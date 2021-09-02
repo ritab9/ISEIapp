@@ -199,15 +199,21 @@ def teacherdashboard(request, userID):
     else:
         tcertificates = None
 
+    basic = TeacherBasicRequirement.objects.filter(teacher=teacher)
+    basic_met = basic.filter(met=True)
+    basic_not_met = basic.filter(met=False)
+
     #ToDo think on how to deal with teachers whose certification is not valid anymore (expired in longer than a year)
     # and need to reapply
-    initial_app = initial_application(teacher)
+    #TODO get rid of initial and last app functions
+    #there will be only one app, so need to get rid of all this
+    #initial_app = initial_application(teacher)
     last_app = last_application(teacher)
 
     today =get_today()
 
     context = dict(teacher=teacher, tcertificates=tcertificates,
-                   today=today, initial_app = initial_app,
+                   today=today, basic_met = basic_met, basic_not_met = basic_not_met,
                    last_app=last_app)
     return render(request, 'users/teacher_dashboard.html', context)
 

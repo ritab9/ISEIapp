@@ -57,7 +57,7 @@ class SchoolOfEmploymentForm(ModelForm):
             'start_date': forms.DateInput(format='%m/%d/%Y',
                                              attrs={'placeholder': 'mm/dd/yyyy', 'input-formats': '%m/%d/%Y'}),
             'end_date': forms.DateInput(format='%m/%d/%Y',
-                                            attrs={'placeholder': 'mm/dd/yyyy', 'input-formats': '%m/%d/%Y'}),
+                                            attrs={'placeholder': 'mm/dd/yyyy or to date', 'input-formats': '%m/%d/%Y'}),
         }
 
 
@@ -70,9 +70,9 @@ class CollegeAttendedForm(ModelForm):
         exclude = ['teacher']
         widgets = {
             'start_date': forms.DateInput(format='%m/%d/%Y',
-                                             attrs={'placeholder': 'mm/dd/yyyy', 'input-formats': '%m/%d/%Y'}),
+                                             attrs={'placeholder': 'mm/dd/yyyy or yyyy', 'input-formats': '%m/%d/%Y'}),
             'end_date': forms.DateInput(format='%m/%d/%Y',
-                                            attrs={'placeholder': 'mm/dd/yyyy', 'input-formats': '%m/%d/%Y'}),
+                                            attrs={'placeholder': 'mm/dd/yyyy or yyyy', 'input-formats': '%m/%d/%Y'}),
             'transcript_received': forms.HiddenInput(),
         }
 

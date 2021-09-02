@@ -556,8 +556,11 @@ def approved_pdf2(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def manage_tcertificate(request, pk, certID=None):
+# pk is teacher.id
+
 
     teacher = Teacher.objects.get(id=pk)
+
     prev_certificates = TCertificate.objects.filter(Q(teacher=teacher), ~Q(id=certID))
     ceu_reports = None
     academic_class = None
@@ -602,7 +605,8 @@ def manage_tcertificate(request, pk, certID=None):
             if tendorsement_formset.is_valid(): #validate the endorsement info
                 tendorsement_formset.save()
                 #if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
-                    #return redirect('manage_tcertificate', pk = pk,  certID=tcertificate.id)
+                messages.success(request, 'Certificate was successfully saved!')
+                return redirect('manage_tcertificate', pk = pk,  certID=tcertificate.id)
                 #if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
                     #return redirect('manage_tcertificate',  pk =pk, certID=tcertificate.id )
 
@@ -771,7 +775,7 @@ def isei_manage_application(request, appID):
         application_form = TeacherCertificationApplicationISEIForm(request.POST, instance = application)
         if application_form.is_valid():
             application_form.save()
-            return redirect('isei_teacher_applications')
+            #return redirect('isei_teacher_applications')
 
 
     context = dict(application = application, application_form = application_form,

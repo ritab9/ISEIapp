@@ -46,7 +46,7 @@
                     <tr>
                         <td></td>
                         <td colspan="6"> {% if app.public_note %} Public note: {{ app.public_note }}<br> {% endif %}
-                             {% if app.isei_note %} Office use only note: {{ app.public_note }}<br> {% endif %}
+                             {% if app.isei_note %} Office use only note: {{ app.isei_note }}<br> {% endif %}
                         </td>
                     </tr>
                 {% endif %}
@@ -54,7 +54,7 @@
                     <tr>
                         <td></td>
                         <td colspan="6">
-                            <span style = "color: green"> Updated by teacher since last ISEI revision.</span>
+                            <div class="spanred"> Updated by teacher since last ISEI revision.</div>
                         </td>
                     </tr>
                 {% endif %}

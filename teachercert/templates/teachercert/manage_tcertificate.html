@@ -93,10 +93,21 @@
                 </div>
                 </div>
                 <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
+
+                {% for message in messages %}
+                    <p id="messages" style="color:blue">{{message}}</p>
+                {% endfor %}
+
             </form>
-                <div class = "row mt-3"><div class="col">
-                    <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
-                </div></div>
+                <div class = "row mt-3">
+                    <div class="col">
+                        <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
+                    </div>
+                    <div class="col">
+                         <a class ="btn btn-sm btn-ISEIblue4" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
+                    </div>
+                </div>
+
 
 <!-- Principal and teacher can only view certificate -->
             {% else %}

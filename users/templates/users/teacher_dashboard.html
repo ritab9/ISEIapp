@@ -15,22 +15,33 @@
         {% for c in tcertificates %}
         <div class = "card card-body mb-3">
   <!-- Certificate Info -->
+            <h6><b>{{ c.certification_type.name }}</b></h6>
+            {% if c.expired %} <span style="color:red">Expired</span> {% endif %}
+
             <div class="row">
                 <div class="col-sm">
-            <!-- certificate name and link + highlight expired certificates -->
-                    <h6><b>{{ c.certification_type.name }}</b></h6>
-                    {% if c.expired %} <span style="color:red">Expired</span> {% endif %}
-                </div>
-                 <div class="col col-sm">
-                    <h6> <b>Endorsements:</b></h6>
+                    <p> <b>Endorsements:</b></p>
                     <ul>{% for e in c.tendorsement_set.all %}
                         <li>{{ e }} </li>
                     {% endfor %} </ul>
                 </div>
                 <div class="col-sm"> <p><b>Valid:</b>
                     {{ c.issue_date }} - {% if c.renewal_date < today %}<span style="color:red">{{ c.renewal_date}}</span> {% else %} {{ c.renewal_date }}{% endif %}
-
                 </p></div>
+                <div class="col-sm">
+                {% if basic_met %}
+                    <b>Basic Requirements Met:</b>
+                    <ul>
+                        {% for r in basic_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if basic_not_met %}
+                    <b>Basic Requirements Not Met:</b>
+                    <ul>
+                        {% for r in basic_not_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
+                    </ul>
+                {% endif %}
+                </div>
             </div>
 
             <div class="row mb-3">
@@ -47,6 +58,7 @@
 <!-- CEU Reports with this certificate -->
                 <div class="col col-sm">
                 <h6><b>CEU Reports</b></h6>
+                {% if c.teacher.ceureport_set.all %}
                     <table class="table">
                         <tr><th>School Year</th><th>Status</th></tr>
 
@@ -75,14 +87,17 @@
                             {% endif %}
                         {% endfor %}
                     </table>
+                {% else %}
+                    No CEU Reports have been submitted yet for this certificate's renewal.
+                {% endif %}
                 </div>
 
     <!-- Academic classes with this certificate -->
-                {% if c.teacher.academicclass_set.all  %}
+
                     <div class="col col-sm">
                         <h6><b>Academic Courses Completed</b></h6>
-
-                    <table class="table table-sm">
+                    {% if c.teacher.academicclass_set.all  %}
+                        <table class="table table-sm">
                         <tr>
                             <th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th>
                         </tr>
@@ -103,9 +118,10 @@
                                 {% endif %}
                              {% endfor %}
                      </table>
-                </div>
-                {% endif %}
-
+                    {% else %}
+                        No Academic Courses have been submitted yet for this certificate's renewal.
+                    {% endif %}
+                    </div>
             </div>
         </div>
 
@@ -121,12 +137,14 @@
         <div class="row">
             <div class="col">
                 <p>Your Teacher Certification Application is being processed.</p>
-                <p> Date received: {{ last_app.date_received }} </p>
+                <p> Date submitted: {{ last_app.date }} </p>
                 <p>{% if last_app.isei_revision_date %}
                     ISEI revision date: {{ last_app.isei_revision_date }}
                     {% if last_app.isei_revision_date <= last_app.date  %}
                             <p style = "color: red"> Not reviewed by ISEI since your update. </p>
                     {% endif %}
+                    {% else %}
+                    Not reviewed yet.
                 {% endif %}</p>
 
                 {% if last_app.fee_paid %} <p> School billed. </p> {% endif %}
