@@ -121,7 +121,8 @@
                             <td>{% if i.evidence %}
                                     {{ i.evidence }}
                                 {% endif %}
-                                <a href="{% get_media_prefix %}{{ i.file }}">{{ i.file }}</td>
+                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                            </td>
                         </tr>
                       {% endfor %}
                     </table>

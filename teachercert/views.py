@@ -194,10 +194,11 @@ def myCEUdashboard(request, pk):
 
     ceu_report = CEUReport.objects.filter(teacher=teacher) #all reports of this teacher
 
-    #all instances run through the filter
+
     ceu_instance = CEUInstance.objects.filter(ceu_report__in=ceu_report)
-    instance_filter = CEUInstanceFilter(request.GET, queryset=ceu_instance)
-    ceu_instance = instance_filter.qs
+    # all instances run through the filter (Taking this out)
+    #instance_filter = CEUInstanceFilter(request.GET, queryset=ceu_instance)
+    #ceu_instance = instance_filter.qs
 
     #instances from denied reports are not filtered
     principal_denied_report = ceu_report.filter(Q(principal_reviewed='d'))
@@ -225,7 +226,8 @@ def myCEUdashboard(request, pk):
         user_not_teacher = False
     else:
         user_not_teacher = True
-    context = dict(teacher=teacher,user_not_teacher=user_not_teacher, instance_filter=instance_filter,
+    context = dict(teacher=teacher,user_not_teacher=user_not_teacher,
+                   #instance_filter=instance_filter,
                    new_school_year = new_school_year, active_report=active_report,
                    submitted_report=submitted_report,
                    principal_denied_report =principal_denied_report, isei_denied_report = isei_denied_report,

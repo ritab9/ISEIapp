@@ -182,7 +182,7 @@
     <div class="col-sm-2">
     <div class="dropdown">
       <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Add / Submit PDA
+        Add / Submit CEUs
       </button>
         <div class="dropdown-menu"  aria-labelledby="dropdownMenuButton">
              {% for ar in active_report %}
@@ -232,25 +232,27 @@
 
     <br>
 
-<!-- filter -->
+
+<!-- Filter  - Hiddedn because I don't think it will be very useful-->
+<!-- filter
     <div class="row">
         <div class="card card-body">
             <h6>Filter ISEI submitted activities:</h6>
             <form method="get">
-                {% if user_not_teacher %}
-                    {{ instance_filter.form.teacher.label_tag }} {{ instance_filter.form.teacher }}<br>
-                {% endif %}
-                {{ instance_filter.form.school_year.label_tag }} {{ instance_filter.form.school_year }}
-                {{ instance_filter.form.description.label_tag }} {{ instance_filter.form.description }}
-                {{ instance_filter.form.start_date.label_tag }} {{ instance_filter.form.start_date }}
-                {{ instance_filter.form.end_date.label_tag }} {{ instance_filter.form.end_date}}
-                {{ instance_filter.form.approved.label_tag }} {{ instance_filter.form.approved }}&nbsp; &nbsp <br><br>
+                { % if user_not_teacher %}
+                    { { instance_filter.form.teacher.label_tag }} { { instance_filter.form.teacher }}<br>
+                { % endif %}
+                { { instance_filter.form.school_year.label_tag }} { { instance_filter.form.school_year }}
+                { { instance_filter.form.description.label_tag }} { { instance_filter.form.description }}
+                { { instance_filter.form.start_date.label_tag }} { { instance_filter.form.start_date }}
+                { { instance_filter.form.end_date.label_tag }} { { instance_filter.form.end_date}}
+                { { instance_filter.form.approved.label_tag }} { { instance_filter.form.approved }}&nbsp; &nbsp <br><br>
                 <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-                <a href="{%  url 'myCEUdashboard' teacher.user.id %}">Clear all filters</a>
+                <a href="{ %  url 'myCEUdashboard' teacher.user.id %}">Clear all filters</a>
             </form>
         </div>
     </div>
-
+-->
 
     <!-- table for ISEI submitted reports + independent instances-->
 
