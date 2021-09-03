@@ -697,7 +697,11 @@ def teachercert_application(request, pk):
 # pk - teacher ID
 
     teacher = Teacher.objects.get(id=pk)
-    application = TeacherCertificationApplication.objects.get(teacher=teacher)
+    if TeacherCertificationApplication.objects.filter(teacher=teacher):
+        application = TeacherCertificationApplication.objects.get(teacher=teacher)
+    else:
+        application = TeacherCertificationApplication(teacher=teacher)
+
 #When application is started reset the fields below to default. If not submitted, this changes will not be saved.
 
     application.closed = False

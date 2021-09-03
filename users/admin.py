@@ -79,5 +79,12 @@ class Teacher(admin.ModelAdmin):
     list_editable = ('school', )
     list_display_links = ('name',)
 
+@admin.register(CollegeAttended)
+class CollegeAttended(admin.ModelAdmin):
+    model = CollegeAttended
+    can_delete=True
+    list_display = ('teacher','name', 'level','degree', 'transcript_requested', 'transcript_received', 'transcript_processed')
+    list_editable = ('transcript_requested', 'transcript_received', 'transcript_processed')
+    list_display_links = ('name',)
 
 
