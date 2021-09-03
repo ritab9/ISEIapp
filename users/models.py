@@ -128,7 +128,7 @@ class CollegeAttended(models.Model):
 
 class SchoolOfEmployment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
-    name = models.CharField(max_length=50, unique=True, blank=False, null=False)
+    name = models.CharField(max_length=50, unique=False, blank=False, null=False)
     address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
     start_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy")
     end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy or to date")
