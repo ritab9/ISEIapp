@@ -41,7 +41,7 @@
                 {% if basic_met %}
                     <b>Basic Requirements Met:</b>
                     <ul>
-                        {% for r in basic_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
+                        {% for r in basic_met %} <li>{{ r.basic_requirement }} ({{ r.course }})</li> {% endfor %}
                     </ul>
                 {% endif %}
                 {% if basic_not_met %}

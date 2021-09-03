@@ -309,6 +309,7 @@ class TeacherBasicRequirement(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete= models.CASCADE, blank=False, null=False)
     basic_requirement = models.ForeignKey(Requirement, on_delete=models.PROTECT, blank=False, null=False)
     met = models.BooleanField(default=False)
+    course = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         unique_together = ('teacher', 'basic_requirement')

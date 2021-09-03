@@ -556,14 +556,20 @@ def approved_pdf2(request):
 # TEACHER CERTIFICATE FUNCTIONS
 
 
+def load_renewal(request):
+    certification_type_id = request.GET.get('certification_type_id')
+    renewal = Renewal.objects.filter(certification_type__id = certification_type_id)
+    return render(request, 'teachercert/ajax_renewal_list.html', {'renewal': renewal})
+
+
 #ISEI only views
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def manage_tcertificate(request, pk, certID=None):
 # pk is teacher.id
 
-
     teacher = Teacher.objects.get(id=pk)
+
 
     prev_certificates = TCertificate.objects.filter(Q(teacher=teacher), ~Q(id=certID))
     ceu_reports = None
@@ -605,14 +611,14 @@ def manage_tcertificate(request, pk, certID=None):
             tendorsement_formset = TEndorsementFormSet(request.POST, instance = tcertificate)
             tbasic_requirement_formset = TeacherBasicRequirementFormSet(request.POST)
             tbasic_requirement_formset.save()
-
             if tendorsement_formset.is_valid(): #validate the endorsement info
                 tendorsement_formset.save()
-                #if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
-                messages.success(request, 'Certificate was successfully saved!')
+
+            if request.POST.get('add_endorsement'): #if more rows are needed for endorsements reload page
                 return redirect('manage_tcertificate', pk = pk,  certID=tcertificate.id)
-                #if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
-                    #return redirect('manage_tcertificate',  pk =pk, certID=tcertificate.id )
+            if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
+                messages.success(request, 'Certificate was successfully saved!')
+                return redirect('manage_tcertificate',  pk =pk, certID=tcertificate.id)
 
     #certID is used in the template to reload page after previous certificates are archived
     context = dict( pk = pk, is_staff= True, tcertificate_form = tcertificate_form,

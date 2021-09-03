@@ -5,7 +5,6 @@
 {% block content %}
 
     <div class="row">
-        <div class="col-12">
         <div class="card card-body">
 
             {% if is_staff %}
@@ -14,99 +13,110 @@
             <form action="." method="POST" >
                 {% csrf_token %}
                 <div class="row">
-                <div class = "col-8">
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
-                                {{ tcertificate_form.certification_type|as_crispy_field }}
-                            </div> <br>
-                            <div class="row">
-                                {{ tcertificate_form.issue_date|as_crispy_field }} &nbsp;
-                                {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
-                                Archived: {{ tcertificate_form.archived }}
-                            </div> <br>
-                                {{ tcertificate_form.renewal_requirements|as_crispy_field }}
-                        </div>
-                        <div class="col-4">
+                    <div class = "col">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="row mb-3">
+                                    {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
+                                    {{ tcertificate_form.certification_type|as_crispy_field }}
+                                </div>
 
-                            <table>
-                                <thead>
+                                <div class="row ">
+                                    {{ tcertificate_form.issue_date|as_crispy_field }} &nbsp;
+                                    {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
+                                    Archived: {{ tcertificate_form.archived }}
+                                </div>
+                            </div>
+                            <div class = "col-3">
+                                <button type="button" class="btn btn-sm btn-ISEIblue1" id="show_requirements" value="show">
+                                        <i class="fas fa-info"></i> <span class="span80">Renewal requirements</span>
+                                </button>
+                                <div class = "row col span80" id="renewal_requirement"> </div>
+                            </div>
+                            <div class="col-3">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>Endorsement</td>
+                                            <td>Delete</td>
+                                        </tr>
+                                    </thead>
+
+                                  <tbody>
+                                    {{ tendorsement_formset.management_data }}
+                                    {{ tendorsement_formset.management_form }}
+                                    {% for form in tendorsement_formset %}
+                                      {{ form.non_field_errors }}
                                     <tr>
-                                        <td>Endorsement</td>
-                                        <td>Delete</td>
+                                        <td>{{ form.endorsement}}<span style ='color:red'>{{ form.basic_requirement.errors }}</span></td>
+                                        <td>{{ form.DELETE }}<span style ='color:red'>{{ form.met.errors }}</span></td>
                                     </tr>
-                                </thead>
-
-                              <tbody>
-                                {{ tendorsement_formset.management_data }}
-                                {{ tendorsement_formset.management_form }}
-                                {% for form in tendorsement_formset %}
-                                  {{ form.non_field_errors }}
-                                <tr>
-                                    <td>{{ form.endorsement}}<span style ='color:red'>{{ form.basic_requirement.errors }}</span></td>
-                                    <td>{{ form.DELETE }}<span style ='color:red'>{{ form.met.errors }}</span></td>
-                                </tr>
-                                  {% for hidden in form.hidden_fields %}
-                                     {{ hidden }}
-                                  {% endfor %}
-                                {% endfor %}
-                              </tbody>
-                    </table>
-
-
-
-                            <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
+                                      {% for hidden in form.hidden_fields %}
+                                         {{ hidden }}
+                                      {% endfor %}
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                                <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
+                            </div>
+                        </div>
+                        <div class = "row" >
+                            <div class="col">
+                                    {{ tcertificate_form.renewal_requirements|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                {{ tcertificate_form.public_note|as_crispy_field }}</div>
+                            <div class="col">
+                                {{ tcertificate_form.office_note|as_crispy_field }}</div>
                         </div>
                     </div>
-                    <div class="row">
-                    <div class="col">
-                        {{ tcertificate_form.public_note|as_crispy_field }}</div>
-                    <div class="col">
-                        {{ tcertificate_form.office_note|as_crispy_field }}</div>
                 </div>
-                </div>
-                <div class="col-4">
-                    <table>
-                        <thead>
+                <div class="row mt-3">
+                    <div class="col">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Basic Requirement</td>
+                                    <td class="span80">Met</td>
+                                    <td>Course Name, College </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{ tbasic_requirement_formset.management_data }}
+                            {{ tbasic_requirement_formset.management_form }}
+                            {% for form in tbasic_requirement_formset %}
+                              {{ form.non_field_errors }}
                             <tr>
-                                <td>Basic Requirement</td>
-                                <td>Met</td>
+                                <td>{{ form.basic_requirement}}<span style ='color:red'>{{ form.basic_requirement.errors }}</span></td>
+                                <td>{{ form.met }}<span style ='color:red'>{{ form.met.errors }}</span></td>
+                                <td>{{ form.course }}</td>
                             </tr>
-                        </thead>
+                              {% for hidden in form.hidden_fields %}
+                                 {{ hidden }}
+                              {% endfor %}
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                    </div>
 
-                      <tbody>
-                        {{ tbasic_requirement_formset.management_data }}
-                        {{ tbasic_requirement_formset.management_form }}
-                        {% for form in tbasic_requirement_formset %}
-                          {{ form.non_field_errors }}
-                        <tr>
-                            <td>{{ form.basic_requirement}}<span style ='color:red'>{{ form.basic_requirement.errors }}</span></td>
-                            <td>{{ form.met }}<span style ='color:red'>{{ form.met.errors }}</span></td>
-                        </tr>
-                          {% for hidden in form.hidden_fields %}
-                             {{ hidden }}
-                          {% endfor %}
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                    <div class = "col">
+                        <div class ="row mt-5 ml-5">
+                           <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
+                            {% for message in messages %}
+                                <p id="messages" style="color:blue">{{message}}</p>
+                            {% endfor %}
+                        </div>
+                        <div class ="row mt-3 ml-5">
+                            <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
+                        </div>
+                        <div class ="row mt-5 ml-5">
+                            <a class ="btn btn-sm btn-ISEIblue4" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
+                        </div>
+                    </div>
                 </div>
-                </div>
-                <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
-
-                {% for message in messages %}
-                    <p id="messages" style="color:blue">{{message}}</p>
-                {% endfor %}
-
             </form>
-                <div class = "row mt-3">
-                    <div class="col">
-                        <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
-                    </div>
-                    <div class="col">
-                         <a class ="btn btn-sm btn-ISEIblue4" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
-                    </div>
-                </div>
 
 
 <!-- Principal and teacher can only view certificate -->
@@ -126,9 +136,32 @@
                 {% endif %}
             {% endif %}
         </div>
-        </div>
+</div>
 
-        <div class="col-4">
+<div class = "row">
+    {%  if not tcertificate.archived %}
+    <div class="col card card-body">
+        <h6> Academic Classes: </h6>
+        {% if academic_class %}
+            {% include 'teachercert/academic_classes_table.html' %}
+        {% else %}
+            <p>No Academic Classes have been submitted yet for this Certification</p>
+        {% endif %}
+    </div>
+
+    <div class="col card card-body">
+        <h6> Reports: </h6>
+            {% if ceu_reports %}
+                {% include 'teachercert/reports_table.html' %}
+            {% else %}
+                <p>No Professional Development Reports have been submitted yet for this Certification</p>
+            {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+
+<div class="col-4">
             <div class="card-body">
                 <p>Previous/Other certificates:</p>
                 {% if prev_certificates %}
@@ -152,25 +185,29 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-{%  if not tcertificate.archived %}
-    <br>
-<h6> Academic Classes: </h6>
-    {% if academic_class %}
-        {% include 'teachercert/academic_classes_table.html' %}
-    {% else %}
-        <p>No Academic Classes have been submitted yet for this Certification</p>
-    {% endif %}
-    <br>
-<h6> Reports: </h6>
-    {% if ceu_reports %}
-        {% include 'teachercert/reports_table.html' %}
-    {% else %}
-        <p>No Professional Development Reports have been submitted yet for this Certification</p>
-    {% endif %}
-{% endif %}
 <script type='text/javascript'>
+/*     Ajax CEU Type Load based on Category */
+        $("#show_requirements").click(function () {
+            if ($(this).attr('value') == "show") {
+                var url = "{% url 'ajax_load_renewal' %}";
+                var cert_type_id = $("#id_certification_type").val();  // get the selected certification Type ID from the HTML input
+                $.ajax({
+                      url: url, // set the url of the request (= localhost:8000/hr/ajax/load_renewal/)
+                      data: {
+                            'certification_type_id': cert_type_id       // add the category id to the GET parameters
+                      },
+                      success: function (data) {   // `data` is the return of the `load_CEUtyples` view function
+                          $("#renewal_requirement").html(data);  // replace the contents of the ceu_type input with the data that came from the server
+                      }
+                  });
+                $(this).attr('value',"hide");
+            }
+            else {
+                $(this).attr('value', "show");
+                $("#renewal_requirement").html("")
+            };
+        });
 
 </script>
 
