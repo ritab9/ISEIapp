@@ -23,21 +23,24 @@ from teachercert.myfunctions import initial_application, last_application
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def register_teacher(request):
+    school = School.objects.all().order_by("name")
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
             new_user = form.save()
             joined_at = request.POST['joined_at']
+            school_id = request.POST['school_dropdown']
             group = Group.objects.get(name='teacher')
             new_user.groups.add(group)
-            Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, joined_at=joined_at )
+            school=School.objects.get(id=school_id)
+            Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, school = school, joined_at=joined_at )
             username = form.cleaned_data.get('username')
             # flash message (only appears once)
             messages.success(request, 'Account was created for ' + username)
             return redirect('account_settings', userID = new_user.id)
 
-    context = {'form': form}
+    context = {'form': form, 'school':school}
     return render(request, 'users/register_teacher.html', context)
 
 

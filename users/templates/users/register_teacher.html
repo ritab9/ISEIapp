@@ -19,6 +19,17 @@
 
 					<form method="POST" action="">
 						{% csrf_token %}
+                        <div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-user"></i></span>
+							</div>
+                            <select name="school_dropdown">
+                                <option value="none">------</option>
+                                {% for s in school %}
+                                    <option value="{{ s.id }}">{{s}}</option>
+                                {% endfor %}
+                            </select>
+						</div>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="fas fa-user"></i></span>
