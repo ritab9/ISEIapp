@@ -1262,8 +1262,8 @@ input[type=button].btn-block {
   .card-columns {
     column-count: 3;
     column-gap: 1.25rem;
-    orphans: 1;
-    widows: 1;
+    /*orphans: 1;
+    widows: 1;*/
   }
   .card-columns .card {
     display: inline-block;
