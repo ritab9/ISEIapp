@@ -22,10 +22,10 @@ class SchoolYear(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        super(SchoolYear, self).save(*args, **kwargs)
-        if self.active_year:
-            all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
+    #def save(self, *args, **kwargs):
+    #    super(SchoolYear, self).save(*args, **kwargs)
+    #    if self.active_year:
+    #        all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
 class CEUCategory(models.Model):
     name = models.CharField(max_length=25, null = False, blank=False)
@@ -99,8 +99,10 @@ class CEUReport(models.Model):
                 travel_ceu = travel_ceu + i.suggested_ceu
         return round(travel_ceu,2)
 
+
     def __str__(self):
         return self.teacher.name() + "," + self.school_year.name + " CEU Report"
+
 
 
 
@@ -177,6 +179,9 @@ class AcademicClass(models.Model):
     transcript_received = models.BooleanField(default=False)
     credits = models.PositiveSmallIntegerField(blank= False, null=False)
 
+    class Meta:
+        ordering = ('-date_completed',)
+
     def __str__(self):
         return self.name
 
@@ -221,12 +226,18 @@ class Renewal(models.Model):
 class Endorsement(models.Model):
     name = models.CharField(max_length=30)
     description = models.CharField(max_length=600, null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
     def __str__(self):
         return self.name
 
 class ElementaryMethod(models.Model):
     name = models.CharField(max_length=30)
     required = models.BooleanField(default=True)
+    class Meta:
+        ordering = ('name',)
     def __str__(self):
         return self.name
 
@@ -248,6 +259,7 @@ class TCertificate(models.Model):
 
     class Meta:
         unique_together = ['teacher','certification_type', 'issue_date' ]
+        ordering = ('renewal_date',)
 
     def __str__(self):
         return self.teacher.name() + "-" + self.certification_type.name
@@ -299,11 +311,15 @@ class TeacherCertificationApplication(models.Model):
     isei_revision_date = models.DateField(blank = True, null = True)
     closed = models.BooleanField(default=False, blank=False, null=False)
 
+    class Meta:
+        ordering = ('date',)
+
     def principal_letter_filename(self):
         return os.path.basename(self.principal_letter_file.name)
 
     def resume_filename(self):
         return os.path.basename(self.resume_file.name)
+
 
 class TeacherBasicRequirement(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete= models.CASCADE, blank=False, null=False)

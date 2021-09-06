@@ -23,39 +23,51 @@
             <div class="col">
                 <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a>
             </div>
-        <!-- Certificate Info -->
+<!-- Certificate Info -->
             <h6><b>{{ c.certification_type.name }}</b></h6>
             {% if c.expired %} <span style="color:red">Expired</span> {% endif %}
 
-            <div class="row">
-                <div class="col-sm">
-                    <p> <b>Endorsements:</b></p>
+            <div class="row mb-2">
+                <div class="col-sm-3">
+                    <h6>Endorsements:</h6>
                     <ul>{% for e in c.tendorsement_set.all %}
                         <li>{{ e }} </li>
                     {% endfor %} </ul>
-                </div>
-                <div class="col-sm"> <p><b>Valid:</b>
+                    <p><h6>Valid:</h6>
                     {{ c.issue_date }} - {% if c.renewal_date < today %}<span style="color:red">{{ c.renewal_date}}</span> {% else %} {{ c.renewal_date }}{% endif %}
                 </p></div>
-                <div class="col-sm">
+
+  <!-- Basic requirments met and not met -->
                 {% if basic_met %}
-                    <b>Basic Requirements Met:</b>
-                    <ul>
-                        {% for r in basic_met %} <li>{{ r.basic_requirement }} ({{ r.course }})</li> {% endfor %}
-                    </ul>
+                    <div class="col-sm-6">
+                    <b class = "span80blue" >Basic Requirements Met:</b>
+                    <table class="span80">
+                        <thead><tr><th>Requirement</th><th>Met by</th><tr></tr></thead>
+                        <tbody>
+                            {% for r in basic_met %}
+                                <tr>
+                                    <td>{{ r.basic_requirement }}</td><td> {{ r.course }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
                 {% endif %}
+
+
                 {% if basic_not_met %}
-                    <b>Basic Requirements Not Met:</b>
+                    <div class="col-sm-3">
+                    <div class="spanred">Basic Requirements Not Met:</div>
                     <ul>
                         {% for r in basic_not_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
                     </ul>
+                    </div>
                 {% endif %}
-                </div>
             </div>
-
+<!-- Renewal requirements and notes -->
             <div class="row mb-3">
                 <div class="col">
-                <p><b> Renewal Requirements:</b> {{ c.renewal_requirements }}</p>
+                <p><h6> Renewal Requirements:</h6> {{ c.renewal_requirements }}</p>
                     {% if c.public_note %}
                         <p><b>Note:</b> {{ c.public_note }}</p>
                     {% endif %}
@@ -167,7 +179,7 @@
                 {% else %}
                     <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application_done' teacher.id  %}">See application</a> <br>
                     {% if last_app.public_note %}<br>
-                        <p><b>Note from ISEI office:</b></p><p>{{ last_app.public_note }}</p>
+                        <p class="spanred">Note from ISEI office:</p><p>{{ last_app.public_note }}</p>
                         <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application' teacher.id %}">Update Application</a>
                     {% endif %}
                 {% endif %}

@@ -310,11 +310,11 @@ def update_academic_class(request, pk):
 @allowed_users(allowed_roles=['staff','principal', 'teacher'])
 def CEUreports(request):
     if request.user.groups.filter(name='staff').exists(): #ISEI staff has access to all reports
-        ceu_reports = CEUReport.objects.all()
+        ceu_reports = CEUReport.objects.filter(teacher__user__is_active= True)
         is_staff=True
     elif request.user.groups.filter(name='principal').exists():
         principal = request.user.teacher
-        ceu_reports = CEUReport.objects.filter(teacher__school = principal.school) #principal has access to reports from his/her school
+        ceu_reports = CEUReport.objects.filter(teacher__school = principal.school, teacher__user__is_active= True) #principal has access to reports from his/her school
         is_staff=False
     else:
         teacher = request.user.teacher
@@ -338,7 +338,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
     principal = request.user.teacher
     teachers = Teacher.objects.filter(school = principal.school, user__is_active= True)
 
-    ceu_report = CEUReport.objects.filter(teacher__school=principal.school) #all the reports from this teacher's school
+    ceu_report = CEUReport.objects.filter(teacher__in=teachers) #all the reports from this teacher's school
     ceu_report_notreviewed = ceu_report.filter( date_submitted__isnull=False, principal_reviewed = 'n').order_by('updated_at') #submitted reports to the principal, not yet reviewed
 
     #ceu_reports approved or denied within a year
@@ -426,13 +426,13 @@ def principal_ceu_approval(request, recID=None, instID=None):
 @allowed_users(allowed_roles=['staff'])
 def isei_ceu_approval(request, repID=None, instID=None):
     teachers = Teacher.objects.filter(user__is_active = True)
-    ceu_report_notreviewed = CEUReport.objects.filter(principal_reviewed ='a', isei_reviewed='n').order_by('date_submitted')
+    ceu_report_notreviewed = CEUReport.objects.filter(principal_reviewed ='a', isei_reviewed='n', teacher__in=teachers).order_by('date_submitted')
 
     # ceu_reports approved or denied within a year
     year_ago = datetime.today() - timedelta(days=366)
-    ceu_report_approved = CEUReport.objects.filter(isei_reviewed ='a', reviewed_at__gt= year_ago).order_by("reviewed_at")
-    ceu_report_denied = CEUReport.objects.filter(isei_reviewed ='d', reviewed_at__gt= year_ago).order_by("reviewed_at")
-    ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report_approved, isei_reviewed='n', date_resubmitted__isnull=False, principal_reviewed='a')
+    ceu_report_approved = CEUReport.objects.filter(isei_reviewed ='a', reviewed_at__gt= year_ago, teacher__in=teachers).order_by("reviewed_at")
+    ceu_report_denied = CEUReport.objects.filter(isei_reviewed ='d', reviewed_at__gt= year_ago, teacher__in= teachers).order_by("reviewed_at")
+    ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report_approved, isei_reviewed='n', date_resubmitted__isnull=False, principal_reviewed='a',)
 
 
     if request.method == 'POST':
@@ -682,7 +682,7 @@ def isei_teachercert(request):
     teachers = Teacher.objects.filter(user__is_active = True)
     school_year = SchoolYear.objects.get(active_year = True)
 
-    tcertificates = TCertificate.objects.filter()
+    tcertificates = TCertificate.objects.filter(teacher__user__is_active= True)
     tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
     tcertificates = tcertificates_filter.qs
 
@@ -766,7 +766,7 @@ def teachercert_application_done(request, pk):
 def isei_teacher_applications(request):
 
     #TODO seperate closed and open applications
-    applications = TeacherCertificationApplication.objects.all().order_by('-date')
+    applications = TeacherCertificationApplication.objects.filter(teacher__user__is_active= True).order_by('-date')
     #closed_applications = TeacherCertificationApplication.objects.filter(closed=True)
 
     application_filter = TeacherCertificationApplicationFilter (request.GET, queryset=applications)

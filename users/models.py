@@ -21,11 +21,15 @@ class Country(models.Model):
         return self.code
 
 
+
 class School(models.Model):
     name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
                             null=False)
     abbreviation = models.CharField(max_length=4, default=" ", help_text=' Enter the abbreviation for this school')
     ordering = ['name']
+
+    class Meta:
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -126,6 +130,9 @@ class CollegeAttended(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ('-end_date',)
+
 class SchoolOfEmployment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=50, unique=False, blank=False, null=False)
@@ -133,5 +140,9 @@ class SchoolOfEmployment(models.Model):
     start_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy")
     end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy or to date")
     courses = models.CharField(verbose_name="Courses taught", max_length=100, default="", )
+
+    class Meta:
+        ordering = ('-end_date',)
+
     def __str__(self):
         return self.name

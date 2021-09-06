@@ -83,4 +83,3 @@ class TeacherCertificationApplicationFilter(django_filters.FilterSet):
     closed = ChoiceFilter(field_name="closed", choices=CHOICES, label='Status')
 
 
-

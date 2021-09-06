@@ -189,7 +189,7 @@ def accountsettings(request, userID):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', ])
+@allowed_users(allowed_roles=['teacher', 'staff','principal'])
 def teacherdashboard(request, userID):
     # TODO teacher dashboard
     user=User.objects.get(id=userID)
@@ -197,7 +197,7 @@ def teacherdashboard(request, userID):
     #user_in = "teacher"
 
     # current_certificates
-    if certified(teacher):
+    if not never_certified(teacher):
         tcertificates = current_certificates(teacher)
     else:
         tcertificates = None
@@ -231,7 +231,7 @@ def principaldashboard(request, userID):
 
 #Teacher Certificates Section
     number_of_teachers = teachers.count()
-    tcertificates = TCertificate.objects.filter(teacher__school = principal.school, archived = False)
+    tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived = False)
 
     #Valid certificates and certified teachers
     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in = teachers).order_by('teacher')
@@ -239,7 +239,7 @@ def principaldashboard(request, userID):
     number_of_certified_teachers = certified_teachers.count()
 
     #expired certificates and teachers with expired certificates
-    expired_tcertificates = tcertificates.filter(renewal_date__lt = date.today()).order_by('teacher')
+    expired_tcertificates = tcertificates.filter(renewal_date__lt = date.today(), teacher__in =teachers).order_by('teacher')
     expired_teachers = teachers.filter(tcertificate__in = expired_tcertificates)
     number_of_expired_teachers = expired_teachers.count()
 
@@ -254,7 +254,7 @@ def principaldashboard(request, userID):
     a_year_ago = today - timedelta (365)
 
 # Report Approval Section
-    ceu_report = CEUReport.objects.filter(teacher__school=principal.school)  # all the reports from this teacher's school
+    ceu_report = CEUReport.objects.filter(teacher__in=teachers)  # all the reports from this teacher's school
     ceu_report_notreviewed = ceu_report.filter(date_submitted__isnull=False, principal_reviewed='n')
     ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report, ceu_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
     if ceu_report_notreviewed or ceu_instance_notreviewed:
@@ -279,9 +279,12 @@ def staffdashboard(request):
     # TODO redo the dashboard, replace activity references
     teachers = Teacher.objects.filter(user__is_active=True)
 
+    school_filter = SchoolFilter(request.GET, queryset=teachers)
+    teachers = school_filter.qs
+
     # Teacher Certificates Section
     number_of_teachers = teachers.count()
-    tcertificates = TCertificate.objects.filter(archived=False)
+    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active= True)
 
     # Valid certificates and certified teachers
     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers).order_by('teacher')
@@ -289,7 +292,7 @@ def staffdashboard(request):
     number_of_certified_teachers = certified_teachers.count()
 
     # expired certificates and teachers with expired certificates
-    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today()).order_by('teacher')
+    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in = teachers).order_by('teacher')
     expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
     number_of_expired_teachers = expired_teachers.count()
 
@@ -297,7 +300,11 @@ def staffdashboard(request):
     non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates))
     number_of_non_certified_teachers = non_certified_teachers.count()
 
-    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    if number_of_teachers >= 1:
+        percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    else:
+        percent_certified = "There are no teachers registered for this school"
+
 
     today = date.today()
     in_six_months = today + timedelta(183)
@@ -311,6 +318,7 @@ def staffdashboard(request):
                    non_certified_teachers=non_certified_teachers,
                    number_of_non_certified_teachers=number_of_non_certified_teachers,
                    number_of_teachers=number_of_teachers,
+                   school_filter = school_filter,
                    )
 
     return render(request, 'users/staff_dashboard.html', context)
