@@ -81,8 +81,6 @@ def load_evidence(request):
 def createCEU(request, recId):
 
 
-    print("function called")
-
     ceu_report = CEUReport.objects.get(id=recId) #report
     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report) #list of already entered instances
     #instanceformset = CEUInstanceFormSet(queryset=CEUInstance.objects.none(), instance=ceu_report) # entering new activity
