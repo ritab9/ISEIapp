@@ -641,14 +641,16 @@ def delete_tcertificate(request, certID=None):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def archive_tcertificate(request, cID, certID):
+    tcertificate = TCertificate.objects.get(id=cID)
     TCertificate.objects.filter(id=cID).update(archived=True)
-    return redirect('manage_tcertificate', certID=certID)
+    return redirect('manage_tcertificate', pk =tcertificate.teacher.id, certID=certID)
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def de_archive_tcertificate(request, cID, certID):
+    tcertificate = TCertificate.objects.get(id=cID)
     TCertificate.objects.filter(id=cID).update(archived=False)
-    return redirect('manage_tcertificate', certID=certID)
+    return redirect('manage_tcertificate', pk =tcertificate.teacher.id, certID=certID)
 
 
 # principal's info page about teacher certification
