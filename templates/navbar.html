@@ -24,13 +24,13 @@
                 {% if request.user|in_group:"staff"%}
 <!-- staff links -->
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff_dashboard' %}">Home </a>
+                        <a class="nav-link" href="{% url 'isei_dashboard' %}">Home </a>
                       </li>
                         <li class="nav-item">
                         <a class="nav-link" href="{% url 'isei_teacher_applications' %}">Teacher Applications</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'isei_teachercert' %}">Teacher Certification</a>
+                        <a class="nav-link" href="{% url 'isei_teachercert' %}">Teacher Certificates</a>
                       </li>
                      <!--
                       <li>

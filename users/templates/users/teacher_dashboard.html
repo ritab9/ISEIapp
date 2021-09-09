@@ -11,8 +11,11 @@
 
 <!-- Teacher Certificates -->
     <div class="">
-        <div class = "row">
+        <div class = "row noprint">
             <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)</div>
+            <div  style = "text-align: right">
+                <button onclick="window.print()">Print Certificate</button>
+            </div>
         </div>
 
         {% for c in tcertificates %}
@@ -58,7 +61,7 @@
 
 
                 {% if basic_not_met %}
-                    <div class="col-sm-3">
+                    <div class="col-sm">
                     <div class="spanred">Basic Requirements Not Met:</div>
                     <ul>
                         {% for r in basic_not_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}

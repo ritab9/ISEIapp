@@ -10,7 +10,6 @@ from teachercert.models import *
 
 
 
-
 class CEUReportForm(ModelForm):
     class Meta:
         model = CEUReport
@@ -23,7 +22,7 @@ class CEUReportForm(ModelForm):
                 attrs={'class': 'form-controls','rows':4 }),
             'isei_comment': forms.Textarea(
                 attrs={'class': 'form-controls', 'rows': 4 }),
-            'date_submitted': forms.DateInput(format ='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'date_submitted': forms.TextInput(attrs={'placeholder': 'mm/dd/yyyy', 'type':'date'}),
         }
 
 
@@ -50,7 +49,7 @@ class CEUInstanceForm(ModelForm):
             #'ceu_category': forms.Select (attrs={'class':'category_class'}),
             #'ceu_type': forms.Select(attrs={'class': 'type_class'}),
             'file': forms.FileInput(attrs={'size': 1}),
-            'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
+            'date_completed': forms.TextInput (attrs = {'type':'date','placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
             'amount': forms.NumberInput (attrs={'style':'width:60px' }),
             'description': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Activity Description', 'rows': 1}),
@@ -75,7 +74,7 @@ class AcademicClassForm(ModelForm):
         model = AcademicClass
         fields = ('__all__')
         widgets = {
-            'date_completed': forms.DateInput (format ='%m/%d/%Y', attrs = {'placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
+            'date_completed': forms.TextInput ( attrs = {'type':'date','placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
         }
 
 class TCertificateForm(ModelForm):
@@ -83,8 +82,8 @@ class TCertificateForm(ModelForm):
         model=TCertificate
         fields =('__all__')
         widgets = {
-            'issue_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
-            'renewal_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'issue_date': forms.TextInput( attrs={'type':'date','placeholder': 'mm/dd/yyyy'}),
+            'renewal_date': forms.TextInput(attrs={'type':'date','placeholder': 'mm/dd/yyyy'}),
             'renewal_requirements': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2,}),
             'public_note': forms.Textarea(
@@ -116,7 +115,7 @@ class TeacherCertificationApplicationForm(ModelForm):
                 attrs={'class': 'form-controls', 'placehoder': 'Felony Description', 'rows': 10}),
             'sexual_offence_description': forms.Textarea(
                 attrs = {'class': 'form-controls', 'placehoder': 'Sexual Offence Description', 'rows': 10}),
-            'date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'date': forms.TextInput(attrs={'placeholder': 'mm/dd/yyyy'}),
             'file': forms.FileInput(attrs={'size': 1}),
         }
 
@@ -130,5 +129,6 @@ class TeacherCertificationApplicationISEIForm(ModelForm):
             'isei_note': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Office use only', 'rows': 2}),
 
-            'isei_revision_date': forms.DateInput(format='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy'}),
+            'isei_revision_date': forms.TextInput(
+                attrs={'placeholder': 'mm/dd/yyyy', 'type':'date'}),
         }

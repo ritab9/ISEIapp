@@ -104,16 +104,19 @@
 
                     <div class = "col">
                         <div class ="row mt-5 ml-5">
-                           <input class="btn-ISEIblue3" type="submit" value="Save Certificate" name = "submit_certificate">
+                               <input class="btn btn-sm btn-ISEIblue3 mr-3" type="submit" value="Save Certificate" name = "submit_certificate">
                             {% for message in messages %}
                                 <p id="messages" style="color:blue">{{message}}</p>
                             {% endfor %}
                         </div>
-                        <div class ="row mt-3 ml-5">
+                         <div class ="row mt-3 ml-5">
+                             <a class ="btn btn-sm btn-ISEIblue3 ml-6" href="{% url "teacher_dashboard" userID %}">Print Certificate</a>
+                         </div>
+                         <div class ="row mt-3 ml-5">
                             <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
                         </div>
                         <div class ="row mt-5 ml-5">
-                            <a class ="btn btn-sm btn-ISEIblue4" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
+                            <a class ="btn btn-sm btn-ISEIblue3" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
                         </div>
                     </div>
                 </div>

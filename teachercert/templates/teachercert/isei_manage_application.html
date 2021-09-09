@@ -5,16 +5,23 @@
 {% block content %}
     {% load static %}
 
-    <div class="card card-body mb-3">
+    <div class = "noprint">
+        <button onclick="window.print()">Print Application</button>
+    </div>
+
+    {% include 'teachercert/teachercert_application_print.html' %}
+
+    <div class="card card-body mb-3 mt-3">
         <form action="" method="post">
             {% csrf_token %}
              {{ application_form }}
-          <input type="submit" class ="btn btn-sm btn-ISEIblue4" value="Submit">
+          <input type="submit" class ="btn btn-sm btn-ISEIblue4 noprint" value="Submit">
         </form>
         <div class="col">
-            <a class ="btn btn-sm btn-ISEIblue4" href="{% url "manage_tcertificate" teacher.id %}">Add Certificate</a>
+            <a class ="btn btn-sm btn-ISEIblue4 noprint" href="{% url "manage_tcertificate" teacher.id %}">Add Certificate</a>
         </div>
     </div>
-    {% include 'teachercert/teachercert_application_print.html' %}
+
+
 
 {% endblock %}

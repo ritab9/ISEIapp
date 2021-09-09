@@ -70,7 +70,7 @@ def loginpage(request):
                     elif is_in_group(request.user, 'staff'):
                         #return redirect('CEUreports')
                         #return redirect('isei_teachercert')
-                        return redirect('staff_dashboard')
+                        return redirect('isei_dashboard')
                     else:
                         messages.info(request, 'User not assigned to a group or not currently active. Please contact the site administrator.')
         else:
@@ -275,7 +275,7 @@ def principaldashboard(request, userID):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
-def staffdashboard(request):
+def iseidashboard(request):
     # TODO redo the dashboard, replace activity references
     teachers = Teacher.objects.filter(user__is_active=True)
 
@@ -284,20 +284,20 @@ def staffdashboard(request):
 
     # Teacher Certificates Section
     number_of_teachers = teachers.count()
-    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active= True)
+    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active= True).order_by('renewal_date')
 
     # Valid certificates and certified teachers
-    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers).order_by('teacher')
+    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
     certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct()
     number_of_certified_teachers = certified_teachers.count()
 
     # expired certificates and teachers with expired certificates
-    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in = teachers).order_by('teacher')
+    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in = teachers)
     expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
     number_of_expired_teachers = expired_teachers.count()
 
     # not certified teachers
-    non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates))
+    non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates)).order_by("school")
     number_of_non_certified_teachers = non_certified_teachers.count()
 
     if number_of_teachers >= 1:
@@ -321,7 +321,7 @@ def staffdashboard(request):
                    school_filter = school_filter,
                    )
 
-    return render(request, 'users/staff_dashboard.html', context)
+    return render(request, 'users/isei_dashboard.html', context)
 
 
 #@login_required(login_url='login')

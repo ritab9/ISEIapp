@@ -567,7 +567,7 @@ def manage_tcertificate(request, pk, certID=None):
 # pk is teacher.id
 
     teacher = Teacher.objects.get(id=pk)
-
+    userID =teacher.user.id
 
     prev_certificates = TCertificate.objects.filter(Q(teacher=teacher), ~Q(id=certID))
     ceu_reports = None
@@ -619,7 +619,7 @@ def manage_tcertificate(request, pk, certID=None):
                 return redirect('manage_tcertificate',  pk =pk, certID=tcertificate.id)
 
     #certID is used in the template to reload page after previous certificates are archived
-    context = dict( pk = pk, is_staff= True, tcertificate_form = tcertificate_form,
+    context = dict( pk = pk, userID=userID, is_staff= True, tcertificate_form = tcertificate_form,
                     tendorsement_formset = tendorsement_formset, tbasic_requirement_formset = tbasic_requirement_formset,
                     prev_certificates = prev_certificates, certID=certID,
                     ceu_reports=ceu_reports, academic_class=academic_class)
