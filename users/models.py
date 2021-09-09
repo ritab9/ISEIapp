@@ -131,7 +131,7 @@ class CollegeAttended(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('teacher','-end_date',)
+        ordering = ('transcript_processed', 'transcript_received', 'transcript_requested','teacher','-end_date',)
 
 class SchoolOfEmployment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)

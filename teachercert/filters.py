@@ -72,14 +72,20 @@ class TCertificateFilter(django_filters.FilterSet):
 
 
 class TeacherCertificationApplicationFilter(django_filters.FilterSet):
-    school = CharFilter(field_name = 'teacher__school',label = "School", lookup_expr = 'icontains')
-    teacher = CharFilter(field_name = 'teacher',label = "Teacher", lookup_expr = 'icontains')
-    CHOICES = (
+    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
+    first_name = CharFilter(field_name = 'teacher__first_name',label = "First Name", lookup_expr = 'icontains')
+    last_name = CharFilter(field_name = 'teacher__last_name',label = "Last Name", lookup_expr = 'icontains')
+    CHOICES_B = (
+        (False, 'Not Billed'),
+        (True, 'Billed'),
+        (None, 'Any')
+    )
+    billed = ChoiceFilter(field_name="billed", choices=CHOICES_B, label='Billed')
+    CHOICES_C = (
         (False, 'Processing'),
         (True, 'Finalized'),
         (None, 'Any')
     )
-    billed = ChoiceFilter(field_name="billed", choices=CHOICES, label='Billed')
-    closed = ChoiceFilter(field_name="closed", choices=CHOICES, label='Status')
+    closed = ChoiceFilter(field_name="closed", choices=CHOICES_C, label='Status')
 
 

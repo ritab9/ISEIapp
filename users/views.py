@@ -322,3 +322,13 @@ def staffdashboard(request):
                    )
 
     return render(request, 'users/staff_dashboard.html', context)
+
+
+#@login_required(login_url='login')
+#@allowed_users(allowed_roles=['staff'])
+#def transcript_status(request):
+#    unprocessed_transcripts = CollegeAttended.objects.filter(teacher__user__is_active=True, transcript_processed= False)
+
+#    context = dict(unprocessed_transcripts = unprocessed_transcripts)
+
+#    return render(request, 'users/transcript_status.html', context)

@@ -19,6 +19,7 @@
                                 <div class="row mb-3">
                                     {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
                                     {{ tcertificate_form.certification_type|as_crispy_field }}
+                                    NAD Certificate: {{ tcertificate_form.nad }}
                                 </div>
 
                                 <div class="row ">
@@ -122,7 +123,7 @@
 <!-- Principal and teacher can only view certificate -->
             {% else %}
                 <p><b>Teacher:</b> {{ tcertificate.teacher }}</p>
-                <p><b>Certification Type:</b> {{ tcertificate.certification_type }}</p>
+                <p><b>Certification Type:</b>{% if tcertificate.nad %}NAD certificate:{% endif %} {{ tcertificate.certification_type }}  </p>
                 <p><b>Validity:</b> {{ tcertificate.issue_date }} - {{ tcertificate.renewal_date }}</p>
                 {% if tcertificate.archived %} <p style="color:red"> Not current certificate <p> {% endif %}
                 {{ tcertificate.renewal_requirements }}
@@ -166,7 +167,7 @@
                 <p>Previous/Other certificates:</p>
                 {% if prev_certificates %}
                     {% for c in prev_certificates %}
-                        <a href="{%  url 'manage_tcertificate' pk c.id %}">{{ c.certification_type }}</a>
+                        <a href="{%  url 'manage_tcertificate' pk c.id %}">{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type }}</a>
                             {% if is_staff %}
                                 {% if c.archived == False %} <a href="{%  url 'archive_tcertificate' c.id certID %}"><span style="color:red"> Archive</span> </a> {% else %} <a href="{%  url 'de_archive_tcertificate' c.id certID%}"><span style="color:green">Retrieve from archive</span></a> {% endif %}
                         &nbsp;   {% else %}

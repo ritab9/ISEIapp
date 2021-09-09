@@ -29,7 +29,7 @@
             <tbody>
                 {% for c in valid_tcertificates %}
                   <tr>
-                      <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td><td>{{ c.certification_type }}</td>
+                      <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td><td>{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type }}</td>
                     <td> {% for e in c.tendorsement_set.all %}
                         {{ e }}{% if not forloop.last %},{% endif %}
                     {% endfor %} </td>
@@ -59,7 +59,7 @@
             {% for c in expired_tcertificates %}
               <tr>
                   <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td>
-                <td>{{ c.certification_type }}</td>
+                <td>{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type }}</td>
                 <td> {% if c.renewal_date < a_year_ago %}
                          <span style="color:red"> {{ c.renewal_date }} Reinstatement Required</span>
 

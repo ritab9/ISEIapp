@@ -253,6 +253,7 @@ class TCertificate(models.Model):
     archived = models.BooleanField (default = False)
     public_note = models.CharField(max_length = 100, null=True, blank=True)
     office_note = models.CharField(max_length=100, null=True, blank=True)
+    nad = models.BooleanField (default=False)
 
     def expired(self):
         return self.renewal_date <= date.today()
@@ -312,7 +313,7 @@ class TeacherCertificationApplication(models.Model):
     closed = models.BooleanField(default=False, blank=False, null=False)
 
     class Meta:
-        ordering = ('date',)
+        ordering = ('billed','closed','date',)
 
     def principal_letter_filename(self):
         return os.path.basename(self.principal_letter_file.name)

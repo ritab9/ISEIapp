@@ -680,13 +680,14 @@ def de_archive_tcertificate(request, cID, certID):
 @allowed_users(allowed_roles=['staff'])
 def isei_teachercert(request):
     teachers = Teacher.objects.filter(user__is_active = True)
-    school_year = SchoolYear.objects.get(active_year = True)
+    #school_year = SchoolYear.objects.get(active_year = True)
+    #school_year = SchoolYear.objects.filter(active_year= True).first()
 
     tcertificates = TCertificate.objects.filter(teacher__user__is_active= True)
     tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
     tcertificates = tcertificates_filter.qs
 
-    context = dict(teachers=teachers, school_year=school_year,
+    context = dict(teachers=teachers,
                    tcertificates = tcertificates, tcertificates_filter= tcertificates_filter)
     return render(request, 'teachercert/isei_teachercert.html', context)
 

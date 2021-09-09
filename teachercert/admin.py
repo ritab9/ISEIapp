@@ -113,7 +113,7 @@ class TCertificate(admin.ModelAdmin):
 @admin.register(TeacherCertificationApplication)
 class TeacherCertificationApplication(admin.ModelAdmin):
     model = TeacherCertificationApplication
-    list_display = ('id','teacher', 'date', 'billed', 'closed')
+    list_display = ('id','teacher', 'date', 'isei_revision_date', 'billed', 'closed')
     list_editable = ('date', 'billed', 'closed')
     list_display_links = ('teacher',)
 
@@ -123,3 +123,4 @@ class TeacherCertificationApplication(admin.ModelAdmin):
 class TeacherBasicRequirement(admin.ModelAdmin):
     list_display = ('teacher', 'basic_requirement', 'met')
     list_editable = ('met',)
+

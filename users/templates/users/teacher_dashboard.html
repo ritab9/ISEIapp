@@ -18,10 +18,14 @@
         {% for c in tcertificates %}
         <div class = "card card-body mb-3">
             <div class="col">
-                <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a>
+                {% if c.teacher.address.address_1 %}
+                    <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a>
+                {% else %}
+                    <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
+                {% endif %}
             </div>
 <!-- Certificate Info -->
-            <h6><b>{{ c.certification_type.name }}</b></h6>
+            <h6><b>{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type.name }}</b></h6>
             {% if c.expired %} <span style="color:red">Expired</span> {% endif %}
 
             <div class="row mb-2">
@@ -34,6 +38,7 @@
                     {{ c.issue_date }} - {% if c.renewal_date < today %}<span style="color:red">{{ c.renewal_date}}</span> {% else %} {{ c.renewal_date }}{% endif %}
                 </p></div>
 
+            {% if not c.nad %}
   <!-- Basic requirments met and not met -->
                 {% if basic_met %}
                     <div class="col-sm-6">
@@ -60,7 +65,9 @@
                     </ul>
                     </div>
                 {% endif %}
+            {% endif %}
             </div>
+
 <!-- Renewal requirements and notes -->
             <div class="row mb-3">
                 <div class="col">
@@ -71,6 +78,7 @@
                 </div>
             </div>
 
+{% if not c.nad %}
              <div class="row mb-3">
 
 <!-- CEU Reports with this certificate -->
@@ -144,6 +152,8 @@
                     {% endif %}
                     </div>
             </div>
+ {% endif %}
+
         </div>
 
         {% endfor %}

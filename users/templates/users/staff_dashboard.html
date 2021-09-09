@@ -46,7 +46,7 @@
                           <tr>
                               <td>{{ c.teacher.school }}</td>
                               <td> <a class="nav-link" href = "{% url 'teacher_dashboard' c.teacher.user.id %}">{{ c.teacher.name }}</a></td>
-                              <td><a class="nav-link" href = "{% url 'manage_tcertificate' c.teacher.id c.id%}">{{ c.certification_type }}</a></td>
+                              <td><a class="nav-link" href = "{% url 'manage_tcertificate' c.teacher.id c.id%}">{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type }}</a></td>
                               <td> {% for e in c.tendorsement_set.all %}
                                     {{ e }}{% if not forloop.last %},{% endif %}
                                     {% endfor %}
@@ -80,7 +80,7 @@
                           <tr>
                                 <td>{{ c.teacher.school }}</td>
                               <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td>
-                              <td><a class="nav-link" href = "{% url 'manage_tcertificate' c.teacher.id %}">{{ c.certification_type }}</a></td>
+                              <td>{% if c.nad %}NAD certificate:{% endif %}<a class="nav-link" href = "{% url 'manage_tcertificate' c.teacher.id %}">{{ c.certification_type }}</a></td>
                               <td> {% if c.renewal_date < a_year_ago %}
                                      <span style="color:red"> {{ c.renewal_date }} Reinstatement Required</span>
                                 {% else %}
@@ -110,11 +110,12 @@
                               <td>{{ t.school}}</td>
                               <td><a class="nav-link" href = "{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
                              {% if t.teachercertificationapplication %}
-
                                  <td><a class="nav-link spanred" href = "{% url 'isei_manage_application' t.teachercertificationapplication.id %}">Processing</a></td>
                                 {%  else %}
                               <td>Not Submitted</td>
-                                {% endif %}
+                             {% endif %}
+                              <td><a class="btn btn-ISEIblue4" href = "{% url 'manage_tcertificate' t.id %}"><div class="span80">Add NAD Certificate</div></a></td>
+
                           </tr>
                         {% endfor %}
                     </tbody>

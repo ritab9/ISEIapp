@@ -167,6 +167,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGOUT_REDIRECT_URL = '/login/'
 
+#logout users when they close browser
+#SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
 #the email setup has to use a two step verifcation
 #the password is an app password (found in Account / Security)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
