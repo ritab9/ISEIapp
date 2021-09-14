@@ -52,7 +52,7 @@ class SchoolOfEmploymentForm(ModelForm):
     class Meta:
         model = SchoolOfEmployment
         fields = '__all__'
-        exclude = ['teacher']
+        exclude = ['teacher', 'id']
         widgets = {
             'start_date': forms.DateInput(format='%m/%d/%Y',
                                              attrs={'placeholder': 'mm/dd/yyyy', 'input-formats': '%m/%d/%Y'}),
@@ -67,7 +67,7 @@ class CollegeAttendedForm(ModelForm):
     class Meta:
         model = SchoolOfEmployment
         fields = '__all__'
-        exclude = ['teacher']
+        exclude = ['teacher', 'id' ]
         widgets = {
             'start_date': forms.DateInput(format='%m/%d/%Y',
                                              attrs={'placeholder': 'mm/dd/yyyy or yyyy', 'input-formats': '%m/%d/%Y'}),
@@ -82,3 +82,4 @@ class AddressForm(ModelForm):
     class Meta:
         model = Address
         fields = ('__all__')
+        exclude =['id',]
