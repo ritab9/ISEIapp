@@ -260,12 +260,12 @@ class TCertificate(models.Model):
 
     class Meta:
         unique_together = ['teacher','certification_type', 'issue_date' ]
-        ordering = ('renewal_date',)
+        ordering = ('-renewal_date',)
 
     def save(self, *args, **kwargs):
         super(TCertificate, self).save(*args, **kwargs)
         if not self.archived:
-            all = TCertificate.objects.exclude(id=self.id).update(archived=True)
+            all = TCertificate.objects.filter(teacher = self.teacher).exclude(id=self.id).update(archived=True)
 
     def __str__(self):
         return self.teacher.name() + "-" + self.certification_type.name
