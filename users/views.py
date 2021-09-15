@@ -17,7 +17,6 @@ from django.urls import reverse
 from django.forms import inlineformset_factory
 # import custom functions
 from .myfunctions import *
-from teachercert.myfunctions import initial_application, last_application
 
 # authentication functions
 @login_required(login_url='login')
@@ -167,12 +166,11 @@ def accountsettings(request, userID):
 
     #TODO This may not stay here. I will have to figure out the best way to
     #Initiate + Renew an application. Just convenient now for working purposes
-    if initial_application(teacher):
+    if TeacherCertificationApplication.objects.filter(teacher=teacher):
         application_submitted=True
-        last_application_id = last_application(teacher).id
     else:
         application_submitted = False
-        last_application_id = None
+
 
 
     context = dict(teacher=teacher, address = address, user = user, school_of_employment =school_of_employment, college_attended = college_attended,
@@ -180,7 +178,7 @@ def accountsettings(request, userID):
                    employment_formset_valid = employment_formset_valid, college_formset_valid = college_formset_valid,
                    user_form= user_form, teacher_form= teacher_form,
                    address_form = address_form,
-                   application_submitted = application_submitted, last_application_id = last_application_id,
+                   application_submitted = application_submitted,
                    school_of_employment_formset = school_of_employment_formset,
                    college_attended_formset = college_attended_formset,
                    )
@@ -211,13 +209,16 @@ def teacherdashboard(request, userID):
     #TODO get rid of initial and last app functions
     #there will be only one app, so need to get rid of all this
     #initial_app = initial_application(teacher)
-    last_app = last_application(teacher)
+    if TeacherCertificationApplication.objects.filter(teacher=teacher):
+        tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
+    else:
+        tcert_application = None
 
     today =get_today()
 
     context = dict(teacher=teacher, tcertificates=tcertificates,
                    today=today, basic_met = basic_met, basic_not_met = basic_not_met,
-                   last_app=last_app)
+                   tcert_application=tcert_application)
     return render(request, 'users/teacher_dashboard.html', context)
 
 

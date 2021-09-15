@@ -92,7 +92,17 @@ class TCertificateForm(ModelForm):
                 attrs={'class': 'form-controls', 'placehoder': 'Enter renewal requirements', 'rows': 2}),
         }
 
-TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, fields=('endorsement',), extra = 3, can_delete=True)
+
+class TEndorsementForm(forms.ModelForm):
+    class Meta:
+        model = TEndorsement
+        fields = ('endorsement', 'range')
+        widgets = {
+            'range':forms.Textarea(attrs={'rows':1,'col':5}),
+        }
+
+
+TEndorsementFormSet = inlineformset_factory(TCertificate, TEndorsement, form=TEndorsementForm,  extra = 3, can_delete=True)
 
 
 class TeacherBasicRequirementForm (forms.ModelForm):

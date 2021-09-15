@@ -98,10 +98,18 @@ class ElementaryMethod(admin.ModelAdmin):
 class Endorsement(admin.ModelAdmin):
     list_display = ('name',)
 
-
 class TEndorsementInLine(admin.StackedInline):
     model = TEndorsement
     extra = 0
+
+
+@admin.register(TEndorsement)
+class TEndorsement(admin.ModelAdmin):
+    list_display = ('certificate','endorsement','range')
+    list_editable = ('endorsement','range')
+    #def teacher(self, obj):
+    #    return self.certificate.teacher
+
 
 @admin.register(TCertificate)
 class TCertificate(admin.ModelAdmin):
@@ -113,8 +121,8 @@ class TCertificate(admin.ModelAdmin):
 @admin.register(TeacherCertificationApplication)
 class TeacherCertificationApplication(admin.ModelAdmin):
     model = TeacherCertificationApplication
-    list_display = ('id','teacher', 'date', 'isei_revision_date', 'billed', 'closed')
-    list_editable = ('date', 'billed', 'closed')
+    list_display = ('id','teacher', 'date', 'endors_level','isei_revision_date', 'billed', 'closed')
+    list_editable = ('date', 'billed', 'closed', 'endors_level')
     list_display_links = ('teacher',)
 
 

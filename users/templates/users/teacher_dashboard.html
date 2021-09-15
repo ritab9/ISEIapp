@@ -35,7 +35,7 @@
                 <div class="col-sm-3">
                     <h6>Endorsements:</h6>
                     <ul>{% for e in c.tendorsement_set.all %}
-                        <li>{{ e }} </li>
+                        <li>{{ e }},  {{ e.range }} </li>
                     {% endfor %} </ul>
                     <p><h6>Valid:</h6>
                     {{ c.issue_date }} - {% if c.renewal_date < today %}<span style="color:red">{{ c.renewal_date}}</span> {% else %} {{ c.renewal_date }}{% endif %}
@@ -169,30 +169,30 @@
     {% endif %}
 
 <!-- If a teacher does not have an ISEI Certification -->
-    {% if last_app %}
+    {% if tcert_application %}
         <div class="card card-body">
         <div class="row">
             <div class="col">
                 <p>Your Teacher Certification Application is being processed.</p>
-                <p> Date submitted: {{ last_app.date }} </p>
-                <p>{% if last_app.isei_revision_date %}
-                    ISEI revision date: {{ last_app.isei_revision_date }}
-                    {% if last_app.isei_revision_date <= last_app.date  %}
+                <p> Date submitted: {{ tcert_application.date }} </p>
+                <p>{% if tcert_application.isei_revision_date %}
+                    ISEI revision date: {{ tcert_application.isei_revision_date }}
+                    {% if tcert_application.isei_revision_date <= tcert_application.date  %}
                             <p style = "color: red"> Not reviewed by ISEI since your update. </p>
                     {% endif %}
                     {% else %}
                     Not reviewed yet.
                 {% endif %} </p>
 
-                {% if last_app.fee_paid %} <p> School billed. </p> {% endif %}
+                {% if tcert_application.fee_paid %} <p> School billed. </p> {% endif %}
             </div>
             <div class="col">
-                {% if last_app.closed %}
+                {% if tcert_application.closed %}
                     <a type="button" class="btn-sm btn-ISEIblue4" href="{% url 'teachercert_application_done' teacher.id  %}">See application</a>
                 {% else %}
                     <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application_done' teacher.id  %}">See application</a> <br>
-                    {% if last_app.public_note %}<br>
-                        <p class="spanred">Note from ISEI office:</p><p>{{ last_app.public_note }}</p>
+                    {% if tcert_application.public_note %}<br>
+                        <p class="spanred">Note from ISEI office:</p><p>{{ tcert_application.public_note }}</p>
                         <a type="button" class="btn btn-sm btn-ISEIblue4 mb-3" href="{% url 'teachercert_application' teacher.id %}">Update Application</a>
                     {% endif %}
                 {% endif %}

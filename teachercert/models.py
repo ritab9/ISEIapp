@@ -251,7 +251,7 @@ class TCertificate(models.Model):
     renewal_date = models.DateField(null=False, blank=False)
     renewal_requirements = models.CharField(max_length = 400, null=False, blank=False)
     archived = models.BooleanField (default = False)
-    public_note = models.CharField(max_length = 100, null=True, blank=True)
+    public_note = models.CharField(max_length = 400, null=True, blank=True)
     office_note = models.CharField(max_length=100, null=True, blank=True)
     nad = models.BooleanField (default=False)
 
@@ -262,12 +262,19 @@ class TCertificate(models.Model):
         unique_together = ['teacher','certification_type', 'issue_date' ]
         ordering = ('renewal_date',)
 
+    def save(self, *args, **kwargs):
+        super(TCertificate, self).save(*args, **kwargs)
+        if not self.archived:
+            all = TCertificate.objects.exclude(id=self.id).update(archived=True)
+
     def __str__(self):
         return self.teacher.name() + "-" + self.certification_type.name
+
 
 class TEndorsement(models.Model):
     certificate = models.ForeignKey(TCertificate, on_delete=models.CASCADE, null=False, blank=False)
     endorsement = models.ForeignKey(Endorsement, on_delete=models.PROTECT, null=False, blank=False)
+    range = models.CharField(max_length=5, blank = True, null= True, default = "9-12")
     def __str__(self):
         return self.endorsement.name
 
@@ -276,16 +283,12 @@ class TeacherCertificationApplication(models.Model):
     teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     CLEVELS = (
         ('v', 'Vocational'),
-        ('s', "Secondary"),
+        ('s', "Subject Areas"),
         ('e', "Elementary"),
         ('d', 'Designated'),
     )
     cert_level = models.CharField(max_length=1, choices=CLEVELS, verbose_name="Certification Level Requested", null=True, blank=True)
-    ELEVELS = (
-        ('e', 'Elementary'),
-        ('s', 'Secondary Area(s)'),
-    )
-    endors_level = models.CharField(max_length=1, choices=ELEVELS, verbose_name="Endorsement Level Requested", null=True, blank=True)
+    endors_level = models.CharField(max_length=5, verbose_name="Grade Range Requested", null=True, blank=True)
     courses_taught = models.CharField(max_length=50, blank=True, verbose_name="Courses Taught")
     #CHOICES=( ('y', 'Yes'), ('n','No'),('a', 'N/A'),)
     #resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Verification of experience (for Designated or Vocational)", default ='a')
