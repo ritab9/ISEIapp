@@ -97,24 +97,22 @@
                         {{ teacher_form.first_name|as_crispy_field }}  <br>
                         {{ teacher_form.middle_name|as_crispy_field }}  <br>
                         {{ teacher_form.last_name|as_crispy_field }}  <br>
-                        {{ teacher_form.suffix|as_crispy_field }} <br>
+                        {{ teacher_form.suffix|as_crispy_field }}
                     </div>
                     <div class = "col-sm teacherform">
-                        {{ teacher_form.date_of_birth|as_crispy_field }}  <br>
+                        {{ teacher_form.date_of_birth|as_crispy_field }} <br>
                         {{ user_form.email|as_crispy_field }} <br>
-                        {{ teacher_form.phone_number|as_crispy_field }}
-                    </div>
-                    <div class = "col-sm teacherform">
-                        {{ teacher_form.school|as_crispy_field }}
-                        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" name="teacher_info" value="Save / Update Teacher Info" style = "position: absolute; bottom:0">
+                        {{ teacher_form.phone_number|as_crispy_field }}<br>
+                        {{ teacher_form.school|as_crispy_field }} <br>
+                        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit" name="teacher_info" value="Save / Update Teacher Info" >
+
                     </div>
 
                 </div>
             </form>
         </div>
 
-
-    <!-- address -->
+<!-- address -->
     <!-- address list -->
         <div class="col-3 addresslist" >
             <div class="col-sm">

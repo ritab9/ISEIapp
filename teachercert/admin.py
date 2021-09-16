@@ -32,6 +32,10 @@ class AcademicClass(admin.ModelAdmin):
     list_display = ('teacher','name', 'university', 'date_completed', 'transcript_requested', 'transcript_received')
     list_display_links = ('name',)
     list_editable = ('university', 'date_completed', 'transcript_requested', 'transcript_received')
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(teacher__user__is_active = True)
+
 
 class CEUInstanceInline(admin.StackedInline):
     model = CEUInstance
@@ -46,6 +50,9 @@ class CEUReport(admin.ModelAdmin):
     list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed', 'school_year')
     list_display_links = ('teacher',)
     readonly_fields = ['created_at', 'updated_at', ]
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(teacher__user__is_active = True)
 
 @admin.register(EmailMessage)
 class EmailMessage(admin.ModelAdmin):
@@ -109,6 +116,9 @@ class TEndorsement(admin.ModelAdmin):
     list_editable = ('endorsement','range')
     #def teacher(self, obj):
     #    return self.certificate.teacher
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(certificate__teacher__user__is_active = True)
 
 
 @admin.register(TCertificate)
@@ -117,13 +127,19 @@ class TCertificate(admin.ModelAdmin):
     list_display = ('teacher', 'certification_type', 'issue_date','renewal_date', 'archived','renewal_requirements')
     list_editable = ('certification_type','archived', 'issue_date','renewal_date', 'renewal_requirements')
     list_display_links = ('teacher',)
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(teacher__user__is_active = True)
 
 @admin.register(TeacherCertificationApplication)
 class TeacherCertificationApplication(admin.ModelAdmin):
     model = TeacherCertificationApplication
-    list_display = ('id','teacher', 'date', 'endors_level','isei_revision_date', 'billed', 'closed')
+    list_display = ('teacher', 'date', 'endors_level','isei_revision_date', 'billed', 'closed')
     list_editable = ('date', 'billed', 'closed', 'endors_level')
     list_display_links = ('teacher',)
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(teacher__user__is_active = True)
 
 
 
@@ -131,4 +147,7 @@ class TeacherCertificationApplication(admin.ModelAdmin):
 class TeacherBasicRequirement(admin.ModelAdmin):
     list_display = ('teacher', 'basic_requirement', 'met')
     list_editable = ('met',)
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(teacher__user__is_active = True)
 

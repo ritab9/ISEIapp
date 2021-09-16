@@ -65,14 +65,12 @@ SchoolOfEmploymentFormSet = inlineformset_factory(Teacher, SchoolOfEmployment, f
 
 class CollegeAttendedForm(ModelForm):
     class Meta:
-        model = SchoolOfEmployment
+        model = CollegeAttended
         fields = '__all__'
         exclude = ['teacher', 'id' ]
         widgets = {
-            'start_date': forms.DateInput(format='%m/%d/%Y',
-                                             attrs={'placeholder': 'mm/dd/yyyy or yyyy', 'input-formats': '%m/%d/%Y'}),
-            'end_date': forms.DateInput(format='%m/%d/%Y',
-                                            attrs={'placeholder': 'mm/dd/yyyy or yyyy', 'input-formats': '%m/%d/%Y'}),
+            'start_date': forms.Textarea(attrs={'rows':1, 'cols':4, 'placeholder': 'yyyy',}),
+            'end_date': forms.Textarea(attrs={'rows':1, 'cols':4,'placeholder': 'yyyy', }),
             'transcript_received': forms.HiddenInput(),
         }
 

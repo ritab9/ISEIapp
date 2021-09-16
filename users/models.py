@@ -113,8 +113,8 @@ class CollegeAttended(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=60, verbose_name="College Name", null=False, blank=False,)
     address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
-    start_date = models.CharField(max_length= 10, null=False, blank=False, help_text="mm/dd/yyyy or yyyy")
-    end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy or yyyy")
+    start_date = models.CharField(verbose_name = "Start Year", max_length= 4, null=False, blank=False, help_text="yyyy")
+    end_date = models.CharField(verbose_name = "End Year", max_length=4, null=False, blank=False, help_text="yyyy")
     LEVELS = (
         ('a', 'Associate degree'),
         ('b', "Bachelor's degree"),
@@ -124,9 +124,9 @@ class CollegeAttended(models.Model):
     )
     level = models.CharField(max_length=1, choices=LEVELS, help_text="Degree Level", null=False, blank=False)
     degree = models.CharField(max_length=40, verbose_name= "Type, Degree Earned", help_text= "BSc, Marketing & Psychology", null= True, blank=True)
-    transcript_requested = models.BooleanField(default= False, verbose_name="Official college transcripts have been requested")
-    transcript_received = models.BooleanField(default= False, null = False, blank= False)
-    transcript_processed = models.BooleanField(default=False, null=False, blank= False)
+    transcript_requested = models.BooleanField(default= False, verbose_name="Transcripts requested")
+    transcript_received = models.BooleanField(default= False, null = False, blank= False, verbose_name="Received")
+    transcript_processed = models.BooleanField(default=False, null=False, blank= False, verbose_name = "Processed")
     def __str__(self):
         return self.name
 

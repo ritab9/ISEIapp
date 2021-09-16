@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django.contrib.admindocs',
+
     'users.apps.UsersConfig',
     'teachercert',
     'crispy_forms',
