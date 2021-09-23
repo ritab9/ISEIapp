@@ -767,10 +767,10 @@ def teachercert_application_done(request, pk):
 def isei_teacher_applications(request):
 
     #TODO seperate closed and open applications
-    applications = TeacherCertificationApplication.objects.filter(teacher__user__is_active= True).order_by('-date')
+    applications = TeacherCertificationApplication.objects.filter(teacher__user__is_active= True).order_by('closed','-date')
     #closed_applications = TeacherCertificationApplication.objects.filter(closed=True)
 
-    application_filter = TeacherCertificationApplicationFilter (request.GET, queryset=applications)
+    application_filter = TeacherCertificationApplicationFilter(request.GET, queryset=applications)
     applications = application_filter.qs
 
     context = dict(applications = applications, application_filter = application_filter )
