@@ -58,14 +58,14 @@ class Teacher(models.Model):
 
     def name(self):
         if self.middle_name and self.suffix:
-            name = self.last_name +"," + self.first_name+ " "+ self.middle_name + " " +self.suffix
+            name = self.last_name + ", " + self.first_name + " " + self.middle_name + " " + self.suffix
         else:
             if self.middle_name:
-                name = self.last_name + "," + self.first_name + " " + self.middle_name
+                name = self.last_name + ", " + self.first_name + " " + self.middle_name
             elif self.suffix:
-                name = self.last_name + "," + self.first_name + " " + self.suffix
+                name = self.last_name + ", " + self.first_name + " " + self.suffix
             else:
-                name = self.last_name + "," + self.first_name
+                name = self.last_name + ", " + self.first_name
         return name
 
     def iseiteacherid(self):
@@ -82,7 +82,7 @@ class Teacher(models.Model):
         return str(self.joined_at.year) + "-" + teacher_id
 
     def __str__(self):
-        return self.last_name + "," + self.first_name
+        return self.last_name + ", " + self.first_name
 
 
 class Address(models.Model):
