@@ -120,7 +120,7 @@ class CollegeAttended(models.Model):
         ('b', "Bachelor's degree"),
         ('m', "Master's degree"),
         ('d', 'Doctoral degree'),
-        ('c','Certificate'),
+        ('c', 'Certificate'),
         ('n', 'None')
     )
     level = models.CharField(max_length=1, choices=LEVELS, help_text="Degree Level", null=False, blank=False)
