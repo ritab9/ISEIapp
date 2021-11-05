@@ -47,7 +47,7 @@
     <div class = "col">
         {% if application_submitted %}
             <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">Renewal Teacher Certification Application</a>
-            <p> *Before reapplying for Teacher Certification please ensure that ALL the information on this page is accurate and up to date, and that the renewal requirements have been met. (See Certification page) </p>
+            <p> *Before reapplying for Teacher Certification please ensure that ALL the information on this page is accurate and up to date, and that the renewal requirements have been met. (See Dashboard) </p>
         {% else %}
             {% if address.address_1 %}
                 <p><a class="btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">ISEI Initial Teacher Certification Application</a></p>
@@ -72,24 +72,29 @@
             <form method="POST" action="" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class = "row">
-    <!-- Profile Picture -->
+    <!-- Profile Picture
                     <div class="col-sm-3">
-                        {% if request.user.teacher.profile_picture %}
-                            <img class="profile-pic" src= "{{user.teacher.profile_picture.url}}">
-                        {% endif %} <br>
+                        { % if request.user.teacher.profile_picture %}
+                            <img class="profile-pic" src= "{ {user.teacher.profile_picture.url}}">
+                        { % endif %} <br>
                          <p>Change Profile Picture</p>
-                        {{ teacher_form.profile_picture}}
+                        { { teacher_form.profile_picture}}
                     </div>
-
+    -->
     <!-- Teacher Info List -->
+
                     <div class = 'col-sm teacherlist'>
-                        <p> Name: {{ teacher.name }} </p>
-                        <p> School: {{ teacher.school.label }}{{ teacher.school }} </p>
-                        <p> Date of birth: {{ teacher.date_of_birth }}</p>
-                        <p> Teacher_ID: {{ teacher.iseiteacherid|slice:'2:9'}}</p>
-                        <p>Email address: {{ user.email }}</p>
-                        <p>Phone number: {{ teacher.phone_number }}</p>
-                        <input type="button" class="btn btn-sm btn-ISEIblue4" id="showteacher"  value ="Update">
+                        <p> <b>Name:</b> {{ teacher.name }} </p>
+                        <p> <b>School:</b> {{ teacher.school.label }}{{ teacher.school }} </p>
+                        <input type="button" class="btn btn-sm btn-ISEIblue4" id="showteacher"  value ="Update personal information">
+                    </div>
+                    <div class = 'col-sm teacherlist'>
+                        <p><b>Email address:</b> {{ user.email }}</p>
+                        <p><b>Phone number:</b> {{ teacher.phone_number }}</p>
+                    </div>
+                    <div class = 'col-sm teacherlist'>
+                        <p> <b>Date of birth:</b> {{ teacher.date_of_birth }}</p>
+                        <p> <b>Teacher_ID:</b> {{ teacher.iseiteacherid|slice:'2:9'}}</p>
                     </div>
 
     <!-- Teacher Info Form -->
@@ -116,12 +121,9 @@
     <!-- address list -->
         <div class="col-3 addresslist" >
             <div class="col-sm">
-                <p> Address:  {{ address.address_1}} {{ address.address_2}}</p>
-                <p>City:  {{ address.city }}</p>
-                <p>State:  {{ address.state }}</p>
-                <p>Zip/Postal Code:  {{ address.zip_code }}</p>
-                <p>Country: {{ address.country}}</p><br>
-                <input type="button" class="btn btn-sm btn-ISEIblue4" id="showaddress"  value ="Update">
+                <p> <b>Address:</b> {{ address.address_1}} {{ address.address_2}}</p>
+                <p>{{ address.city }}, {{ address.state }}, {{ address.zip_code }}, {{ address.country}}</p>
+                <input type="button" class="btn btn-sm btn-ISEIblue4" id="showaddress"  value ="Update Address">
             </div>
         </div>
     <!-- address form -->
