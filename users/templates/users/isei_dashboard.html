@@ -139,8 +139,10 @@
                 <td align = "center"> {{ s_info.certified }}</td>
                 <td align = "right">
                     {% if s_info.percent < 80 %}<span style="color:red">{{ s_info.percent}}%</span>
-                    {% elseif s_info.percent >=80 %}<span style="color:green">{{ s_info.percent }}%</span>
-                    {% else %} {{ s_info.percent }}
+                    {% else %}
+                        {% if s_info.percent >= 80 %}<span style="color:green">{{ s_info.percent }}%</span>
+                            {% else %} {{ s_info.percent }}
+                        {% endif %}
                     {% endif %}
                 </td>
 
