@@ -326,7 +326,7 @@ def iseidashboard(request):
         if s_teachers.count() > 0:
             percent= round(s_certified_teachers.count()*100 / s_teachers.count())
         else:
-            percent = "No teachers registered for this school"
+            percent = "-"
 
         cert_dict[s] = {
             'teachers': s_number_of_teachers,
