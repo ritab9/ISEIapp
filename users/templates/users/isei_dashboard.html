@@ -4,27 +4,30 @@
 
 {% block content %}
 
-     <div class="row">
-        <div class = "col-2 card card-body">
-            <a class= "btn btn-ISEIblue4" href="{% url 'register_teacher' %}"> Add new teacher</a>
-        </div>
+
+<div class="row card card-body" align="right">
+    <div class = "col-2" >
+        <a class= "btn btn-ISEIblue4" href="{% url 'register_teacher' %}"> Add new teacher</a>
     </div>
+</div>
+
+
 <!-- Filter by school -->
-     <div class="row">
-        <div class="card card-body">
-            <form method="get">
-                    {{ school_filter.form}}
-                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-                <a href="{%  url 'isei_dashboard' %}">Clear all filters</a>
-            </form>
-        </div>
+
+<div class="row">
+    <div class="card card-body">
+        <form method="get">
+                {{ school_filter.form}}
+            <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+            <a href="{%  url 'isei_dashboard' %}">Clear all filters</a>
+        </form>
     </div>
+</div>
 
 <div class = "row card card-body">
 <!-- Teacher Certification Status-->
-    <div class="col-sm-10 card card-body">
-
         <h5> Teacher Certification Status</h5>
+            <p>Number of teachers: {{ number_of_teachers }}</p>
         <!-- Percent of registered teachers -->
             <p> <p>Percent of registered teachers certified:
                 {% if percent_certified < 80 %}<span style="color:red">{{ percent_certified }}%</span>
@@ -120,8 +123,37 @@
                         {% endfor %}
                     </tbody>
             </table>
-    </div>
 </div>
+
+
+<div class="row card card-body">
+    <table class = "col col-sm-3">
+        <thead class="span80">
+            <th>School</th><th>Teachers</th><th>Certified</th><th></th>
+        </thead>
+        <tbody>
+            {% for s, s_info in cert_dict.items %}
+                <tr>
+                <td>{{ s }}</td>
+                <td align = "center"> {{ s_info.teachers }}</td>
+                <td align = "center"> {{ s_info.certified }}</td>
+                <td align = "right">
+                    {% if s_info.percent < 80 %}<span style="color:red">{{ s_info.percent}}%</span>
+                    {% else %}<span style="color:green">{{ s_info.percent }}%</span>{% endif %}
+                </td>
+
+
+
+                 <!--   { % for key, info in s_info.items %}
+                        <td>{ { info }}</td>
+                    { % endfor %} -->
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 
 <script>
     $('#certified').on("click", function() {

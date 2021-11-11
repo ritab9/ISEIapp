@@ -277,19 +277,22 @@ def principaldashboard(request, userID):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def iseidashboard(request):
-    # TODO redo the dashboard, replace activity references
+    # all active teacher
     teachers = Teacher.objects.filter(user__is_active=True)
 
+    #filter by school
     school_filter = SchoolFilter(request.GET, queryset=teachers)
     teachers = school_filter.qs
 
     # Teacher Certificates Section
     number_of_teachers = teachers.count()
+    #Last certificate for each active user
     tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active= True).order_by('renewal_date')
 
-    # Valid certificates and certified teachers
+    # Valid certificates
     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
-    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct()
+    # certified teachers with unexpired certificates
+    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct().order_by('school')
     number_of_certified_teachers = certified_teachers.count()
 
     # expired certificates and teachers with expired certificates
@@ -312,6 +315,25 @@ def iseidashboard(request):
     a_year_ago = today - timedelta(365)
 
 
+    schools = School.objects.filter(~Q(name__in={'ISEI', 'Sample School'}))
+    cert_dict = {}
+    for s in schools:
+        s_teachers = teachers.filter(school=s)
+        # certified teachers with unexpired certificates
+        s_certified_teachers = s_teachers.filter(tcertificate__in=valid_tcertificates).distinct()
+        s_number_of_teachers = s_teachers.count()
+        s_number_of_certified_teachers = s_certified_teachers.count()
+        if s_teachers.count() > 0:
+            percent= round(s_certified_teachers.count()*100 / s_teachers.count())
+        else:
+            percent = "No teachers registered for this school"
+
+        cert_dict[s] = {
+            'teachers': s_number_of_teachers,
+            'certified': s_number_of_certified_teachers,
+            'percent': percent,
+        }
+
 
     context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago, percent_certified=percent_certified,
                    valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
@@ -320,6 +342,7 @@ def iseidashboard(request):
                    number_of_non_certified_teachers=number_of_non_certified_teachers,
                    number_of_teachers=number_of_teachers,
                    school_filter = school_filter,
+                   cert_dict = cert_dict,
                    )
 
     return render(request, 'users/isei_dashboard.html', context)
