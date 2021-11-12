@@ -280,6 +280,7 @@ def iseidashboard(request):
     # all active teacher
     teachers = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['teacher'])
 
+
     #filter by school
     school_filter = SchoolFilter(request.GET, queryset=teachers)
     teachers = school_filter.qs
