@@ -411,23 +411,16 @@ def isei_ceu_approval(request, repID=None, instID=None):
         if request.POST.get('approveinst'):
            CEUInstance.objects.filter(id=instID).update(isei_reviewed='a', approved_ceu=request.POST.get('approved_ceu'), reviewed_at=Now(), isei_comment = None)
            this_activity = CEUInstance.objects.get(id=instID)
+           email_CEUactivity_approved_by_ISEI(this_activity.ceu_report.teacher)
 
-           #email = EmailMessage(
-           #    'ISEI Approval', "Your submission has been rejected by ISEI. Go to www.blablabla",
-           #    'ritab.isei.life@gmail.com',
-           #    [this_activity.ceu_report.teacher.user.email])
-           #email.send()
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
            CEUInstance.objects.filter(id=instID).update(isei_reviewed='d', isei_comment=request.POST.get('isei_comment'),
                                                         principal_reviewed = 'n', date_resubmitted = None, reviewed_at=Now())
            this_activity = CEUInstance.objects.get(id=instID)
-           #email = EmailMessage(
-           #    'ISEI Denial', EmailMessage.objects.get(name="ISEIDeniedToTeacher").message,
-           #    'ritab.isei.life@gmail.com',
-           #    [this_activity.ceu_report.teacher.user.email])
-           #email.send()
+           email_CEUactivity_denied_by_ISEI(this_activity.ceu_report.teacher)
+
 
     if request.method == 'POST':
         if request.POST.get('cancelinst'):
@@ -590,6 +583,7 @@ def manage_tcertificate(request, pk, certID=None):
                 return redirect('manage_tcertificate', pk = pk,  certID=tcertificate.id)
             if request.POST.get('submit_certificate'): #if certificate is submitted return to teacher_cert page
                 messages.success(request, 'Certificate was successfully saved!')
+                email_Certificate_issued_or_modified(teacher)
                 return redirect('manage_tcertificate',  pk =pk, certID=tcertificate.id)
 
     #certID is used in the template to reload page after previous certificates are archived
@@ -705,6 +699,7 @@ def teachercert_application(request, pk):
             if application.date_initial == None:
                 application.date_initial = application.date
             application = application_form.save()
+            email_Application_submitted(teacher)
             return redirect ('teachercert_application_done', pk = teacher.id )
 
 
@@ -770,7 +765,12 @@ def isei_manage_application(request, appID):
     if request.method == "POST":
         application_form = TeacherCertificationApplicationISEIForm(request.POST, instance = application)
         if application_form.is_valid():
-            application_form.save()
+            application = application_form.save()
+            if application.closed:
+                email_Application_processed(teacher)
+            elif application.isei_revision_date:
+                email_Application_on_hold(teacher, application.public_note)
+
             #return redirect('isei_teacher_applications')
 
 
