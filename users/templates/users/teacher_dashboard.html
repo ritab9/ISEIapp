@@ -6,13 +6,14 @@
 {% block title %} Teacher {% endblock title %}
 {% block content %}
 
-
 {% if tcertificates %}
 
 <!-- Teacher Certificates -->
     <div class="">
         <div class = "row">
-            <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)</div>
+            <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)
+            <p>{{ highest_degree }}</p>
+            </div>
             <div  class = "noprint" style = "text-align: right">
                 <button class='btn-ISEIblue2' onclick="window.print()">Print Certificate</button>
             </div>

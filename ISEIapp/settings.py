@@ -43,6 +43,8 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'teachercert',
+    'emailing',
+
     'crispy_forms',
     'storages',
     'jquery',
@@ -170,16 +172,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGOUT_REDIRECT_URL = '/login/'
 
 #logout users when they close browser
-#SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
-#the email setup has to use a two step verifcation
-#the password is an app password (found in Account / Security)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+#print emails to console
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#print emails to a file
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email testing'
+
+#the gmail setup has to use a two step verifcation the password is an app password (found in Account / Security)
+
 #EMAIL_HOST = 'mail.isei.life'
 #EMAIL_PORT = 465
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+#OR
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+

@@ -44,12 +44,13 @@ class CEUReportFilter(django_filters.FilterSet):
 
 
 #not used
-#class TeacherFilter(django_filters.FilterSet):
-#    school = CharFilter(field_name = 'school', lookup_expr = 'icontains')
-#    class Meta:
-#        model = Teacher
-#        fields = '__all__'
-#        exclude = ['user', 'phone', 'profile_picture']
+class TeacherFilter(django_filters.FilterSet):
+    school = CharFilter(field_name = 'school', lookup_expr = 'icontains')
+
+    class Meta:
+        model = Teacher
+        fields = '__all__'
+        exclude = ['user', 'phone', 'profile_picture']
 
 
 class TCertificateFilter(django_filters.FilterSet):

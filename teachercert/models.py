@@ -186,8 +186,15 @@ class AcademicClass(models.Model):
         return self.name
 
 class EmailMessage(models.Model):
+    CHOICES = (
+        ('t', 'Teacher'),
+        ('p', 'Principal'),
+        ('i', 'ISEI'),
+    )
+    sender = models.CharField(max_length=1, choices=CHOICES, null=False, default='i')
+    receiver = models.CharField(max_length=1, choices=CHOICES, null=False, default='i')
     name = models.CharField(max_length=50)
-    message = models.CharField(max_length=200)
+    message = models.CharField(max_length=300,)
 
     def __str__(self):
         return self.name

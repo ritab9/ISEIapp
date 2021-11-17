@@ -216,9 +216,23 @@ def teacherdashboard(request, userID):
 
     today =get_today()
 
+    highest_degree = None
+    if CollegeAttended.objects.filter(teacher=teacher, level="d"):
+        highest_degree = "Doctoral Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
+        highest_degree = "Master's Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
+        highest_degree = "Bachelor's Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
+        highest_degree = "Associate Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
+        highest_degree = "Certificate"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
+        highest_degree = "None"
+
     context = dict(teacher=teacher, tcertificates=tcertificates,
                    today=today, basic_met = basic_met, basic_not_met = basic_not_met,
-                   tcert_application=tcert_application)
+                   tcert_application=tcert_application, highest_degree= highest_degree)
     return render(request, 'users/teacher_dashboard.html', context)
 
 
@@ -228,7 +242,7 @@ def principaldashboard(request, userID):
 
     principal = User.objects.get(id=userID).teacher
 
-    teachers = Teacher.objects.filter(school=principal.school,user__is_active= True)
+    teachers = Teacher.objects.filter(school=principal.school,user__is_active= True, user__groups__name__in= ['teacher'])
 
 #Teacher Certificates Section
     number_of_teachers = teachers.count()
@@ -279,7 +293,6 @@ def principaldashboard(request, userID):
 def iseidashboard(request):
     # all active teacher
     teachers = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['teacher'])
-
 
     #filter by school
     school_filter = SchoolFilter(request.GET, queryset=teachers)
@@ -357,3 +370,5 @@ def iseidashboard(request):
 #    context = dict(unprocessed_transcripts = unprocessed_transcripts)
 
 #    return render(request, 'users/transcript_status.html', context)
+
+

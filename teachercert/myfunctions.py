@@ -2,6 +2,18 @@ from .models import *
 from datetime import datetime
 
 
+def get_principals (teacher):
+    principals = User.objects.filter(groups__name='principal', teacher__school=teacher.school)  # get the principal(s) of this teacher
+    return principals
+
+def get_principals_emails(teacher):
+    principals = get_principals(teacher)
+    principal_emails = []
+    for p in principals:
+        principal_emails.append(p.email)
+    return principal_emails
+
+
 # The last issued certificate for a teacher
 def newest_certificate(teacher):
     certificates = TCertificate.objects.filter(teacher=teacher)

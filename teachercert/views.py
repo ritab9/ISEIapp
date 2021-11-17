@@ -11,6 +11,7 @@ from django.db.models.functions import Now
 
 # import custom functions
 from .myfunctions import *
+from emailing.teacher_cert_functions import *
 
 # for creating the pdf
 from django.http import FileResponse
@@ -47,9 +48,10 @@ def createCEUreport(request, pk, sy):
     ceu_report.teacher = Teacher.objects.get(user__id=pk)
     ceu_report.school_year = SchoolYear.objects.get(id=sy)
     ceu_report.save()
+    email_CEUReport_created(ceu_report.teacher, ceu_report.school_year.name)
     return redirect('create_ceu', recId =ceu_report.id)
 
-# Ajax attempt
+#Unused - I think
 def add_instance(request, reportID):
     ceu_instance = CEUInstance(ceu_report=CEUReport.objects.get(id=reportID))
     form = CEUInstanceForm(instance=ceu_instance)
@@ -60,7 +62,7 @@ def add_instance(request, reportID):
             return redirect('create_ceu', recId=reportID)
     return render(request, 'teachercert/add_instance.html', {'form': form})
 
-
+#Ajax
 def load_CEUtypes(request):
     ceu_category_id = request.GET.get('ceu_category_id')
     ceu_types = CEUType.objects.filter(ceu_category_id = ceu_category_id).order_by('description')
@@ -79,7 +81,6 @@ def load_evidence(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin', 'staff', 'teacher'])
 def createCEU(request, recId):
-
 
     ceu_report = CEUReport.objects.get(id=recId) #report
     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report) #list of already entered instances
@@ -107,15 +108,14 @@ def createCEU(request, recId):
                     ceu_report.save()
                     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report)
                     ceu_instance.update(principal_reviewed = 'n', isei_reviewed='n') # set all instances to not reviewed as well
-                    #todo work on message to principal
-                    #principal = Teacher.objects.get(user__groups__name='principal', school=ceu_report.teacher.school) # get the principal of this teacher
-                    #if principal: #to avoid an error message just in case principal is not set
-                    #    principal_email = principal.user.email
-                    #    email = EmailMessage(
-                    #        'Report Submission',
-                    #        ceu_report.teacher.first_name + " " +ceu_report.teacher.last_name + " has submitted a PDA report. Go to www.isei.blablabla to review the submission.",
-                    #        'ritab.isei.life@gmail.com', [principal_email])
-                    #    email.send()
+
+                    #principals = User.objects.filter(groups__name='principal', teacher__school=ceu_report.teacher.school) # get the principal of this teacher
+                    #principal_emails=[]
+                    #for p in principals:
+                    #    principal_emails.append(p.email)
+                    principal_emails = get_principals_emails(ceu_report.teacher)
+                    email_CEUReport_submitted(ceu_report.teacher, principal_emails, ceu_report.school_year.name)
+
                     return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id) # go back to CEUdashboard
 
         if request.POST.get('update_report'):  # update summary, stay on page
@@ -194,7 +194,6 @@ def myCEUdashboard(request, pk):
 
     ceu_report = CEUReport.objects.filter(teacher=teacher) #all reports of this teacher
 
-
     ceu_instance = CEUInstance.objects.filter(ceu_report__in=ceu_report)
     # all instances run through the filter (Taking this out)
     #instance_filter = CEUInstanceFilter(request.GET, queryset=ceu_instance)
@@ -257,6 +256,7 @@ def my_academic_classes(request, pk):
             form = AcademicClassForm(request.POST, instance=a_class)
             if form.is_valid():
                 form.save()
+                email_AcademicClass_submitted(teacher)
 
     if is_in_group(request.user, 'teacher'):
         user_not_teacher = False
@@ -298,7 +298,6 @@ def update_academic_class(request, pk):
 
     context = dict(form=form)
     return render(request, "teachercert/update_academic_class.html", context)
-
 
 
 # Common views
@@ -354,16 +353,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
             ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='a', principal_comment=None, reviewed_at=Now())
             this_report = CEUReport.objects.get(id=recID) #the above is a query set and we need just the object
             CEUInstance.objects.filter(ceu_report = this_report).update(principal_reviewed='a', reviewed_at=Now())
-            #email the principal and ISEI about the approval
-            #Todo workon the email messages
-            #email = EmailMessage(
-            #    'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com', [this_report.teacher.user.email])
-            #email.send()
-            #email = EmailMessage(
-            #    'Principal Approval',
-            #    principal.last_name + " " + principal.first_name + " from " + principal.school.name + " has approved " + this_report.teacher.first_name + " " + this_report.teacher.last_name + "'s report.",
-            #    'ritab.isei.life@gmail.com', ['ritab.isei.life@gmail.com'])
-            #email.send()
+            email_CEUReport_approved_by_principal(this_report.teacher, this_report.school_year.name)
 
 
     if request.method == 'POST':
@@ -371,44 +361,28 @@ def principal_ceu_approval(request, recID=None, instID=None):
             ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='d', date_submitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
             this_report = CEUReport.objects.get(id=recID) #the above is a query set and we need just the object
             CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed='d',date_resubmitted = None, reviewed_at=Now())
-            #Todo work on the email messages
-            #email = EmailMessage(
-            #    'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message, 'ritab.isei.life@gmail.com',
-            #    [this_report.teacher.user.email])
-            #email.send()
+            email_CEUReport_denied_by_principal(this_report.teacher, this_report.school_year.name)
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
             ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='n', date_submitted = F('updated_at') )
             this_report = CEUReport.objects.get(id=recID)
             CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed = 'n', date_resubmitted = F('updated_at') )
-            # Todo work on the email messages
-            #email = EmailMessage(
-            #    'Principal Retracted Action', 'The principal has canceled the approval/denial of the PDA submission.', 'ritab.isei.life@gmail.com',
-            #    [this_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
-            #email.send()
+            email_CEUReport_retracted_by_principal(this_report.teacher, this_report.school_year.name)
+
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
             #todo if ceu_instance_notreviewed filtering can be simplified, isei_reviewed ='n' doesn't need to be here
             CEUInstance.objects.filter(id=instID).update(principal_reviewed='a', isei_reviewed='n', reviewed_at=Now(), principal_comment=None)
             this_activity = CEUInstance.objects.get(id=instID)
-            # Todo work on the email messages
-            #email = EmailMessage(
-            #    'Principal Approval', EmailMessage.objects.get(name="PrincipalApprovedToTeacher").message, 'ritab.isei.life@gmail.com',
-            #    [this_activity.ceu_report.teacher.user.email, 'ritab.isei.life@gmail.com'])
-            #email.send()
+            email_CEUactivity_approved_by_principal(this_activity.ceu_report.teacher)
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
             CEUInstance.objects.filter(id=instID).update(principal_reviewed='d',date_resubmitted = None, principal_comment = request.POST.get('principal_comment'), reviewed_at=Now())
             this_activity = CEUInstance.objects.get(id=instID)
-            # Todo work on the email messages
-            #email = EmailMessage(
-            #    'Principal Denial', EmailMessage.objects.get(name="PrincipalDeniedToTeacher").message,
-            #    'ritab.isei.life@gmail.com',
-            #    [this_activity.ceu_report.teacher.user.email])
-            #email.send()
+            email_CEUactivity_denied_by_principal(this_activity.ceu_report.teacher)
 
 
     context = dict(teachers=teachers,
@@ -436,7 +410,8 @@ def isei_ceu_approval(request, repID=None, instID=None):
     if request.method == 'POST':
         if request.POST.get('approveinst'):
            CEUInstance.objects.filter(id=instID).update(isei_reviewed='a', approved_ceu=request.POST.get('approved_ceu'), reviewed_at=Now(), isei_comment = None)
-           #this_activity = CEUInstance.objects.get(id=instID)
+           this_activity = CEUInstance.objects.get(id=instID)
+
            #email = EmailMessage(
            #    'ISEI Approval', "Your submission has been rejected by ISEI. Go to www.blablabla",
            #    'ritab.isei.life@gmail.com',
@@ -463,27 +438,26 @@ def isei_ceu_approval(request, repID=None, instID=None):
             ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='a', isei_comment=None, reviewed_at=Now())
             CEUInstance.objects.filter(ceu_report=ceu_report).update(isei_reviewed='a', reviewed_at=Now())
             this_report=CEUReport.objects.get(id=repID)
-            email = EmailMessage(
-                'ISEI Approval', "ISEI has approved your PDA submission. Go to www.blabla for details",
-                'ritab.isei.life@gmail.com',
-                [this_report.teacher.user.email])
-            email.send()
+
+            email_CEUReport_approved_by_ISEI(this_report.teacher, this_report.school_year.name)
+
 
     if request.method == 'POST':
         if request.POST.get('denied'):
             ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='d', date_submitted = None, principal_reviewed ='n', isei_comment = request.POST.get('isei_comment'), reviewed_at=Now())
             CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed='n',isei_reviewed='d',date_resubmitted = None, reviewed_at=Now())
             this_report = CEUReport.objects.get(id=repID)
-            email = EmailMessage(
-                'ISEI Denial', "ISEI has approved your PDA submission. Go to www.blabla for details",
-                'ritab.isei.life@gmail.com',
-                [this_report.teacher.user.email])
-            email.send()
+
+            email_CEUReport_denied_by_ISEI(this_report.teacher, this_report.school_year.name)
+
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
             ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted = F('updated_at'), principal_reviewed ='a')
             CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed = 'a', isei_reviewed = 'n', date_resubmitted = Now())
+            this_report = CEUReport.objects.get(id=repID)
+
+            email_CEUReport_retracted_by_ISEI(this_report.teacher, this_report.school_year.name)
 
 
     context = dict(teachers=teachers, ceu_report_notreviewed=ceu_report_notreviewed, ceu_report_approved=ceu_report_approved, ceu_report_denied=ceu_report_denied, ceu_instance_notreviewed = ceu_instance_notreviewed)

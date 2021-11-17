@@ -1,8 +1,8 @@
 {# base for all other templates #}
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" style="font-size: 0.9rem">
+<div class = "">
 <head>   {# make modifiable head elements #}
     <meta charset="UTF-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -19,8 +19,8 @@
 
         {# stying of this specific file #}
         <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
-        {# icom that appears in the tab along with the title #}
-         {#  < link rel="shortcut icon" type="image/png" href="{% static 'appfiles/favicon.ico' %}"> #}
+        {# icon that appears in the tab along with the title #}
+         {#  < link rel="shortcut icon" type="image/png" href="{ % static 'appfiles/favicon.ico' %}"> #}
         {# font awesome for icons #}
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
@@ -76,5 +76,6 @@
     {% block footer_javascript %}
 
     {% endblock footer_javascript %}
+</div>
 </html>
 

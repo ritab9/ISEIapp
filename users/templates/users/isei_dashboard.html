@@ -32,7 +32,7 @@
             <p>Number of teachers: {{ number_of_teachers }}</p>
         <!-- Percent of registered teachers -->
             <p> <p>Percent of registered teachers certified:
-                {% if percent_certified < 80 %}<span style="color:red">{{ percent_certified }}%</span>
+                {% if percent_certified < 85 %}<span style="color:red">{{ percent_certified }}%</span>
                 {% else %}<span style="color:green">{{ percent_certified }}%</span>{% endif %}
             </p></p>
 
@@ -128,7 +128,9 @@
 </div>
 
 <!-- Percent of Certified teachers/school -->
-<div class="row card card-body">
+
+
+    <div class="row card card-body">
     <table class = "table-striped col col-sm-5">
         <thead class="span80">
             <th>School</th><th>Teachers</th><th>Certified</th><th></th>
@@ -140,9 +142,9 @@
                 <td align = "center"> {{ s_info.teachers }}</td>
                 <td align = "center"> {{ s_info.certified }}</td>
                 <td align = "right">
-                    {% if s_info.percent < 80 %}<span style="color:red">{{ s_info.percent}}%</span>
+                    {% if s_info.percent < 85 %}<span style="color:red">{{ s_info.percent}}%</span>
                     {% else %}
-                        {% if s_info.percent >= 80 %}<span style="color:green">{{ s_info.percent }}%</span>
+                        {% if s_info.percent >= 85 %}<span style="color:green">{{ s_info.percent }}%</span>
                             {% else %} {{ s_info.percent }}
                         {% endif %}
                     {% endif %}

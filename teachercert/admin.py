@@ -56,9 +56,9 @@ class CEUReport(admin.ModelAdmin):
 
 @admin.register(EmailMessage)
 class EmailMessage(admin.ModelAdmin):
-    list_display = ('name', 'message')
-    list_editable = ('message',)
-    list_display_links = ('name', )
+    list_display = ( 'sender', 'receiver', 'name', 'message',)
+    list_editable = ('sender', 'receiver', 'name' )
+    list_display_links = ('message', )
 
 
 #teacher Certification Model Registration
