@@ -17,6 +17,7 @@ from django.urls import reverse
 from django.forms import inlineformset_factory
 # import custom functions
 from .myfunctions import *
+from emailing.teacher_cert_functions import email_registered_user
 
 # authentication functions
 @login_required(login_url='login')
@@ -33,10 +34,13 @@ def register_teacher(request):
             group = Group.objects.get(name='teacher')
             new_user.groups.add(group)
             school=School.objects.get(id=school_id)
-            Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, school = school, joined_at=joined_at )
+            teacher = Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, school = school, joined_at=joined_at )
             username = form.cleaned_data.get('username')
             # flash message (only appears once)
+            phone_digits = request.POST['phone_dig']
             messages.success(request, 'Account was created for ' + username)
+
+            email_registered_user(teacher, phone_digits)
             return redirect('account_settings', userID = new_user.id)
 
     context = {'form': form, 'school':school}

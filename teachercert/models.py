@@ -185,7 +185,7 @@ class AcademicClass(models.Model):
     def __str__(self):
         return self.name
 
-class EmailMessage(models.Model):
+class EmailMessageTemplate(models.Model):
     CHOICES = (
         ('t', 'Teacher'),
         ('p', 'Principal'),

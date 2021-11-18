@@ -1,18 +1,9 @@
 
-from teachercert.models import *
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from users.decorators import unauthenticated_user, allowed_users
-
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.views import View
 from django.core.mail import EmailMessage, send_mass_mail
 from django.conf import settings
 
-from .forms import *
-from emailing.filters import UserFilter
+
+from teachercert.models import EmailMessageTemplate
 
 
 signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "www.isei1.org"
@@ -22,6 +13,13 @@ def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.co
     mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher.certification.isei@gmail.com"])
     mail.send()
 
+def email_registered_user (teacher, phone_digits):
+    subject = "ISEI Teacher Certification Account"
+    message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
+               str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
+               "\n" + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
+               "\n" + "Password: ISEIapp"+phone_digits
+    send_email(subject, message, [teacher.user.email])
 
 def email_AcademicClass_submitted(teacher):
     subject = "Academic Class: " + str(teacher)

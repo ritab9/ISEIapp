@@ -61,7 +61,7 @@ class SchoolOfEmploymentForm(ModelForm):
         }
 
 
-SchoolOfEmploymentFormSet = inlineformset_factory(Teacher, SchoolOfEmployment, form = SchoolOfEmploymentForm, extra=3, can_delete=True)
+SchoolOfEmploymentFormSet = inlineformset_factory(Teacher, SchoolOfEmployment, form = SchoolOfEmploymentForm, extra=5, can_delete=True)
 
 class CollegeAttendedForm(ModelForm):
     class Meta:
@@ -74,7 +74,7 @@ class CollegeAttendedForm(ModelForm):
             'transcript_received': forms.HiddenInput(),
         }
 
-CollegeAttendedFormSet = inlineformset_factory(Teacher, CollegeAttended, form = CollegeAttendedForm, extra=3, can_delete=True)
+CollegeAttendedFormSet = inlineformset_factory(Teacher, CollegeAttended, form = CollegeAttendedForm, extra=5, can_delete=True)
 
 class AddressForm(ModelForm):
     class Meta:

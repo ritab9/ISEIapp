@@ -35,7 +35,12 @@ from django.forms import inlineformset_factory
 
 #just an info page about the CEU activities
 def ceu_info(request):
-    return render(request, 'teachercert/ceu_info.html')
+    info = CEUType.objects.all()
+    #first = CEUType.objects.first()
+    #info = CEUType.objects.filter(~Q(id= first.id))
+    list = [1,2,6,7,8,9,10]
+    context = dict(info=info, list= list)
+    return render(request, 'teachercert/ceu_info.html', context)
 
 
 # Teacher Views

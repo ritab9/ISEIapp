@@ -23,7 +23,8 @@
         <div class = "card card-body mb-3">
             <div class="col">
                 {% if c.teacher.address.address_1 %}
-                    <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a>
+                    <!-- <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a> -->
+                    <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
                 {% else %}
                     <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
                 {% endif %}
@@ -202,7 +203,7 @@
         </div>
 
  <!-- list of colleges with transcript received status -->
-        {% if teacher.collegeattended_set.all %}
+        {% if teacher.collegeattended_set.all %}Complete six semester/nine quarter credit hours of college work from the Basic Requirements Not Met list
         <div class="card card-body" >
             <div class="row">
                 <div class="col">

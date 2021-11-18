@@ -17,13 +17,26 @@
         <thead class="thead-dark">
             <tr>
                 <th>Category</th>
-                <th>Professional Development Activity</th>
-                <th>Evidence</th>
+                <th>Activity Description</th>
                 <th>Typical CEU Value</th>
+                <th>Evidence</th>
             </tr>
         </thead>
         <tbody>
-            <tr style = "background-color: #ddd">
+            {%  for i in info %}
+                {% if i.id in list  %}
+                <tr style = "background-color: rgba(218,218,218,0.88)">
+                {% else %}
+                <tr>
+                {% endif %}
+                    <td>{{ i.ceu_category }}</td>
+                    <td>{{ i.description }}</td>
+                    <td>{{ i.ceu_value }}</td>
+                    <td>{{ i.evidence }}</td>
+                </tr>
+
+            {% endfor %}
+ <!--           <tr style = "background-color: #ddd">
                 <td rowspan="2"> <b>Independent</b></td>
                 <td> Reading Professional Books, Audio Books, Professional Magazines & Journals</td>
                 <td> Submit 1-page report </td>
@@ -102,8 +115,10 @@
                 <td>  </td>
                 <td> 4.0 CEUs/100-pgs </td>
             </tr>
+ -->
         </tbody>
     </table>
+    <br>
     <p>Equivalent Academic Credit:  1.0 CEU = 10 clock hours.   3-CEU is equivalent to 1-semester credit</p>
 
 

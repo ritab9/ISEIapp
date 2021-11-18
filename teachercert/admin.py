@@ -54,8 +54,8 @@ class CEUReport(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
 
-@admin.register(EmailMessage)
-class EmailMessage(admin.ModelAdmin):
+@admin.register(EmailMessageTemplate)
+class EmailMessageTemplate(admin.ModelAdmin):
     list_display = ( 'sender', 'receiver', 'name', 'message',)
     list_editable = ('sender', 'receiver', 'name' )
     list_display_links = ('message', )
