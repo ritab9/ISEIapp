@@ -193,43 +193,59 @@ def accountsettings(request, userID):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff','principal'])
 def teacherdashboard(request, userID):
-    # TODO teacher dashboard
+
     user=User.objects.get(id=userID)
     teacher = Teacher.objects.get(user = user)
-    #user_in = "teacher"
+    highest_degree = None
+    tcertificate = None
 
     # current_certificates
-    if not never_certified(teacher):
-        tcertificates = current_certificates(teacher)
-    else:
-        tcertificates = None
+    if never_certified(teacher):
+        certification_status = None
+        basic_met = None
+        basic_not_met = None
 
-    basic = TeacherBasicRequirement.objects.filter(teacher=teacher)
-    basic_met = basic.filter(met=True)
-    basic_not_met = basic.filter(met=False)
+        if TeacherCertificationApplication.objects.filter(teacher=teacher):
+            tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
+        else:
+            tcert_application = None
 
-    if TeacherCertificationApplication.objects.filter(teacher=teacher):
-        tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
     else:
-        tcert_application = None
+        tcertificate = current_certificates(teacher).first()
+
+        basic = TeacherBasicRequirement.objects.filter(teacher=teacher)
+        basic_met = basic.filter(met=True)
+        basic_not_met = basic.filter(met=False)
+
+        if CollegeAttended.objects.filter(teacher=teacher, level="d"):
+            highest_degree = "Doctoral Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
+            highest_degree = "Master's Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
+            highest_degree = "Bachelor's Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
+            highest_degree = "Associate Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
+            highest_degree = "Certificate"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
+            highest_degree = "None"
+
+        if certified(teacher):
+            certification_status = "Valid Certification"
+        else:
+            certification_status = "Expired Certification"
+
+#if an application has been turned in after the latest Certificate was issued
+        if TeacherCertificationApplication.objects.filter(teacher=teacher, date__gte = tcertificate.issue_date):
+            tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
+        else:
+            tcert_application = None
+
 
     today =get_today()
 
-    highest_degree = None
-    if CollegeAttended.objects.filter(teacher=teacher, level="d"):
-        highest_degree = "Doctoral Degree"
-    elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
-        highest_degree = "Master's Degree"
-    elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
-        highest_degree = "Bachelor's Degree"
-    elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
-        highest_degree = "Associate Degree"
-    elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
-        highest_degree = "Certificate"
-    elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
-        highest_degree = "None"
 
-    context = dict(teacher=teacher, tcertificates=tcertificates,
+    context = dict(teacher=teacher, tcertificate=tcertificate, certification_status = certification_status,
                    today=today, basic_met = basic_met, basic_not_met = basic_not_met,
                    tcert_application=tcert_application, highest_degree= highest_degree)
     return render(request, 'users/teacher_dashboard.html', context)

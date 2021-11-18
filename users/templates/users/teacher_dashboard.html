@@ -6,7 +6,7 @@
 {% block title %} Teacher {% endblock title %}
 {% block content %}
 
-{% if tcertificates %}
+{% if tcertificate %}
 
 <!-- Teacher Certificates -->
     <div class="">
@@ -19,10 +19,9 @@
             </div>
         </div>
 
-        {% for c in tcertificates %}
         <div class = "card card-body mb-3">
             <div class="col">
-                {% if c.teacher.address.address_1 %}
+                {% if tcertificate.teacher.address.address_1 %}
                     <!-- <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a> -->
                     <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
                 {% else %}
@@ -30,20 +29,20 @@
                 {% endif %}
             </div>
 <!-- Certificate Info -->
-            <h6><b>{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type.name }}</b></h6>
-            {% if c.expired %} <span style="color:red">Expired</span> {% endif %}
+            <h6><b>{% if tcertificate.nad %}NAD certificate:{% endif %}{{ tcertificate.certification_type.name }}</b></h6>
+            {% if tcertificate.expired %} <span style="color:red">Expired</span> {% endif %}
 
             <div class="row mb-2">
                 <div class="col-sm-3">
                     <h6>Endorsements:</h6>
-                    <ul>{% for e in c.tendorsement_set.all %}
+                    <ul>{% for e in tcertificate.tendorsement_set.all %}
                         <li>{{ e }},  {{ e.range }} </li>
                     {% endfor %} </ul>
                     <p><h6>Valid:</h6>
-                    {{ c.issue_date }} - {% if c.renewal_date < today %}<span style="color:red">{{ c.renewal_date}}</span> {% else %} {{ c.renewal_date }}{% endif %}
+                    {{ tcertificate.issue_date }} - {% if tcertificate.renewal_date < today %}<span style="color:red">{{ tcertificate.renewal_date}}</span> {% else %} {{ tcertificate.renewal_date }}{% endif %}
                 </p></div>
 
-            {% if not c.nad %}
+            {% if not tcertificate.nad %}
   <!-- Basic requirments met and not met -->
                 {% if basic_met %}
                     <div class="col-sm-6">
@@ -76,25 +75,25 @@
 <!-- Renewal requirements and notes -->
             <div class="row mb-3">
                 <div class="col">
-                <p><h6> Renewal Requirements:</h6> {{ c.renewal_requirements }}</p>
-                    {% if c.public_note %}
-                        <p><b>Note:</b> {{ c.public_note }}</p>
+                <p><h6> Renewal Requirements:</h6> {{ tcertificate.renewal_requirements }}</p>
+                    {% if tcertificate.public_note %}
+                        <p><b>Note:</b> {{ tcertificate.public_note }}</p>
                     {% endif %}
                 </div>
             </div>
 
-{% if not c.nad %}
+{% if not tcertificate.nad %}
              <div class="row mb-3">
 
 <!-- CEU Reports with this certificate -->
                 <div class="col col-sm">
                 <h6><b>CEU Reports Submitted</b></h6>
-                {% if c.teacher.ceureport_set.all %}
+                {% if tcertificate.teacher.ceureport_set.all %}
                     <table class="table">
                         <tr><th>School Year</th><th>Status</th></tr>
 
-                        {% for p in c.teacher.ceureport_set.all %}
-                            {% if p.school_year.end_date > c.issue_date %}
+                        {% for p in tcertificate.teacher.ceureport_set.all %}
+                            {% if p.school_year.end_date > tcertificate.issue_date %}
                             <tr>
                                     {% if p.isei_reviewed == 'a' %}
                                         <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
@@ -130,14 +129,14 @@
 
                     <div class="col col-sm">
                         <h6><b>Academic Courses Completed</b></h6>
-                    {% if c.teacher.academicclass_set.all  %}
+                    {% if tcertificate.teacher.academicclass_set.all  %}
                         <table class="table table-sm">
                         <tr>
                             <th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th>
                         </tr>
 
-                        {% for a in c.teacher.academicclass_set.all %}
-                            {% if a.date_completed > c.issue_date %}
+                        {% for a in tcertificate.teacher.academicclass_set.all %}
+                            {% if a.date_completed > tcertificate.issue_date %}
                             <tr> <td><a class="nav-link" href="{% url 'my_academic_classes' teacher.user.id %}"> {{a.name}}</a></td><td>{{ a.credits }}</td><td>{{a.date_completed}}</td>
                                 {% if a.transcript_received %}
                                     <td><span style="color:green"> Received</span> </td> <td></td><td></td>
@@ -161,26 +160,29 @@
 
         </div>
 
-        {% endfor %}
-
     </div>
 
-{% else %}
+{% endif %}
+
+{% if not certification_status %}
     {% if request.user|in_group:"principal" or request.user|in_group:"staff" %}
             {{ teacher }}
     {% endif %}
+{% endif %}
 
-<!-- If a teacher does not have an ISEI Certification -->
+<!-- If a teacher has a valid application -->
     {% if tcert_application %}
         <div class="card card-body">
         <div class="row">
             <div class="col">
-                <p>Your Teacher Certification Application is being processed.</p>
+                <p>Your Teacher Certification Application has been received.</p>
                 <p> Date submitted: {{ tcert_application.date }} </p>
                 <p>{% if tcert_application.isei_revision_date %}
-                    ISEI revision date: {{ tcert_application.isei_revision_date }}
+
                     {% if tcert_application.isei_revision_date <= tcert_application.date  %}
                             <p style = "color: red"> Not reviewed by ISEI since your update. </p>
+                    {% else %}
+                        ISEI revision date: {{ tcert_application.isei_revision_date }}
                     {% endif %}
                     {% else %}
                     Not reviewed yet.
@@ -203,7 +205,8 @@
         </div>
 
  <!-- list of colleges with transcript received status -->
-        {% if teacher.collegeattended_set.all %}Complete six semester/nine quarter credit hours of college work from the Basic Requirements Not Met list
+        {% if teacher.collegeattended_set.all %}
+
         <div class="card card-body" >
             <div class="row">
                 <div class="col">
@@ -244,11 +247,11 @@
         </div>
         {% endif %}
     {% else %}
+        {% if not tcertificate %}
         <div class="card card-body row">
             Please fill out and submit the <a href="{%  url 'account_settings' teacher.user.id %}">Initial Teacher Certification Application Form</a>
         </div>
+            {% endif %}
     {% endif %}
-
-{% endif %}
 
 {% endblock %}

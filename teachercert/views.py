@@ -702,9 +702,12 @@ def teachercert_application(request, pk):
         if application_form.is_valid():
             application = application_form.save(commit= False)
             if application.date_initial == None:
+                initial = True
                 application.date_initial = application.date
+            else:
+                initial  = False
             application = application_form.save()
-            email_Application_submitted(teacher)
+            email_Application_submitted(teacher, initial)
             return redirect ('teachercert_application_done', pk = teacher.id )
 
 

@@ -138,8 +138,8 @@ class SchoolOfEmployment(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=50, unique=False, blank=False, null=False)
     address = models.CharField(verbose_name="City, Country", max_length=40, default="", )
-    start_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy")
-    end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/dd/yyyy or to date")
+    start_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/yyyy or yyyy")
+    end_date = models.CharField(max_length=10, null=False, blank=False, help_text="mm/yyyy or yyyy or 'to date'")
     courses = models.CharField(verbose_name="Courses taught", max_length=100, default="", )
 
     class Meta:

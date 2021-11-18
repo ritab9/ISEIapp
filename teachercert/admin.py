@@ -134,9 +134,14 @@ class TCertificate(admin.ModelAdmin):
 @admin.register(TeacherCertificationApplication)
 class TeacherCertificationApplication(admin.ModelAdmin):
     model = TeacherCertificationApplication
-    list_display = ('teacher', 'date', 'endors_level','isei_revision_date', 'billed', 'closed')
+    list_display = ('School', 'teacher',  'billed', 'date', 'endors_level','isei_revision_date', 'closed')
     list_editable = ('date', 'billed', 'closed', 'endors_level')
     list_display_links = ('teacher',)
+    ordering = ('billed', 'closed','teacher__school')
+
+    def School(self, obj):
+        return obj.teacher.school
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)

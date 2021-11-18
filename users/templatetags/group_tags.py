@@ -11,3 +11,8 @@ def in_group(user, group_name):
 def certified_tag(user):
     teacher = Teacher.objects.get(user=user)
     return certified(teacher)
+
+@register.filter('expired_certified_tag')
+def expired_certified_tag(user):
+    teacher = Teacher.objects.get(user=user)
+    return expired_certified(teacher)

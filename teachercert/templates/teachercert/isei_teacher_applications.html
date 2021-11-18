@@ -36,7 +36,12 @@
                     <td>{{ app.get_cert_level_display }}</td>
                     <td>{{ app.date }}</td>
                     <td> {% if app.billed %} Billed {% else %}<div class="spanred"> Not billed</div> {% endif %}</td>
-                    <td> {% if app.isei_revision_date %} {{ app.isei_revision_date }}
+                    <td> {% if app.isei_revision_date %}
+                                {% if app.isei_revision_date <= app.date  %}
+                                    <div class="spanred"> Needs revision. </div> <div class="span80">Last revision: {{ app.isei_revision_date }}</div>
+                                {% else %}
+                                    {{ app.isei_revision_date }}
+                                {% endif %}
                           {% else %} <div class="spanred">Not reviewed yet</div>
                           {% endif %}
                     </td>
@@ -45,16 +50,8 @@
                 {% if app.public_note or app.isei_note  %}
                     <tr>
                         <td></td>
-                        <td colspan="6"> {% if app.public_note %} Public note: {{ app.public_note }}<br> {% endif %}
+                        <td colspan="6"> {% if app.public_note %} <div class="spangreen">Public note:</div> {{ app.public_note }}<br> {% endif %}
                              {% if app.isei_note %} Office use only note: {{ app.isei_note }}<br> {% endif %}
-                        </td>
-                    </tr>
-                {% endif %}
-                {% if app.isei_revision_date <= app.date  %}
-                    <tr>
-                        <td></td>
-                        <td colspan="6">
-                            <div class="spanred"> Updated by teacher since last ISEI revision.</div>
                         </td>
                     </tr>
                 {% endif %}

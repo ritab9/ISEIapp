@@ -7,6 +7,7 @@ from teachercert.models import EmailMessageTemplate
 
 
 signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "www.isei1.org"
+office_email = ["jodyv@isei.life"]
 
 def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.com"]):
     message = message+signature
@@ -107,11 +108,19 @@ def email_Certificate_issued_or_modified(teacher):
     subject ="ISEI Teacher Certificate"
     message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification has been issued/renewed/modified. Please log in to isei1.org to view your certification information. If you have any questions, or find any of the information to be innacurate, please contact us."
     send_email(subject, message, [teacher.user.email])
+    message1 = str(teacher.first_name) + " from " + str(teacher.school) + "has been issued an ISEI Teacher Certificate."
+    send_email((subject, message1, office_email))
 
-def email_Application_submitted(teacher):
+def email_Application_submitted(teacher, initial):
     subject = str(teacher) + " Application Submitted"
     message = str(teacher) + " from " + str(teacher.school) + " has submitted a Teacher Certification Application."
-    send_email(subject, message)
+    if initial:
+        message = message + "\n" + "This is an Initial Application, please bill."
+    else:
+        message = message + "\n" + "This is a Renewal Application, please bill only teachers from non-foundation schools."
+
+    send_email(subject, message, office_email)
+
 
 def email_Application_processed(teacher):
     subject ="ISEI Teacher Certification Application"
