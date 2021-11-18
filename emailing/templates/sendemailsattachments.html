@@ -1,5 +1,6 @@
 {%  extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load group_tags %}
 
 {% block content %}
 {% load static %}
@@ -14,7 +15,7 @@
           </div>
           {% endif %}
 
-
+{% if request.user|in_group:"staff"%}
 <div class="row">
     <div class="card card-body">
         <form method="get">
@@ -24,28 +25,28 @@
         </form>
     </div>
 </div>
-
+{% endif %}
 
 <p></p>
           {% if email_form %}
-              <h5 id = "allteachers"> Email all teachers </h5>
+
           <form method="POST" action ="" enctype="multipart/form-data">
             {% csrf_token %}
             {{email_form|crispy}}
-
           <button type="submit" class="btn btn-primary">Send Email</button>
           </form>
           {% endif %}
       </div>
     </div>
 
+    {% if request.user|in_group:"staff"%}
         <div>
         <p> Email addresses: </p>
             {% for t in user_emails %}
             <li> {{ t}} </li>
         {% endfor %}
     </div>
-
+    {% endif %}
     </div>
 
 
