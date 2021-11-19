@@ -137,7 +137,7 @@ class TeacherCertificationApplication(admin.ModelAdmin):
     list_display = ('School', 'teacher',  'billed', 'date', 'endors_level','isei_revision_date', 'closed')
     list_editable = ('date', 'billed', 'closed', 'endors_level')
     list_display_links = ('teacher',)
-    ordering = ('billed', 'closed','teacher__school')
+    ordering = ('billed','closed', 'teacher__school')
 
     def School(self, obj):
         return obj.teacher.school

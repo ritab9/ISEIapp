@@ -315,8 +315,12 @@ class TeacherCertificationApplication(models.Model):
     date = models.DateField(null=False, blank=False)
 
     #Office use section
-
-    billed = models.BooleanField(default = False, blank = False, null = False)
+    CHOICES = (
+        ('y', 'Billed'),
+        ('n', "Not Billed"),
+        ('z', "N/A"),
+    )
+    billed = models.CharField(max_length=1, choices=CHOICES, default = 'n')
     public_note = models.CharField(max_length=255, blank=True, null=True)
     isei_note = models.CharField(max_length=255, blank=True, null=True)
     isei_revision_date = models.DateField(blank = True, null = True)

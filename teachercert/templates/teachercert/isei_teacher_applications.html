@@ -35,7 +35,10 @@
                     <td><a href="{% url 'isei_manage_application' app.id %}"> {{app.teacher}}</a></td>
                     <td>{{ app.get_cert_level_display }}</td>
                     <td>{{ app.date }}</td>
-                    <td> {% if app.billed %} Billed {% else %}<div class="spanred"> Not billed</div> {% endif %}</td>
+                    <td> {% if app.billed == 'y' %} Billed {% else %}
+                            {% if app.billed == 'z' %} N/A
+                            {% else %}
+                        <div class="spanred"> Not billed</div> {% endif %} {% endif %}</td>
                     <td> {% if app.isei_revision_date %}
                                 {% if app.isei_revision_date <= app.date  %}
                                     <div class="spanred"> Needs revision. </div> <div class="span80">Last revision: {{ app.isei_revision_date }}</div>
