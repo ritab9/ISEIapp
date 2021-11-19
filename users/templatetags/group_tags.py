@@ -16,3 +16,8 @@ def certified_tag(user):
 def expired_certified_tag(user):
     teacher = Teacher.objects.get(user=user)
     return expired_certified(teacher)
+
+@register.filter('application_submitted_tag')
+def application_submitted_tag(user):
+    teacher = Teacher.objects.get(user=user)
+    return application_submitted(teacher)

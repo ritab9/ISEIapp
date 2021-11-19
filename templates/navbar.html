@@ -75,7 +75,7 @@
                             <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">My Dashboard </a>
                       </li>
 
-                    {% if request.user|certified_tag %}
+                    {% if request.user|application_submitted_tag %}
                       <li class="nav-item">
                             <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">My CEU Reporting</a>
                       </li>
@@ -102,7 +102,7 @@
                     <li class="nav-item" >
                         <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
                     </li>
-                    {% if request.user|certified_tag or request.user|expired_certified_tag %}
+                    {% if request.user|application_submitted_tag %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
                       </li>
