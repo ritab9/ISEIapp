@@ -676,15 +676,16 @@ def teachercert_application(request, pk):
     else:
         application = TeacherCertificationApplication(teacher=teacher)
 
+
 #When application is started reset the fields below to default. If not submitted, this changes will not be saved.
 
     application.closed = False
-    application.billed = False
+    application.billed = 'n'
     application.date = None
     application.signature = None
 
-    if not application:
-        application = TeacherCertificationApplication(teacher = teacher)
+    #if not application:
+    #    application = TeacherCertificationApplication(teacher = teacher)
 
 
     #if appID == None:  # new application
@@ -704,10 +705,20 @@ def teachercert_application(request, pk):
             if application.date_initial == None:
                 initial = True
                 application.date_initial = application.date
+                member = "doesn't matter"
             else:
-                initial  = False
+                initial = False
+                if teacher.school.foundation:
+                    application.billed ='z'
+                    member = "renew"
+                    if newest_certificate(teacher).renewal_date < application.date-timedelta(days=366):
+                        application.billed='n'
+                        member ="reinstate"
+                else:
+                    member = False
+
             application = application_form.save()
-            email_Application_submitted(teacher, initial)
+            email_Application_submitted(teacher, initial, member)
             return redirect ('teachercert_application_done', pk = teacher.id )
 
 

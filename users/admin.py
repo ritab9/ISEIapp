@@ -19,8 +19,8 @@ class SchoolAddressInLine(admin.StackedInline):
 @admin.register(School)
 class School(admin.ModelAdmin):
     inlines = [SchoolAddressInLine,]
-    list_display = ('name', 'abbreviation',)
-    list_editable = ('abbreviation',)
+    list_display = ('name', 'abbreviation', 'foundation')
+    list_editable = ('abbreviation', 'foundation')
 
 
 

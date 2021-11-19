@@ -27,6 +27,7 @@ class School(models.Model):
                             null=False)
     abbreviation = models.CharField(max_length=4, default=" ", help_text=' Enter the abbreviation for this school')
     ordering = ['name']
+    foundation = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('name',)
