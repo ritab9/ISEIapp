@@ -1,0 +1,115 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+{%  load group_tags %}
+
+{% block title %}
+   Add ISEI Workshop CEUs
+{% endblock %}
+
+{% block content %}
+
+    {% load static %}
+
+    <!-- Info card -->
+    <div class="card card-body">
+        <div class="row">
+            <div class="col-sm"><a class = "btn btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">CEU info</a></div>
+            <div class="col-sm" align="right"><a class="btn btn btn-ISEIblue3" href="{% url 'CEUreports' %}">See all reports</a></div>
+        </div>
+    </div>
+
+
+    <div class="card card-body">
+    {% if case == "blank" %}
+        <div id="add_workshop">
+            <form action=" " method="POST" id="workshop_info" >
+                {% csrf_token %}
+
+                <div class = "row">
+                    <div class="col-sm-2">
+                        <select name="selected_school" required>
+                                {% for s in school_list %}
+                                    <option value="{{ s.id }}">{{s}}</option>
+                                {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select name="selected_school_year">
+                            {% for y in school_year_list %}
+                                <option  value = "{{ y.id }}">{{ y}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <label for ="date_completed"> Date Completed</label>
+                        <input type = "date" name = "date_completed" required>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <label for ="description"> Description</label>
+                        <input type = "text" name = "description" maxlength="3000" required>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <label for ="CEUs"> CEUs</label>
+                        <input type = "number" required name = "CEUs" min ="0.1" max="10" step="0.1">
+                    </div>
+
+                    <div class="col-sm-2"><input class="btn-ISEIblue3" type="submit" value="Submit CEUs" name="submit_ceus" id="submit_ceus" ></div>
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <div>
+            {% for message in messages %}
+                        <p id="messages" style="color:blue">{{message}}</p>
+            {% endfor %}
+        </div>
+        {{ case }}
+        <div id="CEU editing">
+            <form action="" method = "POST" name="CEU_editing">
+        {% csrf_token %}
+            <div class="row mt-3">
+                    <div class="col">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>CEUs</td>
+                                    <td>Delete</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{ ceu_form.management_data }}
+                            {{ ceu_form.management_form }}
+                            {% for form in ceu_form %}
+                              {{ form.non_field_errors }}
+                            <tr>
+                                <td>{{ form.instance.ceu_report.teacher}} </td>
+                                <td>{{ form.approved_ceu }}<span style ='color:red'>{{ form.approved_ceu.errors }}</span></td>
+                                <td>{{ form.DELETE }}<span style ='color:red'>{{ form.DELETE.errors }}</span></td>
+
+                            </tr>
+                              {% for hidden in form.hidden_fields %}
+                                 {{ hidden }}
+                              {% endfor %}
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        <div class="col-sm-2"><input class="btn-ISEIblue3" type="submit" value="Submit Changes" name="submit_changes" ></div>
+
+                    </div>
+        </form>
+        </div>
+    {% endif %}
+    </div>
+
+
+    <script>
+
+
+    </script>
+
+{% endblock %}

@@ -8,7 +8,7 @@ from users.models import *
 from .models import *
 from django.db.models import Q, F #Q is for queries in filters, F is to update a field using an other field from the model
 from django.db.models.functions import Now
-
+from django.forms import modelformset_factory
 # import custom functions
 from .myfunctions import *
 from emailing.teacher_cert_functions import *
@@ -799,3 +799,66 @@ def isei_manage_application(request, appID):
     return render(request, 'teachercert/isei_manage_application.html', context)
 
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def add_ISEI_CEUs(request):
+
+    school_list = School.objects.all()
+    school_year_list = SchoolYear.objects.filter(active_year=True)
+
+    iseiCEUformset = modelformset_factory(CEUInstance, fields=('approved_ceu',), extra=0, can_delete=True)
+    case = "blank"
+
+    if request.method == 'POST'and request.POST.get('submit_ceus'):
+        school = School.objects.get (id=request.POST['selected_school'])
+        school_year = SchoolYear.objects.get(id=request.POST['selected_school_year'])
+        date_completed = request.POST['date_completed']
+        description = request.POST['description']
+        CEUs = request.POST['CEUs']
+        teachers= Teacher.objects.filter(school=school, user__is_active= True)
+        ceu_category = CEUCategory.objects.get(name="Group")
+        ceu_type = CEUType.objects.get(description__contains="ISEI")
+        for t in teachers:
+            ceu_report = CEUReport.objects.filter(teacher=t, school_year=school_year).first()
+            if not ceu_report:
+                ceu_report = CEUReport(teacher=t, school_year=school_year)
+                ceu_report.save()
+                email_CEUReport_created(ceu_report.teacher, ceu_report.school_year.name)
+
+            ceu_instance = CEUInstance(ceu_report=ceu_report, ceu_category=ceu_category, ceu_type=ceu_type,
+                                       date_completed=date_completed, description=description,
+                                       isei_reviewed= 'a', approved_ceu= CEUs, amount = CEUs, units ='c')
+            try:
+                ceu_instance.save()
+                new = True
+            except:
+                new=False
+
+        if new == False:
+            messages.success(request, "This activity has already been recorded. You can adjust CEUs or delete activity for individual teachers below.")
+        else:
+            messages.success(request, "New CEU activities have been recorded for the following teachers.")
+
+        ceu_instances = CEUInstance.objects.filter(date_completed=date_completed, description= description)
+        ceu_form = iseiCEUformset (queryset=ceu_instances)
+        case = str(school.name) + ", " + str(school_year.name) + "\n" + str(date_completed) + ", " + str(description) + ", " +str(CEUs)
+
+    else:
+        if request.method == 'POST' and request.POST.get('submit_changes'):
+            ceu_form = iseiCEUformset(request.POST)
+            case = "Changes were not saved"
+            if ceu_form.is_valid():
+                ceu_form = ceu_form.save()
+                case = "Changes were saved"
+
+
+
+        else:
+            ceu_form = iseiCEUformset (queryset=CEUInstance.objects.none())
+
+
+
+    context = dict(school_list=school_list, school_year_list = school_year_list, ceu_form=ceu_form, case=case)
+
+    return render(request, 'teachercert/add_ISEI_CEUs.html', context)

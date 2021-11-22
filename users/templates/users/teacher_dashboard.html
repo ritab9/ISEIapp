@@ -101,20 +101,35 @@
                                     {% elif p.principal_reviewed == 'a' %}
                                         <td><a class="nav-link" href="{% url 'CEUreports'%}">{{ p.school_year}}</a> </td>
                                         <td>ISEI approval pending</td>
+                                        {% if p.approved_ceu > 0 %}
+                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                        {% endif %}
                                     {% elif p.date_submitted %}
                                         <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
                                         <td>Principal Approval Pending</td>
+                                        {% if p.approved_ceu > 0 %}
+                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                        {% endif %}
                                     {% elif p.isei_reviewed == 'd'%}
                                         <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
                                         <td>Returned by ISEI: CEU report not complete.
                                             <div class="spanred"> Please resubmit. </div></td>
+                                        {% if p.approved_ceu > 0 %}
+                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                        {% endif %}
                                     {% elif p.principal_reviewed == 'd'%}
                                         <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
                                         <td>Returned by principal: CEU report not complete.
                                         <div class="spanred"> Please resubmit. </div><td>
+                                        {% if p.approved_ceu > 0 %}
+                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                        {% endif %}
                                     {% else %}
                                         <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
                                         <td>Not submitted</td>
+                                        {% if p.approved_ceu > 0 %}
+                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                        {% endif %}
                                     {% endif %}
                             </tr>
                             {% endif %}

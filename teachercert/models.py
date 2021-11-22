@@ -101,7 +101,7 @@ class CEUReport(models.Model):
 
 
     def __str__(self):
-        return self.teacher.name() + "," + self.school_year.name + " CEU Report"
+        return self.teacher.name() + ", " + self.school_year.name + " CEU Report"
 
 
 
@@ -150,6 +150,7 @@ class CEUInstance(models.Model):
 
     class Meta:
         ordering = ['ceu_report']
+        unique_together = ['ceu_report','date_completed', 'description']
 
     @property
     def suggested_ceu(self):

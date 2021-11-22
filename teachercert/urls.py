@@ -55,13 +55,16 @@ urlpatterns = [
     path('de_archive_tcertificate/<str:cID>/<str:certID>/', views.de_archive_tcertificate, name='de_archive_tcertificate'),
 
     path('isei_ceu_approval/', views.isei_ceu_approval, name='isei_ceu_approval'),
+
+    path('isei_ceu_approval/', views.isei_ceu_approval, name='isei_ceu_approval'),
     path('isei_ceu_approval/<str:repID>/', views.isei_ceu_approval, name='isei_ceu_approval'),
     path('isei_ceu_approval/<str:repID>/<str:instID>/', views.isei_ceu_approval, name='isei_ceu_approval'),
 
-    #pdf of approved activities
-    path('approved_pdf/', views.approved_pdf, name='approved_pdf'),
-    path('approved_pdf2/', views.approved_pdf2, name='approved_pdf2'),
+    #pdf of approved activities - unused
+    #path('approved_pdf/', views.approved_pdf, name='approved_pdf'),
+    #path('approved_pdf2/', views.approved_pdf2, name='approved_pdf2'),
 
+    path('add_ISEI_CEUs/', views.add_ISEI_CEUs, name='add_ISEI_CEUs'),
     path('isei_teacher_applications/', views.isei_teacher_applications, name='isei_teacher_applications'),
     path('isei_manage_application/<str:appID>/',views.isei_manage_application, name = 'isei_manage_application'),
 ]

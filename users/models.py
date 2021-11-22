@@ -21,7 +21,6 @@ class Country(models.Model):
         return self.code
 
 
-
 class School(models.Model):
     name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
                             null=False)
@@ -37,12 +36,10 @@ class School(models.Model):
 
 
 # User Model is automatically created by Django and we will extend it to create Teacher Model
-# upload will be automatically under the Media_root, which for us is Media
+#Teacher Models
 class Teacher(models.Model):
-    #TODO once all data is entered make joined_at auto field
-    #joined_at = models.DateField(auto_now_add=True, blank=True)
-    joined_at = models.DateField(null=True, blank=True)
 
+    joined_at = models.DateField(auto_now_add=True, blank=True)
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     middle_name = models.CharField(max_length=20, null=True, blank=True)
@@ -52,7 +49,6 @@ class Teacher(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
-
 
     class Meta:
         ordering = ('last_name',)
@@ -84,22 +80,6 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.last_name + ", " + self.first_name
-
-
-class Address(models.Model):
-    address_1 = models.CharField(verbose_name="address", max_length=128)
-    address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
-    city = models.CharField(verbose_name="city", max_length=64, default="")
-    state = models.CharField(verbose_name="state or province", max_length=4, default="")
-    zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
-    country = models.ForeignKey(Country, on_delete=models.PROTECT)
-
-    school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
-    teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return self.city +"," +self.country.name
-
 
 class College(models.Model):
     name = models.CharField(max_length=50, unique=True, blank=False,
@@ -148,3 +128,19 @@ class SchoolOfEmployment(models.Model):
 
     def __str__(self):
         return self.name
+
+#Other user Models
+
+class Address(models.Model):
+    address_1 = models.CharField(verbose_name="address", max_length=128)
+    address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
+    city = models.CharField(verbose_name="city", max_length=64, default="")
+    state = models.CharField(verbose_name="state or province", max_length=4, default="")
+    zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+
+    school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
+    teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.city + "," + self.country.name

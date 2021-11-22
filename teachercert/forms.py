@@ -62,6 +62,7 @@ class CEUInstanceForm(ModelForm):
 CEUInstanceFormSet = inlineformset_factory(CEUReport, CEUInstance, form=CEUInstanceForm, extra=1,
                                            can_delete=False)
 
+
 #not used
 class RenewalForm(forms.ModelForm):
     class Meta:
