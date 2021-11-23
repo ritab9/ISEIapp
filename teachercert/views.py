@@ -1033,12 +1033,9 @@ def add_ISEI_CEUs(request):
     else:
         if request.method == 'POST' and request.POST.get('submit_changes'):
             ceu_form = iseiCEUformset(request.POST)
-            print(ceu_form)
             case = "Changes were not saved"
             if ceu_form.is_valid():
                 ceu_form.save()
-                print("after save")
-                print (ceu_form)
                 case = "Changes were saved"
 
 

@@ -81,7 +81,7 @@ def SendEmailsAttachments(request):
             files = request.FILES.getlist('attach')
             try:
                 #BCC all users that receive the message
-                mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, ['teacher.certification.isei@gmail.com'], user_emails)
+                mail = EmailMessage(subject, message, settings.EMAIL_HOST_US, user_emails, ['teacher.certification.isei@gmail.com'] )
                 for f in files:
                     mail.attach(f.name, f.read(), f.content_type)
                 mail.send()
@@ -89,11 +89,11 @@ def SendEmailsAttachments(request):
                               {'error_message': 'Sent email to %s' %user_emails})
             except:
                 return render(request, 'sendemailsattachments.html',
-                              {'email_form': form, 'error_message': 'Either the attachment is too big or corrupt'})
+                              {'email_form': form, 'error_message': 'Unable to send email. Please contact the website administrator'})
 
         return render(request, 'sendemailsattachments.html',
                       {'email_form': form,
-                       'error_message': 'Unable to send email. Please try again later',
+                       'error_message': 'Attachment too big of corrupt',
                         })
 
 
