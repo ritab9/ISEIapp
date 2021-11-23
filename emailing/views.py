@@ -42,9 +42,8 @@ def ContactISEI(request, userID):
                               {'error_message': 'Email sent to ISEI'})
 
             except:
-                print ("exception")
                 return render(request, 'sendemailsattachments.html',
-                              {'email_form': form, 'error_message': 'Either the attachment is too big or corrupt'})
+                              {'email_form': form, 'error_message': 'Email was not sent.'})
 
         return render(request, 'sendemailsattachments.html',
                       {'email_form': form, 'error_message': 'Unable to send email. Please try again later'})

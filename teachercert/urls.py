@@ -6,6 +6,10 @@ from . import views
 
 urlpatterns = [
 
+    path('teacherdashboard/<str:userID>/', views.teacherdashboard, name='teacher_dashboard'),
+    path('principaldashboard/<str:userID>/', views.principaldashboard, name='principal_dashboard'),
+    path('iseidashboard/', views.iseidashboard, name='isei_dashboard'),
+
     # teacher urls pk - teacher.id
     path('myCEUdashboard/<str:pk>/', views.myCEUdashboard, name='myCEUdashboard'),
     path('my_academic_classes/<str:pk>/', views.my_academic_classes, name='my_academic_classes'),

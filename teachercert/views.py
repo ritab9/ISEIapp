@@ -4,7 +4,7 @@ from users.decorators import unauthenticated_user, allowed_users
 from .filters import *
 from .forms import *
 from users.utils import is_in_group
-from users.models import *
+from users.filters import SchoolFilter
 from .models import *
 from django.db.models import Q, F #Q is for queries in filters, F is to update a field using an other field from the model
 from django.db.models.functions import Now
@@ -42,6 +42,192 @@ def ceu_info(request):
     context = dict(info=info, list= list)
     return render(request, 'teachercert/ceu_info.html', context)
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def iseidashboard(request):
+    # all active teacher
+    teachers = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['teacher'])
+
+    #filter by school
+    school_filter = SchoolFilter(request.GET, queryset=teachers)
+    teachers = school_filter.qs
+
+    # Teacher Certificates Section
+    number_of_teachers = teachers.count()
+    #Last certificate for each active user
+    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active= True).order_by('renewal_date')
+
+    # Valid certificates
+    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
+    # certified teachers with unexpired certificates
+    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct().order_by('school')
+    number_of_certified_teachers = certified_teachers.count()
+
+    # expired certificates and teachers with expired certificates
+    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in = teachers)
+    expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
+    number_of_expired_teachers = expired_teachers.count()
+
+    # not certified teachers
+    non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates)).order_by("school")
+    number_of_non_certified_teachers = non_certified_teachers.count()
+
+    if number_of_teachers >= 1:
+        percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    else:
+        percent_certified = "There are no teachers registered for this school"
+
+
+    today = date.today()
+    in_six_months = today + timedelta(183)
+    a_year_ago = today - timedelta(365)
+
+
+    schools = School.objects.filter(~Q(name__in={'ISEI', 'Sample School'}))
+    cert_dict = {}
+    for s in schools:
+        s_teachers = teachers.filter(school=s)
+        # certified teachers with unexpired certificates
+        s_certified_teachers = s_teachers.filter(tcertificate__in=valid_tcertificates).distinct()
+        s_number_of_teachers = s_teachers.count()
+        s_number_of_certified_teachers = s_certified_teachers.count()
+        if s_teachers.count() > 0:
+            percent= round(s_certified_teachers.count()*100 / s_teachers.count())
+        else:
+            percent = "-"
+
+        cert_dict[s] = {
+            'teachers': s_number_of_teachers,
+            'certified': s_number_of_certified_teachers,
+            'percent': percent,
+        }
+
+
+    context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago, percent_certified=percent_certified,
+                   valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
+                   expired_tcertificates=expired_tcertificates, number_of_expired_teachers=number_of_expired_teachers,
+                   non_certified_teachers=non_certified_teachers,
+                   number_of_non_certified_teachers=number_of_non_certified_teachers,
+                   number_of_teachers=number_of_teachers,
+                   school_filter = school_filter,
+                   cert_dict = cert_dict,
+                   )
+
+    return render(request, 'teachercert/isei_dashboard.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal'])
+def principaldashboard(request, userID):
+
+    principal = User.objects.get(id=userID).teacher
+
+    teachers = Teacher.objects.filter(school=principal.school,user__is_active= True, user__groups__name__in= ['teacher'])
+
+#Teacher Certificates Section
+    number_of_teachers = teachers.count()
+    tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived = False)
+
+    #Valid certificates and certified teachers
+    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in = teachers).order_by('teacher')
+    certified_teachers = teachers.filter(tcertificate__in = valid_tcertificates).distinct()
+    number_of_certified_teachers = certified_teachers.count()
+
+    #expired certificates and teachers with expired certificates
+    expired_tcertificates = tcertificates.filter(renewal_date__lt = date.today(), teacher__in =teachers).order_by('teacher')
+    expired_teachers = teachers.filter(tcertificate__in = expired_tcertificates)
+    number_of_expired_teachers = expired_teachers.count()
+
+    #not certified teachers
+    non_certified_teachers = teachers.filter(~Q(tcertificate__in= tcertificates))
+    number_of_non_certified_teachers = non_certified_teachers.count()
+
+    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+
+    today = date.today()
+    in_six_months = today + timedelta (183)
+    a_year_ago = today - timedelta (365)
+
+# Report Approval Section
+    ceu_report = CEUReport.objects.filter(teacher__in=teachers)  # all the reports from this teacher's school
+    ceu_report_notreviewed = ceu_report.filter(date_submitted__isnull=False, principal_reviewed='n')
+    ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report, ceu_report__isei_reviewed='a', isei_reviewed='d', date_resubmitted__isnull=False, principal_reviewed='n')
+    if ceu_report_notreviewed or ceu_instance_notreviewed:
+        reports_to_review = True
+    else:
+        reports_to_review = False
+
+
+    context = dict( today = today, in_six_months = in_six_months, a_year_ago=a_year_ago, percent_certified = percent_certified,
+                   valid_tcertificates = valid_tcertificates, number_of_certified_teachers = number_of_certified_teachers,
+                   expired_tcertificates = expired_tcertificates, number_of_expired_teachers = number_of_expired_teachers,
+                  non_certified_teachers = non_certified_teachers, number_of_non_certified_teachers = number_of_non_certified_teachers,
+                   number_of_teachers = number_of_teachers,
+                    reports_to_review = reports_to_review)
+
+    return render(request, 'teachercert/principal_dashboard.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['teacher', 'staff','principal'])
+def teacherdashboard(request, userID):
+
+    user=User.objects.get(id=userID)
+    teacher = Teacher.objects.get(user = user)
+    highest_degree = None
+    tcertificate = None
+
+    # current_certificates
+    if never_certified(teacher):
+        certification_status = None
+        basic_met = None
+        basic_not_met = None
+
+        if TeacherCertificationApplication.objects.filter(teacher=teacher):
+            tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
+        else:
+            tcert_application = None
+
+    else:
+        tcertificate = current_certificates(teacher).first()
+
+        basic = TeacherBasicRequirement.objects.filter(teacher=teacher)
+        basic_met = basic.filter(met=True)
+        basic_not_met = basic.filter(met=False)
+
+        if CollegeAttended.objects.filter(teacher=teacher, level="d"):
+            highest_degree = "Doctoral Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
+            highest_degree = "Master's Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
+            highest_degree = "Bachelor's Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
+            highest_degree = "Associate Degree"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
+            highest_degree = "Certificate"
+        elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
+            highest_degree = "None"
+
+        if certified(teacher):
+            certification_status = "Valid Certification"
+        else:
+            certification_status = "Expired Certification"
+
+#if an application has been turned in after the latest Certificate was issued
+        if TeacherCertificationApplication.objects.filter(teacher=teacher, date__gte = tcertificate.issue_date):
+            tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
+        else:
+            tcert_application = None
+
+
+    today =get_today()
+
+
+    context = dict(teacher=teacher, tcertificate=tcertificate, certification_status = certification_status,
+                   today=today, basic_met = basic_met, basic_not_met = basic_not_met,
+                   tcert_application=tcert_application, highest_degree= highest_degree)
+    return render(request, 'teachercert/teacher_dashboard.html', context)
 
 # Teacher Views
 
@@ -847,9 +1033,12 @@ def add_ISEI_CEUs(request):
     else:
         if request.method == 'POST' and request.POST.get('submit_changes'):
             ceu_form = iseiCEUformset(request.POST)
+            print(ceu_form)
             case = "Changes were not saved"
             if ceu_form.is_valid():
-                ceu_form = ceu_form.save()
+                ceu_form.save()
+                print("after save")
+                print (ceu_form)
                 case = "Changes were saved"
 
 

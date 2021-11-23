@@ -24,10 +24,6 @@ urlpatterns = [
          name="password_reset_complete"),
 
 # dashboard urls
-    path('iseidashboard/', views.iseidashboard, name='isei_dashboard'),
-    path('teacherdashboard/<str:userID>/', views.teacherdashboard, name='teacher_dashboard'),
-    path('principaldashboard/<str:userID>/', views.principaldashboard, name='principal_dashboard'),
-
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),
 
     #path('transcript_status', views.transcript_status, name='transcript_status')

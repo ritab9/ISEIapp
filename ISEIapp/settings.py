@@ -174,13 +174,16 @@ LOGOUT_REDIRECT_URL = '/login/'
 #logout users when they close browser
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+#allow login to inactive users (basically getting a message that their account is inactive)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBackend', )
+
 
 #print emails to console
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #print emails to a file
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email testing'
+#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+#EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email testing'
 
 #the gmail setup has to use a two step verifcation the password is an app password (found in Account / Security)
 
@@ -188,10 +191,10 @@ EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email
 #EMAIL_PORT = 465
 #OR
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
