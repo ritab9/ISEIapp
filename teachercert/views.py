@@ -300,10 +300,6 @@ def createCEU(request, recId):
                     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report)
                     ceu_instance.update(principal_reviewed = 'n', isei_reviewed='n') # set all instances to not reviewed as well
 
-                    #principals = User.objects.filter(groups__name='principal', teacher__school=ceu_report.teacher.school) # get the principal of this teacher
-                    #principal_emails=[]
-                    #for p in principals:
-                    #    principal_emails.append(p.email)
                     principal_emails = get_principals_emails(ceu_report.teacher)
                     email_CEUReport_submitted(ceu_report.teacher, principal_emails, ceu_report.school_year.name)
 
@@ -346,16 +342,10 @@ def updateCEUinstance(request, pk):
                 form.save()  #save
                 # ToDo Should I set isei_reviewed='n' here???
                 CEUInstance.objects.filter(id=pk).update(principal_reviewed='n', ) # principal reviewed set to no
-                #ToDo work on message to principal
-                #principal = Teacher.objects.get(user__groups__name='principal', school=ceuinstance.ceu_report.teacher.school)
-                #if principal: #if principal assigned sent email.
-                #    principal_email = principal.user.email
-                #    email = EmailMessage(
-                #        'Report Submission',
-                #        ceu_report.teacher.first_name + " " + ceu_report.teacher.last_name + " has submitted an activity. Go to www.isei.blablabla to review the submission.",
-                #        'ritab.isei.life@gmail.com', [principal_email])
-                #    email.send()
-                #if is_in_group(request.user, 'teacher'):        # teacher landing page
+                ceu_report = CEUReport.objects.get(ceu_instance=ceu_instance)
+                principal_emails = get_principals_emails(ceu_report.teacher)
+                email_CEUReport_submitted(ceu_report.teacher, principal_emails, ceu_report.school_year.name)
+
 
                 return redirect('myCEUdashboard', pk=ceu_instance.ceu_report.teacher.user.id)
 
@@ -427,10 +417,6 @@ def myCEUdashboard(request, pk):
                    approved_report = approved_report, approved_instance = approved_instance,)
 
     return render(request, 'teachercert/my_ceu_dashboard.html', context)
-
-# todo create layout in myCEUdashboard template for it to look nicer
-# todo adjust template so that it would allow for the choosing of a different teacher if user_not_teacher
-
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'admin'])
@@ -812,29 +798,8 @@ def de_archive_tcertificate(request, cID, certID):
     return redirect('manage_tcertificate', pk =tcertificate.teacher.id, certID=certID)
 
 
-# principal's info page about teacher certification
-#Todo to be worked on
-#@login_required(login_url='login')
-#@allowed_users(allowed_roles=['principal'])
-#def principal_teachercert(request):
-    #
-    # principal = request.user.teacher
-    # teachers = Teacher.objects.filter(user__is_active=True, school= principal.school)
-    # school_year = SchoolYear.objects.get(active_year=True)
-    #
-    #
-    # tcertificates = TCertificate.objects.filter()
-    # tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
-    # tcertificates = tcertificates_filter.qs
-    #
-    # context = dict(teachers=teachers, school_year=school_year,
-    #                tcertificates=tcertificates, tcertificates_filter=tcertificates_filter)
-    #
-    # return render(request, 'teachercert/principal_teachercert.html', context)
-
 
 # isei's info page about teacher certification
-#Todo to be worked on
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_teachercert(request):
