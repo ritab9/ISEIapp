@@ -857,7 +857,8 @@ def teachercert_application(request, pk):
                 initial = True
                 application.date_initial = application.date
                 member = "doesn't matter"
-            else:
+
+            elif newest_certificate(teacher):
                 initial = False
                 if teacher.school.foundation:
                     application.billed ='z'
@@ -867,6 +868,10 @@ def teachercert_application(request, pk):
                         member ="reinstate"
                 else:
                     member = False
+            else:
+                initial = True
+                application.date_initial = application.date
+                member = "update"
 
             application = application_form.save()
             email_Application_submitted(teacher, initial, member)

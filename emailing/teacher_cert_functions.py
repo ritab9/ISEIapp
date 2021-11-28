@@ -115,7 +115,10 @@ def email_Application_submitted(teacher, initial, member=None):
     subject = str(teacher) + " Application Submitted"
     message = str(teacher) + " from " + str(teacher.school) + " has submitted a Teacher Certification Application."
     if initial:
-        message = message + "\n" + "This is an Initial Application, please bill."
+        if member == "update":
+            message = message + "\n" + "This is an update to the initial application. No billing is needed"
+        else:
+            message = message + "\n" + "This is an Initial Application, please bill."
     else:
         if member:
             if member == "renew":
