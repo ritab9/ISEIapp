@@ -3,7 +3,7 @@ from django.core.mail import EmailMessage, send_mass_mail
 from django.conf import settings
 
 
-from teachercert.models import EmailMessageTemplate
+#from teachercert.models import EmailMessageTemplate
 
 
 signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "www.isei1.org"
@@ -17,9 +17,10 @@ def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.co
 def email_registered_user (teacher, phone_digits):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
-               str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
+               "An account has been created for you to apply for the ISEI teacher certification.If you believe this to be a mistake, please contact us." + \
                "\n" + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
                "\n" + "Password: ISEIapp"+phone_digits
+                # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
 
 def email_AcademicClass_submitted(teacher):
