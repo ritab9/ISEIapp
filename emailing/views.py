@@ -81,7 +81,7 @@ def SendEmailsAttachments(request):
             files = request.FILES.getlist('attach')
             try:
                 #BCC all users that receive the message
-                mail = EmailMessage(subject, message, settings.EMAIL_HOST_US, user_emails, ['teacher.certification.isei@gmail.com'] )
+                mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, user_emails, ['teacher.certification.isei@gmail.com'] )
                 for f in files:
                     mail.attach(f.name, f.read(), f.content_type)
                 mail.send()
