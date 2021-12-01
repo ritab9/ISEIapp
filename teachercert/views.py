@@ -998,7 +998,7 @@ def add_ISEI_CEUs(request):
 
         ceu_instances = CEUInstance.objects.filter(date_completed=date_completed, description= description)
         ceu_form = iseiCEUformset (queryset=ceu_instances)
-        case = str(school.name) + ", " + str(school_year.name) + "\n" + str(date_completed) + ", " + str(description) + ", " +str(CEUs)
+        case = str(school.name) + ", " + str(school_year.name) + ',' + "\n" + str(date_completed) + ", " + str(description) + ", " +str(CEUs) + " CEUs"
 
     else:
         if request.method == 'POST' and request.POST.get('submit_changes'):

@@ -198,8 +198,12 @@
                             <p style = "color: red"> Not reviewed by ISEI since your update. </p>
                     {% else %}
                         ISEI revision date: {{ tcert_application.isei_revision_date }}
+                    {% endif %}<br>
+                    {% if tcert_application.closed %}
+                        Your application is complete and a Certificate will be issued shortly.
                     {% endif %}
-                    {% else %}
+
+                {% else %}
                     Not reviewed yet.
                 {% endif %} </p>
 

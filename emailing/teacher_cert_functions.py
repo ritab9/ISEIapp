@@ -7,7 +7,8 @@ from django.conf import settings
 
 
 signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "www.isei1.org"
-office_email = ["jodyv@isei.life"]
+#office_email = ["jodyv@isei.life"]
+office_email=[]
 
 def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.com"]):
     message = message+signature

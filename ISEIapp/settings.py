@@ -182,8 +182,8 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBacke
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #print emails to a file
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email testing'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email testing'
 
 #the gmail setup has to use a two step verifcation the password is an app password (found in Account / Security)
 
@@ -191,10 +191,10 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBacke
 #EMAIL_PORT = 465
 #OR
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+# EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
