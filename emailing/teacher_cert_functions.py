@@ -1,5 +1,5 @@
 
-from django.core.mail import EmailMessage, send_mass_mail
+from django.core.mail import EmailMessage
 from django.conf import settings
 
 
@@ -43,15 +43,19 @@ def email_CEUReport_submitted(teacher, principal_emails, school_year_name):
     send_email(subject, message, principal_emails)
 
 #two_emails
-def email_CEUReport_approved_by_principal(teacher,school_year_name):
+def email_CEUReport_approved_by_principal(teacher, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
     message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ",  " + school_year_name + " CEU Report was approved by the principal. Log in to www.isei1.org in order to review and approve the CEU Report. "
     message1 = message1 + signature
-    mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
+    mail1 = EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
+    mail1.send()
+    #  mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
     message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was signed by the principal and submitted to ISEI. It will be reviewed shortly."
     message2 = message2 + signature
-    mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
-    send_mass_mail((mail1, mail2), fail_silently= False)
+    #mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
+    mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
+    mail2.send()
+    #send_mass_mail((mail1, mail2), fail_silently= False)
 
 def email_CEUReport_denied_by_principal(teacher,school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
@@ -68,11 +72,13 @@ def email_CEUactivity_approved_by_principal(teacher):
     subject = "CEU Activity: " + str(teacher)
     message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ", CEU activity was approved by the principal. Log in to www.isei1.org in order to review and approve the CEU Activity. "
     message1 = message1 + signature
-    mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
+    mail1 =EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
     message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity was signed by the principal and submitted to ISEI. It will be reviewed shortly."
     message2 = message2 + signature
-    mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email], ["teacher.certification.isei@gmail.com"])
-    send_mass_mail((mail1, mail2), fail_silently= False)
+    mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email], ["teacher.certification.isei@gmail.com"])
+    mail1.send()
+    mail2.send()
+    #send_mass_mail((mail1, mail2), fail_silently= False)
 
 
 def email_CEUactivity_denied_by_principal(teacher):
