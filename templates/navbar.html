@@ -71,6 +71,7 @@
                     <!-- </div> -->
   <!-- teacher links for principal -->
                     <!-- <span class ="teacher_links" style="display:none"> -->
+                     {% if request.user|in_group:"teacher"%}
                       <li class="nav-item">
                             <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">My Dashboard </a>
                       </li>
@@ -87,6 +88,7 @@
                     <li class="nav-item"  style ="border-right:solid 1px #fff;">
                           <a class="nav-link" href="{% url 'account_settings' request.user.id %}">Personal Info</a>
                     </li>
+                         {% endif %}
 
                     <li class="nav-item">
                             <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
