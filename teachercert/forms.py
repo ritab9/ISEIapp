@@ -46,8 +46,8 @@ class CEUInstanceForm(ModelForm):
         model = CEUInstance
         fields = ('ceu_category', 'ceu_type','description', 'date_completed', 'units', 'amount', 'evidence', 'file', 'date_resubmitted')
         widgets = {
-            #'ceu_category': forms.Select (attrs={'class':'category_class'}),
-            #'ceu_type': forms.Select(attrs={'class': 'type_class'}),
+            #'ceu_category': forms.Select ('label':'CEU Category'}),
+            #'ceu_type': forms.Select(attrs={'label': 'CEU Type'}),
             'file': forms.FileInput(attrs={'size': 1}),
             'date_completed': forms.TextInput (attrs = {'type':'date','placeholder':'mm/dd/yyyy', 'style':'width:130px' }),
             'amount': forms.NumberInput (attrs={'style':'width:60px' }),

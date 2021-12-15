@@ -28,14 +28,14 @@ class SchoolYear(models.Model):
     #        all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
 class CEUCategory(models.Model):
-    name = models.CharField(max_length=25, null = False, blank=False)
+    name = models.CharField(max_length=25, null = False, blank=False, verbose_name = "CEU Category")
 
     def __str__(self):
         return self.name
 
 #ceu Report Modelst
 class CEUType(models.Model):
-    description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False)
+    description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False, verbose_name = "CEU Type")
     evidence = models.CharField(max_length=100, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
     ceu_category = models.ForeignKey(CEUCategory, on_delete=models.CASCADE, help_text="Choose a category", null=False, blank=False)
     ceu_value = models.CharField(max_length=60, null=True, blank=True)
