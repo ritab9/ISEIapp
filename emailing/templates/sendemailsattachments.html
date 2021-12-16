@@ -17,7 +17,7 @@
 
 {% if request.user|in_group:"staff"%}
 <div class="row">
-    <div class="card card-body">
+    <div>
         <form method="get">
                 {{ user_filter.form}}
             <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;

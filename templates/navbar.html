@@ -10,9 +10,11 @@
     margin-right: 20px;
   }
 </style>
+
+
 <div class="noprint">
 <nav class="navbar navbar-expand-lg navbar-dark bg-ISEIblue4" style = 'font-size: 1rem'>
-
+  <div class="container-fluid">
     <img src="{% static 'appfiles/Logo.png' %}" width="60" height="60" alt="ISEIapp Logo">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -56,47 +58,48 @@
                       <li class="nav-item ">
                         <a class="nav-link" href="{% url 'principal_dashboard' request.user.id %}" > Teacher Certification </a>
                       </li>
-                    <!-- No need for a teacher cert page for principal
-                     <li class="nav-item" >
-                        <a class="nav-link" href="{ % url 'principal_teachercert' %}">Teacher Certification</a>
-                      </li> -->
 
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
                       </li>
-                      <li class="nav-item" style ="border-right:solid 1px #fff;">
+                      <li class="nav-item" >
                         <a class="nav-link" href="{% url 'principal_ceu_approval' %}">CEU Reports Revision</a>
                       </li>
 
                     <!-- </div> -->
   <!-- teacher links for principal -->
-                    <!-- <span class ="teacher_links" style="display:none"> -->
-                     {% if request.user|in_group:"teacher"%}
-                      <li class="nav-item">
-                            <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">My Dashboard </a>
-                      </li>
+                    {% if request.user|in_group:"teacher"%}
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle p-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        My Teacher Links
+                      </a>
+                      <ul class="dropdown-menu bg-ISEIblue1" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'teacher_dashboard' request.user.id %}">My Dashboard </a>
+                        </li>
+                        {% if request.user|application_submitted_tag %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'myCEUdashboard' request.user.id %}">My CEU Reporting</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'my_academic_classes' request.user.id %}">My Academic Courses</a>
+                            </li>
+                        {% endif %}
 
-                    {% if request.user|application_submitted_tag %}
-                      <li class="nav-item">
-                            <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">My CEU Reporting</a>
-                      </li>
+                        <li>
+                              <a class="dropdown-item" href="{% url 'account_settings' request.user.id %}">Personal Info</a>
+                        </li>
+                      </ul>
+
+                    </li>
+
+                     {% endif %}
+
 
                     <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">My Academic Courses</a>
-                      </li>
-                    {% endif %}
-                    <li class="nav-item"  style ="border-right:solid 1px #fff;">
-                          <a class="nav-link" href="{% url 'account_settings' request.user.id %}">Personal Info</a>
+                            <a class="nav-link p-3" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
                     </li>
-                         {% endif %}
 
-                    <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
-                    </li>
-                    <!-- </span>
-                    <li>
-                        <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Teacher View" id="switch_view">
-                    </li> -->
                 {% endif %}
 
                 {% if request.user|in_group:"teacher" and not request.user|in_group:"principal"%}
@@ -170,5 +173,6 @@ $('#switch_view').on("click", function() {
 
 </script>
 
+  </div>
 </nav>
 </div>
