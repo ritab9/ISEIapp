@@ -130,7 +130,7 @@
 <!-- Percent of Certified teachers/school -->
 
 
-    <div class="row card card-body">
+    <div class="row card card-body" id="school_list">
     <table class = "table-striped col col-sm-5">
         <thead class="span80">
             <th>School</th><th>Teachers</th><th>Certified</th><th></th>
@@ -164,6 +164,8 @@
 
 
 <script>
+
+<!-- show / hide list f Certified, Expired Certification, Non-certified Teachers -->
     $('#certified').on("click", function() {
                  var value = $(this).attr('value');
                  if(value == "Show List") {
@@ -191,6 +193,17 @@
                      $("#details_not_certified").hide();
                      $(this).attr('value',"Show List");}
     });
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        if ($('#id_school option').filter(':selected').text().includes("---")) {
+            document.getElementById('school_list').style.display = "block";
+        }else{
+            document.getElementById('school_list').style.display = "none";
+        };
+
+    });
+
 
 </script>
 
