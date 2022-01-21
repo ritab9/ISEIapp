@@ -1007,9 +1007,6 @@ def add_ISEI_CEUs(request):
             if ceu_form.is_valid():
                 ceu_form.save()
                 case = "Changes were saved"
-
-
-
         else:
             ceu_form = iseiCEUformset (queryset=CEUInstance.objects.none())
 

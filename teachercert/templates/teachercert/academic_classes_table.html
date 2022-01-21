@@ -10,7 +10,7 @@ Not to be used independently
             <div class = "card card-body" id="details" >
                 <table class="table table-sm">
                     <tr>
-                        <th> University</th><th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th><th>Update</th><th>Delete</th>
+                        <th>Institution</th><th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th><th>Update</th><th>Delete</th>
                     </tr>
                 {% for c in academic_class %}
                     <tr> <td>{{ c.university }}</td><td>{{c.name}}</td><td>{{ c.credits }}</td><td>{{c.date_completed}}</td>
