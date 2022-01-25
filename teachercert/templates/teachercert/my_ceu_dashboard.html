@@ -218,7 +218,6 @@
             Add / Submit CEUs
           </button>
             <div class="dropdown-menu"  aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href= "#"> Something</a>
                  {% for ar in active_report %}
                         <a  class="dropdown-item" href="{%  url 'create_ceu' ar.id %}"> for {{ ar.school_year }} </a>
                  {% endfor %}
