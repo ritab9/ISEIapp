@@ -2,6 +2,9 @@
 {% load crispy_forms_tags %}
 {%  load group_tags %}
 
+ {% load static %}
+
+
 {% block title %}
    CEU
 {% endblock %}
@@ -12,7 +15,6 @@
         {{ teacher }}
     {% endif %}
 
-    {% load static %}
 
     <!-- Info card -->
     <div class="card card-body">
@@ -211,21 +213,25 @@
     </div>
     <!-- dropdowns for activity addition -->
     <div class="col-sm-2">
-    <div class="dropdown">
-      <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Add / Submit CEUs
-      </button>
-        <div class="dropdown-menu"  aria-labelledby="dropdownMenuButton">
-             {% for ar in active_report %}
-                    <a  class="dropdown-item" href="{%  url 'create_ceu' ar.id %}"> for {{ ar.school_year }} </a>
-             {% endfor %}
-             {% for sy in new_school_year %}
-                    <a  class="dropdown-item" href="{%  url 'create_report' teacher.user.id sy.id %}"> for {{ sy }}</a>
-            {% endfor %}
-          </div>
+        <div class="dropdown">
+          <button class="btn btn-ISEIblue3 btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Add / Submit CEUs
+          </button>
+            <div class="dropdown-menu"  aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href= "#"> Something</a>
+                 {% for ar in active_report %}
+                        <a  class="dropdown-item" href="{%  url 'create_ceu' ar.id %}"> for {{ ar.school_year }} </a>
+                 {% endfor %}
+                 {% for sy in new_school_year %}
+                        <a  class="dropdown-item" href="{%  url 'create_report' teacher.user.id sy.id %}"> for {{ sy }}</a>
+                {% endfor %}
+            </div>
 
-    </div></div>
-    </div><br>
+        </div>
+    </div>
+    </div>
+
+    <br>
     <!-- table for active instances-->
      <table class="table table-sm">
         <tr>

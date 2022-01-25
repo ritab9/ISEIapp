@@ -406,6 +406,10 @@ def myCEUdashboard(request, pk):
         user_not_teacher = False
     else:
         user_not_teacher = True
+
+
+    print(new_school_year)
+    print(active_report)
     context = dict(teacher=teacher,user_not_teacher=user_not_teacher,
                    #instance_filter=instance_filter,
                    new_school_year = new_school_year, active_report=active_report,
