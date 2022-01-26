@@ -194,7 +194,7 @@
                 <p> Date submitted: {{ tcert_application.date }} </p>
                 <p>{% if tcert_application.isei_revision_date %}
 
-                    {% if tcert_application.isei_revision_date <= tcert_application.date  %}
+                    {% if tcert_application.isei_revision_date < tcert_application.date  %}
                             <p style = "color: red"> Not reviewed by ISEI since your update. </p>
                     {% else %}
                         ISEI revision date: {{ tcert_application.isei_revision_date }}
