@@ -1,6 +1,9 @@
 {%  extends 'base.html' %}
 {% load static %}
 
+{% block title %} CEU Review {% endblock title %}
+
+
 {% block content %}
 {% if ceu_report_approved or ceu_report_denied %}
 	<div class="row">
