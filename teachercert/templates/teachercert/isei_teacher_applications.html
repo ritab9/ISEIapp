@@ -23,7 +23,7 @@
                 <th>Level</th>
                 <th>Date Submitted</th>
                 <th>Fee Status</th>
-                <th>ISEI Revision</th>
+                <th>ISEI Review</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -41,7 +41,7 @@
                         <div class="spanred"> Not billed</div> {% endif %} {% endif %}</td>
                     <td> {% if app.isei_revision_date %}
                                 {% if app.isei_revision_date <= app.date  %}
-                                    <div class="spanred"> Needs revision. </div> <div class="span80">Last revision: {{ app.isei_revision_date }}</div>
+                                    <div class="spanred"> Needs review. </div> <div class="span80">Last review: {{ app.isei_revision_date }}</div>
                                 {% else %}
                                     {{ app.isei_revision_date }}
                                 {% endif %}
