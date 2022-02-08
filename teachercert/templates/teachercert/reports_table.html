@@ -74,7 +74,7 @@ Not to be used independently
                                             {% endif %}
                                         </td>
                                         <td><div class="span80">
-                                             {% if i.evidence %{{ i.evidence }}
+                                             {% if i.evidence %} {{ i.evidence }}
                                             {% elif i.file %}
                                                 <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
                                             {% else %}
