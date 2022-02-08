@@ -18,7 +18,7 @@ def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.co
 def email_registered_user (teacher, phone_digits):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
-               "An account has been created for you to apply for the ISEI teacher certification.If you believe this to be a mistake, please contact us." + \
+               "An account has been created for you to apply for the ISEI teacher certification. If you believe this to be a mistake, please contact us." + \
                "\n" + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
                "\n" + "Password: ISEIapp"+phone_digits
                 # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \

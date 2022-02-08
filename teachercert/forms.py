@@ -54,7 +54,7 @@ class CEUInstanceForm(ModelForm):
         }
 
 
-
+#not used
 CEUInstanceFormSet = inlineformset_factory(CEUReport, CEUInstance, form=CEUInstanceForm, extra=1,
                                            can_delete=False)
 

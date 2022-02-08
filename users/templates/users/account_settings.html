@@ -96,18 +96,24 @@
                         <p> <b>Date of birth:</b> {{ teacher.date_of_birth }}</p>
                         <p> <b>Teacher_ID:</b> {{ teacher.iseiteacherid|slice:'2:9'}}</p>
                     </div>
+                    <div class = 'col-sm teacherlist'>
+                        <p> <b>SDA:</b> {% if teacher.sda %} YES {% else %} NO {% endif %}</p>
+                        <p> <b>Home church:</b> {{ teacher.home_church }}</p>
+                    </div>
 
     <!-- Teacher Info Form -->
                     <div class = 'col-sm teacherform' >
                         {{ teacher_form.first_name|as_crispy_field }}  <br>
                         {{ teacher_form.middle_name|as_crispy_field }}  <br>
                         {{ teacher_form.last_name|as_crispy_field }}  <br>
-                        {{ teacher_form.suffix|as_crispy_field }}
+                        {{ teacher_form.suffix|as_crispy_field }} <br>
+                        {{ teacher_form.date_of_birth|as_crispy_field }} <br>
                     </div>
                     <div class = "col-sm teacherform">
-                        {{ teacher_form.date_of_birth|as_crispy_field }} <br>
                         {{ user_form.email|as_crispy_field }} <br>
                         {{ teacher_form.phone_number|as_crispy_field }}<br>
+                        {{ teacher_form.sda|as_crispy_field }} <br>
+                        {{ teacher_form.home_church|as_crispy_field }} <br>
                         {{ teacher_form.school|as_crispy_field }} <br>
                         <input class="btn btn-sm btn-ISEIblue4 text-light" type="submit" name="teacher_info" value="Save / Update Teacher Info" >
 

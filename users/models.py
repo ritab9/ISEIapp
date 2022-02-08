@@ -49,6 +49,9 @@ class Teacher(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
+    sda = models.BooleanField(default=True)
+    home_church = models.CharField(max_length=30, null=True, blank=True)
+
 
     class Meta:
         ordering = ('last_name',)

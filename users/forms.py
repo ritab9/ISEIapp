@@ -27,7 +27,7 @@ class TeacherForm(ModelForm):
     class Meta:
         model = Teacher
         fields = '__all__'
-        exclude = ['user','joined_at', 'profile_picture']
+        exclude = ['user','joined_at', 'profile_picture',]
         widgets = {
             # 'profile_picture': forms.FileInput(attrs={'size': 1}),
             'date_of_birth': forms.DateInput( format ='%m/%d/%Y', attrs={'placeholder': 'mm/dd/yyyy', 'input-formats':'%m/%d/%Y'}),
