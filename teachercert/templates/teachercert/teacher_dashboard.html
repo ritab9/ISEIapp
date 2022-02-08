@@ -12,7 +12,7 @@
     <div class="">
         <div class = "row">
             <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)
-            <p>{{ highest_degree }}</p>
+            <p>{% if highest_degree %}{{ highest_degree }}{% endif %}</p>
             </div>
             <div  class = "noprint" style = "text-align: right">
                 <button class='btn-ISEIblue2 mt-3 mr-3' onclick="window.print()">Print Certificate</button>
@@ -90,7 +90,7 @@
                 <h6><b>CEU Reports Submitted</b></h6>
                 {% if tcertificate.teacher.ceureport_set.all %}
                     <table class="table">
-                        <tr><th>School Year</th><th>Status</th></tr>
+                        <tr><th>School Year</th><th>Status</th><th></th></tr>
 
                         {% for p in tcertificate.teacher.ceureport_set.all %}
                             {% if p.school_year.end_date > tcertificate.issue_date %}
@@ -120,7 +120,7 @@
                                     {% elif p.principal_reviewed == 'd'%}
                                         <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
                                         <td>Returned by principal: CEU report not complete.
-                                        <div class="spanred"> Please resubmit. </div><td>
+                                        <div class="spanred"> Please resubmit. </div></td>
                                         {% if p.approved_ceu > 0 %}
                                             <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
                                         {% endif %}
