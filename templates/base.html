@@ -2,6 +2,8 @@
 
 <!DOCTYPE html>
 <html lang="en" style="font-size: 1rem">
+{% load group_tags %}
+
 
 <head>   {# make modifiable head elements #}
     <meta charset="UTF-8">
@@ -55,6 +57,7 @@
 </div>
     {# The Footer #}
     <footer class="footer noprint" >
+        {% if user.is_authenticated %}
         <div class="row ml-3">
             <div class="col-sm-auto card">
                 <a href="{% static 'appfiles/1.2Hdbk.pdf' %}"> Teacher Certification Handbook </a>
@@ -63,6 +66,7 @@
                 <a class href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
             </div>
         </div>
+        {% endif %}
 
             <div class="row card mt-3">
                    <div class="mr-3 ml-3" style="text-align: center">
