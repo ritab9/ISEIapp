@@ -6,7 +6,7 @@ from django.conf import settings
 #from teachercert.models import EmailMessageTemplate
 
 
-signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "www.isei1.org"
+signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "isei1.org"
 office_email = ["jodyv@isei.life"]
 
 
@@ -19,14 +19,14 @@ def email_registered_user (teacher, phone_digits):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
                "An account has been created for you to apply for the ISEI teacher certification. If you believe this to be a mistake, please contact us." + \
-               "\n" + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
+               "\n" + "\n " + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
                "\n" + "Password: ISEIapp"+phone_digits
                 # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
 
 def email_AcademicClass_submitted(teacher):
     subject = "Academic Class: " + str(teacher)
-    message = str(teacher) + " from " +str(teacher.school.name) + " has submitted an academic class. www.isei1.org "
+    message = str(teacher) + " from " +str(teacher.school.name) + " has submitted an academic class. isei1.org "
     send_email(subject, message)
     #message = message + signature
     #mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, cc =["teacher.certification.isei@gmail.com"])
@@ -34,23 +34,23 @@ def email_AcademicClass_submitted(teacher):
 
 def email_CEUReport_created(teacher, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = str(teacher) + " from " +str(teacher.school.name) + " has initiated a CEU Report for the " + school_year_name + " school year. www.isei1.org"
+    message = str(teacher) + " from " +str(teacher.school.name) + " has initiated a CEU Report for the " + school_year_name + " school year. isei1.org"
     send_email(subject, message)
 
 def email_CEUReport_submitted(teacher, principal_emails, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = str(teacher) + " from " +str(teacher.school.name) + " has submitted a CEU Report for the " + school_year_name + " school year. Log in to www.isei1.org in order to review and approve the CEU Report. ISEI will NOT receive the report unless you review it. "
+    message = str(teacher) + " from " +str(teacher.school.name) + " has submitted a CEU Report for the " + school_year_name + " school year." + "\n " + "Log in to isei1.org in order to review and approve the CEU Report. ISEI will NOT receive the report unless you review it. "
     send_email(subject, message, principal_emails)
 
 #two_emails
 def email_CEUReport_approved_by_principal(teacher, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ",  " + school_year_name + " CEU Report was reviewed by the principal. Log in to www.isei1.org in order to review and approve the CEU Report. "
+    message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ",  " + school_year_name + " CEU Report was reviewed by the principal." + "\n " + " Log in to isei1.org in order to review and approve the CEU Report. "
     message1 = message1 + signature
     mail1 = EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
     mail1.send()
     #  mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
-    message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was signed by the principal and submitted to ISEI. It will be reviewed shortly."
+    message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was reviewed by the principal and submitted to ISEI. It will be reviewed by ISEI shortly."
     message2 = message2 + signature
     #mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
     mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
@@ -70,7 +70,7 @@ def email_CEUReport_retracted_by_principal(teacher, school_year_name):
 #two_email
 def email_CEUactivity_approved_by_principal(teacher):
     subject = "CEU Activity: " + str(teacher)
-    message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ", CEU activity was reviewed by the principal. Log in to www.isei1.org in order to review and approve the CEU Activity. "
+    message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ", CEU activity was reviewed by the principal. Log in to isei1.org in order to review and approve the CEU Activity. "
     message1 = message1 + signature
     mail1 =EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
     message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity was reviewed by the principal and submitted to ISEI. It will be reviewed shortly."

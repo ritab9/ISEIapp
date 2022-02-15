@@ -21,11 +21,11 @@
 
         <div class = "card card-body mb-3">
             <div class="col">
-                {% if tcertificate.teacher.address.address_1 %}
+                {% if teacher.user.id == request.user.id %}
                     <!-- <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a> -->
                     <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
-                {% else %}
-                    <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
+                <!-- { % elif request.user.id %}
+                    <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'account_settings' teacher.user.id  %}" style="float: right;">Nothing </a> -->
                 {% endif %}
             </div>
 <!-- Certificate Info -->
@@ -231,9 +231,11 @@
                 <div class="col">
                     <h6> Colleges Listed for Transcripts</h6>
                 </div>
-                <div clas="col">
-                    <a class= "btn btn-ISEIblue4 btn-sm" href="{%  url 'account_settings' teacher.user.id %}">Update Transcript Status</a>
-                </div>
+                {% if teacher.user.id == request.user.id %}
+                    <div clas="col">
+                        <a class= "btn btn-ISEIblue4 btn-sm" href="{%  url 'account_settings' teacher.user.id %}">Update Transcript Status</a>
+                    </div>
+                {% endif %}
             </div>
          <table class="table">
              <thead>

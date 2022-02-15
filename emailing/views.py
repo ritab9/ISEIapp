@@ -56,6 +56,7 @@ def ContactISEI(request, userID):
 @allowed_users(allowed_roles=['staff'])
 def SendEmailsAttachments(request):
 
+    # TODO need to deal with the cases when user_emails is more than 100. Can't send more than 100 emails at once.
     form_used = EmailFormNoAddress
     users = User.objects.filter(is_active = True)
 

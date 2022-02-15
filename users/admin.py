@@ -30,8 +30,9 @@ class School(admin.ModelAdmin):
 
 class UserAdmin(AuthUserAdmin):
     #inlines = [TeacherInline, AddressInLine]
-    list_display = ('username', 'School', 'id','group', 'is_active')
+    list_display = ('username', 'School', 'id','group', 'is_active', "last_login")
     list_editable = ('is_active',)
+    ordering = ('-is_active','last_login','username')
 
     #def Name(self,obj):
     #    return obj.teacher

@@ -87,11 +87,12 @@
             <tbody>
                 {% for t in non_certified_teachers %}
                   <tr>
-                      <td><a href="{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
-                     {% if t.teachercertificationapplication %}
-                      <td>Submitted</td>
+                      {% if t.teachercertificationapplication %}
+                          <td><a href="{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
+                          <td>Submitted</td>
                         {%  else %}
-                      <td class="spanred">Not Submitted</td>
+                          <td>{{t.name}}</td>
+                          <td class="spanred">Not Submitted</td>
                         {% endif %}
                   </tr>
                 {% endfor %}
