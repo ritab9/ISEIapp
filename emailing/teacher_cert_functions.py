@@ -18,15 +18,17 @@ def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.co
 def email_registered_user (teacher, phone_digits):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
-               "An account has been created for you to apply for the ISEI teacher certification. If you believe this to be a mistake, please contact us." + \
-               "\n" + "\n " + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
-               "\n" + "Password: ISEIapp"+phone_digits
-                # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
+               "An account has been created for you to apply for the ISEI teacher certification." + \
+              "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." +\
+              "\n" + "\n " + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
+              "\n" + "Password: ISEIapp"+phone_digits + \
+              "\n" + "\n " + "If you believe this to be a mistake, please contact us."
+    # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
 
 def email_AcademicClass_submitted(teacher):
     subject = "Academic Class: " + str(teacher)
-    message = str(teacher) + " from " +str(teacher.school.name) + " has submitted an academic class. isei1.org "
+    message = str(teacher) + " from " +str(teacher.school.name) + " has submitted an academic class. \n \nisei1.org "
     send_email(subject, message)
     #message = message + signature
     #mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, cc =["teacher.certification.isei@gmail.com"])

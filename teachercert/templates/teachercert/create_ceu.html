@@ -1,4 +1,5 @@
 {%  extends 'base.html' %}
+{% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% load group_tags %}
 
@@ -81,7 +82,7 @@
     <!-- enter new activity-->
     <div class="card card-body" >
         <div><input type="button" class="btn btn-sm btn-ISEIblue3" id="actaddbtn"  value ="Enter New Activity">
-             <a class = "btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a>
+             <a class = "btn btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a>
         </div>
 
         <div id="activity_add" style="display: none">
@@ -103,7 +104,7 @@
                         {{ instance_form.evidence|as_crispy_field }}
                         <div id="id_suggested_evidence"> </div> <br>
                         Supporting Documentation: {{instance_form.file}} <br><br>
-                         <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Add Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
+                         <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Save Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
                         {{ instance_form.errors }}
                     </div>
             </div>
@@ -127,7 +128,7 @@
                <div class="span80">*Summarize what you have learned from the combined activities and how you plan to apply this learning to your classroom. </div>
                     {{ report_form.summary.errors }}
                     {{ report_form.summary}}
-               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Update Report" name = "update_report" style ="float:right">
+               <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Save Summary" name = "update_report" style ="float:right">
            </div>
 
             {% if ceu_report.principal_comment or ceu_report.isei_comment %}
@@ -175,8 +176,8 @@
 
                  if(value == "Enter New Activity") {
                      $("#activity_add").show();
-                     $(this).attr('value',"Done"); }
-                 if(value == "Done") {
+                     $(this).attr('value',"Hide"); }
+                 if(value == "Hide") {
                      $("#activity_add").hide();
                      $(this).attr('value',"Enter New Activity");}
         });

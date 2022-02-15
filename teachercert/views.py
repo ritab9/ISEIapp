@@ -306,7 +306,7 @@ def createCEU(request, recId):
                     return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id) # go back to CEUdashboard
 
         if request.POST.get('update_report'):  # update summary, stay on page
-            print("Update Report")
+            #print("Update Report")
             report_form = CEUReportForm(request.POST, instance=ceu_report)
             if report_form.is_valid():
                 ceu_report = report_form.save()
@@ -408,8 +408,8 @@ def myCEUdashboard(request, pk):
         user_not_teacher = True
 
 
-    print(new_school_year)
-    print(active_report)
+    #print(new_school_year)
+    #print(active_report)
     context = dict(teacher=teacher,user_not_teacher=user_not_teacher,
                    #instance_filter=instance_filter,
                    new_school_year = new_school_year, active_report=active_report,
