@@ -1,0 +1,59 @@
+{%  extends 'base.html' %}
+
+{% load teachercert_template_tags %}
+
+{% block title %} ISEI Staff {% endblock title %}
+
+{% block content %}
+
+
+<div class="col" align="right">
+    <div class = "col-2" >
+        <br>
+        <a class= "btn-sm btn-ISEIblue4" href="{% url 'register_teacher' %}"> Add new teacher</a>
+        <br>
+    </div>
+</div>
+<br>
+
+<!-- Filter by school -->
+
+    <div class="row">
+        <div class="card card-body">
+            <form method="get">
+                    {{ teacher_filter.form}}
+                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                <a href="{%  url 'isei_teachers' %}">Clear all filters</a>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Teacher</th><th>School</th><th>Certified</th><th> Applied</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in teachers %}
+                    <tr>
+                        <td>{{ t }}</td><td>{{ t.school }}</td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+<script>
+
+
+</script>
+
+
+
+{% endblock %}

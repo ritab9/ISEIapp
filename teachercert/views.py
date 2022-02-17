@@ -574,7 +574,8 @@ def principal_ceu_approval(request, recID=None, instID=None):
 
 
 #isei views
-#
+
+
 # @login_required(login_url='login')
 # @allowed_users(allowed_roles=['staff'])
 # def isei_teachers(request):
@@ -987,8 +988,8 @@ def isei_manage_application(request, appID):
 
     teacher = application.teacher
     address = Address.objects.get(teacher=teacher)
-    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
-    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-end_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-end_date')
 
     application_form=TeacherCertificationApplicationISEIForm(instance = application)
 
