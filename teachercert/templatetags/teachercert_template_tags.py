@@ -1,7 +1,16 @@
-#from django import template
-#from teachercert.myfunctions import *
+from django import template
+from teachercert.myfunctions import *
 
-#register = template.Library()
+register = template.Library()
+
+@register.filter
+def certified(teacher):
+    return certified(teacher)
+
+
+@register.filter
+def applied(teacher):
+    return applied(teacher)
 
 # TODO review this and delete or finalize
 #not used but theoretically could be used to filter on the template

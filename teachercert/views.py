@@ -47,7 +47,8 @@ def ceu_info(request):
 @allowed_users(allowed_roles=['staff'])
 def iseidashboard(request):
     # all active teacher
-    teachers = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['teacher'])
+    teachers = Teacher.objects.filter(Q(user__is_active=True), Q(user__groups__name__in= ['teacher']))
+                                      # ~Q(school__name__in={'ISEI', 'Sample School'}))
 
     #filter by school
     school_filter = SchoolFilter(request.GET, queryset=teachers)
@@ -573,6 +574,56 @@ def principal_ceu_approval(request, recID=None, instID=None):
 
 
 #isei views
+#
+# @login_required(login_url='login')
+# @allowed_users(allowed_roles=['staff'])
+# def isei_teachers(request):
+#     # all active teacher
+#     teachers = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['teacher'])
+#
+#     #filter by school
+#     teacher_filter = TeacherFilter(request.GET, queryset=teachers)
+#     teachers = teacher_filter.qs
+#
+#     # Teacher Certificates Section
+#     number_of_teachers = teachers.count()
+#     #Last certificate for each active user
+#     tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active= True).order_by('renewal_date')
+#
+#     # Valid certificates
+#     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
+#     # certified teachers with unexpired certificates
+#     certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct().order_by('school')
+#     number_of_certified_teachers = certified_teachers.count()
+#
+#     # expired certificates and teachers with expired certificates
+#     expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in = teachers)
+#     expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
+#     number_of_expired_teachers = expired_teachers.count()
+#
+#     # not certified teachers
+#     non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates)).order_by("school")
+#     number_of_non_certified_teachers = non_certified_teachers.count()
+#
+#     today = date.today()
+#     in_six_months = today + timedelta(183)
+#     a_year_ago = today - timedelta(365)
+#
+#
+#
+#     context = dict(teachers=teachers,
+#                    today=today, in_six_months=in_six_months, a_year_ago=a_year_ago,
+#                    valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
+#                    expired_tcertificates=expired_tcertificates, number_of_expired_teachers=number_of_expired_teachers,
+#                    non_certified_teachers=non_certified_teachers,
+#                    number_of_non_certified_teachers=number_of_non_certified_teachers,
+#                    number_of_teachers=number_of_teachers,
+#                    teacher_filter = teacher_filter,
+#
+#                    )
+#
+#     return render(request, 'teachercert/isei_teachers.html', context)
+#
 
 #isei's approval of teacher activities
 @login_required(login_url='login')

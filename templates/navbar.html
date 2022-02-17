@@ -28,7 +28,10 @@
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'isei_dashboard' %}">Home </a>
                       </li>
-                        <li class="nav-item">
+                   <!-- <li class="nav-item">
+                        <a class="nav-link" href="{ % url 'isei_teachers' %}"> Teachers </a>
+                      </li> -->
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'isei_teacher_applications' %}">Teacher Applications</a>
                       </li>
                       <li class="nav-item">
@@ -140,7 +143,6 @@
   <span class ="name-msg"> <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a> </span>
 {% endif %}
 
-<!-- this is not working -->
 <script>
     $(function () {
   // this will get the full URL at the address bar
@@ -156,6 +158,7 @@
   });
 });
 
+    /*
 $('#switch_view').on("click", function() {
                  var value = $(this).attr('value');
                  if(value == "Teacher View") {
@@ -167,9 +170,7 @@ $('#switch_view').on("click", function() {
                      $("#principal_links").show();
                      $(this).attr('value',"Teacher View");}
     });
-
-
-
+*/
 
 </script>
 

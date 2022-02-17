@@ -87,12 +87,20 @@ class Teacher(admin.ModelAdmin):
 class CollegeAttended(admin.ModelAdmin):
     model = CollegeAttended
     can_delete=True
-    list_display = ('teacher','name', 'level','degree', 'transcript_requested', 'transcript_received', 'transcript_processed')
-    list_editable = ('transcript_requested', 'transcript_received', 'transcript_processed',)
+    list_display = ('teacher','name', 'level','degree', 'transcript_requested', 'transcript_received', 'transcript_processed', 'start_date', 'end_date')
+    list_editable = ('transcript_requested', 'transcript_received', 'transcript_processed')
     list_display_links = ('name',)
     list_filter = ( 'transcript_requested', 'transcript_received', 'transcript_processed', 'name',)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
+
+@admin.register(SchoolOfEmployment)
+class SchoolOfEmployment(admin.ModelAdmin):
+    model = SchoolOfEmployment
+    can_delete = True
+    list_display =('teacher', 'name','start_date', 'end_date', 'courses')
+    list_editable =('start_date', 'end_date',)
+
 

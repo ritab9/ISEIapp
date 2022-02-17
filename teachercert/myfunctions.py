@@ -79,6 +79,13 @@ def never_certified(teacher):
     else:
         return True
 
+
+def applied(teacher):
+    if TeacherCertificationApplication.objects.filter(teacher=teacher):
+        return True
+    else:
+        return False
+
 def current_certificates(teacher):
     return TCertificate.objects.filter(teacher=teacher, archived=False)
 

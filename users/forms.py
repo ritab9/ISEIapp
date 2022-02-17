@@ -55,9 +55,9 @@ class SchoolOfEmploymentForm(ModelForm):
         exclude = ['teacher', 'id']
         widgets = {
             'start_date': forms.DateInput(format='%m/%d/%Y',
-                                             attrs={'placeholder': 'dd/yyyy or yyyy'}),
+                                             attrs={'placeholder': 'yyyy'}),
             'end_date': forms.DateInput(format='%m/%d/%Y',
-                                            attrs={'placeholder': 'dd/yyyy or yyyy or to date'}),
+                                            attrs={'placeholder': 'yyyy or to date'}),
         }
 
 

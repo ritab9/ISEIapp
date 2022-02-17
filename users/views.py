@@ -96,8 +96,8 @@ def accountsettings(request, userID):
     teacher_form_valid = True
     address_form_valid= True
 
-    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-start_date')
-    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-start_date')
+    school_of_employment = SchoolOfEmployment.objects.filter(teacher=teacher).order_by('-end_date')
+    college_attended = CollegeAttended.objects.filter(teacher=teacher).order_by('-end_date')
 
     if request.method == 'POST' and request.POST.get('teacher_info'):
         user_form = UserForm(request.POST, instance=user)
