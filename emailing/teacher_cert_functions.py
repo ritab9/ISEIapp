@@ -148,5 +148,5 @@ def email_Application_processed(teacher):
 
 def email_Application_on_hold(teacher, note = None):
     subject ="ISEI Teacher Certification Application"
-    message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and is on hold." + "\n" + note + "\n" + "Please log in to isei1.org if any updates are needed."
+    message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and is on hold." + "\n" + str(note) + "\n" + "Please log in to isei1.org if any updates are needed."
     send_email(subject, message, [teacher.user.email])
