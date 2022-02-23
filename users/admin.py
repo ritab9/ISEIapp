@@ -30,9 +30,9 @@ class School(admin.ModelAdmin):
 
 class UserAdmin(AuthUserAdmin):
     #inlines = [TeacherInline, AddressInLine]
-    list_display = ('username', 'School', 'id','group', 'is_active', "last_login")
+    list_display = ('username', 'School', 'id','group', 'is_active', "last_login", 'email')
     list_editable = ('is_active',)
-    ordering = ('-is_active','last_login','username')
+    ordering = ('-is_active','last_login','username',)
 
     #def Name(self,obj):
     #    return obj.teacher
@@ -76,9 +76,11 @@ class TeacherAddressInLine(admin.StackedInline):
 @admin.register(Teacher)
 class Teacher(admin.ModelAdmin):
     inlines = [TeacherAddressInLine, CollegeAttendedInLine, SchoolOfEmploymentInLine,]
-    list_display = ('name', 'school',)
+    list_display = ('name', 'school','joined_at')
     list_editable = ('school', )
     list_display_links = ('name',)
+    list_filter =('school',)
+    ordering = ('last_name','joined_at',)
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(user__is_active = True)

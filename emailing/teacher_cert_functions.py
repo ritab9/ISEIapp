@@ -5,9 +5,10 @@ from django.conf import settings
 
 #from teachercert.models import EmailMessageTemplate
 
-
-signature = "\n" + "\n" + "ISEI Teacher Certification" + "\n" + "isei1.org"
+# TODO embed office_email and signature as an env variable (or think of some other way to do it)
+signature = "\n" + "\n" +"Rita Burjan" + "\n" + "ISEI Teacher Certification" + "\n" + "isei1.org"
 office_email = ["jodyv@isei.life"]
+#office_email = ["oldagape@yahoo.com"]
 
 
 def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.com"]):
@@ -15,14 +16,14 @@ def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.co
     mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher.certification.isei@gmail.com"])
     mail.send()
 
-def email_registered_user (teacher, phone_digits):
+def email_registered_user (teacher):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
-               "An account has been created for you to apply for the ISEI teacher certification." + \
+               "An account has been created for you to apply for and manage your ISEI teacher certification." + \
+              "\n" + "\n " + "Your username is: " + str(teacher.first_name) + "." + str(teacher.last_name) + \
+              "\n" + "Follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
               "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." +\
-              "\n" + "\n " + "Username: " + str(teacher.first_name)+"."+str(teacher.last_name) + \
-              "\n" + "Password: ISEIapp"+phone_digits + \
-              "\n" + "\n " + "If you believe this to be a mistake, please contact us."
+              "\n" + "\n " + "If you have any questions, please contact us."
     # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
 

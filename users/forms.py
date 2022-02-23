@@ -1,5 +1,6 @@
 from django.forms import ModelForm, modelformset_factory, ClearableFileInput
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 from django import forms
 # from captcha.fields import CaptchaField
 from django.forms.models import inlineformset_factory
@@ -17,6 +18,11 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', ]
 
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Email exists")
+        return self.cleaned_data
 
 class UserForm(ModelForm):
     class Meta:
