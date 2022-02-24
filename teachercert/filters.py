@@ -88,5 +88,9 @@ class TeacherCertificationApplicationFilter(django_filters.FilterSet):
         (None, 'Any')
     )
     closed = ChoiceFilter(field_name="closed", choices=CHOICES_C, label='Status')
+    applied_after = DateFilter(field_name="date", lookup_expr='gte', label='Applied after:',
+                             widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
+    applied_before = DateFilter(field_name="date", lookup_expr='lte', label='Applied before:',
+                              widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
 
 
