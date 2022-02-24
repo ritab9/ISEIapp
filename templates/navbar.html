@@ -22,7 +22,7 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav navbar-nav">
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and user.is_active%}
                 {% if request.user|in_group:"staff"%}
 <!-- staff links -->
                       <li class="nav-item">

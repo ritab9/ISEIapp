@@ -65,6 +65,7 @@ def loginpage(request):
                         messages.info(request, 'User not assigned to a group. Please contact the site administrator.')
                 else:
                     messages.info(request, 'This account is not currently active. Please contact ISEI.')
+                    logout(request)
         else:
             messages.info(request, 'Username OR password is incorrect')
     context = {}
