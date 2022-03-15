@@ -29,13 +29,12 @@
 <div class = "row card card-body">
 <!-- Teacher Certification Status-->
         <h5> Teacher Certification Status</h5>
-            <p>Number of teachers: {{ number_of_teachers }}</p>
-        <!-- Percent of registered teachers -->
+          <!--  <p>Number of teachers: { { number_of_teachers }}</p>
             <p> <p>Percent of registered teachers certified:
-                {% if percent_certified < 85 %}<span style="color:red">{{ percent_certified }}%</span>
-                {% else %}<span style="color:green">{{ percent_certified }}%</span>{% endif %}
+                { % if percent_certified < 85 %}<span style="color:red">{ { percent_certified }}%</span>
+                { % else %}<span style="color:green">{ { percent_certified }}%</span>{ % endif %}
             </p></p>
-
+            -->
         <!-- Certified Teachers -->
             <p> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id=certified>
                 Certified Teachers: {{ number_of_certified_teachers }}</p>
@@ -62,6 +61,8 @@
                                     <span style="color:orange">{{ c.renewal_date }}</span>
                                   {% endif %}
                               </td>
+                              <!-- td>{ % if c.teacher.academic %} Yes { % else %} No { % endif %}</td -->
+
                           </tr>
                         {% endfor %}
                     </tbody>
@@ -92,6 +93,8 @@
                                     <span style="color:red">{{ c.renewal_date }} </span>
                                 {% endif %}
                             </td>
+                              <!-- td>{ % if c.teacher.academic %} Yes { % else %} No { % endif %}</td -->
+
                           </tr>
                         {% endfor %}
                     </tbody>
@@ -106,7 +109,7 @@
                 <table class = "table" id="details_not_certified" style="display:none">
                     <thead>
                         <tr>
-                            <th>School</th><th>Teacher</th><th>Application Status</th>
+                            <th>School</th><th>Teacher</th><th>Application Status</th><th</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,7 +123,7 @@
                               <td>Not Submitted</td>
                              {% endif %}
                               <td><a class="btn btn-ISEIblue4" href = "{% url 'manage_tcertificate' t.id %}"><div class="span80">Add Certificate</div></a></td>
-
+                              <!-- td>{ % if t.academic %} Yes { % else %} No { % endif %}</td> -->
                           </tr>
                         {% endfor %}
                     </tbody>
@@ -129,34 +132,32 @@
 
 <!-- Percent of Certified teachers/school -->
 
-
-    <div class="row card card-body" id="school_list">
-    <table class = "table-striped col col-sm-5">
+    <div class="card card-body" id="school_list" >
+    <table class = "col-6 table table-striped" style = "table-layout: auto">
         <thead class="span80">
-            <th>School</th><th>Teachers</th><th>Certified</th><th></th>
+            <th>School</th><th>% teachers certified</th>
+            <th>Teachers </th><th>Certified</th>
         </thead>
         <tbody>
             {% for s, s_info in cert_dict.items %}
+                {% if s_info.teachers > 0 %}
                 <tr>
                 <td>{{ s }}</td>
-                <td align = "center"> {{ s_info.teachers }}</td>
-                <td align = "center"> {{ s_info.certified }}</td>
-                <td align = "right">
-                    {% if s_info.percent < 85 %}<span style="color:red">{{ s_info.percent}}%</span>
-                    {% else %}
-                        {% if s_info.percent >= 85 %}<span style="color:green">{{ s_info.percent }}%</span>
-                            {% else %} {{ s_info.percent }}
-                        {% endif %}
+                <td align = "left">
+                    {% if s_info.percent < 50 %}<span style="color:red">{{ s_info.percent}}%</span>
+                        {% elif s_info.percent < 70 %} <span style="color:orange">{{ s_info.percent}}%</span>
+                        {% elif s_info.percent < 85 %} <span style="color:yellowgreen">{{ s_info.percent}}%</span>
+                        {% else %} <span style="color:green">{{ s_info.percent }}%</span>
                     {% endif %}
                 </td>
-
-
-
+                <td align = "left"> {{ s_info.teachers }} </td>
+                <td align = "left"> {{ s_info.certified }} </td>
                  <!--   { % for key, info in s_info.items %}
                         <td>{ { info }}</td>
                     { % endfor %} -->
 
                 </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>
@@ -194,7 +195,7 @@
                      $(this).attr('value',"Show List");}
     });
 
-
+/*
     document.addEventListener("DOMContentLoaded", function() {
         if ($('#id_school option').filter(':selected').text().includes("---")) {
             document.getElementById('school_list').style.display = "block";
@@ -202,7 +203,7 @@
             document.getElementById('school_list').style.display = "none";
         };
 
-    });
+    }); */
 
 
 </script>

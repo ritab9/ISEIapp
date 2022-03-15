@@ -77,7 +77,7 @@ class TeacherAddressInLine(admin.StackedInline):
 class Teacher(admin.ModelAdmin):
     inlines = [TeacherAddressInLine, CollegeAttendedInLine, SchoolOfEmploymentInLine,]
     list_display = ('name', 'school','joined_at')
-    list_editable = ('school', )
+    list_editable = ('school',)
     list_display_links = ('name',)
     list_filter =('school',)
     ordering = ('last_name','joined_at',)

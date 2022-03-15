@@ -2,8 +2,9 @@ from django.db import models
 from users.models import *
 from django.core.validators import MinLengthValidator
 import datetime
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import os
+
 
 
 # Create your models here.
@@ -329,6 +330,15 @@ class TeacherCertificationApplication(models.Model):
 
     class Meta:
         ordering = ('billed','closed','date',)
+
+    def expired(self):
+        if self.isei_revision_date:
+            if max(self.date, self.isei_revision_date) < date.today() - timedelta(days=183):
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def principal_letter_filename(self):
         return os.path.basename(self.principal_letter_file.name)

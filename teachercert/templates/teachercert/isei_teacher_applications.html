@@ -48,7 +48,12 @@
                           {% else %} <div class="spanred">Not reviewed yet</div>
                           {% endif %}
                     </td>
-                    <td>{% if app.closed %} Finalized {% else %}<div class="spanred">Processing</div> {% endif %}</td>
+                    <td>{% if app.closed %} Finalized
+                            {% elif app.expired %} <div class="spanred"> Expired. Please reapply. </div>
+                            {% else %}
+                            <div class="spanred">Processing</div>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% if app.public_note or app.isei_note  %}
                     <tr>

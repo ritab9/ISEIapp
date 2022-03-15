@@ -51,7 +51,7 @@ class Teacher(models.Model):
     profile_picture = models.ImageField(upload_to='users/ProfilePictures/', default='users/ProfilePictures/blank-profile.jpg', null=True, blank=True)
     sda = models.BooleanField(default=True)
     home_church = models.CharField(max_length=30, null=True, blank=True)
-
+    #academic = models.BooleanField(default=True)
 
     class Meta:
         ordering = ('last_name',)

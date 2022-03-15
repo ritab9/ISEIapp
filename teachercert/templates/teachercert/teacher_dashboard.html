@@ -193,21 +193,24 @@
                 <p>Your Teacher Certification Application has been received.</p>
                 <p> Date submitted: {{ tcert_application.date }} </p>
                 <p>{% if tcert_application.isei_revision_date %}
-
-                    {% if tcert_application.isei_revision_date < tcert_application.date  %}
-                            <p style = "color: red"> Not reviewed by ISEI since your update. </p>
-                    {% else %}
-                        ISEI review date: {{ tcert_application.isei_revision_date }}
-                    {% endif %}<br>
                     {% if tcert_application.closed %}
                         Your application is complete and a Certificate will be issued shortly.
-                    {% endif %}
+                    {% else %}
+                        {% if tcert_application.isei_revision_date < tcert_application.date  %}
+                                <p style = "color: red"> Not reviewed by ISEI since your update. </p>
+                        {% else %}
+                            ISEI review date: {{ tcert_application.isei_revision_date }}
+                            {% if tcert_application.expired %}
+                                <p class="spanred">Your application has expired due to over six months of inactivity. Please reapply. </p>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}<br>
+
 
                 {% else %}
                     Not reviewed yet.
                 {% endif %} </p>
 
-                {% if tcert_application.fee_paid %} <p> School billed. </p> {% endif %}
             </div>
             <div class="col">
                 {% if tcert_application.closed %}

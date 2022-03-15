@@ -5,8 +5,9 @@
 {% block content %}
     {% load static %}
 
-    <div class = "noprint">
-        <button onclick="window.print()">Print Application</button>
+    <div class = "noprint mt-3">
+        <a class = "btn btn-ISEIblue3 btn-sm" onclick="window.print()">Print Application</a>
+        <a class ="btn btn-sm btn-ISEIblue3" href="{% url "account_settings" teacher.user.id %}">Teacher Info</a>
     </div>
 
     {% include 'teachercert/teachercert_application_print.html' %}

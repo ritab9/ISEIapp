@@ -119,25 +119,26 @@ def email_Certificate_issued_or_modified(teacher):
     subject ="ISEI Teacher Certificate"
     message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification has been issued/renewed/modified. Please log in to isei1.org to view your certification information. If you have any questions, or find any of the information to be innacurate, please contact us."
     send_email(subject, message, [teacher.user.email])
-    message1 = str(teacher.first_name) + " from " + str(teacher.school) + "has been issued an ISEI Teacher Certificate."
+    message1 = str(teacher.first_name) + " from " + str(teacher.school) + " has been issued an ISEI Teacher Certificate."
     send_email(subject, message1, office_email)
 
-def email_Application_submitted(teacher, initial, member=None):
+def email_Application_submitted(teacher, initial, update, expired):
     subject = str(teacher) + " Application Submitted"
     message = str(teacher) + " from " + str(teacher.school) + " has submitted a Teacher Certification Application."
     if initial:
-        if member == "update":
+        if update == True:
             message = message + "\n" + "This is an update to the initial application. No billing is needed"
         else:
-            message = message + "\n" + "This is an Initial Application, please bill."
-    else:
-        if member:
-            if member == "renew":
-                message = message + "\n" + "This is a Renewal Application, do not bill because teacher is from a foundation schools."
+            if expired == False:
+                message = message + "\n" + "This is an Initial Application, please bill."
             else:
-                message = message + "\n" + "This is a Renewal Application, the teacher is from a foundation school, but should be billed a reinstatement fee because the certificate has been expired for more than a year."
+                message = message + "\n" + "This is an update to an expired (no activity for more than 6 months) Initial Application. Please bill."
+
+    else:
+        if update == True:
+            message = message + "\n" + "This is an update to a Renewal Application. No billing is needed"
         else:
-            message = message + "\n" + "This is a Renewal Application, please bill (teacher is not from a foundation school)."
+            message = message + "\n" + "This is a Renewal Application, or an update to an expired (no activity for more than 6 months) Renewal Application. Please bill."
 
     send_email(subject, message, office_email)
 
@@ -149,5 +150,9 @@ def email_Application_processed(teacher):
 
 def email_Application_on_hold(teacher, note = None):
     subject ="ISEI Teacher Certification Application"
-    message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and is on hold." + "\n" + str(note) + "\n" + "Please log in to isei1.org if any updates are needed."
+    if note:
+        message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and is on hold." + "\n" + str(note) + "\n" + "Please log in to isei1.org if any updates are needed."
+    else:
+        message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and will be processed soon."
+
     send_email(subject, message, [teacher.user.email])

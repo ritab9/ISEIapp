@@ -183,9 +183,12 @@
         });
 
 
- /*     Ajax CEU Type Load based on Category */
-        $("#id_ceu_category").click(function () {
+    $(document).ready(function(){
+ //   Ajax CEU Type Load based on Category
+        $("#id_ceu_category").change(function () {
+            //alert("called");
             var url = "{% url 'ajax_load_CEUtypes' %}";
+            //alert(url)
             //var url = $("#add_activity").attr("data-ceu_categories-url");  // get the url of the `load_CEUtypes` view
             var categoryId = $(this).val();  // get the selected category ID from the HTML input
             $.ajax({
@@ -198,10 +201,12 @@
                   }
               })
         });
+    });
+
 
 //Ajax Suggested Evidence Load based on Type
 
-        $("#id_ceu_type").click(function () {
+        $("#id_ceu_type").change(function () {
             var url = "{% url 'ajax_load_evidence' %}";
             //var url = $("#add_activity").attr("data-ceu_categories-url");  get the url of the `load_CEUtypes` view
             var typeID = $(this).val();  // get the selected category ID from the HTML input
@@ -215,8 +220,6 @@
                   }
               })
         });
-
-
 
     </script>
 

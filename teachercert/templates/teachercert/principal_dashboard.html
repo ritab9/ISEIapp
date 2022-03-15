@@ -9,12 +9,19 @@
 <!-- Teacher Certification Status-->
     <div class="col-sm-10 card card-body">
 
-<h5> Teacher Certification Status</h5>
+<h5 class="mb-3"> Teacher Certification Status</h5>
 <!-- Percent of registered teachers -->
-    <p> <p>Percent of registered teachers certified:
-        {% if percent_certified < 85 %}<span style="color:red">{{ percent_certified }}%</span>
-        {% else %}<span style="color:green">{{ percent_certified }}%</span>{% endif %}
-    </p></p>
+    <div class="mb-3">
+        <p>Number of registered teachers: {{ number_of_teachers }}</p>
+        <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
+        <p> Percent of registered teachers certified:
+            {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
+                {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
+                {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
+                {% else %} <span style="color:green">{{ percent_certified }}%</span>
+            {% endif %}
+        </p>
+    </div>
 
 <!-- Certified Teachers -->
     <p> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id=certified>
@@ -38,6 +45,7 @@
                     {% else %}
                         <span style="color:orange">{{ c.renewal_date }}</span>
                     {% endif %}</td>
+                    <!-- td>{ % if c.teacher.academic %} Yes { % else %} No { % endif %}</td -->
                   </tr>
                 {% endfor %}
             </tbody>
@@ -67,6 +75,8 @@
                         <span style="color:red">{{ c.renewal_date }} </span>
                     {% endif %}
                 </td>
+                  <!-- td>{ % if c.teacher.academic %} Yes { % else %} No { % endif %}</td -->
+
               </tr>
             {% endfor %}
         </tbody>
@@ -94,6 +104,7 @@
                           <td>{{t.name}}</td>
                           <td class="spanred">Not Submitted</td>
                         {% endif %}
+                      <!-- td>{ % if t.academic %} Yes { % else %} No { % endif %}</td -->
                   </tr>
                 {% endfor %}
             </tbody>
