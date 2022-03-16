@@ -46,11 +46,11 @@
     <div class="row">
     <div class = "col">
         {% if application_submitted %}
-            <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">Renewal Teacher Certification Application</a>
-            <p> *Before reapplying for Teacher Certification please ensure that ALL the information on this page is accurate and up to date, and that the renewal requirements have been met. (See Dashboard) </p>
+            <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">Teacher Certification Application</a>
+            <p> *Before applying / reapplying for Teacher Certification please ensure that ALL the information on this page is accurate and up to date, and, if applicable, the renewal requirements have been met. (See Home) </p>
         {% else %}
             {% if address.address_1 %}
-                <p><a class="btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">ISEI Initial Teacher Certification Application</a></p>
+                <p><a class="btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">Teacher Certification Application</a></p>
                 <p> *Before applying ISEI Teacher Certification please ensure that ALL the information on this page is accurate and up to date. </p>
             {% else %}
                 <button class="btn btn-sm btn-ISEIblue4" %}" disabled >ISEI Initial Teacher Certification Application</button><br>
@@ -129,7 +129,11 @@
             <div class="col-sm">
                 <p> <b>Address:</b> {{ address.address_1}} {{ address.address_2}}</p>
                 <p>{{ address.city }}, {{ address.state }}, {{ address.zip_code }}, {{ address.country}}</p>
-                <input type="button" class="btn btn-sm btn-ISEIblue4" id="showaddress"  value ="Update Address">
+                {% if address.address_1 %}
+                    <input type="button" class="btn btn-sm btn-ISEIblue4" id="showaddress"  value ="Update Address">
+                {% else %}
+                    <input type="button" class="btn btn-sm btn-ISEIblue4" id="showaddress"  value ="Enter Address">
+                {% endif %}
             </div>
         </div>
     <!-- address form -->

@@ -111,14 +111,25 @@
     </table>
 </div>
 
-<!-- CEU Report waiting for approval -->
-    {% if reports_to_review %}
-    <div class="col-sm-2 card card-body">
-        <p> Teacher reports or activities have been submitted that are waiting for your review! </p>
-        <a class="btn btn-danger" href="{% url 'principal_ceu_approval' %}"> CEU Reports Review</a>
+    <div class="col-sm-2">
+    <!-- CEU Report waiting for approval -->
+        {% if reports_to_review %}
+            <div class ="row card card-body mt-3">
+                <p> Teacher reports or activities have been submitted and are waiting for your review! </p>
+                <a class="btn btn-sm btn-danger" href="{% url 'principal_ceu_approval' %}"> CEU Reports Review</a>
+            </div>
+        {% endif %}
+    <!-- Background checks not done -->
+        <div class ="row card card-body mt-3">
+            {% if not bc_done %}
+                <p> Please mark completed background checks. </p>
+                <a class="btn btn-sm btn-danger" href="{% url 'background_check' schoolid %}"> Background Checks</a>
+            {% else %}
+                <p>Background checks for all theachers are marked as completed</p>
+                <a class="btn btn-sm btn-ISEIblue3" href="{% url 'background_check' schoolid %}"> Background Checks</a>
+            {% endif %}
+        </div>
     </div>
-{% endif %}
-
 </div>
 
 <script>

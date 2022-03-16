@@ -1,0 +1,58 @@
+{%  extends 'base.html' %}
+{% load crispy_forms_tags %}
+{%  load group_tags %}
+
+{% block title %}
+   Background Check
+{% endblock %}
+
+{% block content %}
+
+    {% load static %}
+
+    <div class="card card-body">
+    <p> Please ensure that background checks are done for all staff. </p>
+        <p>Click the checkbox next to the name of each staff for whom the background check is on file.</p>
+
+        <div id="bc_editing">
+            <form action="" method = "POST" name="bc_editing">
+        {% csrf_token %}
+            <div class="row mt-3">
+                    <div class="col">
+                        <table class="table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td>Background Check Done (on file)</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{ bc_form.management_data }}
+                                {{ bc_form.management_form }}
+                                {% for form in bc_form %}
+                                  {{ form.non_field_errors }}
+                                    <tr>
+                                        <td>{{ form.instance.name}} </td>
+                                        <td><div class="ml-5">{{ form.background_check }}</div><span style ='color:red'>{{ form.background_check.errors }}</span></td>
+                                    </tr>
+                                  {% for hidden in form.hidden_fields %}
+                                     {{ hidden }}
+                                  {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="col-sm-2 mt-3 mb-3"><input class="btn-ISEIblue3" type="submit" value="Submit Changes" name="submit_changes" ></div>
+                             {% if case %}   {{ case }} {% endif %}
+                    </div>
+            </div>
+        </form>
+        </div>
+    </div>
+
+
+    <script>
+
+
+    </script>
+
+{% endblock %}

@@ -43,6 +43,7 @@ urlpatterns = [
     path('principal_ceu_approval/', views.principal_ceu_approval, name='principal_ceu_approval'),
     path('principal_ceu_approval/<str:recID>/', views.principal_ceu_approval, name='principal_ceu_approval'),
     path('principal_ceu_approval/<str:recID>/<str:instID>/', views.principal_ceu_approval, name='principal_ceu_approval'),
+    path('background_check/<str:schoolid>/', views.mark_background_check, name='background_check'),
 
     # isei staff and principal urls
     path('CEUreports/', views.CEUreports, name='CEUreports'),

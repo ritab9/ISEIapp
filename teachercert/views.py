@@ -6,11 +6,9 @@ from .forms import *
 from users.utils import is_in_group
 from users.filters import SchoolFilter
 from .models import *
-from django.db.models import Q, \
-    F  # Q is for queries in filters, F is to update a field using an other field from the model
+from django.db.models import Q, F  # Q is for queries in filters, F is to update a field using an other field from the model
 from django.db.models.functions import Now
 from django.forms import modelformset_factory
-# import custom functions
 from .myfunctions import *
 from emailing.teacher_cert_functions import *
 
@@ -21,7 +19,6 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from django.http import HttpResponse
-
 # for emailing
 from django.core.mail import EmailMessage
 
@@ -58,7 +55,7 @@ def iseidashboard(request):
     # Teacher Certificates Section
     # number_of_teachers = teachers.count()
     # Last certificate for each active user
-    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active=True).order_by('renewal_date')
+    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active=True).order_by('renewal_date', 'teacher__school')
 
     # Valid certificates
     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
@@ -95,10 +92,13 @@ def iseidashboard(request):
         # s_number_of_certified_academic_teachers = s_certified_teachers.filter(academic=True).count()
         # s_number_of_academic_teachers = s_teachers.filter(academic=True).count()
         if s_teachers.count() > 0:
-            percent = round(s_certified_teachers.count() * 100 / s_teachers.count())
+            percent = round(s_number_of_certified_teachers * 100 / s_number_of_teachers)
             # percent= round(s_number_of_certified_academic_teachers * 100 / s_number_of_academic_teachers)
         else:
             percent = "-"
+
+        #bc_complete = Teacher.objects.filter(user__is_active=True, school__id=s.id, background_check=True)
+        bc_missing = Teacher.objects.filter(user__is_active=True, school__id=s.id, background_check=False).count()
 
         cert_dict[s] = {
             'teachers': s_number_of_teachers,
@@ -106,6 +106,7 @@ def iseidashboard(request):
             # 'academic': s_number_of_academic_teachers,
             # 'certified_academic':s_number_of_certified_academic_teachers,
             'percent': percent,
+            'bc_missing': bc_missing,
         }
 
     context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago,
@@ -167,14 +168,17 @@ def principaldashboard(request, userID):
     else:
         reports_to_review = False
 
+    bc_done = complete_background_checks(principal.school.id)
+
     context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago, percent_certified=percent_certified,
                    valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
                    expired_tcertificates=expired_tcertificates, number_of_expired_teachers=number_of_expired_teachers,
                    non_certified_teachers=non_certified_teachers,
                    number_of_non_certified_teachers=number_of_non_certified_teachers,
-                   number_of_teachers=number_of_teachers,
+                   number_of_teachers=number_of_teachers, schoolid = principal.school.id,
                    # number_of_academic_teachers = number_of_academic_teachers, number_of_certified_academic_teachers = number_of_certified_academic_teachers,
-                   reports_to_review=reports_to_review)
+                   reports_to_review=reports_to_review,
+                   bc_done= bc_done)
 
     return render(request, 'teachercert/principal_dashboard.html', context)
 
@@ -655,6 +659,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
 #     return render(request, 'teachercert/isei_teachers.html', context)
 #
 
+
 # isei's approval of teacher activities
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
@@ -732,67 +737,66 @@ def isei_ceu_approval(request, repID=None, instID=None):
 
 
 # create a pdf with approved CEUs
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['staff'])
-def approved_pdf(request):
-    # Create a Bytestream buffer
-    buf = io.BytesIO()
-    # Create a canvas
-    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-    # Create text object - what will be on the canvas
-    textob = c.beginText()
-    textob.setFont("Helvetica", 12)
-    textob.setTextOrigin(inch, inch)
-
-    # Add text
-    lines = []
-    approved_report = CEUReport.objects.filter(isei_reviewed='a')
-    # approved_instance = CEUInstance.objects.filter(isei_reviewed='a')
-    # for a in approved_instance:
-    for a in approved_report:
-        lines.append("")
-        # lines.append(a.ceu_report.teacher.first_name +" "+a.ceu_report.teacher.last_name)
-        lines.append(a.teacher.first_name + " " + a.teacher.last_name + ", " + a.school_year.name)
-        lines.append("")
-        for i in a.ceuinstance_set.all():
-            categ = i.ceu_category
-            lines.append(categ + " " + str(i.date_completed))
-            lines.append(i.description)
-            lines.append(str(i.approved_ceu))
-
-    for line in lines:
-        textob.textLine(line)
-
-    # Finish up
-    c.drawText(textob)
-    c.showPage()
-    c.save()
-    pdf = buf.getvalue()
-    buf.close()
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="mypdf.pdf"'
-    response.write(pdf)
-    # return response
-    return pdf
-    # (to use it with approved_pdf2) comment response and uncomment return pdf
-
-
-# email a pdf with approved CEUs
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['staff'])
-def approved_pdf2(request):
-    email = EmailMessage(
-        'Subject here', 'Here is the message.', 'ritab.isei.life@gmail.com', ['oldagape@yahoo.com'])
-    pdf = approved_pdf(request)
-    email.attach("Approved_CEUs.pdf", pdf, 'application/pdf')
-    email.send()
-
-    return render(request, 'teachercert/isei_ceu_approval.html')
+# @login_required(login_url='login')
+# @allowed_users(allowed_roles=['staff'])
+# def approved_pdf(request):
+#     # Create a Bytestream buffer
+#     buf = io.BytesIO()
+#     # Create a canvas
+#     c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+#     # Create text object - what will be on the canvas
+#     textob = c.beginText()
+#     textob.setFont("Helvetica", 12)
+#     textob.setTextOrigin(inch, inch)
+#
+#     # Add text
+#     lines = []
+#     approved_report = CEUReport.objects.filter(isei_reviewed='a')
+#     # approved_instance = CEUInstance.objects.filter(isei_reviewed='a')
+#     # for a in approved_instance:
+#     for a in approved_report:
+#         lines.append("")
+#         # lines.append(a.ceu_report.teacher.first_name +" "+a.ceu_report.teacher.last_name)
+#         lines.append(a.teacher.first_name + " " + a.teacher.last_name + ", " + a.school_year.name)
+#         lines.append("")
+#         for i in a.ceuinstance_set.all():
+#             categ = i.ceu_category
+#             lines.append(categ + " " + str(i.date_completed))
+#             lines.append(i.description)
+#             lines.append(str(i.approved_ceu))
+#
+#     for line in lines:
+#         textob.textLine(line)
+#
+#     # Finish up
+#     c.drawText(textob)
+#     c.showPage()
+#     c.save()
+#     pdf = buf.getvalue()
+#     buf.close()
+#
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = 'inline; filename="mypdf.pdf"'
+#     response.write(pdf)
+#     # return response
+#     return pdf
+#     # (to use it with approved_pdf2) comment response and uncomment return pdf
+#
+#
+# # email a pdf with approved CEUs
+# @login_required(login_url='login')
+# @allowed_users(allowed_roles=['staff'])
+# def approved_pdf2(request):
+#     email = EmailMessage(
+#         'Subject here', 'Here is the message.', 'ritab.isei.life@gmail.com', ['oldagape@yahoo.com'])
+#     pdf = approved_pdf(request)
+#     email.attach("Approved_CEUs.pdf", pdf, 'application/pdf')
+#     email.send()
+#
+#     return render(request, 'teachercert/isei_ceu_approval.html')
 
 
 # TEACHER CERTIFICATE FUNCTIONS
-
 
 def load_renewal(request):
     certification_type_id = request.GET.get('certification_type_id')
@@ -1094,3 +1098,28 @@ def add_ISEI_CEUs(request):
     context = dict(school_list=school_list, school_year_list=school_year_list, ceu_form=ceu_form, case=case)
 
     return render(request, 'teachercert/add_ISEI_CEUs.html', context)
+
+
+# Background Checks
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff', 'principal'])
+def mark_background_check(request, schoolid):
+
+    teachers= Teacher.objects.filter(school__id=schoolid, user__is_active=True).order_by('background_check')
+
+    #formset for all teachers to mark background check
+    bcformset = modelformset_factory(Teacher, fields=('background_check',),extra=0, can_delete=False)
+
+    if request.method == 'POST':
+        bc_form = bcformset(request.POST)
+        case = "Changes were not saved"
+        if bc_form.is_valid():
+            bc_form.save()
+            case = "Changes were saved"
+    else:
+        bc_form = bcformset(queryset=teachers)
+        case = None
+
+    context = dict(bc_form=bc_form, case=case)
+
+    return render(request, 'teachercert/mark_background_check.html', context)

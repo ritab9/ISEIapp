@@ -100,3 +100,10 @@ def application_submitted(teacher):
 
 def get_today():
     return date.today()
+
+
+def complete_background_checks(schoolid):
+    if Teacher.objects.filter(user__is_active=True, school__id=schoolid, background_check=False):
+        return False
+    else:
+        return True

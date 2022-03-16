@@ -52,6 +52,7 @@ class Teacher(models.Model):
     sda = models.BooleanField(default=True)
     home_church = models.CharField(max_length=30, null=True, blank=True)
     #academic = models.BooleanField(default=True)
+    background_check=models.BooleanField(default=False)
 
     class Meta:
         ordering = ('last_name',)

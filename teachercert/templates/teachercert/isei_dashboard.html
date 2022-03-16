@@ -20,7 +20,7 @@
     <div class="card card-body">
         <form method="get">
                 {{ school_filter.form}}
-            <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+            <button class="btn btn-ISEIblue3 btn-sm" id="id_filter_button" type="submit">Search</button> &nbsp;
             <a href="{%  url 'isei_dashboard' %}">Clear all filters</a>
         </form>
     </div>
@@ -130,19 +130,21 @@
             </table>
 </div>
 
-<!-- Percent of Certified teachers/school -->
+<!-- Percent of Certified teachers/school  + background checks done-->
 
     <div class="card card-body" id="school_list" >
     <table class = "col-6 table table-striped" style = "table-layout: auto">
         <thead class="span80">
             <th>School</th><th>% teachers certified</th>
-            <th>Teachers </th><th>Certified</th>
+            <th>Teachers </th><th>Certified</th><th>Missing Background Check</th>
         </thead>
         <tbody>
             {% for s, s_info in cert_dict.items %}
                 {% if s_info.teachers > 0 %}
                 <tr>
-                <td>{{ s }}</td>
+                <td>
+                    <div class ='btn btn-sm' onClick="selectschool({{ s.id }})">{{ s }}</div>
+                </td>
                 <td align = "left">
                     {% if s_info.percent < 50 %}<span style="color:red">{{ s_info.percent}}%</span>
                         {% elif s_info.percent < 70 %} <span style="color:orange">{{ s_info.percent}}%</span>
@@ -156,6 +158,11 @@
                         <td>{ { info }}</td>
                     { % endfor %} -->
 
+                    <td align = "center">
+                        {% if s_info.bc_missing > 0 %} <a href="{% url 'background_check' s.id %}" class="spanred">{{ s_info.bc_missing }}</a>
+                        {% else %} <a href="{% url 'background_check' s.id %}" class="spangreen">{{ s_info.bc_missing }}</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endif %}
             {% endfor %}
@@ -165,6 +172,11 @@
 
 
 <script>
+
+    function selectschool(id){
+        $('#id_school').val(id);
+        $("#id_filter_button").click();
+    };
 
 <!-- show / hide list f Certified, Expired Certification, Non-certified Teachers -->
     $('#certified').on("click", function() {
