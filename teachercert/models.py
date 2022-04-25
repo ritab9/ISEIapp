@@ -1,10 +1,10 @@
-from django.db import models
 from users.models import *
-from django.core.validators import MinLengthValidator
-import datetime
-from datetime import datetime, date, timedelta
 import os
+from datetime import date, timedelta
 
+from django.core.validators import MinLengthValidator
+
+from users.models import *
 
 
 # Create your models here.
@@ -349,7 +349,7 @@ class TeacherCertificationApplication(models.Model):
 
 class TeacherBasicRequirement(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete= models.CASCADE, blank=False, null=False)
-    basic_requirement = models.ForeignKey(Requirement, on_delete=models.PROTECT, blank=False, null=False)
+    basic_requirement = models.ForeignKey(Requirement, on_delete=models.CASCADE, blank=False, null=False)
     met = models.BooleanField(default=False)
     course = models.CharField(max_length=70, blank=True, null=True)
 

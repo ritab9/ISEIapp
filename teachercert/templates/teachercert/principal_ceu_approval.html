@@ -5,73 +5,6 @@
 
 
 {% block content %}
-{% if ceu_report_approved or ceu_report_denied %}
-	<div class="row">
-        {% if ceu_report_approved %}
-            <div class="col-sm">
-                Complete Reports:
-                <div class="card-body">
-                    <table class="table table-sm table-light" style="font-size: 85%">
-                    <thead class="table-light">
-                        <th>Teacher</th><th>SchoolYear</th><th>Submitted</th><th>Approved</th><th></th>
-                    </thead>
-                    <tbody>
-                        {% for p in ceu_report_approved%}
-                            <tr>
-                                <td>{{p.teacher}}</td>
-                                <td>{{p.school_year}}</td>
-                                <td>{{ p.date_submitted }}</td>
-                                <td>{{ p.reviewed_at }}</td>
-                                <td>
-                                 {% if p.isei_reviewed == 'n' %}
-                                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
-                                        {% csrf_token %}
-                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle">
-                                    </form>
-                                {% else %}
-                                    {{ p.get_isei_reviewed_display }} by ISEI
-                                {% endif %}
-                            </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if ceu_report_denied %}
-            <div class="col-sm">
-                More information needed:
-                <div class="card-body">
-                    <table class="table table-sm table-light" style="font-size: 85%">
-                      <thead class="table-light">
-                          <tr>
-                            <th>Teacher</th><th>SchoolYear</th><th>More Info Needed</th><th>Cancel</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                        {% for p in ceu_report_denied%}
-                            <tr>
-                                <td> {{p.teacher}} </td>
-                                <td> {{p.school_year}} </td>
-                                <td> {{ p.reviewed_at }} </td>
-                                <td>
-                                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
-                                        {% csrf_token %}
-                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                </div>
-             </div>
-        {% endif %}
-    </div>
-{% endif %}
-
 
 <div class="row">
     <div class="col-sm">
@@ -251,5 +184,73 @@
 
     </div>
 </div>
+
+    {% if ceu_report_approved or ceu_report_denied %}
+	<div class="row">
+        {% if ceu_report_approved %}
+            <div class="col-sm">
+                Complete Reports:
+                <div class="card-body">
+                    <table class="table table-sm table-light" style="font-size: 85%">
+                    <thead class="table-light">
+                        <th>Teacher</th><th>SchoolYear</th><th>Submitted</th><th>Approved</th><th></th>
+                    </thead>
+                    <tbody>
+                        {% for p in ceu_report_approved%}
+                            <tr>
+                                <td>{{p.teacher}}</td>
+                                <td>{{p.school_year}}</td>
+                                <td>{{ p.date_submitted }}</td>
+                                <td>{{ p.reviewed_at }}</td>
+                                <td>
+                                 {% if p.isei_reviewed == 'n' %}
+                                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+                                        {% csrf_token %}
+                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle">
+                                    </form>
+                                {% else %}
+                                    {{ p.get_isei_reviewed_display }} by ISEI
+                                {% endif %}
+                            </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if ceu_report_denied %}
+            <div class="col-sm">
+                More information needed:
+                <div class="card-body">
+                    <table class="table table-sm table-light" style="font-size: 85%">
+                      <thead class="table-light">
+                          <tr>
+                            <th>Teacher</th><th>SchoolYear</th><th>More Info Needed</th><th>Cancel</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                        {% for p in ceu_report_denied%}
+                            <tr>
+                                <td> {{p.teacher}} </td>
+                                <td> {{p.school_year}} </td>
+                                <td> {{ p.reviewed_at }} </td>
+                                <td>
+                                    <form action="{% url 'principal_ceu_approval' p.id %}" method="POST">
+                                        {% csrf_token %}
+                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                </div>
+             </div>
+        {% endif %}
+    </div>
+{% endif %}
+
 
 {% endblock  %}

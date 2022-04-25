@@ -16,7 +16,7 @@ def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.co
     mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher.certification.isei@gmail.com"])
     mail.send()
 
-def email_registered_user (teacher):
+def email_registered_user(teacher):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
                "An account has been created for you to apply for and manage your ISEI teacher certification." + \

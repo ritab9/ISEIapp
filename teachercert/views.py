@@ -683,7 +683,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
                                                          approved_ceu=request.POST.get('approved_ceu'),
                                                          reviewed_at=Now(), isei_comment=None)
             this_activity = CEUInstance.objects.get(id=instID)
-            email_CEUactivity_approved_by_ISEI(this_activity.ceu_report.teacher)
+            #email_CEUactivity_approved_by_ISEI(this_activity.ceu_report.teacher)
 
     if request.method == 'POST':
         if request.POST.get('denyinst'):
@@ -692,7 +692,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
                                                          principal_reviewed='n', date_resubmitted=None,
                                                          reviewed_at=Now())
             this_activity = CEUInstance.objects.get(id=instID)
-            email_CEUactivity_denied_by_ISEI(this_activity.ceu_report.teacher)
+            #email_CEUactivity_denied_by_ISEI(this_activity.ceu_report.teacher)
 
     if request.method == 'POST':
         if request.POST.get('cancelinst'):

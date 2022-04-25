@@ -31,61 +31,8 @@
     </div>
 
 {% endif %}
-
-<!-- Approved and Denied list -->
-{% if ceu_report_approved %}
-    <div class="col-sm-3">
-<!--    Approved: -->
-        <div class="card-body">
-         Approved:
-            <table class="table table-sm table-light" style="font-size: 85%">
-                <thead class="table-light">
-                  <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
-                </thead>
-              <tbody>
-                {% for p in ceu_report_approved%}
-                <tr>
-                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
-                    <td>
-                        <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
-    </div>
-{% endif %}
-<!-- Denied-->
-{% if ceu_report_denied %}
-    <div class="col-sm-3">
-        <div class="card-body">
-         Denied:
-            <table class="table table-sm table-light" style="font-size: 85%">
-                <thead class="table-light">
-                  <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
-                </thead>
-              <tbody>
-                {% for p in ceu_report_denied%}
-                <tr>
-                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
-                    <td>
-                        <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
-                            {% csrf_token %}
-                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
-    </div>
-{% endif %}
 </div>
+
 <div class ="row">
 
     {% if ceu_report_notreviewed %}
@@ -322,6 +269,59 @@
 </div>
 
 
+<!-- Approved and Denied list -->
+{% if ceu_report_approved %}
+    <div class="col-sm-3">
+<!--    Approved: -->
+        <div class="card-body">
+         Approved:
+            <table class="table table-sm table-light" style="font-size: 85%">
+                <thead class="table-light">
+                  <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
+                </thead>
+              <tbody>
+                {% for p in ceu_report_approved%}
+                <tr>
+                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
+                    <td>
+                        <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+<!-- Denied-->
+{% if ceu_report_denied %}
+    <div class="col-sm-3">
+        <div class="card-body">
+         Denied:
+            <table class="table table-sm table-light" style="font-size: 85%">
+                <thead class="table-light">
+                  <th>School</th><th>Teacher</th><th>SchoolYear</th><th>Cancel</th>
+                </thead>
+              <tbody>
+                {% for p in ceu_report_denied%}
+                <tr>
+                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
+                    <td>
+                        <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
+                            {% csrf_token %}
+                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancel" name="cancel" style = "width: 5em; height: 27px; vertical-align: middle" >
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
 
 <!--
 <script>

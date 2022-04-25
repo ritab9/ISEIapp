@@ -65,6 +65,7 @@ class EmailMessageTemplate(admin.ModelAdmin):
 @admin.register(Requirement)
 class Requirement(admin.ModelAdmin):
     list_display = ('name', 'category', )
+    ordering = ('category',)
     #def certification_types(self, obj):
     #    certification_types =[]
     #    for c in obj.certification_type_set.all():

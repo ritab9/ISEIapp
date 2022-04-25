@@ -118,6 +118,8 @@ class TeacherCertificationApplicationForm(ModelForm):
                  'felony','felony_description','sexual_offence','sexual_offence_description',
                  'signature', 'date')
         widgets = {
+            'courses_taught': forms.Textarea(
+                attrs={'class': 'form-controls', 'placehoder': 'Courses Taught','rows':1}),
             'felony_description': forms.Textarea(
                 attrs={'class': 'form-controls', 'placehoder': 'Felony Description', 'rows': 10}),
             'sexual_offence_description': forms.Textarea(
