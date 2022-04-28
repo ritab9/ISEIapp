@@ -158,3 +158,10 @@ class TeacherBasicRequirement(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
 
+@admin.register(StandardChecklist)
+class StandardCheckList(admin.ModelAdmin):
+    list_display = ("teacher","sda",'background_check', 'ba_degree', 'no_Ds', 'experience',
+                    'religion_and_health', 'education_credits',
+                    'endorsement_credits18', 'elementary_methods', 'sec_methods'
+                    )
+

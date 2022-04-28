@@ -358,3 +358,73 @@ class TeacherBasicRequirement(models.Model):
 
     def __str__(self):
         return self.basic_requirement.name
+
+class StandardChecklist(models.Model):
+    teacher=models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=False, null=False,)
+    sda=models.BooleanField(default=True, verbose_name= "SDA Church Member")
+    background_check = models.BooleanField(default=False, verbose_name= "Clean background check")
+    ba_degree = models.BooleanField(verbose_name="Baccalaureate degree or higher")
+    no_Ds = models.BooleanField(verbose_name = "No Grades below C-")
+    experience = models.BooleanField(verbose_name="3-years teaching experience")
+
+    sop = models.BooleanField(verbose_name="Spirit of Prophecy")
+    sda_doctrine= models.BooleanField(verbose_name="SDA Doctrines")
+    sda_history= models.BooleanField(verbose_name="SDA Church History")
+    sda_health = models.BooleanField(verbose_name="SDA Health Principles")
+
+    sda_education = models.PositiveSmallIntegerField(verbose_name="Principles and Philosophy of SDA Education",blank=True, null=True)
+    psychology = models.PositiveSmallIntegerField(verbose_name="Developmental and Educational Psychology",blank=True, null=True)
+    assessment = models.PositiveSmallIntegerField(verbose_name="Educational Assessment",blank=True, null=True)
+    exceptional_child = models.PositiveSmallIntegerField(verbose_name="Exceptional Child in the Classroom",blank=True, null=True)
+    technology = models.PositiveSmallIntegerField(verbose_name="Technology in Teaching & Learning",blank=True, null=True)
+
+    sec_methods = models.PositiveSmallIntegerField(verbose_name="Secondary Curriculum and Methods", blank=True, null=True)
+    sec_rw_methods = models.PositiveSmallIntegerField(verbose_name="Secondary Reading and Writing Methods (recommended)", blank=True, null=True)
+    endorsement_credits18 = models.BooleanField(verbose_name="18 endorsment(s) credit")
+
+    em_science = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Science",blank=True, null=True)
+    em_math = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Mathematics",blank=True, null=True)
+    em_reading = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Reading",blank=True, null=True)
+    em_language = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Language Arts",blank=True, null=True)
+    em_religion = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Religion",blank=True, null=True)
+    em_social = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Social Studies (recommended)",blank=True, null=True)
+    em_health = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Health (recommended)",blank=True, null=True)
+
+    other_ed_credit = models.PositiveSmallIntegerField(verbose_name="Other Professional Education Credits",blank=True, null=True)
+
+    def religion_and_health(self):
+        if (self.sop & self.sda_doctrine & self.sda_health & self.sda_history):
+            return True
+        else:
+            return False
+    religion_and_health.boolean = True
+
+    def education_credits(self):
+        ba_cr = sum(filter(None, [self.sda_education, self.psychology, self.assessment, self.exceptional_child, self.technology]))
+        sm_cr = sum(filter(None, [self.sec_methods, self.sec_rw_methods]))
+        emr_cr = sum(filter(None, [self.em_science, self.em_math, self.em_reading, self.em_language, self.em_religion]))
+        emo_cr = sum(filter(None, [self.em_social, self.em_health]))
+        o_cr = sum(filter(None, [self.other_ed_credit]))
+        credit = sum(filter(None, [ba_cr, sm_cr, emr_cr, emo_cr, o_cr]))
+        return str(credit) + " (20 required)"
+
+
+    def elementary_methods(self):
+         if (self.em_math) and (self.em_science):
+             #& self.em_religion & self.em_language & self.em_reading):
+             return True
+         else:
+             return False
+    elementary_methods.boolean = True
+
+
+    class Meta:
+        ordering = ('teacher',)
+
+
+
+
+
+
+
+
