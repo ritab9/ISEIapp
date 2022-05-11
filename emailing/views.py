@@ -8,7 +8,8 @@ from users.decorators import unauthenticated_user, allowed_users
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
-from django.core.mail import EmailMessage
+from django.core import mail
+#from django.core.mail import EmailMessage
 from django.conf import settings
 
 from .forms import *
@@ -51,12 +52,10 @@ def ContactISEI(request, userID):
 
 
 
-#view that sends an email using a form on a website with mannually entering addresses
+#view that sends an email using a form on a website filtering options for email addresses
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def SendEmailsAttachments(request):
-
-    # TODO need to deal with the cases when user_emails is more than 100. Can't send more than 100 emails at once.
     form_used = EmailFormNoAddress
     users = User.objects.filter(is_active = True)
 
@@ -74,73 +73,34 @@ def SendEmailsAttachments(request):
 
     if request.method == "POST":
         form = form_used(request.POST, request.FILES)
-
         if form.is_valid():
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
-            #email = form.cleaned_data['email']
             files = request.FILES.getlist('attach')
             try:
-                #BCC all users that receive the message
-                mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, user_emails, ['teacher.certification.isei@gmail.com'] )
+                connection = mail.get_connection()
+                connection.open()
+                for e in user_emails:
+                    email = mail.EmailMessage(subject, message, settings.EMAIL_HOST_USER, [e], connection=connection)
+                    for f in files:
+                        email.attach(f.name, f.read(), f.content_type)
+                    email.send()
+
+                #send a copy to ISEI
+                message = message + "\n" + "Sent to " + str(list(user_emails))
+
+                email = mail.EmailMessage(subject, message, settings.EMAIL_HOST_USER, [settings.EMAIL_HOST_USER], connection=connection)
                 for f in files:
-                    mail.attach(f.name, f.read(), f.content_type)
-                mail.send()
+                    email.attach(f.name, f.read(), f.content_type)
+                email.send()
+
+                connection.close()
                 return render(request, 'sendemailsattachments.html',
-                              {'error_message': 'Sent email to %s' %user_emails})
+                              {'error_message': 'Sent email to %s' %list(user_emails)})
             except:
                 return render(request, 'sendemailsattachments.html',
                               {'email_form': form, 'error_message': 'Unable to send email. Please contact the website administrator'})
 
         return render(request, 'sendemailsattachments.html',
                       {'email_form': form,
-                       'error_message': 'Attachment too big of corrupt',
-                        })
-
-
-
-# Not used
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['staff'])
-def emailing(request):
-    # all active teacher
-    # teachers = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['teacher'])
-    # principals = Teacher.objects.filter(user__is_active=True, user__groups__name__in= ['principal'])
-    #
-    #
-    # #filter by school
-    # school_filter = SchoolFilter(request.GET, queryset=teachers)
-    # teachers = school_filter.qs
-    # principals = school_filter.qs
-    #
-    # schools = School.objects.filter(~Q(name__in={'ISEI', 'Sample School'}))
-    #
-    # today = date.today()
-    # in_six_months = today + timedelta(183)
-    # a_year_ago = today - timedelta(365)
-
-    if request.method == "GET":
-        form = EmailForm
-        return render(request, 'sendemailsattachments.html', {'email_form': form})
-
-    if request.method == "POST":
-        form = EmailForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            subject = form.cleaned_data['subject']
-            message = form.cleaned_data['message']
-            email = form.cleaned_data['email']
-            files = request.FILES.getlist('attach')
-            try:
-                mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, [email])
-                for f in files:
-                    mail.attach(f.name, f.read(), f.content_type)
-                mail.send()
-                return render(request, 'sendemailsattachments.html',
-                              {'error_message': 'Sent email to %s' % email})
-            except:
-                return render(request, 'sendemailsattachments.html',
-                              {'email_form': form, 'error_message': 'Either the attachment is too big or corrupt'})
-
-        return render(request, 'sendemailsattachments.html',
-                      {'email_form': form, 'error_message': 'Unable to send email. Please try again later'})
+                       'error_message': 'Attachment too big or corrupt', })

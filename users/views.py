@@ -82,7 +82,6 @@ def logoutuser(request):
 @allowed_users(allowed_roles=['teacher','principal', 'staff'])
 def accountsettings(request, userID):
 
-    # TODO account settings for different categories of users
     user = User.objects.get(id=userID)
     teacher = Teacher.objects.get(user=user)
 
