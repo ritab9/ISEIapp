@@ -180,6 +180,11 @@ def teacherdashboard(request, userID):
     highest_degree = None
     tcertificate = None
 
+    if StandardChecklist.objects.filter(teacher=teacher):
+        standard_checklist = StandardChecklist.objects.get(teacher=teacher)
+    else:
+        standard_checklist = None
+
     # current_certificates
     if never_certified(teacher):
         certification_status = None
@@ -234,6 +239,7 @@ def teacherdashboard(request, userID):
     context = dict(teacher=teacher, tcertificate=tcertificate, certification_status=certification_status,
                    today=today, basic_met=basic_met, basic_not_met=basic_not_met,
                    tcert_application=tcert_application, highest_degree=highest_degree,
+                   checklist=standard_checklist,
                   )
     return render(request, 'teachercert/teacher_dashboard.html', context)
 

@@ -43,30 +43,37 @@
                 </p></div>
 
             {% if not tcertificate.nad %}
+                {% if not checklist %}
   <!-- Basic requirments met and not met -->
-                {% if basic_met %}
-                    <div class="col-sm-6">
-                    <b class = "span80blue" >Basic Requirements Met:</b>
-                    <table class="span80">
-                        <thead><tr><th>Requirement</th><th>Met by</th><tr></tr></thead>
-                        <tbody>
-                            {% for r in basic_met %}
-                                <tr>
-                                    <td>{{ r.basic_requirement }}</td><td> {{ r.course }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    </div>
-                {% endif %}
+                    {% if basic_met %}
+                        <div class="col-sm-6">
+                        <b class = "span80blue" >Basic Requirements Met:</b>
+                        <table class="span80">
+                            <thead><tr><th>Requirement</th><th>Met by</th><tr></tr></thead>
+                            <tbody>
+                                {% for r in basic_met %}
+                                    <tr>
+                                        <td>{{ r.basic_requirement }}</td><td> {{ r.course }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+                    {% endif %}
 
-
-                {% if basic_not_met %}
-                    <div class="col-sm">
-                    <div class="spanred">Basic Requirements Not Met:</div>
-                    <ul>
-                        {% for r in basic_not_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
-                    </ul>
+                    {% if basic_not_met %}
+                        <div class="col-sm">
+                        <div class="spanred">Basic Requirements Not Met:</div>
+                        <ul>
+                            {% for r in basic_not_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
+                        </ul>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="card">
+                        {% include "teachercert/standard_checklist_list.html" %}
+                        <div class="spangreen">*green indicates met requirements</div>
+                        <div class="spanred">*red indicates not met requirements</div>
                     </div>
                 {% endif %}
             {% endif %}
@@ -84,7 +91,6 @@
 
 {% if not tcertificate.nad %}
              <div class="row mb-3">
-
 <!-- CEU Reports with this certificate -->
                 <div class="col col-sm">
                 <h6><b>CEU Reports Submitted</b></h6>
