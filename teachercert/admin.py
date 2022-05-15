@@ -162,6 +162,6 @@ class TeacherBasicRequirement(admin.ModelAdmin):
 class StandardCheckList(admin.ModelAdmin):
     list_display = ("teacher","sda",'background_check', 'ba_degree', 'no_Ds', 'experience',
                     'religion_and_health', 'education_credits',
-                    'endorsement_credits18', 'elementary_methods', 'sec_methods'
+                    'credits18', "credits12", 'elementary_methods', 'sec_methods'
                     )
 

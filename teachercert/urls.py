@@ -73,4 +73,6 @@ urlpatterns = [
     path('add_ISEI_CEUs/', views.add_ISEI_CEUs, name='add_ISEI_CEUs'),
     path('isei_teacher_applications/', views.isei_teacher_applications, name='isei_teacher_applications'),
     path('isei_manage_application/<str:appID>/',views.isei_manage_application, name = 'isei_manage_application'),
+
+    path('standard_checklist/<str:teacherID>/', views.standard_checklist, name = 'standard_checklist'),
 ]

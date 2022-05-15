@@ -6,12 +6,10 @@
 
     <div class="row">
         <div class="card card-body">
-
-            {% if is_staff %}
-
-<!-- staff can edit TCertificate -->
+<!-- Edit TCertificate -->
             <form action="." method="POST" >
                 {% csrf_token %}
+<!-- Certificate Info, including requirement -->
                 <div class="row">
                     <div class = "col">
                         <div class="row">
@@ -19,13 +17,12 @@
                                 <div class="row mb-3">
                                     {{ tcertificate_form.teacher|as_crispy_field }}  &nbsp;
                                     {{ tcertificate_form.certification_type|as_crispy_field }}
-                                    NAD Certificate: {{ tcertificate_form.nad }}
                                 </div>
-
                                 <div class="row ">
                                     {{ tcertificate_form.issue_date|as_crispy_field }} &nbsp;
                                     {{ tcertificate_form.renewal_date|as_crispy_field }} &nbsp;
-                                    Archived: {{ tcertificate_form.archived }}
+                                    <div class="mr-2 ml-2">NAD Cert: {{ tcertificate_form.nad }}</div>
+                                    <div class="mr-2 ml-2">Archived: {{ tcertificate_form.archived }}</div>
                                 </div>
                             </div>
                             <div class = "col-3">
@@ -76,8 +73,98 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col">
+<!--Buttons :) -->
+                <div class=" mt-3">
+                    <input class="btn btn-sm btn-ISEIblue3 mr-3" type="submit" value="Save Certificate" name = "submit_certificate">
+                        {% for message in messages %}
+                            <p id="messages" style="color:blue">{{message}}</p>
+                        {% endfor %}
+                    <a class ="btn btn-sm btn-ISEIblue3 mr-3" href="{% url "teacher_dashboard" userID %}">Print Page</a>
+                    <a class = "btn btn-sm btn-danger mr-3" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
+                    <a class ="btn btn-sm btn-ISEIblue3 mr-xl-5" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
+                </div>
+
+                {% if checklist %}
+<!-- Standard requirement list -->
+                    <div class="row">
+                        <div class="col-sm-auto card mt-2 ">
+                            <div class="row mt-2 ml-1">
+                                <div class="col-sm-auto">
+                                General Requirements:
+                                    {% if checklist.sda %}<div class="spangreen"> SDA Member </div>
+                                    {% else %} <div class="spangred"> SDA Member</div> {% endif %}
+                                    {% if checklist.background_check  %}<div class="spangreen"> Background Check </div>
+                                    {% else %} <div class="spanred"> Background Check </div> {% endif %}
+                                    {% if checklist.ba_degree  %}<div class="spangreen"> BA or higher </div>
+                                    {% else %} <div class="spanred"> BA or higher </div> {% endif %}
+                                    {% if checklist.no_Ds  %}<div class="spangreen"> No Ds in required classes </div>
+                                    {% else %} <div class="spanred"> No Ds in required classes </div> {% endif %}
+                                    {% if checklist.experience  %}<div class="spangreen"> 3+ years teaching experience </div>
+                                    {% else %} <div class="spanred"> 3+ years teaching experience </div> {% endif %}
+                                </div>
+                                <div class="col-sm-auto">
+                                    <b>Religion Courses:</b>
+                                    {% if checklist.sop %}<div class="spangreen"> Spirit of Prophecy </div>
+                                    {% else %} <div class="spanred"> Spirit of Prophecy </div> {% endif %}
+                                    {% if checklist.sda_doctrine  %}<div class="spangreen"> SDA Doctrine </div>
+                                    {% else %} <div class="spanred"> SDA Doctrine </div> {% endif %}
+                                    {% if checklist.sda_history  %}<div class="spangreen"> SDA Church History </div>
+                                    {% else %} <div class="spanred"> SDA Church History </div> {% endif %}
+                                    {% if checklist.sda_health  %}<div class="spangreen"> SDA Health Principles </div>
+                                    {% else %} <div class="spanred">  SDA Health Principles  </div> {% endif %}
+                                </div>
+                                <div class="col-sm-auto">
+                                    <b>Professional Education Courses:</b>
+                                    {% if checklist.sda_education %}<div class="spangreen"> Philosophy of SDA Education: {{ checklist.sda_education }} credits  </div>
+                                    {% else %} <div class="spanred"> Philosophy of SDA Education </div> {% endif %}
+                                    {% if checklist.psychology %}<div class="spangreen"> Developmental and Educational Psychology: {{ checklist.psychology }} credits  </div>
+                                    {% else %} <div class="spanred"> Developmental and Educational Psychology </div> {% endif %}
+                                    {% if checklist.assessment %}<div class="spangreen"> Educational Assessment: {{ checklist.assessment }} credits  </div>
+                                    {% else %} <div class="spanred"> Educational Assessment </div> {% endif %}
+                                    {% if checklist.exceptional_child %}<div class="spangreen">Exceptional Child in the Classroom: {{ checklist.exceptional_child }} credits  </div>
+                                    {% else %} <div class="spanred"> Exceptional Child in the Classroom </div> {% endif %}
+                                    {% if checklist.technology %}<div class="spangreen"> Technology in Teaching and Learning: {{ checklist.technology }} credits  </div>
+                                    {% else %} <div class="spanred"> Technology in Teaching and Learning </div> {% endif %}
+                                </div>
+                                <div class="col-sm-auto">
+                                    <b>Secondary/Subject:</b>
+                                    {% if checklist.sec_methods %}<div class="spangreen"> Secondary Curriculum and Methods: {{ checklist.sec_methods }} credits  </div>
+                                    {% else %} <div class="spanred"> Secondary Curriculum and Methods: </div> {% endif %}
+                                    {% if checklist.sec_rw_methods %}<div class="spangreen"> Secondary Reading and Writing Methods: {{ checklist.sec_rw_methods }} credits  </div>
+                                    {% else %} <div>  Secondary Reading and Writing Methods (recommended) </div> {% endif %}
+
+                                    <div class="fieldWrapper">18 Credit Subjects: {{ checklist.credits18}}</div>
+                                    <div class="fieldWrapper">12 Credit Subjects: {{ checklist.credits12}}</div>
+
+                                    <div class="fieldWrapper">Other Education Credits: {{ checklist.other_ed_credit}}</div>
+                                    <div class="mt-5"><b>Total Professional Education Credits: {{ checklist.education_credits }}</b></div>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <b>Elementary:</b>
+                                    {% if checklist.em_science %}<div class="spangreen"> Science Methods: {{ checklist.em_science}} credits  </div>
+                                    {% else %} <div class="spanred">  Science Methods </div> {% endif %}
+                                     {% if checklist.em_math %}<div class="spangreen"> Math Methods: {{ checklist.em_math}} credits  </div>
+                                    {% else %} <div class="spanred">  Math Methods </div> {% endif %}
+                                    {% if checklist.em_reading %}<div class="spangreen"> Reading Methods: {{ checklist.em_reading}} credits  </div>
+                                    {% else %} <div class="spanred">  Reading Methods </div> {% endif %}
+                                    {% if checklist.em_language %}<div class="spangreen"> Language Methods: {{ checklist.em_language}} credits  </div>
+                                    {% else %} <div class="spanred">  Language Methods </div> {% endif %}
+                                    {% if checklist.em_religion %}<div class="spangreen"> Religion Methods: {{ checklist.em_religion}} credits  </div>
+                                    {% else %} <div class="spanred">  Religion Methods </div> {% endif %}
+                                    {% if checklist.em_social %}<div class="spangreen"> Social Science Methods: {{ checklist.em_social}} credits  </div>
+                                    {% else %} <div>  Social Science Methods (rec.) </div> {% endif %}
+                                    {% if checklist.em_health %}<div class="spangreen"> Health Methods: {{ checklist.em_health}} credits  </div>
+                                    {% else %} <div>  Health Methods (rec.) </div> {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-auto mt-2">
+                            <a class ="btn btn-sm btn-ISEIblue3" href="{% url "standard_checklist" pk %}">Edit Checklist</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                     <div class="col">
                         <table>
                             <thead>
                                 <tr>
@@ -103,49 +190,20 @@
                           </tbody>
                         </table>
                     </div>
-
-                    <div class = "col">
-                        <div class ="row mt-5 ml-5">
-                               <input class="btn btn-sm btn-ISEIblue3 mr-3" type="submit" value="Save Certificate" name = "submit_certificate">
-                            {% for message in messages %}
-                                <p id="messages" style="color:blue">{{message}}</p>
-                            {% endfor %}
-                        </div>
-                         <div class ="row mt-3 ml-5">
-                             <a class ="btn btn-sm btn-ISEIblue3 ml-6" href="{% url "teacher_dashboard" userID %}">Print Page</a>
-                         </div>
-                         <div class ="row mt-3 ml-5">
-                            <a class = "btn btn-sm btn-danger" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
-                        </div>
-                        <div class ="row mt-5 ml-5">
-                            <a class ="btn btn-sm btn-ISEIblue3" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
-                        </div>
+                     <div class="col-sm-auto mt-2">
+                            <a class ="btn btn-sm btn-ISEIblue3" href="{% url "standard_checklist" pk %}">Add Checklist</a>
+                     </div>
                     </div>
-                </div>
-            </form>
-
-
-<!-- Principal and teacher can only view certificate -->
-            {% else %}
-                <p><b>Teacher:</b> {{ tcertificate.teacher }}</p>
-                <p><b>Certification Type:</b>{% if tcertificate.nad %}NAD certificate:{% endif %} {{ tcertificate.certification_type }}  </p>
-                <p><b>Validity:</b> {{ tcertificate.issue_date }} - {{ tcertificate.renewal_date }}</p>
-                {% if tcertificate.archived %} <p style="color:red"> Not current certificate <p> {% endif %}
-                {{ tcertificate.renewal_requirements }}
-                <p><b>Endorsements:</b>
-                    {% for e in tcertificate.tendorsement_set.all %}
-                        {{ e }}{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                </p>
-                {% if tcertificate.public_note %}
-                    <p><b>Note from ISEI:</b> {{ tcertificate.public_note }} </p>
                 {% endif %}
-            {% endif %}
+            </form>
         </div>
-</div>
+    </div>
 
+
+
+<!-- Academic Classes and CEUs turned in for this Certificate -->
 <div class = "row">
-    {%  if not tcertificate.archived %}
+    <!-- { %  if not tcertificate_form.archived %} -->
     <div class="col card card-body">
         <h6> Academic Classes: </h6>
         {% if academic_class %}
@@ -163,10 +221,10 @@
                 <p>No Professional Development Reports have been submitted yet for this Certification</p>
             {% endif %}
     </div>
-    {% endif %}
+    <!-- { % endif %} -->
 </div>
 
-
+<!-- Previous Certificates -->
 <div class="col">
             <div class="card-body">
                 <p>Previous/Other certificates:</p>
@@ -192,6 +250,7 @@
             </div>
         </div>
 
+
 <script type='text/javascript'>
 /*     Ajax CEU Type Load based on Category */
         $("#show_requirements").click(function () {
@@ -203,8 +262,8 @@
                       data: {
                             'certification_type_id': cert_type_id       // add the category id to the GET parameters
                       },
-                      success: function (data) {   // `data` is the return of the `load_CEUtyples` view function
-                          $("#renewal_requirement").html(data);  // replace the contents of the ceu_type input with the data that came from the server
+                      success: function (data) {   // `data` is the return of the `load_renewal` view function
+                          $("#renewal_requirement").html(data);  // replace the contents of the renewal input with the data that came from the server
                       }
                   });
                 $(this).attr('value',"hide");
@@ -216,7 +275,5 @@
         });
 
 </script>
-
-
 
 {% endblock  %}

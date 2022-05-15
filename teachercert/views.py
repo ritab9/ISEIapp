@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from users.decorators import unauthenticated_user, allowed_users
+from users.decorators import allowed_users
+from django.http import HttpResponseRedirect
 from .filters import *
 from .forms import *
 from users.utils import is_in_group
@@ -12,21 +13,9 @@ from django.forms import modelformset_factory
 from .myfunctions import *
 from emailing.teacher_cert_functions import *
 
-# for creating the pdf
-from django.http import FileResponse
-import io
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
-from django.http import HttpResponse
-# for emailing
-from django.core.mail import EmailMessage
-
 from datetime import datetime, timedelta
 from django.contrib import messages
-from django.views.generic.edit import CreateView, UpdateView
-from django.urls import reverse
-from django.forms import inlineformset_factory
+
 
 
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
@@ -807,6 +796,30 @@ def load_renewal(request):
 # ISEI only views
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
+def standard_checklist(request, teacherID):
+
+    teacher = Teacher.objects.get(id=teacherID)
+
+    checklist = StandardChecklist.objects.filter(teacher = teacher)
+    if not checklist:
+        checklist = StandardChecklist(teacher = teacher)
+        checklist.save()
+    checklist = StandardChecklist.objects.get(teacher = teacher)
+    checklist_form=StandardChecklistForm(instance=checklist)
+
+    if request.method == "POST":
+        form = StandardChecklistForm(request.POST, instance=checklist)
+        if form.is_valid():
+            form.save()
+        if request.POST.get('save'):
+            return redirect('standard_checklist', teacherID)
+
+    context = dict(teacher = teacher, checklist_form= checklist_form)
+    return render(request, 'teachercert/standard_checklist.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def manage_tcertificate(request, pk, certID=None):
     # pk is teacher.id
 
@@ -862,11 +875,18 @@ def manage_tcertificate(request, pk, certID=None):
                 email_Certificate_issued_or_modified(teacher)
                 return redirect('manage_tcertificate', pk=pk, certID=tcertificate.id)
 
+    if StandardChecklist.objects.filter(teacher=teacher):
+        checklist=StandardChecklist.objects.get(teacher=teacher)
+    else:
+        checklist=None
+
     # certID is used in the template to reload page after previous certificates are archived
     context = dict(pk=pk, userID=userID, is_staff=True, tcertificate_form=tcertificate_form,
                    tendorsement_formset=tendorsement_formset, tbasic_requirement_formset=tbasic_requirement_formset,
                    prev_certificates=prev_certificates, certID=certID,
-                   ceu_reports=ceu_reports, academic_class=academic_class)
+                   ceu_reports=ceu_reports, academic_class=academic_class,
+                   checklist=checklist,
+                   )
     return render(request, 'teachercert/manage_tcertificate.html', context)
 
 

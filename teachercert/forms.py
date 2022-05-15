@@ -95,7 +95,7 @@ class TEndorsementForm(forms.ModelForm):
         model = TEndorsement
         fields = ('endorsement', 'range')
         widgets = {
-            'range':forms.Textarea(attrs={'rows':1,'col':5}),
+            'range':forms.Textarea(attrs={'rows':1,'cols':5}),
         }
 
 
@@ -140,4 +140,29 @@ class TeacherCertificationApplicationISEIForm(ModelForm):
 
             'isei_revision_date': forms.TextInput(
                 attrs={'placeholder': 'mm/dd/yyyy', 'type':'date'}),
+        }
+
+class StandardChecklistForm(ModelForm):
+    class Meta:
+        model = StandardChecklist
+        exclude=['teacher',]
+        widgets = {
+            'sda_education':forms.NumberInput(attrs = {'size': 3,}),
+            'psychology': forms.NumberInput (attrs={'size': 3}),
+            'assessment': forms.NumberInput(attrs={'size': 3}),
+            'exceptional_child': forms.NumberInput(attrs={'size': 3}),
+            'technology': forms.NumberInput(attrs={'size': 3}),
+            'sec_methods': forms.NumberInput(attrs={'size': 3}),
+            'sec_rw_methods': forms.NumberInput(attrs={'size': 3}),
+            'endorsement_credits18': forms.NumberInput(attrs={'size': 3}),
+
+            'em_science': forms.NumberInput(attrs={'size': 3}),
+            'em_math': forms.NumberInput(attrs={'size': 3}),
+            'em_reading': forms.NumberInput(attrs={'size': 3}),
+            'em_language': forms.NumberInput(attrs={'size': 3}),
+            'em_religion': forms.NumberInput(attrs={'size': 3}),
+            'em_social': forms.NumberInput(attrs={'size': 3}),
+            'em_health': forms.NumberInput(attrs={'size': 3}),
+            'other_ed_credit': forms.NumberInput(attrs={'size': 3}),
+
         }

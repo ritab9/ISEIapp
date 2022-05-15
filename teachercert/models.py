@@ -362,15 +362,15 @@ class TeacherBasicRequirement(models.Model):
 class StandardChecklist(models.Model):
     teacher=models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=False, null=False,)
     sda=models.BooleanField(default=True, verbose_name= "SDA Church Member")
-    background_check = models.BooleanField(default=False, verbose_name= "Clean background check")
-    ba_degree = models.BooleanField(verbose_name="Baccalaureate degree or higher")
-    no_Ds = models.BooleanField(verbose_name = "No Grades below C-")
-    experience = models.BooleanField(verbose_name="3-years teaching experience")
+    background_check = models.BooleanField(default=False, verbose_name= "Clean background check", blank= True, null=True)
+    ba_degree = models.BooleanField(verbose_name="Baccalaureate degree or higher", blank= True, null=True)
+    no_Ds = models.BooleanField(verbose_name = "No Grades below C- for required classes", blank= True, null=True)
+    experience = models.BooleanField(verbose_name="3-years teaching experience", blank= True, null=True)
 
-    sop = models.BooleanField(verbose_name="Spirit of Prophecy")
-    sda_doctrine= models.BooleanField(verbose_name="SDA Doctrines")
-    sda_history= models.BooleanField(verbose_name="SDA Church History")
-    sda_health = models.BooleanField(verbose_name="SDA Health Principles")
+    sop = models.BooleanField(verbose_name="Spirit of Prophecy", default=False)
+    sda_doctrine= models.BooleanField(verbose_name="SDA Doctrines", default=False)
+    sda_history= models.BooleanField(verbose_name="SDA Church History", default=False)
+    sda_health = models.BooleanField(verbose_name="SDA Health Principles", default=False)
 
     sda_education = models.PositiveSmallIntegerField(verbose_name="Principles and Philosophy of SDA Education",blank=True, null=True)
     psychology = models.PositiveSmallIntegerField(verbose_name="Developmental and Educational Psychology",blank=True, null=True)
@@ -380,7 +380,9 @@ class StandardChecklist(models.Model):
 
     sec_methods = models.PositiveSmallIntegerField(verbose_name="Secondary Curriculum and Methods", blank=True, null=True)
     sec_rw_methods = models.PositiveSmallIntegerField(verbose_name="Secondary Reading and Writing Methods (recommended)", blank=True, null=True)
-    endorsement_credits18 = models.BooleanField(verbose_name="18 endorsment(s) credit")
+
+    credits18 = models.CharField(verbose_name="18 credit subjects", blank=True, null=True, max_length=100)
+    credits12 = models.CharField(verbose_name="12 credit subjects", blank=True, null=True, max_length = 100)
 
     em_science = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Science",blank=True, null=True)
     em_math = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Mathematics",blank=True, null=True)
@@ -410,8 +412,7 @@ class StandardChecklist(models.Model):
 
 
     def elementary_methods(self):
-         if (self.em_math) and (self.em_science):
-             #& self.em_religion & self.em_language & self.em_reading):
+         if (self.em_math) and (self.em_science) and (self.em_religion) and (self.em_language) and (self.em_reading):
              return True
          else:
              return False

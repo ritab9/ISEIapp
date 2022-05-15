@@ -1,0 +1,62 @@
+{%  extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+<div class="card card-body">
+    <form action="." method="POST" >
+        {% csrf_token %}
+        {{ checklist_form.non_field_errors }}
+
+        <h6>Checklist for: {{ teacher }} ({{ teacher.school }}) </h6>
+        <div class="row mt-4">
+        <div class="col-sm-auto">
+            <div class="fieldWrapper">{{ checklist_form.sda }} {{ checklist_form.sda.label_tag }}{{ checklist_form.sda.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.background_check }} {{ checklist_form.background_check.label_tag }}{{ checklist_form.background_check.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.ba_degree }} {{ checklist_form.ba_degree.label_tag }}{{ checklist_form.ba_degree.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.no_Ds }} {{ checklist_form.no_Ds.label_tag }}{{ checklist_form.no_Ds.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.experience }} {{ checklist_form.experience.label_tag }}{{ checklist_form.experience.errors }}</div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="fieldWrapper">{{ checklist_form.sop }} {{ checklist_form.sop.label_tag }}{{ checklist_form.sop.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.sda_doctrine }} {{ checklist_form.sda_doctrine.label_tag }}{{ checklist_form.sda_doctrine.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.sda_history }} {{ checklist_form.sda_history.label_tag }}{{ checklist_form.sda_history.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.sda_health }} {{ checklist_form.sda_health.label_tag }}{{ checklist_form.sda_health.errors }}</div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="fieldWrapper">{{ checklist_form.sda_education }} {{ checklist_form.sda_education.label_tag }}{{ checklist_form.sda_education.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.psychology }} {{ checklist_form.psychology.label_tag }}{{ checklist_form.psychology.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.assessment }} {{ checklist_form.assessment.label_tag }}{{ checklist_form.assessment.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.exceptional_child }} {{ checklist_form.exceptional_child.label_tag }}{{ checklist_form.exceptional_child.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.technology}} {{ checklist_form.technology.label_tag }}{{ checklist_form.technology.errors }}</div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="fieldWrapper">{{ checklist_form.sec_methods}} {{ checklist_form.sec_methods.label_tag }}{{ checklist_form.sec_methods.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.sec_rw_methods}} {{ checklist_form.sec_rw_methods.label_tag }}{{ checklist_form.sec_rw_methods.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.endorsement_credits18}} {{ checklist_form.endorsement_credits18.label_tag }}{{ checklist_form.endorsement_credits18.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.other_ed_credit}} {{ checklist_form.other_ed_credit.label_tag }}{{ checklist_form.other_ed_credit.errors }}</div>
+            <div class="mt-5">Total Professional Education Credits: {{ checklist_form.instance.education_credits }}</div>
+        </div>
+        <div class="col-sm-auto">
+            <div class="fieldWrapper">{{ checklist_form.em_science}} {{ checklist_form.em_science.label_tag }}{{ checklist_form.em_science.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.em_math}} {{ checklist_form.em_math.label_tag }}{{ checklist_form.em_math.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.em_reading}} {{ checklist_form.em_reading.label_tag }}{{ checklist_form.em_reading.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.em_language}} {{ checklist_form.em_language.label_tag }}{{ checklist_form.em_language.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.em_religion}} {{ checklist_form.em_religion.label_tag }}{{ checklist_form.em_religion.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.em_social}} {{ checklist_form.em_social.label_tag }}{{ checklist_form.em_social.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.em_health}} {{ checklist_form.em_health.label_tag }}{{ checklist_form.em_health.errors }}</div>
+        </div>
+        </div>
+        <input class="btn-ISEIblue3" type="submit" value="Save" name = "save">
+        <!-- <input class="btn-ISEIblue3" type="submit" value="Save + Close" name = "save_and_close"> -->
+    </form>
+</div>
+
+
+<script type='text/javascript'>
+
+</script>
+
+{% endblock  %}
