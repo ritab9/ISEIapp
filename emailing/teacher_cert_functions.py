@@ -11,9 +11,9 @@ office_email = ["jodyv@isei.life"]
 #office_email = ["oldagape@yahoo.com"]
 
 
-def send_email(subject, message, send_to = ["teacher.certification.isei@gmail.com"]):
+def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"]):
     message = message+signature
-    mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher.certification.isei@gmail.com"])
+    mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher_certification@iseiea.org"])
     mail.send()
 
 def email_registered_user(teacher):
@@ -32,7 +32,7 @@ def email_AcademicClass_submitted(teacher):
     message = str(teacher) + " from " +str(teacher.school.name) + " has submitted an academic class. \n \nisei1.org "
     send_email(subject, message)
     #message = message + signature
-    #mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, cc =["teacher.certification.isei@gmail.com"])
+    #mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, cc =["teacher_certification@iseiea.org"])
     #mail.send()
 
 def email_CEUReport_created(teacher, school_year_name):
@@ -50,13 +50,13 @@ def email_CEUReport_approved_by_principal(teacher, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
     message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ",  " + school_year_name + " CEU Report was reviewed by the principal." + "\n " + " Log in to isei1.org in order to review and approve the CEU Report. "
     message1 = message1 + signature
-    mail1 = EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
+    mail1 = EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher_certification@iseiea.org"])
     mail1.send()
-    #  mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
+    #  mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher_certification@iseiea.org"])
     message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was reviewed by the principal and submitted to ISEI. It will be reviewed by ISEI shortly."
     message2 = message2 + signature
-    #mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
-    mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher.certification.isei@gmail.com"])
+    #mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher_certification@iseiea.org"])
+    mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher_certification@iseiea.org"])
     mail2.send()
     #send_mass_mail((mail1, mail2), fail_silently= False)
 
@@ -75,10 +75,10 @@ def email_CEUactivity_approved_by_principal(teacher):
     subject = "CEU Activity: " + str(teacher)
     message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ", CEU activity was reviewed by the principal. Log in to isei1.org in order to review and approve the CEU Activity. "
     message1 = message1 + signature
-    mail1 =EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher.certification.isei@gmail.com"])
+    mail1 =EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher_certification@iseiea.org"])
     message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity was reviewed by the principal and submitted to ISEI. It will be reviewed shortly."
     message2 = message2 + signature
-    mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email], ["teacher.certification.isei@gmail.com"])
+    mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email], ["teacher_certification@iseiea.org"])
     mail1.send()
     mail2.send()
     #send_mass_mail((mail1, mail2), fail_silently= False)
