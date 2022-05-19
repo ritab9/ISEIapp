@@ -60,6 +60,8 @@ class CEUReport(models.Model):
     school_year = models.ForeignKey(SchoolYear, null=True, blank=True, on_delete=models.PROTECT)
 
     date_submitted = models.DateField(null=True, blank=True)
+    last_submitted = models.DateField(blank=True, null=True)
+
 
     CHOICES = (
         ('n', 'Not yet reviewed'),

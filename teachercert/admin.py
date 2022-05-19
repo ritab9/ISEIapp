@@ -50,6 +50,8 @@ class CEUReport(admin.ModelAdmin):
     list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed', 'school_year')
     list_display_links = ('teacher',)
     readonly_fields = ['created_at', 'updated_at', ]
+    list_filter = ('school_year', 'principal_reviewed', 'isei_reviewed')
+    search_fields = ['teacher__user__first_name', 'teacher__user__last_name' ]
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)

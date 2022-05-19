@@ -259,16 +259,16 @@ def createCEUreport(request, pk, sy):
 
 
 # Unused - I think
-def add_instance(request, reportID):
-    ceu_instance = CEUInstance(ceu_report=CEUReport.objects.get(id=reportID))
-    form = CEUInstanceForm(instance=ceu_instance)
-    if request.method == 'POST':
-        form = CEUInstanceForm(request.POST, instance=ceu_instance)
-        if form.is_valid():
-            form.save()
-            return redirect('create_ceu', recId=reportID)
-    return render(request, 'teachercert/add_instance.html', {'form': form})
-
+# def add_instance(request, reportID):
+#     ceu_instance = CEUInstance(ceu_report=CEUReport.objects.get(id=reportID))
+#     form = CEUInstanceForm(instance=ceu_instance)
+#     if request.method == 'POST':
+#         form = CEUInstanceForm(request.POST, instance=ceu_instance)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('create_ceu', recId=reportID)
+#     return render(request, 'teachercert/add_instance.html', {'form': form})
+#
 
 # Ajax
 def load_CEUtypes(request):
@@ -315,6 +315,8 @@ def createCEU(request, recId):
                     ceu_instance = CEUInstance.objects.filter(ceu_report=ceu_report)
                     ceu_instance.update(principal_reviewed='n',
                                         isei_reviewed='n')  # set all instances to not reviewed as well
+
+                    ceu_report.last_submitted = ceu_report.date_submitted
 
                     principal_emails = get_principals_emails(ceu_report.teacher)
                     email_CEUReport_submitted(ceu_report.teacher, principal_emails, ceu_report.school_year.name)
@@ -405,7 +407,7 @@ def myCEUdashboard(request, pk):
     new_school_year = SchoolYear.objects.filter(Q(active_year=True), ~Q(ceureport__in=ceu_report))
     # reports not reviewed by principal, and not denied by ISEI (those are in a different group)
     active_report = ceu_report.filter(Q(principal_reviewed='n'), ~Q(isei_reviewed='d'))  # not reviewed by principal
-    submitted_report = ceu_report.filter(Q(principal_reviewed='a'), ~Q(isei_reviewed='a'))  # submitted to ISEI
+    submitted_report = ceu_report.filter(Q(principal_reviewed='a'), Q(isei_reviewed='n'))  # submitted to ISEI
     approved_report = ceu_report.filter(isei_reviewed='a')
 
     isei_denied_independent_instance = ceu_instance.filter(isei_reviewed='d', ceu_report__isei_reviewed='a',
@@ -569,14 +571,15 @@ def principal_ceu_approval(request, recID=None, instID=None):
                                                                       reviewed_at=Now())
             email_CEUReport_denied_by_principal(this_report.teacher, this_report.school_year.name)
 
-    if request.method == 'POST':
-        if request.POST.get('cancel'):
-            ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='n',
-                                                                   date_submitted=F('updated_at'))
-            this_report = CEUReport.objects.get(id=recID)
-            CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed='n',
-                                                                      date_resubmitted=F('updated_at'))
-            email_CEUReport_retracted_by_principal(this_report.teacher, this_report.school_year.name)
+    #allow principal to cancel
+    # if request.method == 'POST':
+    #     if request.POST.get('cancel'):
+    #         ceu_report = CEUReport.objects.filter(id=recID).update(principal_reviewed='n',
+    #                                                                date_submitted=F('updated_at'))
+    #         this_report = CEUReport.objects.get(id=recID)
+    #         CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed='n',
+    #                                                                   date_resubmitted=F('updated_at'))
+    #         email_CEUReport_retracted_by_principal(this_report.teacher, this_report.school_year.name)
 
     if request.method == 'POST':
         if request.POST.get('approveinst'):
@@ -602,7 +605,6 @@ def principal_ceu_approval(request, recID=None, instID=None):
 
 
 # isei views
-
 
 # @login_required(login_url='login')
 # @allowed_users(allowed_roles=['staff'])
@@ -717,7 +719,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
 
     if request.method == 'POST':
         if request.POST.get('cancel'):
-            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted=F('updated_at'),
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted=F('last_submitted'),
                                                                    principal_reviewed='a')
             CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed='a', isei_reviewed='n',
                                                                      date_resubmitted=Now())

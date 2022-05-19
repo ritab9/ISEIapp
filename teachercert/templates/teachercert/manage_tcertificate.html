@@ -57,7 +57,6 @@
                                     {% endfor %}
                                   </tbody>
                                 </table>
-                                <input class="btn-ISEIblue3" type="submit" value="Add More Endorsements" name = "add_endorsement">
                             </div>
                         </div>
                         <div class = "row" >
@@ -75,7 +74,8 @@
                 </div>
 <!--Buttons :) -->
                 <div class=" mt-3">
-                    <input class="btn btn-sm btn-ISEIblue3 mr-3" type="submit" value="Save Certificate" name = "submit_certificate">
+                    <input class="btn-ISEIblue3" type="submit" value="Save Changes/Add More Endorsements" name = "add_endorsement">
+                    <input class="btn btn-sm btn-ISEIblue3 mr-3" type="submit" value="Submit Certificate" name = "submit_certificate">
                         {% for message in messages %}
                             <p id="messages" style="color:blue">{{message}}</p>
                         {% endfor %}
