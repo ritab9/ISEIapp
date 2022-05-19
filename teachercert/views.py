@@ -668,9 +668,9 @@ def isei_ceu_approval(request, repID=None, instID=None):
     # ceu_reports approved or denied within a year
     year_ago = datetime.today() - timedelta(days=366)
     ceu_report_approved = CEUReport.objects.filter(isei_reviewed='a', reviewed_at__gt=year_ago,
-                                                   teacher__in=teachers).order_by("reviewed_at")
+                                                   teacher__in=teachers).order_by("reviewed_at").order_by("school_year")
     ceu_report_denied = CEUReport.objects.filter(isei_reviewed='d', reviewed_at__gt=year_ago,
-                                                 teacher__in=teachers).order_by("reviewed_at")
+                                                 teacher__in=teachers).order_by("reviewed_at").order_by("school_year")
     ceu_instance_notreviewed = CEUInstance.objects.filter(ceu_report__in=ceu_report_approved, isei_reviewed='n',
                                                           date_resubmitted__isnull=False, principal_reviewed='a', )
 
