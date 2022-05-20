@@ -107,3 +107,18 @@ def complete_background_checks(schoolid):
         return False
     else:
         return True
+
+def degree(teacher):
+    if CollegeAttended.objects.filter(teacher=teacher, level="d"):
+        hdegree = "Doctoral Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
+        hdegree = "Master's Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
+        hdegree = "Bachelor's Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
+        hdegree = "Associate Degree"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
+        hdegree = "Certificate"
+    elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
+        hdegree = "-"
+    return hdegree

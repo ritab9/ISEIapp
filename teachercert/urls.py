@@ -54,6 +54,8 @@ urlpatterns = [
     path('manage_tcertificate/<str:pk>/', views.manage_tcertificate, name='manage_tcertificate'),
     path('manage_tcertificate/<str:pk>/<str:certID>/', views.manage_tcertificate, name='manage_tcertificate'),
     path('delete_tcertificate/<str:certID>/', views.delete_tcertificate, name='delete_tcertificate'),
+#attempt to create and print the certificate directly
+    path('create_certificate/<str:certID>/', views.create_certificate, name='create_certificate'),
 
     path('ajax/load_renewal/', views.load_renewal, name='ajax_load_renewal'),
 

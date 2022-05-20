@@ -82,6 +82,8 @@
                     <a class ="btn btn-sm btn-ISEIblue3 mr-3" href="{% url "teacher_dashboard" userID %}">Print Page</a>
                     <a class = "btn btn-sm btn-danger mr-3" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
                     <a class ="btn btn-sm btn-ISEIblue3 mr-xl-5" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
+                    <a class ="btn btn-sm btn-ISEIblue3 mr-3 disabled" href="{% url "create_certificate" certID %}">Create Certificate</a>
+
                 </div>
 
                 {% if checklist %}

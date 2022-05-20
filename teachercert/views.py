@@ -203,18 +203,19 @@ def teacherdashboard(request, userID):
         basic_met = basic.filter(met=True)
         basic_not_met = basic.filter(met=False)
 
-        if CollegeAttended.objects.filter(teacher=teacher, level="d"):
-            highest_degree = "Doctoral Degree"
-        elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
-            highest_degree = "Master's Degree"
-        elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
-            highest_degree = "Bachelor's Degree"
-        elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
-            highest_degree = "Associate Degree"
-        elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
-            highest_degree = "Certificate"
-        elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
-            highest_degree = "None"
+        highest_degree = degree(teacher)
+        # if CollegeAttended.objects.filter(teacher=teacher, level="d"):
+        #     highest_degree = "Doctoral Degree"
+        # elif CollegeAttended.objects.filter(teacher=teacher, level="m"):
+        #     highest_degree = "Master's Degree"
+        # elif CollegeAttended.objects.filter(teacher=teacher, level="b"):
+        #     highest_degree = "Bachelor's Degree"
+        # elif CollegeAttended.objects.filter(teacher=teacher, level="a"):
+        #     highest_degree = "Associate Degree"
+        # elif CollegeAttended.objects.filter(teacher=teacher, level="c"):
+        #     highest_degree = "Certificate"
+        # elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
+        #     highest_degree = "None"
 
         if certified(teacher):
             certification_status = "Valid Certification"
@@ -1150,3 +1151,16 @@ def mark_background_check(request, schoolid):
     context = dict(bc_form=bc_form, case=case)
 
     return render(request, 'teachercert/mark_background_check.html', context)
+
+
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def create_certificate(request, certID=None):
+    certificate = TCertificate.objects.get(id=certID)
+    highest_degree = degree(certificate.teacher)
+    endorsements = TEndorsement.objects.filter(certificate = certificate)
+
+    context = dict(certificate = certificate, highest_degree=highest_degree, endorsements=endorsements)
+    return render(request, 'teachercert/create_certificate.html', context)
