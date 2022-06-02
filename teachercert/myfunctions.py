@@ -21,7 +21,8 @@ def newest_certificate(teacher):
     return newest_cert
 
 def ceureport_belongs_to_certificate(ceureport, tcertificate):
-    if ceureport.school_year.end_date > tcertificate.issue_date:
+    #if ceureport.school_year.end_date > tcertificate.issue_date:
+    if ceureport.reviewed_at > tcertificate.issue_date:
         #if tcertificate == newest_certificate(tcertificate.teacher):
         if tcertificate.archived == False:
             return True
