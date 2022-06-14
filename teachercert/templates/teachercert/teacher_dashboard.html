@@ -99,7 +99,7 @@
                         <tr><th>School Year</th><th>Status</th><th></th></tr>
 
                         {% for p in tcertificate.teacher.ceureport_set.all %}
-                            {% if p.reviewed_at > tcertificate.issue_date %}
+                            {% if not p.reviewed_at or p.reviewed_at > tcertificate.issue_date %}
                             <tr>
                                     {% if p.isei_reviewed == 'a' %}
                                         <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
