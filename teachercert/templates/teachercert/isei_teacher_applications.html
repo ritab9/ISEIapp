@@ -9,11 +9,25 @@
         <div class="card card-body">
             <form method="get">
                     {{ application_filter.form}}
-                <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                <button class="btn btn-ISEIblue3 btn-sm" type="submit" name="search">Search</button> &nbsp;
                 <a href="{%  url 'isei_teacher_applications' %}">Clear all filters</a>
             </form>
         </div>
     </div>
+
+        <div class="row">
+            <input type="button" class="btn btn-ISEIblue3 btn-sm ml-3" id="emailbtn" value="Open Emailing">
+        </div>
+
+        <div class="row card card-body" style="display: none" id="emaildiv">
+            <form method="post">
+                {% csrf_token %}
+                <p>Send an email message to all the teachers in the filtered list. "Dear Teacher_First Name" and ISEI signature will be added to the message.</p>
+                <textarea rows="1" cols="50" name="subject" value="Subject">Subject...</textarea>
+                <textarea rows = "4" cols = "50" name="message" value="Message">Message...</textarea>
+                <input class="btn btn-ISEIblue3 btn-sm" type="submit" name="sendemail" value="Send Email">
+            </form>
+        </div>
 
     <table class="table">
         <thead>
@@ -68,8 +82,19 @@
     </table>
 
 
-<!-- Submit
-        <input class="btn btn-default bg-ISEIblue4 text-light" type="submit"  value="Update Application" >
--->
+<script>
+    $('#emailbtn').on("click", function() {
+                 var value = $(this).attr('value');
+
+                 if(value == "Open Emailing") {
+                     $("#emaildiv").show();
+                     $(this).attr('value',"Close Emailing"); }
+                 if(value == "Close Emailing") {
+                     $("#emaildiv").hide();
+                     $(this).attr('value',"Open Emailing");}
+        });
+
+
+</script>
 
 {% endblock content%}

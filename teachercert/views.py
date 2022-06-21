@@ -1028,14 +1028,15 @@ def teachercert_application_done(request, pk):
 def isei_teacher_applications(request):
     applications = TeacherCertificationApplication.objects.filter(teacher__user__is_active=True).order_by('closed', '-billed', '-isei_revision_date',
                                                                                                           'date')
-    # closed_applications = TeacherCertificationApplication.objects.filter(closed=True)
-
     application_filter = TeacherCertificationApplicationFilter(request.GET, queryset=applications)
     applications = application_filter.qs
-
+    if request.POST.get('sendemail'):
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        for a in applications:
+            complete_message = "Dear "+ str(a.teacher.first_name)+"," + "\n \n" + message + "\n \n" + str(a.public_note)
+            send_email(subject, complete_message, [a.teacher.user.email])
     context = dict(applications=applications, application_filter=application_filter)
-    # closed_applications = closed_applications,
-
     return render(request, 'teachercert/isei_teacher_applications.html', context)
 
 
