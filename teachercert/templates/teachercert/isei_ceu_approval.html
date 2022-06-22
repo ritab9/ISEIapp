@@ -89,10 +89,11 @@
                             <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.amount }}{{ i.get_units_display }}
                             <td><div class = "span80">
-                                            {% if i.evidence %}
-                                                {{ i.evidence }}
-                                            {% elif i.file %}
-                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% if i.evidence or i.file %}
+                                                {% if i.file %}
+                                                     <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                                {% endif %}
+                                                {% if i.evidence %} {{ i.evidence }} {% endif %}
                                             {% else %}
                                                 <div class="spanred">None</div>
                                             {% endif %}
@@ -127,12 +128,13 @@
                             <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
                             <td>{{ i.amount }}{{ i.get_units_display }}</td>
                             <td><div class="span80">
-                                {% if i.evidence %}
-                                                {{ i.evidence }}
-                                            {% elif i.file %}
-                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
-                                            {% else %}
-                                                <div class="spanred">None</div>
+                                {% if i.evidence or i.file %}
+                                    {% if i.file %}
+                                        <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                    {% endif %}
+                                    {% if i.evidence %} {{ i.evidence }} {% endif %}
+                                {% else %}
+                                    <div class="spanred">None</div>
                                 {% endif %}</div>
                             </td>
                             <td>{{ i.approved_ceu}}</td>
@@ -152,12 +154,13 @@
                             <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}}</td>
                             <td>{{ i.amount }}</td>
                             <td><div class="span80">
-                                {% if i.evidence %}
-                                                {{ i.evidence }}
-                                            {% elif i.file %}
-                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
-                                            {% else %}
-                                                <div class="spanred">None</div>
+                                {% if i.evidence or i.file %}
+                                    {% if i.file %}
+                                        <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                    {% endif %}
+                                    {% if i.evidence %} {{ i.evidence }} {% endif %}
+                                {% else %}
+                                    <div class="spanred">None</div>
                                 {% endif %}</div></td>
 
                             <td><div class="spanred"> Not approved</div></td>

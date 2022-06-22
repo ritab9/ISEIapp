@@ -62,10 +62,9 @@
                                         <td>{{ i.ceu_type }}</td>
                                         <td>{{i.description}} </td>
                                         <td>{{ i.suggested_ceu }}</td>
-                                        <td>{% if i.evidence %}
-                                                {{ i.evidence }}
-                                            {% elif i.file %}
-                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                        <td>{{% if p.evidence or p.file %}
+                                                {% if p.file %} <a href="{% get_media_prefix %}{{ p.file }}"> {{ p.file }}</a>{% endif %}
+                                                {% if p.evidence %} {{ p.evidence }} {% endif %}
                                             {% else %}
                                                 <div class="spanred">None</div>
                                             {% endif %}
