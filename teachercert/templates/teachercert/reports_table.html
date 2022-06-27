@@ -9,7 +9,7 @@ Not to be used independently
               <thead>
                 <tr>
                     {% if is_staff %}
-                    <th scope="col">School</th>
+                        <th scope="col">School</th>
                     {% endif %}
                     <th scope="col">Name</th>
                     <th> School Year </th>
@@ -21,9 +21,11 @@ Not to be used independently
             {% for p in ceu_reports %}
                 <tr>
                     {% if is_staff %}
-                    <td> {{ p.teacher.school }}</td>
+                        <td> {{ p.teacher.school }} </td>
                     {% endif %}
-                    <td> {{ p.teacher.name}}</td>
+                    <td> {{ p.teacher.name}}<br>
+                        <a class="spanyellow" href="{% url "myCEUdashboard" p.teacher.user.id %}">Teacher View</a>
+                    </td>
                     <td>{{ p.school_year}}</td>
                     <td>
                             {% if p.isei_reviewed == 'a' %}

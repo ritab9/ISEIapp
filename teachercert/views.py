@@ -570,7 +570,7 @@ def principal_ceu_approval(request, recID=None, instID=None):
             this_report = CEUReport.objects.get(id=recID)  # the above is a query set and we need just the object
             CEUInstance.objects.filter(ceu_report=this_report).update(principal_reviewed='d', date_resubmitted=None,
                                                                       reviewed_at=Now())
-            email_CEUReport_denied_by_principal(this_report.teacher, this_report.school_year.name)
+            email_CEUReport_denied_by_principal(this_report.teacher, this_report.school_year.name, this_report.principal_comment)
 
     #allow principal to cancel
     # if request.method == 'POST':
@@ -716,7 +716,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
                                                                      date_resubmitted=None, reviewed_at=Now())
             this_report = CEUReport.objects.get(id=repID)
 
-            email_CEUReport_denied_by_ISEI(this_report.teacher, this_report.school_year.name)
+            email_CEUReport_denied_by_ISEI(this_report.teacher, this_report.school_year.name, this_report.isei_comment)
 
     if request.method == 'POST':
         if request.POST.get('cancel'):

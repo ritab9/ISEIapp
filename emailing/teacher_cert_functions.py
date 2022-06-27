@@ -60,9 +60,9 @@ def email_CEUReport_approved_by_principal(teacher, school_year_name):
     mail2.send()
     #send_mass_mail((mail1, mail2), fail_silently= False)
 
-def email_CEUReport_denied_by_principal(teacher,school_year_name):
+def email_CEUReport_denied_by_principal(teacher,school_year_name, comment):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was considered incomplete by the principal. Please log in to isei1.org ,review, update and resubmit your Report. Contact your principal if further clarifications are needed."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was considered incomplete by the principal. \n \n" + comment + "\n \n Please log in to isei1.org, review, update and resubmit your Report. Contact your principal if further clarifications are needed."
     send_email(subject,message,[teacher.user.email])
 
 def email_CEUReport_retracted_by_principal(teacher, school_year_name):
@@ -86,7 +86,7 @@ def email_CEUactivity_approved_by_principal(teacher):
 
 def email_CEUactivity_denied_by_principal(teacher):
     subject = "CEU Report: " + str(teacher)
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity was considered incomplete by the principal. Please log in to isei1.org ,review, update and resubmit your CEU Activity."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity reporting was considered incomplete by the principal. Please log in to isei1.org, review, update and resubmit your CEU Activity."
     send_email(subject,message,[teacher.user.email])
 
 
@@ -95,9 +95,9 @@ def email_CEUReport_approved_by_ISEI(teacher,school_year_name):
     message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was reviewed by ISEI. Please sign in to isei1.org to review the approved activities and CEUs."
     send_email(subject,message,[teacher.user.email])
 
-def email_CEUReport_denied_by_ISEI(teacher, school_year_name):
+def email_CEUReport_denied_by_ISEI(teacher, school_year_name, comment):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was considered incomplete by ISEI. Please log in to isei1.org ,review, update and resubmit your Report."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was considered incomplete by ISEI. \n \n" + comment + "\n \n" + " Log in to isei1.org to review, update and resubmit your Report."
     send_email(subject,message,[teacher.user.email])
 
 def email_CEUReport_retracted_by_ISEI(teacher, school_year_name):
