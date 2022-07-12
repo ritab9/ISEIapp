@@ -128,4 +128,7 @@ def degree(teacher):
         hdegree = "Certificate"
     elif CollegeAttended.objects.filter(teacher=teacher, level="n"):
         hdegree = "-"
+    else:
+        hdegree = "No Degrees Entered. Please go to Personal Info, and update the Colleges Attended List"
+
     return hdegree
