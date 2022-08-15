@@ -1026,7 +1026,7 @@ def teachercert_application_done(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_teacher_applications(request):
-    applications = TeacherCertificationApplication.objects.filter(teacher__user__is_active=True).order_by('date', 'closed', 'billed', '-isei_revision_date',
+    applications = TeacherCertificationApplication.objects.filter(teacher__user__is_active=True).order_by('-date', 'closed', 'billed', '-isei_revision_date',
                                                                                                           )
     application_filter = TeacherCertificationApplicationFilter(request.GET, queryset=applications)
     applications = application_filter.qs
