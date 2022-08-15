@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def get_principals (teacher):
-    principals = User.objects.filter(groups__name='principal', teacher__school=teacher.school)  # get the principal(s) of this teacher
+    principals = User.objects.filter(groups__name='principal', teacher__school=teacher.school, is_active=True)  # get the principal(s) of this teacher
     return principals
 
 def get_principals_emails(teacher):
