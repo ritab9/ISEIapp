@@ -364,7 +364,7 @@ class TeacherBasicRequirement(models.Model):
 class StandardChecklist(models.Model):
     teacher=models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=False, null=False,)
     sda=models.BooleanField(default=True, verbose_name= "SDA Church Member")
-    background_check = models.BooleanField(default=False, verbose_name= "Clean background check", blank= True, null=True)
+    #background_check = models.BooleanField(default=False, verbose_name= "Clean background check", blank= True, null=True)
     ba_degree = models.BooleanField(verbose_name="Baccalaureate degree or higher", blank= True, null=True)
     no_Ds = models.BooleanField(verbose_name = "No Grades below C- for required classes", blank= True, null=True)
     experience = models.BooleanField(verbose_name="3-years teaching experience", blank= True, null=True)

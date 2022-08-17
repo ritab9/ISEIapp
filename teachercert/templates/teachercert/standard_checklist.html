@@ -14,7 +14,8 @@
         <div class="row mt-4">
         <div class="col-sm-auto">
             <div class="fieldWrapper">{{ checklist_form.sda }} {{ checklist_form.sda.label_tag }}{{ checklist_form.sda.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.background_check }} {{ checklist_form.background_check.label_tag }}{{ checklist_form.background_check.errors }}</div>
+            <div class="fieldWrapper">
+                {% if teacher.background_check %} Clean Background check {% else %} Unknown Background check status {% endif %}</div>
             <div class="fieldWrapper">{{ checklist_form.ba_degree }} {{ checklist_form.ba_degree.label_tag }}{{ checklist_form.ba_degree.errors }}</div>
             <div class="fieldWrapper">{{ checklist_form.no_Ds }} {{ checklist_form.no_Ds.label_tag }}{{ checklist_form.no_Ds.errors }}</div>
             <div class="fieldWrapper">{{ checklist_form.experience }} {{ checklist_form.experience.label_tag }}{{ checklist_form.experience.errors }}</div>
@@ -35,7 +36,8 @@
         <div class="col-sm-auto">
             <div class="fieldWrapper">{{ checklist_form.sec_methods}} {{ checklist_form.sec_methods.label_tag }}{{ checklist_form.sec_methods.errors }}</div>
             <div class="fieldWrapper">{{ checklist_form.sec_rw_methods}} {{ checklist_form.sec_rw_methods.label_tag }}{{ checklist_form.sec_rw_methods.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.endorsement_credits18}} {{ checklist_form.endorsement_credits18.label_tag }}{{ checklist_form.endorsement_credits18.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.credits18}} {{ checklist_form.credits18.label_tag }}{{ checklist_form.credits18.errors }}</div>
+            <div class="fieldWrapper">{{ checklist_form.credits12}} {{ checklist_form.credits12.label_tag }}{{ checklist_form.credits12.errors }}</div>
             <div class="fieldWrapper">{{ checklist_form.other_ed_credit}} {{ checklist_form.other_ed_credit.label_tag }}{{ checklist_form.other_ed_credit.errors }}</div>
             <div class="mt-5">Total Professional Education Credits: {{ checklist_form.instance.education_credits }}</div>
         </div>

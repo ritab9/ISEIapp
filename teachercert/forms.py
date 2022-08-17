@@ -154,7 +154,8 @@ class StandardChecklistForm(ModelForm):
             'technology': forms.NumberInput(attrs={'size': 3}),
             'sec_methods': forms.NumberInput(attrs={'size': 3}),
             'sec_rw_methods': forms.NumberInput(attrs={'size': 3}),
-            'endorsement_credits18': forms.NumberInput(attrs={'size': 3}),
+            'credits18': forms.Textarea(attrs={'rows': 1}),
+            'credits12': forms.Textarea(attrs={'rows': 1}),
 
             'em_science': forms.NumberInput(attrs={'size': 3}),
             'em_math': forms.NumberInput(attrs={'size': 3}),

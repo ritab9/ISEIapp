@@ -162,7 +162,7 @@ class TeacherBasicRequirement(admin.ModelAdmin):
 
 @admin.register(StandardChecklist)
 class StandardCheckList(admin.ModelAdmin):
-    list_display = ("teacher","sda",'background_check', 'ba_degree', 'no_Ds', 'experience',
+    list_display = ("teacher","sda", 'ba_degree', 'no_Ds', 'experience',
                     'religion_and_health', 'education_credits',
                     'credits18', "credits12", 'elementary_methods', 'sec_methods'
                     )
