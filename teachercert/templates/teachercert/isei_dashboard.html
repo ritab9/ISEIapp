@@ -120,7 +120,7 @@
                         {% for t in non_certified_teachers %}
                           <tr>
                               <td>{{ t.school}}</td>
-                              <td><div class="spanyellow"><a class="nav-link" href = "{% url 'account_settings' t.user.id %}">Info</a></div>
+                              <td><a class="nav-link" href = "{% url 'account_settings' t.user.id %}"><div class="spanyellow">Info</div></a>
                                   <a class="nav-link" href = "{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
                               </td>
                              {% if t.teachercertificationapplication %}
