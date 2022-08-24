@@ -8,7 +8,6 @@ from django.conf import settings
 # TODO embed office_email and signature as an env variable (or think of some other way to do it)
 signature = "\n" + "\n" +"Rita Burjan" + "\n" + "ISEI Teacher Certification" + "\n" + "isei1.org"
 office_email = ["jodyv@isei.life"]
-#office_email = ["oldagape@yahoo.com"]
 
 
 def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"]):
@@ -19,10 +18,12 @@ def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"])
 def email_registered_user(teacher):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
-               "An account has been created for you to apply for and manage your ISEI teacher certification." + \
+               "Welcome! " + "\n" + \
+               "Because you are teacher at an ISEI school an account has been created for you to apply for and manage your ISEI Teacher Certification on the isei1.org website." + \
               "\n" + "\n " + "Your username is: " + str(teacher.first_name) + "." + str(teacher.last_name) + \
-              "\n" + "Follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
-              "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." +\
+              "\n" + "As a first time user follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
+              "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." + \
+              "\n" + "You will need to submit an application and and request college transcripts to be sent to ISEI."
               "\n" + "\n " + "If you have any questions, please contact us."
     # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
