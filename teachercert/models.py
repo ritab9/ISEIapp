@@ -375,7 +375,8 @@ class StandardChecklist(models.Model):
     sda_health = models.BooleanField(verbose_name="SDA Health Principles", default=False)
 
     sda_education = models.PositiveSmallIntegerField(verbose_name="Principles and Philosophy of SDA Education",blank=True, null=True)
-    psychology = models.PositiveSmallIntegerField(verbose_name="Developmental and Educational Psychology",blank=True, null=True)
+    psychology = models.PositiveSmallIntegerField(verbose_name="Educational Psychology",blank=True, null=True)
+    dev_psychology =models.PositiveSmallIntegerField(verbose_name="Developmental Psychology (recommended)", blank=True, null=True)
     assessment = models.PositiveSmallIntegerField(verbose_name="Educational Assessment",blank=True, null=True)
     exceptional_child = models.PositiveSmallIntegerField(verbose_name="Exceptional Child in the Classroom",blank=True, null=True)
     technology = models.PositiveSmallIntegerField(verbose_name="Technology in Teaching & Learning",blank=True, null=True)

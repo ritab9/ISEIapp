@@ -1,5 +1,5 @@
 import django_filters
-from django_filters import DateFilter, CharFilter, ChoiceFilter, BooleanFilter, ModelChoiceFilter
+from django_filters import ModelChoiceFilter
 from django.contrib.auth.models import Group
 
 

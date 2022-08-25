@@ -33,8 +33,10 @@ Not to be used independently
         <b>Professional Education Courses:</b>
         {% if checklist.sda_education %}<div class="spangreen"> Philosophy of SDA Education: {{ checklist.sda_education }} credits  </div>
         {% else %} <div class="spanred"> Philosophy of SDA Education </div> {% endif %}
-        {% if checklist.psychology %}<div class="spangreen"> Developmental and Educational Psychology: {{ checklist.psychology }} credits  </div>
-        {% else %} <div class="spanred"> Developmental and Educational Psychology </div> {% endif %}
+        {% if checklist.dev_psychology %}<div class="spangreen"> Educational Psychology: {{ checklist.dev_psychology }} credits  </div>
+        {% else %} <div> Developmental Psychology (recommended) </div> {% endif %}
+        {% if checklist.psychology %}<div class="spangreen"> Educational Psychology: {{ checklist.psychology }} credits  </div>
+        {% else %} <div class="spanred"> Educational Psychology </div> {% endif %}
         {% if checklist.assessment %}<div class="spangreen"> Educational Assessment: {{ checklist.assessment }} credits  </div>
         {% else %} <div class="spanred"> Educational Assessment </div> {% endif %}
         {% if checklist.exceptional_child %}<div class="spangreen">Exceptional Child in the Classroom: {{ checklist.exceptional_child }} credits  </div>
