@@ -23,7 +23,7 @@ def email_registered_user(teacher):
               "\n" + "\n " + "Your username is: " + str(teacher.first_name) + "." + str(teacher.last_name) + \
               "\n" + "As a first time user follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
               "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." + \
-              "\n" + "You will need to submit an application and and request college transcripts to be sent to ISEI."
+              "\n" + "You will need to submit an application and and request college transcripts to be sent to ISEI." +\
               "\n" + "\n " + "If you have any questions, please contact us."
     # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
@@ -54,7 +54,7 @@ def email_CEUReport_approved_by_principal(teacher, school_year_name):
     mail1 = EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher_certification@iseiea.org"])
     mail1.send()
     #  mail1 = (subject, message1, settings.EMAIL_HOST_USER, ["teacher_certification@iseiea.org"])
-    message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was reviewed by the principal and submitted to ISEI. It will be reviewed by ISEI shortly."
+    message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "\n "+ "Your CEU Report was reviewed by the principal and submitted to ISEI. It will be reviewed by ISEI shortly."
     message2 = message2 + signature
     #mail2 = (subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher_certification@iseiea.org"])
     mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email],["teacher_certification@iseiea.org"])
@@ -63,12 +63,12 @@ def email_CEUReport_approved_by_principal(teacher, school_year_name):
 
 def email_CEUReport_denied_by_principal(teacher,school_year_name, comment):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was considered incomplete by the principal. \n \n" + comment + "\n \n Please log in to isei1.org, review, update and resubmit your Report. Contact your principal if further clarifications are needed."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "\n "+ "Your CEU Report was considered incomplete by the principal. \n \n" + comment + "\n \n Please log in to isei1.org, review, update and resubmit your Report. Contact your principal if further clarifications are needed."
     send_email(subject,message,[teacher.user.email])
 
 def email_CEUReport_retracted_by_principal(teacher, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) + "," + "\n " + "The principal has canceled the previous action on your CEU Report. If a new action is not taken soon, please contact your principal."
+    message = "Dear " + str(teacher.first_name) + "," + "\n " + "\n "+ "The principal has canceled the previous action on your CEU Report. If a new action is not taken soon, please contact your principal."
     send_email(subject,message,[teacher.user.email])
 
 #two_email
@@ -77,7 +77,7 @@ def email_CEUactivity_approved_by_principal(teacher):
     message1 = str(teacher) + "'s, from " +str(teacher.school.name) + ", CEU activity was reviewed by the principal. Log in to isei1.org in order to review and approve the CEU Activity. "
     message1 = message1 + signature
     mail1 =EmailMessage(subject, message1, settings.EMAIL_HOST_USER, ["teacher_certification@iseiea.org"])
-    message2 = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity was reviewed by the principal and submitted to ISEI. It will be reviewed shortly."
+    message2 = "Dear " + str(teacher.first_name) +","+"\n "+"\n "+ "Your CEU activity was reviewed by the principal and submitted to ISEI. It will be reviewed shortly."
     message2 = message2 + signature
     mail2 = EmailMessage(subject, message2, settings.EMAIL_HOST_USER, [teacher.user.email], ["teacher_certification@iseiea.org"])
     mail1.send()
@@ -87,23 +87,23 @@ def email_CEUactivity_approved_by_principal(teacher):
 
 def email_CEUactivity_denied_by_principal(teacher):
     subject = "CEU Report: " + str(teacher)
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity reporting was considered incomplete by the principal. Please log in to isei1.org, review, update and resubmit your CEU Activity."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "\n "+ "Your CEU activity reporting was considered incomplete by the principal. Please log in to isei1.org, review, update and resubmit your CEU Activity."
     send_email(subject,message,[teacher.user.email])
 
 
 def email_CEUReport_approved_by_ISEI(teacher,school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was reviewed by ISEI. Please sign in to isei1.org to review the approved activities and CEUs."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "\n "+ "Your CEU Report was reviewed by ISEI. Please sign in to isei1.org to review the approved activities and CEUs."
     send_email(subject,message,[teacher.user.email])
 
 def email_CEUReport_denied_by_ISEI(teacher, school_year_name, comment):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU Report was considered incomplete by ISEI. \n \n" + comment + "\n \n" + " Log in to isei1.org to review, update and resubmit your Report."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "\n "+"Your CEU Report was considered incomplete by ISEI. \n \n" + comment + "\n \n" + " Log in to isei1.org to review, update and resubmit your Report."
     send_email(subject,message,[teacher.user.email])
 
 def email_CEUReport_retracted_by_ISEI(teacher, school_year_name):
     subject = "CEU Report: " + str(teacher) + ", " + school_year_name
-    message = "Dear " + str(teacher.first_name) + "," + "\n " + "ISEI has canceled the previous action on your CEU Report. A new action will be taken soon or you will be contacted shortly."
+    message = "Dear " + str(teacher.first_name) + "," + "\n " + "\n "+"ISEI has canceled the previous action on your CEU Report. A new action will be taken soon or you will be contacted shortly."
     send_email(subject,message,[teacher.user.email])
 
 def email_CEUactivity_approved_by_ISEI(teacher):
@@ -113,12 +113,12 @@ def email_CEUactivity_approved_by_ISEI(teacher):
 
 def email_CEUactivity_denied_by_ISEI(teacher):
     subject = "CEU Report: " + str(teacher)
-    message = "Dear " + str(teacher.first_name) +","+"\n "+ "Your CEU activity was considered incomplete by the ISEI. Please log in to isei1.org ,review, update and resubmit your CEU Activity."
+    message = "Dear " + str(teacher.first_name) +","+"\n "+ "\n "+"Your CEU activity was considered incomplete by the ISEI. Please log in to isei1.org ,review, update and resubmit your CEU Activity."
     send_email(subject,message,[teacher.user.email])
 
 def email_Certificate_issued_or_modified(teacher):
     subject ="ISEI Teacher Certificate"
-    message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification has been issued/renewed/modified. Please log in to isei1.org to view your certification information. If you have any questions, or find any of the information to be innacurate, please contact us."
+    message = "Dear " + str(teacher.first_name) +","+"\n " +"\n "+ "Your ISEI Teacher Certification has been issued/renewed/modified. Please log in to isei1.org to view your certification information. If you have any questions, or find any of the information to be innacurate, please contact us."
     send_email(subject, message, [teacher.user.email])
     message1 = str(teacher.first_name) + " from " + str(teacher.school) + " has been issued an ISEI Teacher Certificate."
     send_email(subject, message1, office_email)
@@ -146,14 +146,14 @@ def email_Application_submitted(teacher, initial, update, expired):
 
 def email_Application_processed(teacher):
     subject ="ISEI Teacher Certification Application"
-    message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and your Teacher Certificate will be issued shortly."
+    message = "Dear " + str(teacher.first_name) +","+"\n " + "\n "+"Your ISEI Teacher Certification Application and college transcripts has been received and your Teacher Certificate will be issued shortly."
     send_email(subject, message, [teacher.user.email])
 
 def email_Application_on_hold(teacher, note = None):
     subject ="ISEI Teacher Certification Application"
     if note:
-        message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and is on hold." + "\n" + str(note) + "\n" + "Please log in to isei1.org if any updates are needed."
+        message = "Dear " + str(teacher.first_name) +","+"\n " + "\n "+"Your ISEI Teacher Certification Application has been received and is on hold." + "\n" + str(note) + "\n" + "Please log in to isei1.org if any updates are needed."
     else:
-        message = "Dear " + str(teacher.first_name) +","+"\n " + "Your ISEI Teacher Certification Application has been received and will be processed soon."
+        message = "Dear " + str(teacher.first_name) +","+"\n " + "\n "+"Your ISEI Teacher Certification Application has been received and will be processed soon."
 
     send_email(subject, message, [teacher.user.email])
