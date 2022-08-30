@@ -1092,16 +1092,18 @@ def add_ISEI_CEUs(request):
             if not ceu_report:
                 ceu_report = CEUReport(teacher=t, school_year=school_year)
                 ceu_report.save()
-                email_CEUReport_created(ceu_report.teacher, ceu_report.school_year.name)
+                #email_CEUReport_created(ceu_report.teacher, ceu_report.school_year.name)
 
             ceu_instance = CEUInstance(ceu_report=ceu_report, ceu_category=ceu_category, ceu_type=ceu_type,
                                        date_completed=date_completed, description=description,
                                        isei_reviewed='a', approved_ceu=CEUs, amount=CEUs, units='c')
+
             try:
                 ceu_instance.save()
                 new = True
             except:
                 new = False
+
 
         if new == False:
             messages.success(request,
@@ -1123,6 +1125,12 @@ def add_ISEI_CEUs(request):
                 case = "Changes were saved"
         else:
             ceu_form = iseiCEUformset(queryset=CEUInstance.objects.none())
+
+    if request.method == 'POST' and request.POST.get('submit_changes'):
+        reports = CEUReport.objects.filter(school_year__id__in= school_year_list)
+        for r in reports:
+            if not CEUInstance.objects.filter(ceu_report=r):
+                r.delete()
 
     context = dict(school_list=school_list, school_year_list=school_year_list, ceu_form=ceu_form, case=case)
 
