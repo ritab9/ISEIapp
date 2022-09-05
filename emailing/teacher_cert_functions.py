@@ -23,10 +23,12 @@ def email_registered_user(teacher):
               "\n" + "\n " + "Your username is: " + str(teacher.first_name) + "." + str(teacher.last_name) + \
               "\n" + "As a first time user follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
               "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." + \
-              "\n" + "You will need to submit an application and and request college transcripts to be sent to ISEI." +\
-              "\n" + "\n " + "If you have any questions, please contact us."
+              "\n" + "You will need to submit an application and request college transcripts to be sent to ISEI." + \
+              "\n" + "\n " + "If you have a valid NAD Teacher Certification it can be accepted in place of the ISEI Certificate. Please send a copy of it to ISEI." + \
+              "\n" + "\n " + "If you have any questions, please contact us - email or phone."
     # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
     send_email(subject, message, [teacher.user.email])
+
 
 def email_AcademicClass_submitted(teacher):
     subject = "Academic Class: " + str(teacher)
@@ -128,7 +130,7 @@ def email_Application_submitted(teacher, initial, update, expired):
     message = str(teacher) + " from " + str(teacher.school) + " has submitted a Teacher Certification Application."
     if initial:
         if update == True:
-            message = message + "\n" + "This is an update to the initial application. No billing is needed"
+            message = message + "\n" + "This is an update to the initial application. Application only needs to be billed once."
         else:
             if expired == False:
                 message = message + "\n" + "This is an Initial Application, please bill."
@@ -137,7 +139,7 @@ def email_Application_submitted(teacher, initial, update, expired):
 
     else:
         if update == True:
-            message = message + "\n" + "This is an update to a Renewal Application. No billing is needed"
+            message = message + "\n" + "This is an update to a Renewal Application. Application only needs to be billed once."
         else:
             message = message + "\n" + "This is a Renewal Application, or an update to an expired (no activity for more than 6 months) Renewal Application. Please bill."
 
