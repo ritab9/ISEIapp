@@ -149,6 +149,7 @@ class StandardChecklistForm(ModelForm):
         widgets = {
             'sda_education':forms.NumberInput(attrs = {'size': 3,}),
             'psychology': forms.NumberInput (attrs={'size': 3}),
+            'dev_psychology': forms.NumberInput (attrs={'size': 3}),
             'assessment': forms.NumberInput(attrs={'size': 3}),
             'exceptional_child': forms.NumberInput(attrs={'size': 3}),
             'technology': forms.NumberInput(attrs={'size': 3}),
