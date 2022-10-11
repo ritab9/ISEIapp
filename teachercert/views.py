@@ -939,6 +939,13 @@ def isei_teachercert(request):
     tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
     tcertificates = tcertificates_filter.qs
 
+    if request.POST.get('sendemail'):
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        for a in tcertificates:
+            complete_message = "Dear "+ str(a.teacher.first_name)+"," + "\n \n" + message + "\n \n"
+            send_email(subject, complete_message, [a.teacher.user.email])
+
     context = dict(teachers=teachers,
                    tcertificates=tcertificates, tcertificates_filter=tcertificates_filter)
     return render(request, 'teachercert/isei_teachercert.html', context)

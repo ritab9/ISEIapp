@@ -184,7 +184,7 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBacke
 if DEVELOPMENT_MODE is True:
 #print emails to a file
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = '/Users/wrsarr/Dropbox/B2 IT Development/Web Development/Email testing'
+    EMAIL_FILE_PATH = '/Users/ritab/Dropbox/B2 IT Development/Web Development/Email testing'
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 
 #the gmail setup has to use a two step verifcation the password is an app password (found in Account / Security)
