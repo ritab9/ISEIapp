@@ -524,6 +524,13 @@ def CEUreports(request):
     ceu_report_filter = CEUReportFilter(request.GET, queryset=ceu_reports)
     ceu_reports = ceu_report_filter.qs
 
+    if request.POST.get('sendemail'):
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        for a in ceu_reports:
+            complete_message = "Dear " + str(a.teacher.first_name) + "," + "\n \n" + message + "\n \n"
+            send_email(subject, complete_message, [a.teacher.user.email])
+
     context = dict(ceu_reports=ceu_reports, ceu_report_filter=ceu_report_filter, is_staff=is_staff)
     return render(request, 'teachercert/ceu_reports.html', context)
 
