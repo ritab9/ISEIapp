@@ -10,8 +10,8 @@
 			<p> Are you sure you want to delete "{{item}}"? The operation can not be undone.</p>
 			<form action="{% url 'delete_ceuinstance' item.id %}" method="POST">
 				{% csrf_token %}
-					<a class="btn btn-warning" href="{%  url 'create_ceu' item.ceu_report.id %}">Cancel</a>
-					<input class="btn btn-danger" type='submit' value ='Confirm'>
+					<a class="btn btn-sm btn-warning" href="{%  url 'create_ceu' item.ceu_report.id %}">Cancel</a>
+					<input class="btn btn-sm btn-danger" type='submit' value ='Confirm'>
 			</form>
 		</div>
 	</div>

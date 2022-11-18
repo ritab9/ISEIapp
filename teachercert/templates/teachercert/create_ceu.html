@@ -85,7 +85,11 @@
              <a class = "btn btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">More info</a>
         </div>
 
-        <div id="activity_add" style="display: none">
+        {% if activity_entering_error %}
+            <div id="activity_add">
+        {% else %}
+            <div id="activity_add" style="display: none">
+        {% endif %}
         <br>
             <div class="row">
                     <div class="col-sm">
@@ -106,6 +110,11 @@
                         Supporting Documentation: {{instance_form.file}} <br><br>
                          <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Save Activity" name = "add_activity" style = "margin-top: 20px; margin-right: 30px">
                         {{ instance_form.errors }}
+                        {% for message in messages %}
+                            {% if message.tags == "warning" %}
+                                <span class="spanred">{{ message }}</span>
+                            {% endif %}
+                        {% endfor %}
                     </div>
             </div>
 
@@ -129,6 +138,11 @@
                     {{ report_form.summary.errors }}
                     {{ report_form.summary}}
                <input class = "btn btn-sm btn-ISEIblue3" type="submit" value="Save Summary" name = "update_report" style ="float:right">
+               {% for message in messages %}
+                   {% if message.tags == "success" %}
+                       <span class="spangreen">{{ message }}</span>
+                   {% endif %}
+               {% endfor %}
            </div>
 
             {% if ceu_report.principal_comment or ceu_report.isei_comment %}
@@ -176,10 +190,14 @@
 
                  if(value == "Enter New Activity") {
                      $("#activity_add").show();
-                     $(this).attr('value',"Hide"); }
+                     $(this).attr('value',"Hide");
+                     $("#submit_report").hide()
+                 }
                  if(value == "Hide") {
                      $("#activity_add").hide();
-                     $(this).attr('value',"Enter New Activity");}
+                     $(this).attr('value',"Enter New Activity");
+                     $("#submit_report").show()
+                 }
         });
 
 

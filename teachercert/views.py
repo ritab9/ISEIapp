@@ -16,6 +16,8 @@ from emailing.teacher_cert_functions import *
 from datetime import datetime, timedelta
 from django.contrib import messages
 
+from django.db import IntegrityError
+
 
 
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
@@ -297,13 +299,26 @@ def createCEU(request, recId):
     new_instance = CEUInstance(ceu_report=ceu_report)
     instance_form = CEUInstanceForm(instance=new_instance)
     report_form = CEUReportForm(instance=ceu_report)  # form for editing current report (summary and submission)
+    activity_entering_error=False
 
     if request.method == 'POST':
-        if request.POST.get('add_activity'):  # add activity and stay on page
+        if request.POST.get('add_activity'):  # add activity or update summary and stay on page
             instance_form = CEUInstanceForm(request.POST, request.FILES or None, instance=new_instance)
             if instance_form.is_valid():
-                instance_form.save()  # save activity
-                instance_form = CEUInstanceForm(instance=CEUInstance(ceu_report=ceu_report))  # allow for a new entry
+                try:
+                    instance_form.save()  # save activity
+                    instance_form = CEUInstanceForm(instance=CEUInstance(ceu_report=ceu_report))  # allow for a new entry
+                except IntegrityError:
+                    messages.warning(request, "This activity is already entered")
+                    activity_entering_error = True
+
+
+        if request.POST.get('update_report'):  # update summary, stay on page
+            report_form = CEUReportForm(request.POST, instance=ceu_report)
+            if report_form.is_valid():
+                ceu_report = report_form.save()
+                messages.success(request, 'Summary was successfully updated!')
+
 
         if request.POST.get('submit_report'):  # submit report - go to CEUdashboard
             report_form = CEUReportForm(request.POST, instance=ceu_report)
@@ -324,14 +339,11 @@ def createCEU(request, recId):
 
                     return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id)  # go back to CEUdashboard
 
-        if request.POST.get('update_report'):  # update summary, stay on page
-            # print("Update Report")
-            report_form = CEUReportForm(request.POST, instance=ceu_report)
-            if report_form.is_valid():
-                ceu_report = report_form.save()
+
 
     context = dict(ceu_instance=ceu_instance, ceu_report=ceu_report,
-                   instance_form=instance_form, report_form=report_form, )
+                   instance_form=instance_form, report_form=report_form,
+                   activity_entering_error = activity_entering_error)
 
     return render(request, "teachercert/create_ceu.html", context)
 
@@ -355,6 +367,7 @@ def updateCEUinstance(request, pk):
             if form.is_valid():
                 form.save()
                 return redirect('create_ceu', ceu_instance.ceu_report.id)
+
 
         if request.POST.get('resubmit'):  # if it is a resubmition
             form = CEUInstanceForm(request.POST, request.FILES or None, instance=ceu_instance)

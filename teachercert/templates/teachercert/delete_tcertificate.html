@@ -12,9 +12,9 @@
 			<form action="{% url 'delete_tcertificate' item.id %}" method="POST">
 				{% csrf_token %}
 
-					<a class="btn btn-warning" href="{%  url 'manage_tcertificate' item.id %}">Cancel</a>
+					<a class="btn btn-sm btn-warning" href="{%  url 'manage_tcertificate' item.id %}">Cancel</a>
 
-					<input class="btn btn-danger" type='submit' value ='Confirm'>
+					<input class="btn btn-sm btn-danger" type='submit' value ='Confirm'>
 			</form>
 		</div>
 	</div>
