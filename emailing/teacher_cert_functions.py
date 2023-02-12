@@ -1,5 +1,5 @@
 
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 
 
@@ -12,6 +12,9 @@ office_email = ["jodyv@isei.life"]
 
 def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"]):
     message = message+signature
+    #send_mail(subject, message, "ritab@iseiea.org", send_to, fail_silently=False, auth_user="ritab@iseiea.org", auth_password="*********",
+    #          connection=None, html_message=None)
+
     mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher_certification@iseiea.org"])
     mail.send()
 

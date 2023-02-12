@@ -1,6 +1,6 @@
 from django import forms
 import django_filters
-from django_filters import DateFilter, CharFilter, ChoiceFilter, BooleanFilter, ModelChoiceFilter
+from django_filters import DateFilter, CharFilter, ChoiceFilter, ModelChoiceFilter
 
 import users.models, teachercert.models
 from .models import *
