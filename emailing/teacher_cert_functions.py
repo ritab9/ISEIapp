@@ -7,7 +7,7 @@ from django.conf import settings
 
 # TODO embed office_email and signature as an env variable (or think of some other way to do it)
 signature = "\n" + "\n" +"Rita Burjan" + "\n" + "ISEI Teacher Certification" + "\n" + "isei1.org"
-office_email = ["jodyv@isei.life"]
+office_email = []
 
 
 def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"]):
