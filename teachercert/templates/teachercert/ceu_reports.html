@@ -55,6 +55,7 @@
 
 
 <!-- Emailing -->
+    {%  if request.user|in_group:"staff" %}
     <div class="row">
             <input type="button" class="btn btn-ISEIblue3 btn-sm ml-3" id="emailbtn" value="Open Emailing">
     </div>
@@ -68,6 +69,7 @@
             <input class="btn btn-ISEIblue3 btn-sm" type="submit" name="sendemail" value="Send Email">
         </form>
     </div>
+    {% endif %}
 
 
 
