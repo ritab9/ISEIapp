@@ -54,7 +54,7 @@
                             {% else %}
                         <div class="spanred"> Not billed</div> {% endif %} {% endif %}</td>
                     <td> {% if app.isei_revision_date %}
-                                {% if app.isei_revision_date <= app.date  %}
+                                {% if app.isei_revision_date < app.date  %}
                                     <div class="spanred"> Needs review. </div> <div class="span80">Last review: {{ app.isei_revision_date }}</div>
                                 {% else %}
                                     {{ app.isei_revision_date }}
