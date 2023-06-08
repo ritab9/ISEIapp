@@ -45,7 +45,7 @@ Not to be used independently
         {% else %} <div class="spanred"> Technology in Teaching and Learning </div> {% endif %}
     </div>
     <div class="col-sm-auto">
-        <b>Secondary/Subject:</b>
+        <b>For Secondary/Subject endorsement:</b>
         {% if checklist.sec_methods %}<div class="spangreen"> Secondary Curriculum and Methods: {{ checklist.sec_methods }} credits  </div>
         {% else %} <div class="spanred"> Secondary Curriculum and Methods: </div> {% endif %}
         {% if checklist.sec_rw_methods %}<div class="spangreen"> Secondary Reading and Writing Methods: {{ checklist.sec_rw_methods }} credits  </div>
@@ -58,7 +58,7 @@ Not to be used independently
         <div class="mt-5"><b>Total Professional Education Credits: {{ checklist.education_credits }}</b></div>
     </div>
     <div class="col-sm-auto">
-        <b>Elementary:</b>
+        <b>For Elementary endorsement only:</b>
         {% if checklist.em_science %}<div class="spangreen"> Science Methods: {{ checklist.em_science}} credits  </div>
         {% else %} <div class="spanred">  Science Methods </div> {% endif %}
          {% if checklist.em_math %}<div class="spangreen"> Math Methods: {{ checklist.em_math}} credits  </div>
