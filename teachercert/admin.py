@@ -32,6 +32,7 @@ class AcademicClass(admin.ModelAdmin):
     list_display = ('teacher','name', 'university', 'date_completed', 'transcript_requested', 'transcript_received')
     list_display_links = ('name',)
     list_editable = ('university', 'date_completed', 'transcript_requested', 'transcript_received')
+    list_filter = ('transcript_requested', 'transcript_received', 'university')
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
@@ -130,6 +131,7 @@ class TCertificate(admin.ModelAdmin):
     list_display = ('teacher', 'certification_type', 'issue_date','renewal_date', 'archived','renewal_requirements')
     list_editable = ('certification_type','archived', 'issue_date','renewal_date', 'renewal_requirements')
     list_display_links = ('teacher',)
+    list_filter = ('certification_type','archived')
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
