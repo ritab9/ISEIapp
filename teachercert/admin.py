@@ -31,8 +31,9 @@ class AcademicClass(admin.ModelAdmin):
     model = AcademicClass
     list_display = ('teacher','name', 'university', 'date_completed', 'transcript_requested', 'transcript_received')
     list_display_links = ('name',)
-    list_editable = ('university', 'date_completed', 'transcript_requested', 'transcript_received')
+    list_editable = ('transcript_requested', 'transcript_received')
     list_filter = ('transcript_requested', 'transcript_received', 'university')
+    search_fields = ['name', 'university']
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
@@ -48,7 +49,7 @@ class CEUInstanceInline(admin.StackedInline):
 class CEUReport(admin.ModelAdmin):
     inlines = [CEUInstanceInline,]
     list_display = ('teacher', 'school_year', 'date_submitted','principal_reviewed', 'isei_reviewed', 'updated_at')
-    list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed', 'school_year')
+    list_editable = ('date_submitted', 'principal_reviewed', 'isei_reviewed',)
     list_display_links = ('teacher',)
     readonly_fields = ['created_at', 'updated_at', ]
     list_filter = ('school_year', 'principal_reviewed', 'isei_reviewed')
@@ -128,10 +129,12 @@ class TEndorsement(admin.ModelAdmin):
 @admin.register(TCertificate)
 class TCertificate(admin.ModelAdmin):
     inlines = [TEndorsementInLine]
-    list_display = ('teacher', 'certification_type', 'issue_date','renewal_date', 'archived','renewal_requirements')
-    list_editable = ('certification_type','archived', 'issue_date','renewal_date', 'renewal_requirements')
+    list_display = ('teacher', 'certification_type', 'issue_date','renewal_date', 'archived',)
+    list_editable = ('archived', )
     list_display_links = ('teacher',)
     list_filter = ('certification_type','archived')
+    search_fields = ['teacher__user__first_name', 'teacher__user__last_name' ]
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(teacher__user__is_active = True)
@@ -144,6 +147,8 @@ class TeacherCertificationApplication(admin.ModelAdmin):
     list_display_links = ('teacher',)
     ordering = ('billed','closed', 'teacher__school')
     list_filter = ('billed', 'closed', 'teacher__school')
+    search_fields = ['teacher__user__first_name', 'teacher__user__last_name' ]
+
 
     def School(self, obj):
         return obj.teacher.school

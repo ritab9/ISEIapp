@@ -91,8 +91,10 @@ class CollegeAttended(admin.ModelAdmin):
     can_delete=True
     list_display = ('teacher','name', 'level','degree', 'transcript_requested', 'transcript_received', 'transcript_processed', 'start_date', 'end_date')
     list_editable = ('transcript_requested', 'transcript_received', 'transcript_processed')
-    list_display_links = ('name',)
+    list_display_links = ('name', 'teacher')
     list_filter = ( 'transcript_requested', 'transcript_received', 'transcript_processed', 'name',)
+    search_fields = ['name']
+
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -104,5 +106,7 @@ class SchoolOfEmployment(admin.ModelAdmin):
     can_delete = True
     list_display =('teacher', 'name','start_date', 'end_date', 'courses')
     list_editable =('start_date', 'end_date',)
+    search_fields = ['name']
+
 
 
