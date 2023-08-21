@@ -47,7 +47,7 @@
   <!-- Basic requirments met and not met -->
                     {% if basic_met %}
                         <div class="col-sm-6">
-                        <b class = "span80blue" >Basic Requirements Met (for Standard Certification):</b>
+                        <b class = "span80blue" >Basic Requirements Met:</b>
                         <table class="span80">
                             <thead><tr><th>Requirement</th><th>Met by</th><tr></tr></thead>
                             <tbody>
@@ -63,7 +63,7 @@
 
                     {% if basic_not_met %}
                         <div class="col-sm">
-                        <div class="spanred">Basic Requirements Not Met:</div>
+                        <div class="spanred">Basic Requirements Not Met (for Standard Certification):</div>
                         <ul>
                             {% for r in basic_not_met %} <li>{{ r.basic_requirement }}</li> {% endfor %}
                         </ul>
