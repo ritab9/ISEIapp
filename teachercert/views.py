@@ -434,7 +434,7 @@ def myCEUdashboard(request, pk):
     submitted_instance = ceu_instance.filter(
         Q(ceu_report__in=submitted_report) | Q(isei_reviewed='n', ceu_report__in=approved_report,
                                                principal_reviewed='a'))
-    approved_instance = ceu_instance.filter(isei_reviewed='a')
+    approved_instance = ceu_instance.filter(isei_reviewed='a').order_by('date_completed')
 
     if is_in_group(request.user, 'teacher'):
         user_not_teacher = False

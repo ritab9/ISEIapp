@@ -46,7 +46,7 @@
                         <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
                         <th>Evidence / Supporting documentation</th><th>Review Date</th>
                     </tr>
-                    {% for p in  ar.ceuinstance_set.all %}
+                    {% for p in  ar.ceuinstance_set.all|dictsort:"p.date_completed" %}
                         <tr>
                             <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                             <td>{{p.amount}} {{p.get_units_display}} </td>
@@ -90,7 +90,7 @@
                 <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
                 <th>Evidence / Supporting documentation</th><th>Review Date</th>
             </tr>
-            {% for p in ar.ceuinstance_set.all %}
+            {% for p in ar.ceuinstance_set.all|dictsort:"p.date_completed" %}
                 <tr>
                     <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>
                     <td>{{p.amount}} {{p.get_units_display}}</td>
