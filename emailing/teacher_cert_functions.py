@@ -1,6 +1,9 @@
 
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
+from django.contrib.auth.models import User, Group
+from users.models import Teacher
+
 
 
 #from teachercert.models import EmailMessageTemplate
@@ -20,6 +23,9 @@ def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"])
 
 def email_registered_user(teacher):
     subject = "ISEI Teacher Certification Account"
+    group = Group.objects.get(name='principal')
+    principal = Teacher.objects.filter(school=teacher.school, user__groups=group ).first()
+
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
                "Welcome! " + "\n" + \
                "An account has been created for you to apply for and manage your ISEI Teacher Certification." + \
@@ -30,7 +36,7 @@ def email_registered_user(teacher):
               "\n" + "\n " + "If you have a valid NAD Teacher Certification it will be accepted in place of the ISEI Certificate. Please send a copy of it to ISEI." + \
               "\n" + "\n " + "If you have any questions, please contact us through email or phone."
     # str(EmailMessageTemplate.objects.get(name="RegisterUser").message) + \
-    send_email(subject, message, [teacher.user.email])
+    send_email(subject, message, [teacher.user.email, principal.user.email])
 
 
 def email_AcademicClass_submitted(teacher):
