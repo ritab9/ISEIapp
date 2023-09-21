@@ -31,6 +31,8 @@ def email_registered_user(teacher):
                "An account has been created for you to apply for and manage your ISEI Teacher Certification." + \
               "\n" + "\n " + "Your username is: " + str(teacher.first_name) + "." + str(teacher.last_name) + \
               "\n" + "As a first time user follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
+              "\n" + "\n " + "After login update all the information on the Teacher Info page, before clicking ISEI Initial Teacher Certification Application." +\
+              "\n" + "Read through the application to ensure all information is accurate, then type in the date and your name (electronic signature) and submit the application." +\
               "\n" + "\n " + "After login you can access the Teacher Certification Handbook (bottom right corner of the website). Sections 5-7 offer guidance for using the website." + \
               "\n" + "You will need to submit an application and request college transcripts to be sent to ISEI." + \
               "\n" + "\n " + "If you have a valid NAD Teacher Certification it will be accepted in place of the ISEI Certificate. Please send a copy of it to ISEI." + \
