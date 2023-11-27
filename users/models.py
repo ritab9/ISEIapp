@@ -5,7 +5,63 @@ from datetime import date
 
 
 
-# Create your models here.
+class StateField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 2
+        kwargs['choices'] = [
+            ('AL', 'Alabama'),
+            ('AK', 'Alaska'),
+            ('AZ', 'Arizona'),
+            ('AR', 'Arkansas'),
+            ('CA', 'California'),
+            ('CO', 'Colorado'),
+            ('CT', 'Connecticut'),
+            ('DE', 'Delaware'),
+            ('FL', 'Florida'),
+            ('GA', 'Georgia'),
+            ('HI', 'Hawaii'),
+            ('ID', 'Idaho'),
+            ('IL', 'Illinois'),
+            ('IN', 'Indiana'),
+            ('IA', 'Iowa'),
+            ('KS', 'Kansas'),
+            ('KY', 'Kentucky'),
+            ('LA', 'Louisiana'),
+            ('ME', 'Maine'),
+            ('MD', 'Maryland'),
+            ('MA', 'Massachusetts'),
+            ('MI', 'Michigan'),
+            ('MN', 'Minnesota'),
+            ('MS', 'Mississippi'),
+            ('MO', 'Missouri'),
+            ('MT', 'Montana'),
+            ('NE', 'Nebraska'),
+            ('NV', 'Nevada'),
+            ('NH', 'New Hampshire'),
+            ('NJ', 'New Jersey'),
+            ('NM', 'New Mexico'),
+            ('NY', 'New York'),
+            ('NC', 'North Carolina'),
+            ('ND', 'North Dakota'),
+            ('OH', 'Ohio'),
+            ('OK', 'Oklahoma'),
+            ('OR', 'Oregon'),
+            ('PA', 'Pennsylvania'),
+            ('RI', 'Rhode Island'),
+            ('SC', 'South Carolina'),
+            ('SD', 'South Dakota'),
+            ('TN', 'Tennessee'),
+            ('TX', 'Texas'),
+            ('UT', 'Utah'),
+            ('VT', 'Vermont'),
+            ('VA', 'Virginia'),
+            ('WA', 'Washington'),
+            ('WV', 'West Virginia'),
+            ('WI', 'Wisconsin'),
+            ('WY', 'Wyoming'),
+        ]
+        super().__init__(*args, **kwargs)
+
 
 class Country(models.Model):
     name = models.CharField(max_length=25, unique = True)
@@ -138,8 +194,9 @@ class SchoolOfEmployment(models.Model):
 class Address(models.Model):
     address_1 = models.CharField(verbose_name="address", max_length=128)
     address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
-    city = models.CharField(verbose_name="city", max_length=64, default="")
-    state = models.CharField(verbose_name="state or province", max_length=4, default="")
+    city= models.CharField(verbose_name="city", max_length=64, default="")
+    state_old = models.CharField(verbose_name="state or province", max_length=4, default="")
+    state = StateField(blank=True, null=True)
     zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
 
