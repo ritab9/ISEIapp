@@ -199,7 +199,6 @@ class Address(models.Model):
     state = StateField(blank=True, null=True)
     zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
-
     school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
     teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, blank=True, null=True)
 
