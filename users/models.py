@@ -196,7 +196,7 @@ class Address(models.Model):
     address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
     city= models.CharField(verbose_name="city", max_length=64, default="")
     state_old = models.CharField(verbose_name="state or province", max_length=4, default="")
-    state = StateField(blank=True, null=True)
+    #state = StateField(blank=True, null=True)
     zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
     school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
