@@ -47,17 +47,17 @@
     <div class = "col">
         {% if application_submitted %}
             <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'teachercert_application' teacher.id %}">Go to Teacher Certification Application</a>
-            <h6><div class="spanred">Important:</div>
+            <p><div class="spanred">Important:</div>
                 <p>Before applying / reapplying for Teacher Certification please ensure that ALL the information on this page is accurate and up to date, and, if applicable, the renewal requirements have been met. (See Home)</p>
                 Click button above to verify, sign and <span class="spanred">submit</span> your application.
-            </h6>
+            </p>
         {% else %}
             {% if address.address_1 %}
                 <p><a class="btn btn-sm btn-danger" href="{% url 'teachercert_application' teacher.id %}">Go to Initial Teacher Certification Application</a></p>
-                <h6><div class="spanred">Important:</div>
+                <p><div class="spanred">Important:</div>
                 <p>Before applying for ISEI Teacher Certification please ensure that ALL the information on this page is accurate and up to date. </p>
                     Click button above to verify, sign and <span class="spanred">submit</span> your application.
-                </h6>
+                </p>
             {% else %}
                 <button class="btn btn-sm btn-ISEIblue4" disabled >Go to Initial Teacher Certification Application</button><br>
                 <span style = "color:red"> *Please fill out the information below, including Teacher Info and Address</span>
