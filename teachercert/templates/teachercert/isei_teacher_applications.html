@@ -22,7 +22,9 @@
         <div class="row card card-body" style="display: none" id="emaildiv">
             <form method="post">
                 {% csrf_token %}
-                <p>Send an email message to all the teachers in the filtered list. "Dear Teacher_First Name" and ISEI signature will be added to the message.</p>
+                <p>Send an email message to all the teachers in the filtered list. "Dear Teacher_First Name" and ISEI signature will be added to the message.
+                If there is a comment attached to the application that will be emailed to them as well (it will be at the end of the message, before the signature).
+                </p>
                 <textarea rows="1" cols="50" name="subject" value="Subject">Subject...</textarea>
                 <textarea rows = "4" cols = "50" name="message" value="Message">Message...</textarea>
                 <input class="btn btn-ISEIblue3 btn-sm" type="submit" name="sendemail" value="Send Email">
