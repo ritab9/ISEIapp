@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from users.decorators import allowed_users
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .filters import *
 from .forms import *
 from users.utils import is_in_group
