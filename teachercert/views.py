@@ -839,7 +839,7 @@ def standard_checklist(request, teacherID):
         if form.is_valid():
             form.save()
         if request.POST.get('save'):
-            return redirect('standard_checklist', teacherID)
+            return redirect('manage_tcertificate', teacherID)
 
     context = dict(teacher = teacher, checklist_form= checklist_form)
     return render(request, 'teachercert/standard_checklist.html', context)
