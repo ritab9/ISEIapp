@@ -18,8 +18,6 @@ from django.contrib import messages
 
 from django.db import IntegrityError
 
-
-
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
 
 # just an info page about the CEU activities
