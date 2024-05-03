@@ -1,0 +1,47 @@
+
+<!-- Not used -->
+
+{%  extends 'teachercert_base.html' %}
+{% load static %}
+{% load group_tags %}
+
+{% block content %}
+
+
+{% if request.user|in_group:"staff" or request.user|in_group:"principal"%}
+<!-- filter -->
+    <div class="row">
+        <div class="card card-body">
+            <h6>Filter:</h6>
+            <form method="get">
+                <div class="row">
+                <div class="col-sm span80">
+                    {% if is_staff%}
+                    {{ tcertificates_filter.form.school.label_tag }} {{ tcertificates_filter.form.school }} <br>
+                    {% endif %}
+                    {{ tcertificates_filter.form.certificate_type.label_tag }} {{ tcertificates_filter.form.certificate_type }} <br>
+                    <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                    <a href="{%  url 'principal_teachercert' %}">Clear all filters</a></div>
+                <div class="col-sm span80">
+                    {{ tcertificates_filter.form.first_name.label_tag}}{{ tcertificates_filter.form.first_name}}<br>
+                    {{ tcertificates_filter.form.last_name.label_tag}}{{ tcertificates_filter.form.last_name}} </div>
+
+                <div class="col-sm span80" >
+                    {{ tcertificates_filter.form.issued_after.label_tag }} {{ tcertificates_filter.form.issued_after }}<br>
+                    {{ tcertificates_filter.form.issued_before.label_tag }} {{ tcertificates_filter.form.issued_before }}</div>
+                <div class="col-sm span80" >
+                    {{ tcertificates_filter.form.renew_after.label_tag }} {{ tcertificates_filter.form.renew_after }}<br>
+                    {{ tcertificates_filter.form.renew_before.label_tag }} {{ tcertificates_filter.form.renew_before }}</div>
+                <div class ="col-sm span80">
+                    {{ tcertificates_filter.form.archived.label_tag }}{{ tcertificates_filter.form.archived }} <br>
+                </div>
+            </form>
+        </div>
+    </div>
+  {% endif %}
+
+
+
+{% include 'teachercert/tcertificates_table.html' %}
+
+{% endblock  %}

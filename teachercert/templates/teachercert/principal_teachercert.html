@@ -1,47 +1,200 @@
+{%  extends 'teachercert_base.html' %}
 
-<!-- Not used -->
+{% block title %} Principal Teacher Certification Dashboard {% endblock title %}
 
-{%  extends 'base.html' %}
-{% load static %}
-{% load group_tags %}
 
 {% block content %}
 
+<div class = "row">
+<!-- Teacher Certification Status-->
+    <div class="col-sm-10 card card-body">
 
-{% if request.user|in_group:"staff" or request.user|in_group:"principal"%}
-<!-- filter -->
-    <div class="row">
-        <div class="card card-body">
-            <h6>Filter:</h6>
-            <form method="get">
-                <div class="row">
-                <div class="col-sm span80">
-                    {% if is_staff%}
-                    {{ tcertificates_filter.form.school.label_tag }} {{ tcertificates_filter.form.school }} <br>
+<h5 class="mb-3"> Teacher Certification Status</h5>
+<!-- Percent of registered teachers -->
+    <div class="mb-3">
+        <p>Number of registered teachers: {{ number_of_teachers }}</p>
+        <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
+        <p> Percent of registered teachers certified:
+            {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
+                {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
+                {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
+                {% else %} <span style="color:green">{{ percent_certified }}%</span>
+            {% endif %}
+        </p>
+    </div>
+
+<!-- Certified Teachers -->
+    <p> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id=certified>
+        Certified Teachers: {{ number_of_certified_teachers }}</p>
+
+        <table class = "table" id="details_certified" style="display:none" >
+            <thead>
+                <tr>
+                    <th>Teacher</th><th>Certification</th><th>Endorsement</th><th>Renewal Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in valid_tcertificates %}
+                  <tr>
+                      <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td><td>{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type }}</td>
+                    <td> {% for e in c.tendorsement_set.all %}
+                        {{ e }}{% if not forloop.last %},{% endif %}
+                    {% endfor %} </td>
+                    <td>{% if c.renewal_date > in_six_months %}
+                        {{ c.renewal_date }}
+                    {% else %}
+                        <span style="color:orange">{{ c.renewal_date }}</span>
+                    {% endif %}</td>
+                    <!-- td>{ % if c.teacher.academic %} Yes { % else %} No { % endif %}</td -->
+                  </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    <p></p>
+    <p> <input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id=expired>
+        Teachers with Expired Certificates: {{ number_of_expired_teachers}} </p>
+
+        <table class = "table" id="details_expired" style="display:none">
+        <thead>
+            <tr>
+                <th>Teacher</th>
+                <th>Certification</th>
+                <th>Expiration Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in expired_tcertificates %}
+              <tr>
+                  <td><a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a></td>
+                <td>{% if c.nad %}NAD certificate:{% endif %}{{ c.certification_type }}</td>
+                <td> {% if c.renewal_date < a_year_ago %}
+                         <span style="color:red"> {{ c.renewal_date }} Reinstatement Required</span>
+
+                    {% else %}
+                        <span style="color:red">{{ c.renewal_date }} </span>
                     {% endif %}
-                    {{ tcertificates_filter.form.certificate_type.label_tag }} {{ tcertificates_filter.form.certificate_type }} <br>
-                    <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-                    <a href="{%  url 'principal_teachercert' %}">Clear all filters</a></div>
-                <div class="col-sm span80">
-                    {{ tcertificates_filter.form.first_name.label_tag}}{{ tcertificates_filter.form.first_name}}<br>
-                    {{ tcertificates_filter.form.last_name.label_tag}}{{ tcertificates_filter.form.last_name}} </div>
+                </td>
+                  <!-- td>{ % if c.teacher.academic %} Yes { % else %} No { % endif %}</td -->
 
-                <div class="col-sm span80" >
-                    {{ tcertificates_filter.form.issued_after.label_tag }} {{ tcertificates_filter.form.issued_after }}<br>
-                    {{ tcertificates_filter.form.issued_before.label_tag }} {{ tcertificates_filter.form.issued_before }}</div>
-                <div class="col-sm span80" >
-                    {{ tcertificates_filter.form.renew_after.label_tag }} {{ tcertificates_filter.form.renew_after }}<br>
-                    {{ tcertificates_filter.form.renew_before.label_tag }} {{ tcertificates_filter.form.renew_before }}</div>
-                <div class ="col-sm span80">
-                    {{ tcertificates_filter.form.archived.label_tag }}{{ tcertificates_filter.form.archived }} <br>
-                </div>
-            </form>
+              </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <p></p>
+    <p><input type="button" class="detailbtn btn btn-sm btn-ISEIblue4" value ="Show List" id="not_certified">
+        Non Certified Teachers: {{ number_of_non_certified_teachers }}
+    </p>
+
+        <table class = "table" id="details_not_certified" style="display:none">
+            <thead>
+                <tr>
+                    <th>Teacher</th><th>Application Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in non_certified_teachers %}
+                  <tr>
+                      {% if t.teachercertificationapplication %}
+                          <td><a href="{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
+                          <td>Submitted</td>
+                        {%  else %}
+                          <td>{{t.name}}</td>
+                          <td class="spanred">Not Submitted</td>
+                        {% endif %}
+                      <!-- td>{ % if t.academic %} Yes { % else %} No { % endif %}</td -->
+                  </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</div>
+
+    <div class="col-sm-2">
+    <!-- CEU Report waiting for approval -->
+        {% if reports_to_review %}
+            <div class ="row card card-body mt-3">
+                <p> Teacher reports or activities have been submitted and are waiting for your review! </p>
+                <a class="btn btn-sm btn-danger" href="{% url 'principal_ceu_approval' %}"> CEU Reports Review</a>
+            </div>
+        {% endif %}
+    <!-- Background checks not done -->
+        <div class ="row card card-body mt-3">
+            {% if not bc_done %}
+                <p> Please mark completed background checks. </p>
+                <a class="btn btn-sm btn-danger" href="{% url 'background_check' schoolid %}"> Background Checks</a>
+            {% else %}
+                <p>Background checks for all theachers are marked as completed</p>
+                <a class="btn btn-sm btn-ISEIblue3" href="{% url 'background_check' schoolid %}"> Background Checks</a>
+            {% endif %}
         </div>
     </div>
-  {% endif %}
+</div>
 
+<script>
+    $('#certified').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show List") {
+                     $("#details_certified").show();
+                     $(this).attr('value',"Hide List"); }
+                     if(value == "Hide List") {
+                     $("#details_certified").hide();
+                     $(this).attr('value',"Show List");}
+    });
+    $('#expired').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show List") {
+                     $("#details_expired").show();
+                     $(this).attr('value',"Hide List"); }
+                     if(value == "Hide List") {
+                     $("#details_expired").hide();
+                     $(this).attr('value',"Show List");}
+    });
+    $('#not_certified').on("click", function() {
+                 var value = $(this).attr('value');
+                 if(value == "Show List") {
+                     $("#details_not_certified").show();
+                     $(this).attr('value',"Hide List"); }
+                     if(value == "Hide List") {
+                     $("#details_not_certified").hide();
+                     $(this).attr('value',"Show List");}
+    });
 
+</script>
 
-{% include 'teachercert/tcertificates_table.html' %}
+<!-- Reports
 
-{% endblock  %}
+    <div class="row">
+        <div class="col-sm-4">
+            <table class="table table-sm table-light">
+                  <thead class="table-light">
+                    <th>2020-2021 Reporting</th>
+					<th>Due Date</th>
+                    <th>Submitted</th>
+                  </thead>
+                  <tbody>
+                  <tr> <td><a href="">Student Reporting</a> </td> <td>August 30, 2020</td> <td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Employee Summary </a></td> <td>August 30, 2020</td> <td><input type="checkbox"></td></tr>
+                  <tr> <td><a href="">Opening Report </a></td> <td>August 30, 2020</td> <td><input type="checkbox"></td></tr>
+                  <tr> <td><a href="">190-Day Report </a></td> <td>August 30, 2020</td><td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Safety and Maintenance</a> </td> <td>August 30, 2020</td><td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Year-end In-service Report</a> </td> <td>June 1, 2021</td><td><input type="checkbox"></td> </tr>
+
+                  </tbody>
+                </table>
+             <table class="table table-sm table-light">
+                  <thead class="table-light">
+                    <th>Delinquent Reporting</th>
+					<th>Due Date</th>
+                    <th>Submitted</th>
+                  </thead>
+                  <tbody>
+                  <tr> <td><a href="">Safety and Maintenance </a></td> <td>August 30, 2019</td><td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Year-end Inservice Report</a> </td> <td>June 1, 2020</td><td><input type="checkbox"></td> </tr>
+                  </tbody>
+                </table>
+        </div>
+    </div>
+-->
+{% endblock %}

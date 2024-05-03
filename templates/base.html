@@ -50,9 +50,11 @@
 <body class="Site">
  <div class="content">
     {# Navigation Menu #}
+     {% block header %}   
         <header>
-            {% include 'navbar.html' %}
+           {% include 'navbar.html' %}
         </header>
+    {% endblock header %}
     <div class="container-fluid">
     {# The Document Body #}
         <div class="site_content">
@@ -64,17 +66,6 @@
 </div>
     {# The Footer #}
     <footer class="footer noprint" >
-        {% if user.is_authenticated %}
-        <div class="row ml-3">
-            <div class="col-sm-auto card">
-                <a href="{% static 'appfiles/Hdbk.pdf' %}"> Teacher Certification Handbook </a>
-            </div>
-            <div class="col-sm-auto card">
-                <a class href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
-            </div>
-        </div>
-        {% endif %}
-
             <div class="row card mt-3">
                    <div class="mr-3 ml-3" style="text-align: center">
                        <i>ISEI</i> Education Association || P.O. Box 491, Collegedale, TN 37315, USA || teacher_certification@iseiea.org

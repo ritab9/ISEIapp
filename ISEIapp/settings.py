@@ -74,6 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #makes current school year available in any template {{ current_school_year.name }}
+                'ISEIapp.context_processors.current_school_year_processor',
             ],
         },
     },

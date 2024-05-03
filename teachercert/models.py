@@ -1,10 +1,10 @@
 from users.models import *
 import os
 from datetime import date, timedelta
+from django.db.models import Q
+
 
 from django.core.validators import MinLengthValidator
-
-from users.models import *
 
 
 # Create your models here.
@@ -17,16 +17,20 @@ class SchoolYear(models.Model):
     active_year = models.BooleanField(default=False)
     country = models.ManyToManyField(Country)
 
+    current_school_year = models.BooleanField(default=False)  # added field
+
+    def save(self, *args, **kwargs):
+        if self.current_school_year:
+            # Set current_school_year for all other records to False
+            SchoolYear.objects.filter(~Q(id=self.id)).update(current_school_year=False)
+        super().save(*args, **kwargs)
+
     class Meta:
         ordering = ('-name',)
 
     def __str__(self):
         return self.name
 
-    #def save(self, *args, **kwargs):
-    #    super(SchoolYear, self).save(*args, **kwargs)
-    #    if self.active_year:
-    #        all = SchoolYear.objects.exclude(id=self.id).update(active_year=False)
 
 class CEUCategory(models.Model):
     name = models.CharField(max_length=25, null = False, blank=False, verbose_name = "CEU Category")

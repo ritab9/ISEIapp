@@ -8,8 +8,8 @@ from users.models import *
 
 @admin.register(SchoolYear)
 class SchoolYear(admin.ModelAdmin):
-    list_display = ('name','active_year', 'start_date', 'end_date',)
-    list_editable = ('active_year','start_date', 'end_date', )
+    list_display = ('name','current_school_year','active_year', 'start_date', 'end_date',)
+    list_editable = ('current_school_year','active_year','start_date', 'end_date', )
     list_display_links = ('name',)
 
 @admin.register(CEUCategory)

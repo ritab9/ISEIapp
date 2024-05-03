@@ -56,7 +56,8 @@ def loginpage(request):
             else:
                 if request.user.is_active == True:
                     if is_in_group(request.user, 'principal'):
-                        return redirect('principal_dashboard', user.id)
+                        return redirect('principal_teachercert', user.id)
+                        #return redirect('principal_dashboard', user.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -179,7 +180,44 @@ def accountsettings(request, userID):
     return render(request, 'users/account_settings.html', context)
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal'])
+def principal_dashboard(request, userID):
+    principal = User.objects.get(id=userID).teacher
 
+    teachers = Teacher.objects.filter(school=principal.school, user__is_active=True, user__groups__name__in=['teacher'])
+
+    # Teacher Certificates Section
+    number_of_teachers = teachers.count()
+    # number_of_academic_teachers = teachers.filter(academic=True).count()
+    tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False)
+
+    # Valid certificates and certified teachers
+    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers).order_by('teacher')
+    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct()
+    number_of_certified_teachers = certified_teachers.count()
+    # number_of_certified_academic_teachers = certified_teachers.filter(academic=True).count()
+
+    # expired certificates and teachers with expired certificates
+    #expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in=teachers).order_by(
+    #    'teacher')
+    #expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
+    #number_of_expired_teachers = expired_teachers.count()
+    # not certified teachers
+    #non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates))
+    #number_of_non_certified_teachers = non_certified_teachers.count()
+
+    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+
+    #today = date.today()
+    #in_six_months = today + timedelta(183)
+    #a_year_ago = today - timedelta(365)
+
+
+    context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers, userID = userID,
+                  )
+
+    return render(request, 'users/principal_dashboard.html', context)
 
 #@login_required(login_url='login')
 #@allowed_users(allowed_roles=['staff'])

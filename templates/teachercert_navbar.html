@@ -1,0 +1,119 @@
+<!-- html from bootstrap for navigation bar -->
+{% extends "navbar.html" %}
+{% load static %}
+{% load group_tags %}
+
+{% block navbar_content %}
+     {% if user.is_authenticated and user.is_active%}
+                {% if request.user|in_group:"staff"%}
+<!-- staff links -->
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'isei_dashboard' %}">Home </a>
+                      </li>
+                   <!-- <li class="nav-item">
+                        <a class="nav-link" href="{ % url 'isei_teachers' %}"> Teachers </a>
+                      </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'isei_teacher_applications' %}">Teacher Applications</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'isei_teachercert' %}">Teacher Certificates</a>
+                      </li>
+                     <!--
+                      <li>
+                        <a class="nav-link" href = "{ % url 'manage_tcertificate' %}"> Add Certificate</a>
+                      </li> -->
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'isei_ceu_approval' %}">CEU Approval</a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sendemailsattachments' %}">Send Emails </a>
+                      </li>
+
+                {% endif %}
+
+<!-- Principal links -->
+                {% if request.user|in_group:"principal"%}
+
+                    <!-- <div class="principal_links" > -->
+                      <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'principal_teachercert' request.user.id %}" > Teacher Certification </a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
+                      </li>
+                      <li class="nav-item" >
+                        <a class="nav-link" href="{% url 'principal_ceu_approval' %}">CEU Reports Review</a>
+                      </li>
+
+                    <!-- </div> -->
+  <!-- teacher links for principal -->
+                    {% if request.user|in_group:"teacher"%}
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle p-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        My Teacher Certification
+                      </a>
+                      <ul class="dropdown-menu bg-ISEIblue4" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item text-light" href="{% url 'teacher_dashboard' request.user.id %}">Teacher Certification </a>
+                        </li>
+                        {% if request.user|application_submitted_tag %}
+                            <li>
+                                <a class="dropdown-item text-light" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
+                            </li>
+                        {% endif %}
+
+                        <li>
+                              <a class="dropdown-item text-light" href="{% url 'account_settings' request.user.id %}">Personal Info</a>
+                        </li>
+                      </ul>
+
+                    </li>
+
+                     {% endif %}
+
+
+                    <li class="nav-item">
+                            <a class="nav-link p-3" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                    </li>
+
+                {% endif %}
+
+                {% if request.user|in_group:"teacher" and not request.user|in_group:"principal"%}
+
+                    <li class="nav-item" >
+                        <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
+                    </li>
+                    {% if request.user|application_submitted_tag %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
+                      </li>
+
+                    <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
+                    </li>
+                    {% endif %}
+                      <li class="nav-item" style ="border-right:solid 1px #fff;">
+                        <a class="nav-link" href="{% url 'account_settings' request.user.id%}">Teacher Info</a>
+                      </li>
+
+                    <li class="nav-item">
+                            <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                    </li>
+
+                {% endif %}
+                {% else %}
+               <!--
+                <li><a href="% url 'login' %}">Login</a></li>
+                <li><a href="" class="p-r-none">Sign Up</a></li>
+                -->
+            {% endif %}
+{% endblock navbar_content %}

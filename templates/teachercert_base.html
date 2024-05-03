@@ -1,0 +1,36 @@
+{# base teacher certification templates #}
+
+
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+        <header>
+            {% include 'teachercert_navbar.html' %}
+        </header>
+{% endblock header %}   
+ 
+    {# The Footer #}
+{% block footer %}
+    <footer class="footer noprint" >
+        {% if user.is_authenticated %}
+        <div class="row ml-3">
+            <div class="col-sm-auto card">
+                <a href="{% static 'appfiles/Hdbk.pdf' %}"> Teacher Certification Handbook </a>
+            </div>
+            <div class="col-sm-auto card">
+                <a class href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
+            </div>
+        </div>
+        {% endif %}
+    </footer>
+    {{ block.super }}
+{% endblock footer %}
+
+</body>
+
+    {% block footer_javascript %}
+
+    {% endblock footer_javascript %}
+
+</html>
+

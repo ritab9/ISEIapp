@@ -62,6 +62,8 @@ class StateField(models.CharField):
         ]
         super().__init__(*args, **kwargs)
 
+class Region(models.Model):
+    name = models.CharField(max_length=25, unique = True)
 
 class Country(models.Model):
     name = models.CharField(max_length=25, unique = True)
@@ -71,7 +73,8 @@ class Country(models.Model):
         ('e', 'Europe'),
         ('n', 'North America'),
     }
-    region = models.CharField(max_length=1, choices=sorted(REGIONS), null=False, blank=False)
+    region2 = models.CharField(max_length=1, choices=sorted(REGIONS), null=False, blank=False)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.code

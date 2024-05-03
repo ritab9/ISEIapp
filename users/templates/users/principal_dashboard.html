@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %} Principal Dashboard {% endblock title %}
+
+
+{% block content %}
+
+<div class="row">
+<!-- Teacher Cert -->
+    <div class = "col">
+<!-- Teacher Certification Status-->
+    <div class="col-sm-10 card card-body">
+        <h6 class="mb-3">
+        <a href="{% url 'principal_teachercert' userID %}">Teacher Certification </a>
+        </h6>
+<!-- Percent of registered teachers -->
+        <div class="mb-3">
+            <p>Number of registered teachers: {{ number_of_teachers }}</p>
+            <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
+            <p> Percent of registered teachers certified:
+                {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
+                    {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
+                    {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
+                    {% else %} <span style="color:green">{{ percent_certified }}%</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+    <!-- Reporting -->
+    <div class="col">
+    <div class="col-sm-10 card card-body">
+        <div class="col-sm-4">
+            <table class="table table-sm table-light">
+                  <thead class="table-light">
+                    <th>2020-2021 Reporting</th>
+					<th>Due Date</th>
+                    <th>Submitted</th>
+                  </thead>
+                  <tbody>
+                  <tr> <td><a href="">Student Reporting</a> </td> <td>August 30, 2020</td> <td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Employee Summary </a></td> <td>August 30, 2020</td> <td><input type="checkbox"></td></tr>
+                  <tr> <td><a href="">Opening Report </a></td> <td>August 30, 2020</td> <td><input type="checkbox"></td></tr>
+                  <tr> <td><a href="">190-Day Report </a></td> <td>August 30, 2020</td><td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Safety and Maintenance</a> </td> <td>August 30, 2020</td><td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Year-end In-service Report</a> </td> <td>June 1, 2021</td><td><input type="checkbox"></td> </tr>
+
+                  </tbody>
+                </table>
+             <table class="table table-sm table-light">
+                  <thead class="table-light">
+                    <th>Delinquent Reporting</th>
+					<th>Due Date</th>
+                    <th>Submitted</th>
+                  </thead>
+                  <tbody>
+                  <tr> <td><a href="">Safety and Maintenance </a></td> <td>August 30, 2019</td><td><input type="checkbox"></td> </tr>
+                  <tr> <td><a href="">Year-end Inservice Report</a> </td> <td>June 1, 2020</td><td><input type="checkbox"></td> </tr>
+                  </tbody>
+                </table>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

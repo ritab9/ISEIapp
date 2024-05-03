@@ -114,7 +114,7 @@ def iseidashboard(request):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal'])
-def principaldashboard(request, userID):
+def principalteachercert(request, userID):
     principal = User.objects.get(id=userID).teacher
 
     teachers = Teacher.objects.filter(school=principal.school, user__is_active=True, user__groups__name__in=['teacher'])
@@ -169,7 +169,7 @@ def principaldashboard(request, userID):
                    reports_to_review=reports_to_review,
                    bc_done= bc_done)
 
-    return render(request, 'teachercert/principal_dashboard.html', context)
+    return render(request, 'teachercert/principal_teachercert.html', context)
 
 
 @login_required(login_url='login')
