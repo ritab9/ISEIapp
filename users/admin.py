@@ -6,10 +6,10 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 # Register your models here.
 
-@admin.register(Country)
+@admin.register(Region)
 class Region(admin.ModelAdmin):
-    list_display = ('name',)
-    list_editable = ('name')
+    list_display = ('id', 'name',)
+    list_editable = ('name',)
 
 @admin.register(Country)
 class Country(admin.ModelAdmin):
