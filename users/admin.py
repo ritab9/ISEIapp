@@ -5,6 +5,12 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 
 # Register your models here.
+
+@admin.register(Country)
+class Region(admin.ModelAdmin):
+    list_display = ('name',)
+    list_editable = ('name')
+
 @admin.register(Country)
 class Country(admin.ModelAdmin):
     list_display = ('name', 'code', 'region')
