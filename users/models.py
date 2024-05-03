@@ -70,12 +70,6 @@ class Region(models.Model):
 class Country(models.Model):
     name = models.CharField(max_length=25, unique = True)
     code = models.CharField(max_length=3, unique = True)
-    REGIONS = {
-        ('a', 'Asia'),
-        ('e', 'Europe'),
-        ('n', 'North America'),
-    }
-    region2 = models.CharField(max_length=1, choices=sorted(REGIONS), null=False, blank=False)
     region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
