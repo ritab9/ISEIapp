@@ -2,8 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from localflavor.us.models import USSocialSecurityNumberField
 from datetime import date
+from django.core.exceptions import ValidationError
 
-
+class TNCounty(models.Model):
+    name = models.CharField(max_length=255)
+    def __str__(self):
+        return self.name
 
 class StateField(models.CharField):
     def __init__(self, *args, **kwargs):
@@ -68,12 +72,13 @@ class Region(models.Model):
         return self.name
 
 class Country(models.Model):
-    name = models.CharField(max_length=25, unique = True)
+    name = models.CharField(max_length=100, unique = True)
     code = models.CharField(max_length=3, unique = True)
     region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
+    ordering = ['name']
 
     def __str__(self):
-        return self.code
+        return self.name
 
 
 class School(models.Model):
@@ -85,6 +90,11 @@ class School(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+    def save(self, *args, **kwargs):
+        if not self.address:
+            raise ValidationError("Address is required for this school.")
+        super(School, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -194,7 +204,6 @@ class Address(models.Model):
     address_1 = models.CharField(verbose_name="address", max_length=128)
     address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
     city= models.CharField(verbose_name="city", max_length=64, default="")
-    state_old = models.CharField(verbose_name="state or province", max_length=4, default="")
     state_us = StateField(verbose_name="US State", blank=True, null=True)
     zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
     country = models.ForeignKey(Country, on_delete=models.PROTECT)

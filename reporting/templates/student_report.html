@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %} Student Report {% endblock title %}
+
+
+{% block content %}
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="scrollable-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            {% for field in formset.forms.0.visible_fields %}
+                                <th>{{ field.label }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                                <tr>
+                                    {% for field in form %}
+                                        <td>{{ field }}
+                                         {% if field.errors %}
+                                            <div class="text-danger">
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                {% if form.non_field_errors %}
+                                <tr>
+                                    <td colspan="{{ form|length }}">
+                                        <div class="text-danger">
+                                            {{ form.non_field_errors }}
+                                        </div>
+                                    </td>
+                                </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <input type="submit" name="save_and_add_more" class="btn btn-secondary" value="Next">
+
+            <input type="submit" name="submit" class="btn btn-primary" value="Submit">
+        </form>
+    </div>
+
+
+    <script>
+    // To make TN_county available only for TN schools
+
+    $(document).ready(function() {
+    // Listen to any change on state fields
+        $(document).on('change', 'select[name$=us_state]', function() {
+        // Get the TN county field in the same form
+            var tn_county_field = $(this).closest('tr').find('select[name$=TN_county]');
+        // Get the Country select field in the same form
+            var country_field = $(this).closest('tr').find('select[name$=country]');
+
+            if ( country_field.val()!==4 && $(this).val()) {  // if any value (not empty) is selected for US state
+                country_field.val(4);  // set the country field to USA
+                country_field.on('mousedown keydown', function(e) {
+                e.preventDefault();}); // Prevent mouse and keyboard interactions
+            }
+
+            if ( !$(this).val()) {
+                country_field.off('mousedown keydown');  // Restore mouse and keyboard interactions
+            }
+
+            if ($(this).val() === 'TN') {
+                tn_county_field.prop('disabled', false);
+            } else {
+                tn_county_field.prop('disabled', true);
+                tn_county_field.val(''); // You might also want to reset the county select box
+            }
+        });
+
+        // Initialize the TN county field state on page load
+        $('select[name$=us_state]').each(function () {
+            $(this).trigger('change');
+        });
+    });
+
+    </script>
+
+{% endblock %}

@@ -5,16 +5,23 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 
 # Register your models here.
+class CountryInline(admin.TabularInline):
+    model = Country
 
 @admin.register(Region)
 class Region(admin.ModelAdmin):
-    list_display = ('id', 'name',)
-    list_editable = ('name',)
+    inlines = [CountryInline]
+    list_display = ('name',)
 
 @admin.register(Country)
 class Country(admin.ModelAdmin):
     list_display = ('name', 'code', 'region')
     list_editable = ('code', 'region')
+    search_fields = ('name',)
+    list_filter = ('region',)
+
+
+admin.site.register(TNCounty)
 
 class SchoolAddressInLine(admin.StackedInline):
     model = Address
@@ -25,8 +32,8 @@ class SchoolAddressInLine(admin.StackedInline):
 @admin.register(School)
 class School(admin.ModelAdmin):
     inlines = [SchoolAddressInLine,]
-    list_display = ('id', 'name', 'abbreviation', 'foundation')
-    list_editable = ('abbreviation', 'foundation')
+    list_display = ('name', 'abbreviation', )
+    list_editable = ('abbreviation',)
 
 
 

@@ -134,7 +134,7 @@
         <div class="col-3 addresslist" >
             <div class="col-sm">
                 <p> <b>Address:</b> {{ address.address_1}} {{ address.address_2}}</p>
-                <p>{{ address.city }}, {{ address.state_old }}, {{ address.zip_code }}, {{ address.country}}</p>
+                <p>{{ address.city }}, {{ address.state_us }}, {{ address.zip_code }}, {{ address.country}}</p>
                 {% if address.address_1 %}
                     <input type="button" class="btn btn-sm btn-ISEIblue4" id="showaddress"  value ="Update Address">
                 {% else %}
@@ -152,7 +152,7 @@
                         {{ address_form.city|as_crispy_field }}
                     </div>
                     <div class="col-sm">
-                         {{ address_form.state_old|as_crispy_field }}
+                         {{ address_form.state_us|as_crispy_field }}
                          {{ address_form.zip_code|as_crispy_field }}
                          {{ address_form.country|as_crispy_field }}<br>
                         <input class="btn btn-sm btn-ISEIblue4 text-light" type="submit" name="address" value="Save Address" >

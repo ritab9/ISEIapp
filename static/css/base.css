@@ -5,7 +5,9 @@
         visibility: hidden;
     }
 }
-
+.scrollable-table {
+    overflow-x: auto;
+}
 
 /* used with JS to show/hide elements in report table*/
 .approvaltable .table{}

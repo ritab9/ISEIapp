@@ -111,9 +111,6 @@ class CEUReport(models.Model):
         return self.teacher.name() + ", " + self.school_year.name + " CEU Report"
 
 
-
-
-
 class CEUInstance(models.Model):
     # report contains teacher, school-year and summary
 

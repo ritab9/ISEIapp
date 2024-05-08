@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 from django.db.models import Q
 from datetime import timedelta
 
@@ -11,7 +13,8 @@ from .utils import is_in_group
 from .filters import *
 from .myfunctions import *
 from emailing.teacher_cert_functions import email_registered_user
-from teachercert.models import Teacher
+from teachercert.models import Teacher, SchoolYear
+from reporting.models import ReportDueDate
 
 
 # authentication functions
@@ -56,8 +59,8 @@ def loginpage(request):
             else:
                 if request.user.is_active == True:
                     if is_in_group(request.user, 'principal'):
-                        return redirect('principal_teachercert', user.id)
-                        #return redirect('principal_dashboard', user.id)
+                        #return redirect('principal_teachercert', user.id)
+                        return redirect('principal_dashboard', user.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -184,37 +187,46 @@ def accountsettings(request, userID):
 @allowed_users(allowed_roles=['principal'])
 def principal_dashboard(request, userID):
     principal = User.objects.get(id=userID).teacher
+    school=principal.school
+    school_year=SchoolYear.objects.get(current_school_year=True)
 
-    teachers = Teacher.objects.filter(school=principal.school, user__is_active=True, user__groups__name__in=['teacher'])
+    teachers = Teacher.objects.filter(school=school, user__is_active=True, user__groups__name__in=['teacher'])
 
     # Teacher Certificates Section
     number_of_teachers = teachers.count()
-    # number_of_academic_teachers = teachers.filter(academic=True).count()
     tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False)
-
     # Valid certificates and certified teachers
     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers).order_by('teacher')
     certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct()
     number_of_certified_teachers = certified_teachers.count()
-    # number_of_certified_academic_teachers = certified_teachers.filter(academic=True).count()
-
-    # expired certificates and teachers with expired certificates
-    #expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in=teachers).order_by(
-    #    'teacher')
-    #expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
-    #number_of_expired_teachers = expired_teachers.count()
-    # not certified teachers
-    #non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates))
-    #number_of_non_certified_teachers = non_certified_teachers.count()
-
     percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
 
     #today = date.today()
     #in_six_months = today + timedelta(183)
     #a_year_ago = today - timedelta(365)
 
+    # Get all ReportingDueDate objects for this region
+    report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region)
+    for report_dd in report_due_dates:
+        if report_dd.report.name == 'Student Enrollment Report':
+            report_dd.url = reverse('student_report', args=[school.id, school_year.id])
+        elif report_dd.report.name == 'Opening Data Report':
+            report_dd.url = reverse('opening_report', args=[school.id, school_year.id])
+        elif report_dd.report.name == 'Employee Data Report':
+            report_dd.url = reverse('employee_report', args=[school.id, school_year.id])
+        elif report_dd.report.name == '190 - Day Report':
+            report_dd.url = reverse('day190_report', args=[school.id, school_year.id])
+        elif report_dd.report.name == 'In-Service Year End Report':
+            report_dd.url = reverse('inservice_report', args=[school.id, school_year.id])
+        elif report_dd.report.name == 'Annual Progress Report (APR)':
+            report_dd.url = reverse('ap_report', args=[school.id, school_year.id])
+        else:
+            pass
+            #raise ValueError(f'Invalid report name: {report_dd.report.name}')
+
 
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers, userID = userID,
+                    school = principal.school, report_due_dates = report_due_dates,
                   )
 
     return render(request, 'users/principal_dashboard.html', context)

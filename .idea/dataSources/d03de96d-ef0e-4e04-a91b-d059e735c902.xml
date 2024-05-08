@@ -51,5 +51,136 @@
       <StateNumber>1</StateNumber>
       <OwnerName>postgres</OwnerName>
     </tablespace>
+    <access-method id="14" parent="2" name="brin">
+      <Comment>block range index (BRIN) access method</Comment>
+      <ObjectId>3580</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Type>index</Type>
+      <HandlerId>335</HandlerId>
+      <HandlerName>brinhandler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <access-method id="15" parent="2" name="btree">
+      <Comment>b-tree index access method</Comment>
+      <ObjectId>403</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Type>index</Type>
+      <HandlerId>330</HandlerId>
+      <HandlerName>bthandler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <access-method id="16" parent="2" name="gin">
+      <Comment>GIN index access method</Comment>
+      <ObjectId>2742</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Type>index</Type>
+      <HandlerId>333</HandlerId>
+      <HandlerName>ginhandler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <access-method id="17" parent="2" name="gist">
+      <Comment>GiST index access method</Comment>
+      <ObjectId>783</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Type>index</Type>
+      <HandlerId>332</HandlerId>
+      <HandlerName>gisthandler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <access-method id="18" parent="2" name="hash">
+      <Comment>hash index access method</Comment>
+      <ObjectId>405</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Type>index</Type>
+      <HandlerId>331</HandlerId>
+      <HandlerName>hashhandler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <access-method id="19" parent="2" name="heap">
+      <Comment>heap table access method</Comment>
+      <ObjectId>2</ObjectId>
+      <StateNumber>1</StateNumber>
+      <HandlerId>3</HandlerId>
+      <HandlerName>heap_tableam_handler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <access-method id="20" parent="2" name="spgist">
+      <Comment>SP-GiST index access method</Comment>
+      <ObjectId>4000</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Type>index</Type>
+      <HandlerId>334</HandlerId>
+      <HandlerName>spghandler</HandlerName>
+      <HandlerParentName>pg_catalog</HandlerParentName>
+    </access-method>
+    <extension id="21" parent="2" name="adminpack">
+      <Comment>administrative functions for PostgreSQL</Comment>
+      <ObjectId>16384</ObjectId>
+      <StateNumber>486</StateNumber>
+      <Version>2.1</Version>
+      <ExtSchemaId>11</ExtSchemaId>
+      <ExtSchemaName>pg_catalog</ExtSchemaName>
+    </extension>
+    <extension id="22" parent="2" name="plpgsql">
+      <Comment>PL/pgSQL procedural language</Comment>
+      <ObjectId>13428</ObjectId>
+      <StateNumber>439</StateNumber>
+      <Version>1.0</Version>
+      <ExtSchemaId>11</ExtSchemaId>
+      <ExtSchemaName>pg_catalog</ExtSchemaName>
+    </extension>
+    <language id="23" parent="2" name="c">
+      <Comment>dynamically-loaded C functions</Comment>
+      <ObjectId>13</ObjectId>
+      <StateNumber>1</StateNumber>
+      <ValidatorName>fmgr_c_validator</ValidatorName>
+      <ValidatorSchema>pg_catalog</ValidatorSchema>
+    </language>
+    <language id="24" parent="2" name="internal">
+      <Comment>built-in functions</Comment>
+      <ObjectId>12</ObjectId>
+      <StateNumber>1</StateNumber>
+      <ValidatorName>fmgr_internal_validator</ValidatorName>
+      <ValidatorSchema>pg_catalog</ValidatorSchema>
+    </language>
+    <language id="25" parent="2" name="plpgsql">
+      <Comment>PL/pgSQL procedural language</Comment>
+      <HandlerName>plpgsql_call_handler</HandlerName>
+      <HandlerSchema>pg_catalog</HandlerSchema>
+      <InlineHandlerName>plpgsql_inline_handler</InlineHandlerName>
+      <InlineHandlerSchema>pg_catalog</InlineHandlerSchema>
+      <ObjectId>13432</ObjectId>
+      <StateNumber>439</StateNumber>
+      <Trusted>1</Trusted>
+      <ValidatorName>plpgsql_validator</ValidatorName>
+      <ValidatorSchema>pg_catalog</ValidatorSchema>
+    </language>
+    <language id="26" parent="2" name="sql">
+      <Comment>SQL-language functions</Comment>
+      <ObjectId>14</ObjectId>
+      <StateNumber>1</StateNumber>
+      <Trusted>1</Trusted>
+      <ValidatorName>fmgr_sql_validator</ValidatorName>
+      <ValidatorSchema>pg_catalog</ValidatorSchema>
+    </language>
+    <schema id="27" parent="2" name="information_schema">
+      <ObjectId>13158</ObjectId>
+      <StateNumber>293</StateNumber>
+      <OwnerName>postgres</OwnerName>
+    </schema>
+    <schema id="28" parent="2" name="pg_catalog">
+      <Comment>system catalog schema</Comment>
+      <ObjectId>11</ObjectId>
+      <StateNumber>286</StateNumber>
+      <OwnerName>postgres</OwnerName>
+    </schema>
+    <schema id="29" parent="2" name="public">
+      <Comment>standard public schema</Comment>
+      <Current>1</Current>
+      <IntrospectionStateNumber>488</IntrospectionStateNumber>
+      <ObjectId>2200</ObjectId>
+      <StateNumber>287</StateNumber>
+      <OwnerName>postgres</OwnerName>
+    </schema>
   </database-model>
 </dataSource>
