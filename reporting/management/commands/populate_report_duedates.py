@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.dateparse import parse_date
 from users.models import Region
-from reporting.models import Report, ReportDueDate
+from reporting.models import ReportType, ReportDueDate
 
 
 class Command(BaseCommand):
@@ -37,12 +37,12 @@ class Command(BaseCommand):
         }
 
         report_names = {report for reports in data.values() for report in reports.keys()}
-        report_objs = {report: Report.objects.get_or_create(name=report)[0] for report in report_names}
+        report_objs = {report: ReportType.objects.get_or_create(name=report)[0] for report in report_names}
 
         for region_name, reports in data.items():
             region = Region.objects.get(name=region_name)
             for report_name, due_date in reports.items():
-                report, _ = Report.objects.get_or_create(name=report_name)
+                report, _ = ReportType.objects.get_or_create(name=report_name)
                 due_date = parse_date(due_date)
                 ReportDueDate.objects.create(region=region, report=report, due_date=due_date)
 

@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.db.models import Q
 from datetime import timedelta
@@ -14,7 +15,7 @@ from .filters import *
 from .myfunctions import *
 from emailing.teacher_cert_functions import email_registered_user
 from teachercert.models import Teacher, SchoolYear
-from reporting.models import ReportDueDate
+from reporting.models import ReportDueDate, AnnualReport
 
 
 # authentication functions
@@ -57,10 +58,10 @@ def loginpage(request):
             if request.GET.get('next'):
                 return redirect(request.GET.get('next'))
             else:
-                if request.user.is_active == True:
+                if request.user.is_active:
                     if is_in_group(request.user, 'principal'):
-                        return redirect('principal_teachercert', user.id)
-                        #return redirect('principal_dashboard', user.id)
+                        #return redirect('principal_teachercert', user.id)
+                        return redirect('principal_dashboard', user.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -206,19 +207,27 @@ def principal_dashboard(request, userID):
     #a_year_ago = today - timedelta(365)
 
     # Get all ReportingDueDate objects for this region
-    report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region)
+    report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('-due_date','report_type')
     for report_dd in report_due_dates:
-        if report_dd.report.name == 'Student Enrollment Report':
+        try:
+            annual_report = AnnualReport.objects.get(school=school, school_year=school_year,
+                                              report_type=report_dd.report_type)
+            report_dd.submit_date = annual_report.submit_date
+            report_dd.last_update_date = annual_report.last_update_date
+        except ObjectDoesNotExist:
+            report_dd.submit_date = None
+
+        if report_dd.report_type.name == 'Student Enrollment Report':
             report_dd.url = reverse('student_report', args=[school.id, school_year.id])
-        elif report_dd.report.name == 'Opening Data Report':
+        elif report_dd.report_type.name == 'Opening Data Report':
             report_dd.url = reverse('opening_report', args=[school.id, school_year.id])
-        elif report_dd.report.name == 'Employee Data Report':
+        elif report_dd.report_type.name == 'Employee Data Report':
             report_dd.url = reverse('employee_report', args=[school.id, school_year.id])
-        elif report_dd.report.name == '190 - Day Report':
+        elif report_dd.report_type.name == '190 - Day Report':
             report_dd.url = reverse('day190_report', args=[school.id, school_year.id])
-        elif report_dd.report.name == 'In-Service Year End Report':
+        elif report_dd.report_type.name == 'In-Service Year End Report':
             report_dd.url = reverse('inservice_report', args=[school.id, school_year.id])
-        elif report_dd.report.name == 'Annual Progress Report (APR)':
+        elif report_dd.report_type.name == 'Annual Progress Report (APR)':
             report_dd.url = reverse('ap_report', args=[school.id, school_year.id])
         else:
             pass

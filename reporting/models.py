@@ -10,20 +10,20 @@ from django.core.exceptions import ValidationError
 from django import forms
 
 
-class Report(models.Model):
+class ReportType(models.Model):
     name = models.CharField(max_length=255)
     def __str__(self):
         return self.name
 
 class ReportDueDate(models.Model):
     due_date = models.DateField()
-    report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    report_type = models.ForeignKey(ReportType, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     opening_report = models.BooleanField(default=False)
     class Meta:
         verbose_name_plural = "Report due dates"
     def __str__(self):
-        return self.region.name +", "+ self.report.name
+        return self.region.name +", "+ self.report_type.name
     def get_actual_due_date(self):
         # Fetch the active school year
         current_year = SchoolYear.objects.get(current_school_year=True)
@@ -45,10 +45,12 @@ class ReportDueDate(models.Model):
 class AnnualReport(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
-    report = models.ForeignKey(Report, on_delete=models.CASCADE, null=True, blank=True)
-    unique_together = (('school', 'school_year',report),)
+    report_type = models.ForeignKey(ReportType, on_delete=models.CASCADE, null=True, blank=True)
+    unique_together = (('school', 'school_year', report_type),)
+    submit_date = models.DateField(null=True, blank=True)
+    last_update_date = models.DateField(null=True, blank=True)
     def __str__(self):
-        return self.school.name + "," + self.school_year.name + ","+self.report.name
+        return self.school.name + "," + self.school_year.name + ","+self.report_type.name
 
 
 class Student(models.Model):
@@ -59,8 +61,8 @@ class Student(models.Model):
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
     birth_date = models.DateField()
     #school = models.ForeignKey(School, on_delete=models.CASCADE)
-    baptized = models.BooleanField(null=True)
-    is_at_least_one_parent_sda = models.BooleanField(null=True, verbose_name="Parent SDA")
+    baptized = models.BooleanField(null=True, default=False)
+    is_at_least_one_parent_sda = models.BooleanField(null=True, verbose_name="Parent SDA", default=False)
 
     STATUS_CHOICES = [
         ('enrolled', 'Enrolled'),

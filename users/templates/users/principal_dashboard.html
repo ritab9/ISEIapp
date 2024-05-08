@@ -37,13 +37,17 @@
                             <tr>
                                 <th scope="col">Report</th>
                                 <th scope="col">Due Date</th>
+                                <th scope="col">Submitted On</th>
+                                <th scope="col">Last Update</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for report_dd in report_due_dates %}
                                 <tr>
-                                    <td><a href="{{ report_dd.url }}"> {{report_dd.report.name}} </a></td>
+                                    <td><a href="{{ report_dd.url }}"> {{report_dd.report_type.name}} </a></td>
                                     <td>{{report_dd.get_actual_due_date}}</td>
+                                    <td>{{ report_dd.submit_date|default_if_none:"-" }}</td>
+                                    <td>{{ report_dd.last_update_date|default_if_none:"-" }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -52,41 +56,7 @@
             {% endif %}
     </div>
 
-    <!-- Reporting
-    <div class="col">
-    <div class="col-sm-10 card card-body">
-        <div class="col-sm-4">
-            <table class="table table-sm table-light">
-                  <thead class="table-light">
-                    <th>2020-2021 Reporting</th>
-					<th>Due Date</th>
-                    <th>Submitted</th>
-                  </thead>
-                  <tbody>
-                  <tr> <td><a href="">Student Reporting</a> </td> <td>August 30, 2020</td> <td><input type="checkbox"></td> </tr>
-                  <tr> <td><a href="">Employee Summary </a></td> <td>August 30, 2020</td> <td><input type="checkbox"></td></tr>
-                  <tr> <td><a href="">Opening Report </a></td> <td>August 30, 2020</td> <td><input type="checkbox"></td></tr>
-                  <tr> <td><a href="">190-Day Report </a></td> <td>August 30, 2020</td><td><input type="checkbox"></td> </tr>
-                  <tr> <td><a href="">Safety and Maintenance</a> </td> <td>August 30, 2020</td><td><input type="checkbox"></td> </tr>
-                  <tr> <td><a href="">Year-end In-service Report</a> </td> <td>June 1, 2021</td><td><input type="checkbox"></td> </tr>
 
-                  </tbody>
-                </table>
-             <table class="table table-sm table-light">
-                  <thead class="table-light">
-                    <th>Delinquent Reporting</th>
-					<th>Due Date</th>
-                    <th>Submitted</th>
-                  </thead>
-                  <tbody>
-                  <tr> <td><a href="">Safety and Maintenance </a></td> <td>August 30, 2019</td><td><input type="checkbox"></td> </tr>
-                  <tr> <td><a href="">Year-end Inservice Report</a> </td> <td>June 1, 2020</td><td><input type="checkbox"></td> </tr>
-                  </tbody>
-                </table>
-        </div>
-    </div>
-</div>
--->
 </div>
 
 {% endblock %}
