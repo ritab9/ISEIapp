@@ -60,9 +60,14 @@ class Student(models.Model):
     TN_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
     birth_date = models.DateField()
-    #school = models.ForeignKey(School, on_delete=models.CASCADE)
-    baptized = models.BooleanField(null=True, default=False)
-    is_at_least_one_parent_sda = models.BooleanField(null=True, verbose_name="Parent SDA", default=False)
+    STATUS_CHOICES = [
+        ('Y', 'Yes'),
+        ('N', 'No'),
+        ('U', 'Unknown'),
+    ]
+
+    baptized = models.CharField(max_length=1, choices=STATUS_CHOICES, default='U')
+    parent_sda = models.CharField(max_length=1, choices=STATUS_CHOICES, default='U', verbose_name="Parent SDA")
 
     STATUS_CHOICES = [
         ('enrolled', 'Enrolled'),
@@ -97,6 +102,7 @@ class Student(models.Model):
         ('on-site', 'On-Site'),
         ('satelite', 'Satelite'),
         ('distance-learning', 'Distance-Learning')
+
     ]
     location = models.CharField(max_length=20, choices=LOCATION_CHOICES, default='on-site')
 

@@ -3,6 +3,9 @@ from reporting.models import Student
 from django.core.exceptions import ValidationError
 
 
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
+
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
@@ -14,8 +17,8 @@ class StudentForm(forms.ModelForm):
             'TN_county': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'country': forms.Select(attrs={'style': 'max-width: 100px;'}),  # forms.Select for foreign key
             'birth_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
-            'baptized': forms.CheckboxInput(),
-            'is_at_least_one_parent_sda': forms.CheckboxInput(),
+            'baptized': forms.Select(attrs={'style': 'max-width: 100px;'}),
+            'parent_sda': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'status': forms.Select(attrs={'style': 'max-width: 100px;'}),  # forms.Select for choices field
             'grade_level': forms.Select(attrs={'style': 'max-width: 50px;'}),
             'registration_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
@@ -29,7 +32,7 @@ class StudentForm(forms.ModelForm):
             student_country = cleaned_data.get('country')
             us_state = cleaned_data.get('us_state')
             if student_country:
-                if student_country.code == 'USA' and not us_state:
+                if student_country.code == 'US' and not us_state:
                     self.add_error('us_state', ValidationError("required for US address"))
         if 'TN_county' in self.fields:
             us_state = cleaned_data.get('us_state')

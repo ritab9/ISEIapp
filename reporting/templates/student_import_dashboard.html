@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} Student Import Dashboard {% endblock title %}
+
+
+{% block content %}
+
+<!-- Info card -->
+    <div class=" card card-body">
+        <div class="col pl-2">
+            <p>Particular attention is necessary when importing data into the system. </p>
+            Fields that use predefined choices, should be populated using the specific values provided.
+                <ul>
+                    <li><b>baptized:</b> This field indicates whether a student has been baptized. Acceptable values are <b>Y</b> (Yes), <b>N</b> (No). If nothing is entered the <b>Unknown</b> value will be default.</li>
+                    <li><b>parent_sda:</b> This field reflects is at least one parent of the student is Seventh-day Adventist. Valid inputs are <b>Y</b> (Yes), <b>N</b> (No). If nothing is entered the <b>Unknown</b> value will be default.</li>
+                    <li><b>status:</b> This field represents the enrollment status of a student. Acceptable values are <b>enrolled</b>, <b>graduated</b>, and <b>did_not_return</b>. Default value is <b>enrolled</b>.</li>
+                    <li><b>grade_level</b>: This field denotes the student's grade level. The valid inputs range from <b>K</b> to <b>12</b>.</li>
+                    <li><b>us_state</b>: When entering data for U.S. states, please use the appropriate two-letter state code. For example, use <b>NY</b> for New York, <b>CA</b> for California, etc.</li>
+                    <li><b>country</b>: For country entries, use the corresponding country codes. For example, <b>US</b> for the United States, <b>GB</b> for the United Kingdom, <b>FR</b> for France, etc.</li>
+                </ul>
+
+            <p>Remember that our system is case-sensitive, so ensure to input the values and location codes exactly as mentioned above. Incorrect inputs or deviations from the accepted values could prevent the successful completion of data imports. Please check the imported data after completion.</p>
+
+            <ul>
+            <li><b>Step 1:</b> Download the template Excel file that contains the column heading needed for student import.
+            <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'student_excel_download' %}">Download Template</a>
+            </li>
+            <li><b>Step 2:</b> Fill out the data:
+                <ul>
+                    <li> Required fields: <b>name, address, country, birth_date, grade_level, registration_date </b></li>
+                    <li><b>us_state</b> is required for US addresses, and TN_county is required for TN addresses if the school is also in TN</li>
+                    <li> <b>baptized, parent_sda</b> will be <b>Unknown</b> if left blank </li>
+                    <li> <b>status</b> will be <b>Enrolled</b> if left blank </li>
+                    <li><b>location</b> will be <b>on-site</b> if left blank</li>
+                </ul>
+            </li>
+            <li><b>Step 3:</b> Upload the Excel file containing student data.
+                <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'student_import_data' arID=arID %}">Import Data</a>
+
+            </li>
+            </ul>
+            <p>Should you encounter any issues or require further assistance with the data import process, please don't hesitate to reach out to our support.</p>
+        </div>
+    </div>
+
+{% endblock %}
