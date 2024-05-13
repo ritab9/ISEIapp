@@ -60,8 +60,8 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal'):
-                        #return redirect('principal_teachercert', user.id)
-                        return redirect('principal_dashboard', user.id)
+                        return redirect('principal_teachercert', user.id)
+                        #return redirect('principal_dashboard', user.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
