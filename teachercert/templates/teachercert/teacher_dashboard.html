@@ -5,28 +5,30 @@
 
 {% block title %} Teacher {% endblock title %}
 {% block content %}
-
-{% if tcertificate %}
+    {% load static %}
+    {% load group_tags %}
 
 <!-- Teacher Certificates -->
     <div class="">
         <div class = "row">
             <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)
-            <p>{% if highest_degree %}{{ highest_degree }}{% endif %}</p>
+                <p>{% if highest_degree %}{{ highest_degree }}{% endif %}</p>
             </div>
             <div  class = "noprint" style = "text-align: right">
                 <button class='btn-ISEIblue2 mt-3 mr-3' onclick="window.print()">Print Page</button>
             </div>
+            {% if request.user|in_group:"staff"%}
+                <div  class = "noprint" style = "text-align: right">
+                    <button class="btn btn-sm btn-outline-ISEIblue4 mt-3" id="email-button">Resend Teacher Registration Info</button>
+                </div>
+            {% endif %}
         </div>
 
         <div class = "card card-body mb-3">
             <div class="col">
                 {% if teacher.user.id == request.user.id %}
-                    <!-- <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'teachercert_application' teacher.id  %}" style="float: right;">Renew </a> -->
                     <a class=" btn btn-sm btn-ISEIblue4" href="{% url 'account_settings' teacher.user.id  %}" style="float: right;">Renew </a>
-                <!-- { % elif request.user.id %}
-                    <a class=" btn btn-sm btn-ISEIblue4" href="{ % url 'account_settings' teacher.user.id  %}" style="float: right;">Nothing </a> -->
-                {% endif %}
+                 {% endif %}
             </div>
 <!-- Certificate Info -->
             <h6><b>{% if tcertificate.nad %}NAD certificate:{% endif %}{{ tcertificate.certification_type.name }}</b></h6>
@@ -38,9 +40,10 @@
                     <ul>{% for e in tcertificate.tendorsement_set.all %}
                         <li>{{ e }},  {{ e.range }} </li>
                     {% endfor %} </ul>
-                    <p><h6>Valid:</h6>
+                    <div><h6>Valid:</h6>
                     {{ tcertificate.issue_date }} - {% if tcertificate.renewal_date < today %}<span style="color:red">{{ tcertificate.renewal_date}}</span> {% else %} {{ tcertificate.renewal_date }}{% endif %}
-                </p></div>
+                    </div>
+                </div>
 
             {% if not tcertificate.nad %}
                 {% if not checklist %}
@@ -82,7 +85,7 @@
 <!-- Renewal requirements and notes -->
             <div class="row mb-3">
                 <div class="col">
-                <p><h6> Renewal Requirements:</h6> {{ tcertificate.renewal_requirements }}</p>
+                    <div><h6> Renewal Requirements:</h6> {{ tcertificate.renewal_requirements }}</div>>
                     {% if tcertificate.public_note %}
                         <p><b>Note:</b> {{ tcertificate.public_note }}</p>
                     {% endif %}
@@ -93,70 +96,70 @@
              <div class="row mb-3">
 <!-- CEU Reports with this certificate -->
                 <div class="col col-sm">
-                <h6><b>CEU Reports Submitted</b></h6>
-                {% if tcertificate.teacher.ceureport_set.all %}
-                    <table class="table">
-                        <tr><th>School Year</th><th>Status</th><th></th></tr>
+                    <h6><b>CEU Reports Submitted</b></h6>
+                    {% if tcertificate.teacher.ceureport_set.all %}
+                        <table class="table">
+                            <tr><th>School Year</th><th>Status</th><th></th></tr>
 
-                        {% for p in tcertificate.teacher.ceureport_set.all %}
-                            {% if not p.reviewed_at or p.reviewed_at > tcertificate.issue_date %}
-                            <tr>
-                                    {% if p.isei_reviewed == 'a' %}
-                                        <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
-                                        <td>{{ p.approved_ceu }} CEUs approved</td>
-                                    {% elif p.principal_reviewed == 'a' %}
-                                        <td><a class="nav-link" href="{% url 'CEUreports'%}">{{ p.school_year}}</a> </td>
-                                        <td>ISEI approval pending</td>
-                                        {% if p.approved_ceu > 0 %}
-                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
-                                        {% endif %}
-                                    {% elif p.date_submitted %}
-                                        <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
-                                        <td>Principal Approval Pending</td>
-                                        {% if p.approved_ceu > 0 %}
-                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
-                                        {% endif %}
-                                    {% elif p.isei_reviewed == 'd'%}
-                                        <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
-                                        <td>Returned by ISEI: CEU report not complete.
+                            {% for p in tcertificate.teacher.ceureport_set.all %}
+                                {% if not p.reviewed_at or p.reviewed_at > tcertificate.issue_date %}
+                                <tr>
+                                        {% if p.isei_reviewed == 'a' %}
+                                            <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
+                                            <td>{{ p.approved_ceu }} CEUs approved</td>
+                                        {% elif p.principal_reviewed == 'a' %}
+                                            <td><a class="nav-link" href="{% url 'CEUreports'%}">{{ p.school_year}}</a> </td>
+                                            <td>ISEI approval pending</td>
+                                            {% if p.approved_ceu > 0 %}
+                                                <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                            {% endif %}
+                                        {% elif p.date_submitted %}
+                                            <td><a class="nav-link" href="{% url 'myCEUdashboard' teacher.user.id %}">{{ p.school_year}}</a> </td>
+                                            <td>Principal Approval Pending</td>
+                                            {% if p.approved_ceu > 0 %}
+                                                <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                            {% endif %}
+                                        {% elif p.isei_reviewed == 'd'%}
+                                            <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
+                                            <td>Returned by ISEI: CEU report not complete.
+                                                <div class="spanred"> Please resubmit. </div></td>
+                                            {% if p.approved_ceu > 0 %}
+                                                <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                            {% endif %}
+                                        {% elif p.principal_reviewed == 'd'%}
+                                            <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
+                                            <td>Returned by principal: CEU report not complete.
                                             <div class="spanred"> Please resubmit. </div></td>
-                                        {% if p.approved_ceu > 0 %}
-                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                            {% if p.approved_ceu > 0 %}
+                                                <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                            {% endif %}
+                                        {% else %}
+                                            <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
+                                            <td>Not submitted</td>
+                                            {% if p.approved_ceu > 0 %}
+                                                <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
+                                            {% endif %}
                                         {% endif %}
-                                    {% elif p.principal_reviewed == 'd'%}
-                                        <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
-                                        <td>Returned by principal: CEU report not complete.
-                                        <div class="spanred"> Please resubmit. </div></td>
-                                        {% if p.approved_ceu > 0 %}
-                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
-                                        {% endif %}
-                                    {% else %}
-                                        <td><a class="nav-link" href="{% url 'create_ceu' p.id %}">{{ p.school_year}}</a> </td>
-                                        <td>Not submitted</td>
-                                        {% if p.approved_ceu > 0 %}
-                                            <td>{{ p.approved_ceu }} CEUs pre-approved (ISEI Workshop)</td>
-                                        {% endif %}
-                                    {% endif %}
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </table>
-                {% else %}
-                    No CEU Reports have been submitted yet for this certificate's renewal.
-                {% endif %}
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        No CEU Reports have been submitted yet for this certificate's renewal.
+                    {% endif %}
                 </div>
 
     <!-- Academic classes with this certificate -->
 
-                    <div class="col col-sm">
+                <div class="col col-sm">
                         <h6><b>Academic Courses Completed</b></h6>
                     {% if tcertificate.teacher.academicclass_set.all  %}
                         <table class="table table-sm">
-                        <tr>
-                            <th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th>
-                        </tr>
+                            <tr>
+                                <th>Class Name</th><th>Credits</th><th>Date Completed</th><th>Transcript status</th>
+                            </tr>
 
-                        {% for a in tcertificate.teacher.academicclass_set.all %}
+                            {% for a in tcertificate.teacher.academicclass_set.all %}
                             {% if a.date_completed > tcertificate.issue_date %}
                             <tr> <td><a class="nav-link" href="{% url 'my_academic_classes' teacher.user.id %}"> {{a.name}}</a></td><td>{{ a.credits }}</td><td>{{a.date_completed}}</td>
                                 {% if a.transcript_received %}
@@ -171,11 +174,11 @@
                             </tr>
                                 {% endif %}
                              {% endfor %}
-                     </table>
+                        </table>
                     {% else %}
                         No Academic Courses have been submitted yet for this certificate's renewal.
                     {% endif %}
-                    </div>
+            </div>
             </div>
  {% endif %}
 
@@ -183,7 +186,6 @@
 
     </div>
 
-{% endif %}
 
 {% if not certification_status %}
     {% if request.user|in_group:"principal" or request.user|in_group:"staff" %}
@@ -284,4 +286,32 @@
             {% endif %}
     {% endif %}
 
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('email-button').addEventListener('click', function() {
+
+            let teacher = {{ teacher.id }};
+            let url = `{% url 'email_registered_user_view' teacher.id %}`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 'teacher': teacher })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
+
+
 {% endblock %}
+
+
+=

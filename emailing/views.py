@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from users.decorators import unauthenticated_user, allowed_users
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.core import mail
@@ -14,6 +14,9 @@ from django.conf import settings
 
 from .forms import *
 from emailing.filters import UserFilter
+
+from django.views.decorators.csrf import csrf_exempt
+from .teacher_cert_functions import email_registered_user
 
 #send an email to EMAIL_HOST_USER, including message, optional attachment, sender name and email
 @login_required(login_url='login')
@@ -48,7 +51,6 @@ def ContactISEI(request, userID):
 
         return render(request, 'sendemailsattachments.html',
                       {'email_form': form, 'error_message': 'Unable to send email. Please try again later'})
-
 
 
 
@@ -104,3 +106,13 @@ def SendEmailsAttachments(request):
         return render(request, 'sendemailsattachments.html',
                       {'email_form': form,
                        'error_message': 'Attachment too big or corrupt', })
+
+@csrf_exempt
+def email_registered_user_view(request, teacherID):
+    if request.method == 'POST':
+        teacher = Teacher.objects.get(id=teacherID)
+        email_registered_user(teacher)  # Call your function here
+        return JsonResponse({'status': 'success'}, status=200)
+
+    return JsonResponse({'status': 'failed'}, status=400)
+

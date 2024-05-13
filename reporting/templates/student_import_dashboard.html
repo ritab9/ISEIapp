@@ -27,7 +27,8 @@
             </li>
             <li><b>Step 2:</b> Fill out the data:
                 <ul>
-                    <li> Required fields: <b>name, address, country, birth_date, grade_level, registration_date </b></li>
+                    <li> Required fields: <b>name, address, country, grade_level, registration_date </b></li>
+                    <li> Either <b>birth_date</b> or <b>age</b> are required.</li>
                     <li><b>us_state</b> is required for US addresses, and TN_county is required for TN addresses if the school is also in TN</li>
                     <li> <b>baptized, parent_sda</b> will be <b>Unknown</b> if left blank </li>
                     <li> <b>status</b> will be <b>Enrolled</b> if left blank </li>
@@ -35,12 +36,34 @@
                 </ul>
             </li>
             <li><b>Step 3:</b> Upload the Excel file containing student data.
-                <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'student_import_data' arID=arID %}">Import Data</a>
+              <!--
+                <a class="btn btn-sm btn-outline-ISEIblue4" href="{ % url 'student_import_data' arID=arID %}">Import Data</a> -->
 
             </li>
             </ul>
             <p>Should you encounter any issues or require further assistance with the data import process, please don't hesitate to reach out to our support.</p>
         </div>
     </div>
+
+     <div class="card card-body">
+        <p>Upload Student data file. Ensure that it meets the requirement listed above.
+        </p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-sm btn-ISEIblue2" type="submit">Upload Excel File</button>
+        </form>
+    </div>
+
+    <div class="card card-body">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+            <a href="{% url 'student_report' schoolID=annual_report.school.id school_yearID=annual_report.school_year.id %}">See Student Report</a>    </div>
+
 
 {% endblock %}

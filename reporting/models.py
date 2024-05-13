@@ -59,7 +59,7 @@ class Student(models.Model):
     us_state= StateField(verbose_name="US State", blank=True, null=True)
     TN_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True, blank=True)
     STATUS_CHOICES = [
         ('Y', 'Yes'),
         ('N', 'No'),
@@ -96,7 +96,8 @@ class Student(models.Model):
     registration_date = models.DateField()
     withdraw_date = models.DateField(null=True, blank=True)
 
-    age_at_registration = models.PositiveIntegerField(blank=True, null=True)
+    age_at_registration = models.PositiveIntegerField()
+    age = models.PositiveIntegerField(blank=True, null=True)
 
     LOCATION_CHOICES = [
         ('on-site', 'On-Site'),
@@ -115,6 +116,8 @@ class Student(models.Model):
             self.age_at_registration = self.registration_date.year - self.birth_date.year - (
                     (self.registration_date.month, self.registration_date.day) < (
                 self.birth_date.month, self.birth_date.day))
+        elif self.age and not self.age_at_registration:
+            self.age_at_registration = self.age
         super().save(*args, **kwargs)
 
     def __str__(self):

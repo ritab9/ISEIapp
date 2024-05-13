@@ -76,15 +76,12 @@ def student_report(request, schoolID, school_yearID):
 
     return render(request, 'student_report.html', context)
 
-def student_import_dashboard(request, arID):
-    context=dict(arID=arID)
-    return render(request, 'student_import_dashboard.html', context)
-
 
 class StudentExcelDownload(View):
     def get(self, request, *args, **kwargs):
-        column_headers = ['name', 'address', 'us_state', 'TN_county', 'country',
-                          'birth_date', 'grade_level','baptized', 'parent_sda', 'status',
+        #to do take out age; it's only for importing old data
+        column_headers = ['name', 'address', 'us_state', 'TN_county', 'country', 'grade_level',
+                          'birth_date', 'age','baptized', 'parent_sda', 'status',
                           'registration_date', 'withdraw_date',
                           'location',]
 
@@ -104,9 +101,11 @@ class StudentExcelDownload(View):
         return response
 
 
-def student_import_data(request, arID):
+def student_import_dashboard(request, arID):
 
     annual_report_instance = AnnualReport.objects.get(id=arID)
+    school_state = annual_report_instance.school.address.state_us
+
 
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
@@ -142,30 +141,41 @@ def student_import_data(request, arID):
                     continue
                 # country validation
                 try:
-                    country_instance = Country.objects.get(code=row['country'])
+                    country_instance = Country.objects.get(Q(code=row['country']) | Q(name=row['country']))
                 except Country.DoesNotExist:
                     messages.error(request, f"In row {index + 1}, '{row['country']}' is not a valid country code. No data is saved for this row")
                     continue
                 # validate US state when the country code is 'US', and TN_state when state is TN
+                us_state = None
+                tn_county_instance = None
                 if country_instance.code == 'US':
                     us_state = row['us_state']
                     if us_state not in valid_state_codes:
                         messages.error(request, f"In row {index + 1}, '{us_state}' is not a valid US state code. No data is saved for this row")
                         continue
                     else:
-                        if us_state == 'TN':
+                        if school_state=='TN' and us_state == 'TN':
                             try:
                                 tn_county_instance = TNCounty.objects.get(name=row['TN_county'])
                             except TNCounty.DoesNotExist:
                                 messages.error(request,f"In row {index + 1}, {row['TN_county']}' is not a valid TN county code. No data is saved for this row")
                                 continue
 
+
+                # Check if age is not a number or if it falls outside the range 3-25
+                age = row['age']
+                if pd.isna(age) or not isinstance(age, int) or age < 3 or age > 25:
+                    messages.error(request,
+                                   f"In row {index + 1}, {age} is not a valid age. No data is saved for this row")
+                    continue
+
                # validate birth date
                 birth_date = pd.to_datetime(row['birth_date'], errors='coerce') if pd.notnull(
                     row['birth_date']) else None
-                if birth_date is None or not twenty_five_years_ago <= birth_date <= one_year_ago:
-                        messages.error(request,f"Invalid Birth Date {birth_date} at row: {index+1}")
-                        continue
+                if not age:
+                    if birth_date is None or not twenty_five_years_ago <= birth_date <= one_year_ago:
+                            messages.error(request,f"Invalid Birth Date {birth_date} at row: {index+1}")
+                            continue
 
                 # validate registration and withdraw date
                 registration_date = pd.to_datetime(row['registration_date'], errors='coerce') if pd.notnull(
@@ -232,6 +242,7 @@ def student_import_data(request, arID):
                         'baptized': baptized,
                         'parent_sda': parent_sda,
                         'status': status,
+                        'age':age,
                         'grade_level': grade_level,
                         'registration_date': registration_date,
                         'withdraw_date': withdraw_date,
@@ -246,7 +257,7 @@ def student_import_data(request, arID):
                 messages.success(request,f"{created_count} student record(s) have been created. Data has been imported into Student model.")
     else:
         form = UploadFileForm()
-    return render(request, 'student_import_data.html', {'form': form, 'annual_report': annual_report_instance})
+    return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})
 
 
 def opening_report(request, schoolID, school_yearID):
