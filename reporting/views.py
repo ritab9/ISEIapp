@@ -11,6 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 import numpy as np
 
+from django.db.models import Q
+
 from django.http import FileResponse
 from django.views import View
 from io import BytesIO
@@ -33,26 +35,28 @@ def student_report(request, schoolID, school_yearID):
 
     if school.address.country.code == "US":
         if school.address.state_us == "TN":
-            StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=0, can_delete=True,
+            StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True,
                                               exclude=('annual_report', 'id', 'age_at_registration'))
         else:
-            StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=0, can_delete=True,
+            StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True,
                                                   exclude=('annual_report', 'id', 'age_at_registration', 'TN_county'))
     else:
-        StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=0, can_delete=True,
+        StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True,
                                               exclude=('annual_report', 'id', 'age_at_registration', 'us_state',
                                                        'TN_county'))
 
     if request.method == 'POST':
         formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
-        for form in formset:
-            if form.has_changed():
-                print("Following fields in the form were changed:", form.changed_data)
+        #for form in formset:
+        #    if form.has_changed():
+        #        print("Following fields in the form were changed:", form.changed_data)
         if formset.is_valid():
             instances = formset.save(commit=False)
             for instance in instances:
                 instance.annual_report = annual_report
                 instance.save()
+            for object in formset.deleted_objects:
+                object.delete()
 
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
@@ -60,7 +64,7 @@ def student_report(request, schoolID, school_yearID):
                     annual_report.save()
                 annual_report.last_update_date = date.today()
                 annual_report.save()
-                #Todo Send email to ISEI about it's commpletion
+                #Todo Send email to ISEI about it's completion
                 return redirect('principal_dashboard', request.user.id)
             elif 'save' in request.POST:
                 annual_report.last_update_date = date.today()
@@ -79,11 +83,20 @@ def student_report(request, schoolID, school_yearID):
 
 class StudentExcelDownload(View):
     def get(self, request, *args, **kwargs):
-        #to do take out age; it's only for importing old data
-        column_headers = ['name', 'address', 'us_state', 'TN_county', 'country', 'grade_level',
-                          'birth_date', 'age','baptized', 'parent_sda', 'status',
-                          'registration_date', 'withdraw_date',
-                          'location',]
+        #TODO take out age; it's only for importing old data (or maybe keep it as an alternative to birth_date?)
+        address = request.user.teacher.school.address
+        if address.state_us == "TN":
+            column_headers = ['name', 'gender', 'grade_level', 'age',  'birth_date', 'address', 'us_state', 'TN_county', 'country',
+                          'registration_date',  'withdraw_date', 'status', 'location','baptized', 'parent_sda',
+                          ]
+        elif address.country.code == "US":
+            column_headers = ['name', 'gender', 'grade_level', 'age', 'birth_date', 'address', 'us_state', 'country',
+                              'registration_date', 'withdraw_date', 'status', 'location', 'baptized', 'parent_sda',
+                              ]
+        else:
+            column_headers = ['name', 'gender', 'grade_level', 'age', 'birth_date', 'address', 'country',
+                              'registration_date', 'withdraw_date', 'status', 'location', 'baptized', 'parent_sda',
+                              ]
 
         df = pd.DataFrame(columns=column_headers)
 
@@ -110,8 +123,9 @@ def student_import_dashboard(request, arID):
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
     valid_statuses = ['enrolled', 'graduated', 'did_not_return']
-    valid_grades = ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+    valid_grades = ['Pre-K', 'K', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
     valid_locations = ['on-site', 'satelite', 'distance-learning']
+    valid_gender = ['M', 'F']
 
     today = pd.to_datetime(date.today())
     one_year_ago = today - pd.DateOffset(years=1)
@@ -143,7 +157,7 @@ def student_import_dashboard(request, arID):
                 try:
                     country_instance = Country.objects.get(Q(code=row['country']) | Q(name=row['country']))
                 except Country.DoesNotExist:
-                    messages.error(request, f"In row {index + 1}, '{row['country']}' is not a valid country code. No data is saved for this row")
+                    messages.error(request, f"In row {index + 1}, '{row['country']}' is not a valid country name or code. No data is saved for this row")
                     continue
                 # validate US state when the country code is 'US', and TN_state when state is TN
                 us_state = None
@@ -162,14 +176,20 @@ def student_import_dashboard(request, arID):
                                 continue
 
 
+                # TODO Here Age is required, combine it with birth_date validation
                 # Check if age is not a number or if it falls outside the range 3-25
                 age = row['age']
-                if pd.isna(age) or not isinstance(age, int) or age < 3 or age > 25:
-                    messages.error(request,
-                                   f"In row {index + 1}, {age} is not a valid age. No data is saved for this row")
+                if pd.isna(age):
+                    messages.error(request, f"In row {index + 1}, 'age' is missing. No data is saved for this row")
                     continue
+                else:
+                    age = int(row['age'])
+                    if not 3 <= age <= 25:
+                        messages.error(request,
+                                       f"In row {index + 1}, {age} is not a valid age. No data is saved for this row")
+                        continue
 
-               # validate birth date
+                # validate birth date
                 birth_date = pd.to_datetime(row['birth_date'], errors='coerce') if pd.notnull(
                     row['birth_date']) else None
                 if not age:
@@ -208,6 +228,12 @@ def student_import_dashboard(request, arID):
                     messages.error(request, f" {parent_sda} is invalid value for 'parent_sda' at row: {index+1} (valid_choices = ['Y', 'N'])")
                     continue
 
+                #validate gender
+                gender=row.get('gender')
+                if gender is not None and gender not in valid_gender:
+                    messages.error(request, f"Invalid gender {gender} at row: {index+1}")
+                    continue
+
                 # Validate enrollment status
                 status = row.get('status')
                 if status is None:
@@ -239,6 +265,7 @@ def student_import_dashboard(request, arID):
                         'us_state': us_state,
                         'TN_county': tn_county_instance,
                         'country': country_instance,
+                        'gender': gender,
                         'baptized': baptized,
                         'parent_sda': parent_sda,
                         'status': status,
@@ -258,6 +285,7 @@ def student_import_dashboard(request, arID):
     else:
         form = UploadFileForm()
     return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})
+
 
 
 def opening_report(request, schoolID, school_yearID):

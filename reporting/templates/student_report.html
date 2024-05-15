@@ -70,15 +70,23 @@
             <div class="scrollable-table scrollable-table2">
                 <table class="table table-light">
                     <thead class="thead-dark sticky_head">
-                        <tr>
+                        <tr><th>#</th>
                             {% for field in formset.forms.0.visible_fields %}
-                                <th>{{ field.label }}</th>
+                                <th>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>{{ field.label }}</span>
+                                            {% if field.label == "Birth date" %}
+                                                <span style="text-align: right;">OR</span>
+                                            {% endif %}
+                                    </div>
+                                </th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody id="formset">
                         {% for form in formset %}
                                 <tr class="form">
+                                    <td></td>
                                     {% for field in form %}
                                         <td style="text-align: center;"> {{ field }}
                                          {% if field.errors %}
@@ -102,9 +110,11 @@
                     </tbody>
                 </table>
             </div>
+
 <!-- empty form template -->
             <template id="empty_form_template">
                 <tr class="form">
+                    <td></td>
                     {% for field in formset.empty_form %}
                         <td style="text-align: center;">{{ field }}</td>
                     {% endfor %}
@@ -131,10 +141,9 @@
         </span>
     </div>
 
+<script>
 
-    <script>
-
-        // To make TN_county available only for TN schools, and add US as country if US state is selected
+// To make TN_county available only for TN schools, and add US as country if US state is selected
     $(document).ready(function() {
     // Listen to any change on state fields
         $(document).on('change', 'select[name$=us_state]', function() {
@@ -231,10 +240,40 @@
         }
     });
 
-//Confirmation message for adding common registration to existing records
-    document.getElementById("update-button").onclick = function() {
-        return confirm('This date is added only to records with blank registration date. Ensure that you are applying the correct date!');
-    }
-    </script>
+//add row number
+function updateRowNumbers() {
+    let rowIndex = 1
+    document.querySelectorAll('#formset .form').forEach(row => {
+        let firstCell = row.querySelector('td:first-child')
+        firstCell.textContent = rowIndex
+        rowIndex++
+    })
+}
+
+    document.addEventListener('DOMContentLoaded', e => {
+    var formset = document.querySelector('#formset');
+
+    updateRowNumbers();
+
+    // Create a callback function for the observer to run when mutations are observed
+    var callback = function (mutationsList, observer) {
+        for (let mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                if(mutation.addedNodes.length > 0){ // Check if nodes were added
+                    // A child was added to the node, call updateRowNumbers()
+                    updateRowNumbers();
+                }
+            }
+        }
+    };
+
+    // Create an observer instance and pass in the callback function
+    var observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(formset, {childList: true});
+});
+
+</script>
 
 {% endblock %}

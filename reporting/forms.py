@@ -9,7 +9,9 @@ class UploadFileForm(forms.Form):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        exclude = ('annual_report', 'id', 'age_at_registration')
+        #exclude = ('annual_report', 'id', 'age_at_registration')
+        fields=('name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date','age', 'baptized','parent_sda',
+                'status', 'grade_level','registration_date','withdraw_date', 'location')
         widgets = {
             'name': forms.TextInput(attrs={'style': 'max-width: 300px;'}),
             'address': forms.TextInput(attrs={'style': 'max-width: 300px;'}),
@@ -17,6 +19,7 @@ class StudentForm(forms.ModelForm):
             'TN_county': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'country': forms.Select(attrs={'style': 'max-width: 100px;'}),  # forms.Select for foreign key
             'birth_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'age': forms.NumberInput (attrs={'min': 1, 'max': 110, 'style': 'max-width: 30px;'}),
             'baptized': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'parent_sda': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'status': forms.Select(attrs={'style': 'max-width: 100px;'}),  # forms.Select for choices field

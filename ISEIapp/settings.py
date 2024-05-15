@@ -197,3 +197,5 @@ else:
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
     EMAIL_PORT = 587
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # no of student forms

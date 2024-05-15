@@ -14,9 +14,11 @@
                     <li><b>baptized:</b> This field indicates whether a student has been baptized. Acceptable values are <b>Y</b> (Yes), <b>N</b> (No). If nothing is entered the <b>Unknown</b> value will be default.</li>
                     <li><b>parent_sda:</b> This field reflects is at least one parent of the student is Seventh-day Adventist. Valid inputs are <b>Y</b> (Yes), <b>N</b> (No). If nothing is entered the <b>Unknown</b> value will be default.</li>
                     <li><b>status:</b> This field represents the enrollment status of a student. Acceptable values are <b>enrolled</b>, <b>graduated</b>, and <b>did_not_return</b>. Default value is <b>enrolled</b>.</li>
-                    <li><b>grade_level</b>: This field denotes the student's grade level. The valid inputs range from <b>K</b> to <b>12</b>.</li>
+                    <li><b>grade_level</b>: This field denotes the student's grade level. The valid inputs are <b>Pre-K</b>, <b>K</b> and the range from <b>0</b> to <b>12</b>.</li>
                     <li><b>us_state</b>: When entering data for U.S. states, please use the appropriate two-letter state code. For example, use <b>NY</b> for New York, <b>CA</b> for California, etc.</li>
-                    <li><b>country</b>: For country entries, use the corresponding country codes. For example, <b>US</b> for the United States, <b>GB</b> for the United Kingdom, <b>FR</b> for France, etc.</li>
+                    <li><b>country</b>: For country entries, use the corresponding country codes or name. For example, <b>US</b> or <b>United States</b>, <b>FR</b> or <b>France</b>, etc.</li>
+                    <li><b>location</b>: Acceptable values are: <b>on-site</b>, <b>satelite</b>, <b>distance-learning</b></li>
+                    <li><b>gender</b>:Acceptable values are <b>F</b> (for female) and <b>M</b> (for male)</li>
                 </ul>
 
             <p>Remember that our system is case-sensitive, so ensure to input the values and location codes exactly as mentioned above. Incorrect inputs or deviations from the accepted values could prevent the successful completion of data imports. Please check the imported data after completion.</p>
@@ -63,7 +65,11 @@
                 {% endfor %}
             </ul>
         {% endif %}
-            <a href="{% url 'student_report' schoolID=annual_report.school.id school_yearID=annual_report.school_year.id %}">See Student Report</a>    </div>
+        <p>Please review the exported data and mark the report completed if applicable.</p>
+        <div class="col">
+            <a class= "btn btn-sm btn-ISEIblue2" href="{% url 'student_report' schoolID=annual_report.school.id school_yearID=annual_report.school_year.id %}">Review and Finalize Report</a>
+        </div>
+    </div>
 
 
 {% endblock %}

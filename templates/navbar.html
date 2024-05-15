@@ -31,8 +31,12 @@
 
 {% if user.is_authenticated and user.is_active%}
     <span class ="name-msg">  </span>
-  <span class ="name-msg"> {{request.user.first_name}} {{request.user.last_name}} <br> {{ current_school_year.name }} </span>
-  <span class ="name-msg"> <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a> </span>
+  <span class ="name-msg"> {{request.user.first_name}} {{request.user.last_name}}
+      <br> {{ request.user.teacher.school }}
+  </span>
+  <span class ="name-msg"> <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a>
+      <br> {{ current_school_year.name }}
+  </span>
 {% endif %}
 
 <script>

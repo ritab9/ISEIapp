@@ -59,7 +59,15 @@ class Student(models.Model):
     us_state= StateField(verbose_name="US State", blank=True, null=True)
     TN_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+
     birth_date = models.DateField(null=True, blank=True)
+    age = models.PositiveIntegerField(blank=True, null=True)
+    age_at_registration = models.PositiveIntegerField()
     STATUS_CHOICES = [
         ('Y', 'Yes'),
         ('N', 'No'),
@@ -77,7 +85,9 @@ class Student(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='enrolled')
 
     GRADE_LEVEL_CHOICES = [
+        ('Pre-K', 'Pre-K'),
         ('K', 'K'),
+        ('0', '0'),
         ('1', '1'),
         ('2', '2'),
         ('3', '3'),
@@ -91,7 +101,7 @@ class Student(models.Model):
         ('11', '11'),
         ('12', '12'),
     ]
-    grade_level =  models.CharField(max_length=2, choices=GRADE_LEVEL_CHOICES)
+    grade_level =  models.CharField(max_length=5, choices=GRADE_LEVEL_CHOICES)
 
     registration_date = models.DateField()
     withdraw_date = models.DateField(null=True, blank=True)
