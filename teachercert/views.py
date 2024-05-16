@@ -113,7 +113,7 @@ def iseidashboard(request):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal'])
+@allowed_users(allowed_roles=['principal','registrar'])
 def principalteachercert(request, userID):
     principal = User.objects.get(id=userID).teacher
 
@@ -173,7 +173,7 @@ def principalteachercert(request, userID):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
+@allowed_users(allowed_roles=['teacher', 'staff', 'principal', 'registrar'])
 def teacherdashboard(request, userID):
     user = User.objects.get(id=userID)
     teacher = Teacher.objects.get(user=user)
@@ -516,7 +516,7 @@ def update_academic_class(request, pk):
 
 # isei's info page about all reports with filter
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff', 'principal', 'teacher'])
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar','teacher'])
 def CEUreports(request):
     if request.user.groups.filter(name='staff').exists():  # ISEI staff has access to all reports
         ceu_reports = CEUReport.objects.filter(teacher__user__is_active=True)
@@ -550,7 +550,7 @@ def CEUreports(request):
 
 # principal's approval of teacher activities
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal', 'staff'])
+@allowed_users(allowed_roles=['principal', 'registrar','staff'])
 def principal_ceu_approval(request, recID=None, instID=None):
     principal = request.user.teacher
     teachers = Teacher.objects.filter(school=principal.school, user__is_active=True)
@@ -970,7 +970,7 @@ def isei_teachercert(request):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
+@allowed_users(allowed_roles=['teacher', 'staff', 'principal','registrar'])
 def teachercert_application(request, pk):
     # pk - teacher ID
 
@@ -1029,7 +1029,7 @@ def teachercert_application(request, pk):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher', 'staff', 'principal'])
+@allowed_users(allowed_roles=['teacher', 'staff', 'principal','registrar'])
 def teachercert_application_done(request, pk):
     # pk - teacher ID
 
@@ -1164,7 +1164,7 @@ def add_ISEI_CEUs(request):
 
 # Background Checks
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff', 'principal'])
+@allowed_users(allowed_roles=['staff', 'principal','registrar'])
 def mark_background_check(request, schoolid):
 
     teachers= Teacher.objects.filter(school__id=schoolid, user__is_active=True).order_by('background_check')
@@ -1185,8 +1185,6 @@ def mark_background_check(request, schoolid):
     context = dict(bc_form=bc_form, case=case)
 
     return render(request, 'teachercert/mark_background_check.html', context)
-
-
 
 
 @login_required(login_url='login')

@@ -12,6 +12,9 @@ class StudentForm(forms.ModelForm):
         #exclude = ('annual_report', 'id', 'age_at_registration')
         fields=('name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date','age', 'grade_level', 'baptized','parent_sda',
                 'status', 'registration_date','withdraw_date', 'location')
+        field_order = ( 'name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date', 'age', 'grade_level', 'baptized',
+                'parent_sda', 'status', 'registration_date', 'withdraw_date', 'location')
+
         widgets = {
             'name': forms.TextInput(attrs={'style': 'max-width: 300px;'}),
             'address': forms.TextInput(attrs={'style': 'max-width: 300px;'}),

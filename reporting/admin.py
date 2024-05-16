@@ -15,8 +15,12 @@ class ReportDueDateAdmin(admin.ModelAdmin):
     list_filter = ['region']
     list_editable = ['due_date', 'opening_report']
 
-admin.site.register(ReportType, ReportAdmin)
 admin.site.register(ReportDueDate, ReportDueDateAdmin)
+
+class ReportTypeAdmin(admin.ModelAdmin):
+    list_display = ['name','order_number']
+    list_editable = ['order_number']
+admin.site.register(ReportType, ReportTypeAdmin)
 
 @admin.register(AnnualReport)
 class AnnualReportAdmin(admin.ModelAdmin):

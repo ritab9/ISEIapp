@@ -16,6 +16,8 @@ from django.db.models import Q
 from django.http import FileResponse
 from django.views import View
 from io import BytesIO
+from django.contrib.auth.decorators import login_required
+from reporting.models import GRADE_LEVEL_DICT
 
 
 def report_dashboard(request, schoolID, school_yearID):
@@ -74,7 +76,7 @@ def student_report(request, schoolID, school_yearID):
                 return redirect('principal_dashboard', request.user.id)
 
     else:
-        formset = StudentFormSet(queryset=Student.objects.filter(annual_report=annual_report))
+        formset = StudentFormSet(queryset=Student.objects.filter(annual_report=annual_report, status='enrolled').order_by('grade_level','name'))
 
     context = dict(formset=formset, annual_report=annual_report)
 
@@ -123,7 +125,6 @@ def student_import_dashboard(request, arID):
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
     valid_statuses = ['enrolled', 'graduated', 'did_not_return']
-    valid_grades = ['Pre-K', 'K', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
     valid_locations = ['on-site', 'satelite', 'distance-learning']
     valid_gender = ['M', 'F']
 
@@ -243,10 +244,11 @@ def student_import_dashboard(request, arID):
                     continue
 
                 # Validate 'grade_level'
-                grade_level = str(row.get('grade_level'))
-                if grade_level is None or grade_level not in valid_grades:
-                    messages.error(request, f"Invalid or missing grade level {grade_level} at row: {index+1}")
+                grade_level_str = str(row.get('grade_level'))
+                if grade_level_str is None or grade_level_str not in GRADE_LEVEL_DICT:
+                    messages.error(request, f"Invalid or missing grade level {grade_level_str} at row: {index+1}")
                     continue
+                grade_level = GRADE_LEVEL_DICT[grade_level_str]
 
                 # Validate 'location'
                 location = row.get('location')

@@ -34,32 +34,36 @@
     </div>
 <!-- Common registration date -->
     <div class="card mt-3">
-        <div class="d-flex justify-content-left">
             <div class="row mt-1 mb-2 ml-2 ">
-                <div class="col col-auto text-right">
-                    <div class="text-left"><label for="common-registration-date"><b>Registration Date</b></label></div>
+                <div class="col col-auto">
+                    <div class="text-left"><label for="common-registration-date"><b>Global Registration Date</b></label></div>
                     <div><input type="date" id="common-registration-date" style="width: 150px"/></div>
+                    <button class="btn btn-ISEIblue2 btn-sm mt-1" id="add-date-button">Apply</button>
+
                 </div>
-                <div class="col col-auto text-left">
+                <!-- div class="col col-auto text-left">
                     <div class="row">
-                        <button class="btn btn-outline-ISEIblue2 btn-sm mt-4 mr-2" id="add-date-button">Add Registration Date</button>
+                        <button class="btn btn-ISEIblue2 btn-sm mt-4 mr-2" id="rewrite-date-button">Rewrite Registration Date</button>
                     </div>
+                </div -->
+                <div class="col col-auto align-right">
+                    <div class=""><label for="global-location"><b>Global Location</b></label></div>
+                    <select id="global_location">
+                        <option value="on-site">On-Site</option>
+                        <option value="satelite">Satelite</option>
+                        <option value="distance-learning">Distance-Learning</option>
+                    </select>
                 </div>
-                <div class="col col-auto text-left">
-                    <div class="row">
-                        <button class="btn btn-outline-ISEIblue2 btn-sm mt-4 mr-2" id="rewrite-date-button">Rewrite Registration Date</button>
-                    </div>
+                <!-- Comments and instructions -->
+                <div class="col col-auto">
+                    <ul>
+                        <li>Be sure to check data for all previous students for accuracy: enrollment status, grade level, address, baptismal status, etc.</li>
+                        <li> Depending on your screen size, in order to view all columns you may need to horizontally scroll through the table.</li>
+                    </ul>
                 </div>
             </div>
-        </div>
     </div>
 
-<!-- Comments and instructions -->
-    <div class="card mt-2">
-        <span class="ml-2">
-           Depending on your screen size, in order to view all columns you may need to horizontally scroll through the table.
-        </span>
-    </div>
 
 <!-- Student Report -->
     <div class="card">
@@ -128,7 +132,10 @@
                 <div class="col d-flex justify-content-center">
                     <input class="btn btn-sm btn-ISEIblue2"  type="submit" name="save"  value="Save and Finalize Later"></div>
                 <div class="col d-flex justify-content-center">
-                    <input class="btn btn-sm btn-success" type="submit" name="submit"  value="Report Complete"></div>
+                    <input class="btn btn-sm btn-success" type="submit" name="submit"  value="Report Complete"
+                    onclick="return confirm('Be sure to check data for all previous students for accuracy: enrollment status, grade level, address, baptismal status, etc. ' +
+                     'Click Cancel if you need to review, OK if report if complete.');" >
+                </div>
                 <div class="col d-flex justify-content-center">
                     <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Return</a></div>
             </div>
@@ -216,7 +223,7 @@
     }
 
 //rewrite common registration date for ALL existing records
-    document.getElementById('rewrite-date-button').addEventListener('click', function(e) {
+/*    document.getElementById('rewrite-date-button').addEventListener('click', function(e) {
         e.preventDefault();  // prevent form submission if the button type is 'submit'
         var commonDate = document.getElementById('common-registration-date').value;
         var registrationDateInputs = document.querySelectorAll('input[name$="registration_date"]');
@@ -229,7 +236,7 @@
     document.getElementById("rewrite-date-button").onclick = function() {
         return confirm(
             'This date will change ALL registration dates to date entered. Are you sure you want to do this?');
-    }
+    } */
 
 // add common registration date when student name is entered
     $(document).on('change', 'input[name^="form-"][name$="-name"]', function() {
@@ -241,7 +248,7 @@
     });
 
 //add row number
-function updateRowNumbers() {
+    function updateRowNumbers() {
     let rowIndex = 1
     document.querySelectorAll('#formset .form').forEach(row => {
         let firstCell = row.querySelector('td:first-child')
@@ -273,6 +280,23 @@ function updateRowNumbers() {
     // Start observing the target node for configured mutations
     observer.observe(formset, {childList: true});
 });
+
+//apply global location for all records
+    $(document).ready(function(){
+        $(document).on('change', '#global_location', function(){
+            var location = $(this).val();
+            var confirmation = confirm("Are you sure you want to apply this change to all forms?");
+            if(confirmation) {
+                // Select inputs with name starting with 'form-' and ending with '-location'
+                $('select[name^="form-"][name$="-location"]').each(function () {
+                    $(this).val(location);
+                });
+            } else {
+                // If 'Cancel' is clicked, reset the global select to its previous value
+                 $(this).val(this.defaultValue);
+            };
+        });
+    });
 
 </script>
 

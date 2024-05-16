@@ -12,6 +12,7 @@ from django import forms
 
 class ReportType(models.Model):
     name = models.CharField(max_length=255)
+    order_number = models.PositiveSmallIntegerField(default=0)
     def __str__(self):
         return self.name
 
@@ -53,6 +54,23 @@ class AnnualReport(models.Model):
         return self.school.name + "," + self.school_year.name + ","+self.report_type.name
 
 
+GRADE_LEVEL_DICT = {
+        'Pre-K': -2,
+        'K': -1,
+        '0': 0,
+        '1': 1,
+        '2': 2,
+        '3': 3,
+        '4': 4,
+        '5': 5,
+        '6': 6,
+        '7': 7,
+        '8': 8,
+        '9': 9,
+        '10': 10,
+        '11': 11,
+        '12': 12,
+    }
 class Student(models.Model):
     name = models.CharField(max_length=200)
     address = models.CharField(max_length=500)
@@ -85,29 +103,26 @@ class Student(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='enrolled')
 
     GRADE_LEVEL_CHOICES = [
-        ('Pre-K', 'Pre-K'),
-        ('K', 'K'),
-        ('0', '0'),
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-        ('5', '5'),
-        ('6', '6'),
-        ('7', '7'),
-        ('8', '8'),
-        ('9', '9'),
-        ('10', '10'),
-        ('11', '11'),
-        ('12', '12'),
+        (-2, 'Pre-K'),
+        (-1, 'K'),
+        (0, '0'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10'),
+        (11, '11'),
+        (12, '12'),
     ]
-    grade_level =  models.CharField(max_length=5, choices=GRADE_LEVEL_CHOICES)
+    grade_level =  models.IntegerField(choices=GRADE_LEVEL_CHOICES)
 
     registration_date = models.DateField()
     withdraw_date = models.DateField(null=True, blank=True)
-
-    age_at_registration = models.PositiveIntegerField()
-    age = models.PositiveIntegerField(blank=True, null=True)
 
     LOCATION_CHOICES = [
         ('on-site', 'On-Site'),

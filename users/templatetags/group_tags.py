@@ -4,8 +4,9 @@ from users.myfunctions import *
 register = template.Library()
 
 @register.filter('in_group')
-def in_group(user, group_name):
-    return user.groups.filter(name=group_name).exists()
+def in_group(user, group_names):
+    group_names = group_names.split(',')
+    return user.groups.filter(name__in=group_names).exists()
 
 @register.filter('certified_tag')
 def certified_tag(user):

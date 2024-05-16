@@ -90,6 +90,12 @@ class School(models.Model):
     abbreviation = models.CharField(max_length=4, default=" ", help_text=' Enter the abbreviation for this school')
     ordering = ['name']
     foundation = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
+    website = models.URLField(max_length=200, blank=True, null=True)
+    principal = models.CharField(max_length=100, blank=True, null=True)
+    president = models.CharField(max_length=100, blank=True, null=True)
+    #address = models.OneToOneField('Address', on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         ordering = ('name',)
@@ -208,6 +214,7 @@ class Address(models.Model):
     address_2 = models.CharField(verbose_name="address cont'd", max_length=128, blank=True)
     city= models.CharField(verbose_name="city", max_length=64, default="")
     state_us = StateField(verbose_name="US State", blank=True, null=True)
+    tn_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
     zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
     school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)

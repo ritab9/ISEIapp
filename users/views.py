@@ -59,9 +59,9 @@ def loginpage(request):
                 return redirect(request.GET.get('next'))
             else:
                 if request.user.is_active:
-                    if is_in_group(request.user, 'principal'):
-                        return redirect('principal_teachercert', user.id)
-                        #return redirect('principal_dashboard', user.id)
+                    if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
+                        #return redirect('principal_teachercert', user.id)
+                        return redirect('principal_dashboard', user.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -84,7 +84,7 @@ def logoutuser(request):
 
 #set up only for teachers + principals now
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['teacher','principal', 'staff'])
+@allowed_users(allowed_roles=['teacher','principal', 'registrar', 'staff'])
 def accountsettings(request, userID):
 
     user = User.objects.get(id=userID)
@@ -185,8 +185,9 @@ def accountsettings(request, userID):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal'])
+@allowed_users(allowed_roles=['principal', 'registrar'])
 def principal_dashboard(request, userID):
+
     principal = User.objects.get(id=userID).teacher
     school=principal.school
     school_year=SchoolYear.objects.get(current_school_year=True)
@@ -207,7 +208,7 @@ def principal_dashboard(request, userID):
     #a_year_ago = today - timedelta(365)
 
     # Get all ReportingDueDate objects for this region
-    report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('-due_date','report_type')
+    report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')
     for report_dd in report_due_dates:
         try:
             annual_report = AnnualReport.objects.get(school=school, school_year=school_year,
