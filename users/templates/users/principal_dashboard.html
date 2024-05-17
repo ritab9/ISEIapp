@@ -6,30 +6,13 @@
 {% block content %}
 
 <div class="row">
-<!-- Teacher Cert -->
-    <div class = "col">
-<!-- Teacher Certification Status-->
-    <div class="col-sm-10 card card-body">
-        <h6 class="mb-3">
-        <a href="{% url 'principal_teachercert' userID %}">Teacher Certification </a>
-        </h6>
-<!-- Percent of registered teachers -->
-        <div class="mb-3">
-            <p>Number of registered teachers: {{ number_of_teachers }}</p>
-            <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
-            <p> Percent of registered teachers certified:
-                {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
-                    {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
-                    {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
-                    {% else %} <span style="color:green">{{ percent_certified }}%</span>
-                {% endif %}
-            </p>
-        </div>
+<!-- School Info -->
+    <div class = "col col-auto card card-body">
+
     </div>
-</div>
 <!--Reports-->
-    <div class="col card card-body">
-        <h6>ISEI Reports {{ school.name }} ({{ current_school_year.name }}) </h6>
+    <div class="col col-auto card card-body">
+        <h6> {{ current_school_year.name }} Reports </h6>
             {% if report_due_dates %}
                <div class="container">
                     <table class="table table-striped table-bordered">
@@ -54,6 +37,25 @@
                     </table>
                 </div>
             {% endif %}
+    </div>
+<!-- Teacher Cert -->
+    <div class = "col col-auto card card-body">
+<!-- Teacher Certification Status-->
+            <h6 class="mb-3">
+            <a href="{% url 'principal_teachercert' userID %}">Teacher Certification </a>
+            </h6>
+    <!-- Percent of registered teachers -->
+            <div class="mb-3">
+                <p>Number of registered teachers: {{ number_of_teachers }}</p>
+                <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
+                <p> Percent of registered teachers certified:
+                    {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
+                        {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
+                        {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
+                        {% else %} <span style="color:green">{{ percent_certified }}%</span>
+                    {% endif %}
+                </p>
+            </div>
     </div>
 
 

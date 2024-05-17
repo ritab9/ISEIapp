@@ -125,8 +125,9 @@ def student_import_dashboard(request, arID):
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
     valid_statuses = ['enrolled', 'graduated', 'did_not_return']
-    valid_locations = ['on-site', 'satelite', 'distance-learning']
+    valid_locations = ['on-site', 'satellite', 'distance-learning']
     valid_gender = ['M', 'F']
+    valid_boarding_choices = {'Yes': True, 'No': False}
 
     today = pd.to_datetime(date.today())
     one_year_ago = today - pd.DateOffset(years=1)
@@ -258,6 +259,14 @@ def student_import_dashboard(request, arID):
                     messages.error(request, f"Invalid location at row: {index+1}")
                     continue
 
+                #validate 'boarding'
+                try:
+                    # Attempt to map the boarding value to a boolean
+                    boarding = valid_boarding_choices[row['boarding']]
+                except KeyError:
+                    messages.error(request, f'Invalid boarding value at row {index + 1} in the Excel file.')
+                    continue  # Skip to next iteration
+
                 # Create or update instance
                 student, created = Student.objects.update_or_create(
                     name=name,
@@ -268,6 +277,7 @@ def student_import_dashboard(request, arID):
                         'TN_county': tn_county_instance,
                         'country': country_instance,
                         'gender': gender,
+                        'boarding':boarding,
                         'baptized': baptized,
                         'parent_sda': parent_sda,
                         'status': status,

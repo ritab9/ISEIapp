@@ -32,9 +32,10 @@
             </div>
         </div>
     </div>
-<!-- Common registration date -->
+
     <div class="card mt-3">
             <div class="row mt-1 mb-2 ml-2 ">
+<!-- Global registration date -->
                 <div class="col col-auto">
                     <div class="text-left"><label for="common-registration-date"><b>Global Registration Date</b></label></div>
                     <div><input type="date" id="common-registration-date" style="width: 150px"/></div>
@@ -46,6 +47,7 @@
                         <button class="btn btn-ISEIblue2 btn-sm mt-4 mr-2" id="rewrite-date-button">Rewrite Registration Date</button>
                     </div>
                 </div -->
+ <!-- Global Location -->
                 <div class="col col-auto align-right">
                     <div class=""><label for="global-location"><b>Global Location</b></label></div>
                     <select id="global_location">
@@ -54,7 +56,11 @@
                         <option value="distance-learning">Distance-Learning</option>
                     </select>
                 </div>
-                <!-- Comments and instructions -->
+<!-- Global Boarding/or no -->
+                 <div class="col col-auto align-right">
+                     <input type="checkbox" id="markAllBoarding"> Mark all students as boarding
+                 </div>
+<!-- Comments and instructions -->
                 <div class="col col-auto">
                     <ul>
                         <li>Be sure to check data for all previous students for accuracy: enrollment status, grade level, address, baptismal status, etc.</li>
@@ -297,6 +303,16 @@
             };
         });
     });
+
+//apply boarding or not for all students
+
+    document.querySelector("#markAllBoarding").addEventListener("change", function(event){
+        var boardingCheckboxes = document.querySelectorAll('input[name$="-boarding"]');
+        for(var i=0; i<boardingCheckboxes.length; i++){
+             boardingCheckboxes[i].checked = event.target.checked;
+        }
+    });
+
 
 </script>
 

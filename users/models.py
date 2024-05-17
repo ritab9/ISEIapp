@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from localflavor.us.models import USSocialSecurityNumberField
 from datetime import date
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class TNCounty(models.Model):
     name = models.CharField(max_length=255)
@@ -107,6 +108,25 @@ class School(models.Model):
 
     def __str__(self):
         return self.name
+
+class AccreditationAgency(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    abbreviation = models.CharField(max_length=10)
+    def __str__(self):
+        return self.abbreviation
+
+
+
+class AccreditationInfo(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    agency = models.ForeignKey(AccreditationAgency, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    current_accreditation = models.BooleanField(default=False)
+    class Meta:
+        unique_together = ['school', 'agency', 'current_accreditation']
+    def __str__(self):
+        return self.school.name+','+self.agency.abbreviation
 
 
 # User Model is automatically created by Django and we will extend it to create Teacher Model

@@ -91,6 +91,7 @@ class Student(models.Model):
         ('N', 'No'),
         ('U', 'Unknown'),
     ]
+    boarding = models.BooleanField(default=False)
 
     baptized = models.CharField(max_length=1, choices=STATUS_CHOICES, default='U')
     parent_sda = models.CharField(max_length=1, choices=STATUS_CHOICES, default='U', verbose_name="Parent SDA")
@@ -126,7 +127,7 @@ class Student(models.Model):
 
     LOCATION_CHOICES = [
         ('on-site', 'On-Site'),
-        ('satelite', 'Satelite'),
+        ('satellite', 'Satellite'),
         ('distance-learning', 'Distance-Learning')
 
     ]

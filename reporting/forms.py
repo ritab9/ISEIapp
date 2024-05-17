@@ -10,9 +10,9 @@ class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         #exclude = ('annual_report', 'id', 'age_at_registration')
-        fields=('name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date','age', 'grade_level', 'baptized','parent_sda',
+        fields=('name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date','age', 'grade_level', 'boarding', 'baptized','parent_sda',
                 'status', 'registration_date','withdraw_date', 'location')
-        field_order = ( 'name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date', 'age', 'grade_level', 'baptized',
+        field_order = ( 'name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date', 'age', 'grade_level', 'boarding', 'baptized',
                 'parent_sda', 'status', 'registration_date', 'withdraw_date', 'location')
 
         widgets = {
