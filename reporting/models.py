@@ -13,6 +13,10 @@ from django import forms
 class ReportType(models.Model):
     name = models.CharField(max_length=255)
     order_number = models.PositiveSmallIntegerField(default=0)
+    for_all_schools = models.BooleanField(default=False)
+    isei_created = models.BooleanField(default=False)
+    view_name = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return self.name
 
@@ -47,12 +51,13 @@ class AnnualReport(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     report_type = models.ForeignKey(ReportType, on_delete=models.CASCADE, null=True, blank=True)
-    unique_together = (('school', 'school_year', report_type),)
     submit_date = models.DateField(null=True, blank=True)
     last_update_date = models.DateField(null=True, blank=True)
     def __str__(self):
         return self.school.name + "," + self.school_year.name + ","+self.report_type.name
 
+    class Meta:
+        unique_together = (('school', 'school_year', 'report_type'),)
 
 GRADE_LEVEL_DICT = {
         'Pre-K': -2,
@@ -135,7 +140,8 @@ class Student(models.Model):
 
     annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='students', null=False, blank=False)
 
-    unique_together = (('name', 'birth_date', 'annual_report'),)
+    class Meta:
+        unique_together = (('name', 'birth_date', 'annual_report'),)
 
     def save(self, *args, **kwargs):
         if self.birth_date and self.registration_date and not self.age_at_registration:

@@ -49,8 +49,7 @@
 <!--Reports-->
     <div class="col col-auto card card-body">
         <h6> {{ current_school_year.name }} Reports </h6>
-            {% if report_due_dates %}
-               <div class="container">
+        <div class="container">
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
@@ -61,18 +60,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for report_dd in report_due_dates %}
+                            {% for report, due_date in annual_reports %}
                                 <tr>
-                                    <td><a href="{{ report_dd.url }}"> {{report_dd.report_type.name}} </a></td>
-                                    <td>{{report_dd.get_actual_due_date}}</td>
-                                    <td>{{ report_dd.submit_date|default_if_none:"-" }}</td>
-                                    <td>{{ report_dd.last_update_date|default_if_none:"-" }}</td>
+                                    <td><a href="{% url report.report_type.view_name report.id %}"> {{report.report_type.name}} </a></td>
+                                    <td>{{due_date}}</td>
+                                    <td>{{ report.submit_date|default_if_none:"-" }}</td>
+                                    <td>{{ report.last_update_date|default_if_none:"-" }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            {% endif %}
     </div>
 <!-- Teacher Cert -->
     <div class = "col col-auto card card-body">

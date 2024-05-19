@@ -15,7 +15,7 @@ from .filters import *
 from .myfunctions import *
 from emailing.teacher_cert_functions import email_registered_user
 from teachercert.models import Teacher, SchoolYear
-from reporting.models import ReportDueDate, AnnualReport
+from reporting.models import ReportDueDate, AnnualReport, ReportType
 
 
 # authentication functions
@@ -60,8 +60,8 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
-                        return redirect('principal_teachercert', user.id)
-                        #return redirect('principal_dashboard', user.teacher.school.id)
+                        #return redirect('principal_teachercert', user.id)
+                        return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -204,34 +204,21 @@ def principal_dashboard(request, schoolID):
 
     # Get all ReportingDueDate objects for this region
     report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')
+    annual_reports=[]
     for report_dd in report_due_dates:
-        try:
-            annual_report = AnnualReport.objects.get(school=school, school_year=school_year,
+        if report_dd.report_type.isei_created == False:
+            annual_report, created = AnnualReport.objects.get_or_create(school=school, school_year=school_year,
                                               report_type=report_dd.report_type)
-            report_dd.submit_date = annual_report.submit_date
-            report_dd.last_update_date = annual_report.last_update_date
-        except ObjectDoesNotExist:
-            report_dd.submit_date = None
-
-        if report_dd.report_type.name == 'Student Enrollment Report':
-            report_dd.url = reverse('student_report', args=[school.id, school_year.id])
-        elif report_dd.report_type.name == 'Opening Data Report':
-            report_dd.url = reverse('opening_report', args=[school.id, school_year.id])
-        elif report_dd.report_type.name == 'Employee Data Report':
-            report_dd.url = reverse('employee_report', args=[school.id, school_year.id])
-        elif report_dd.report_type.name == '190 - Day Report':
-            report_dd.url = reverse('day190_report', args=[school.id, school_year.id])
-        elif report_dd.report_type.name == 'In-Service Year End Report':
-            report_dd.url = reverse('inservice_report', args=[school.id, school_year.id])
-        elif report_dd.report_type.name == 'Annual Progress Report (APR)':
-            report_dd.url = reverse('ap_report', args=[school.id, school_year.id])
+            annual_reports.append((annual_report, report_dd.get_actual_due_date()))
         else:
-            pass
-            #raise ValueError(f'Invalid report name: {report_dd.report.name}')
-
-
+            try:
+                annual_report, created = AnnualReport.objects.get(school=school,school_year=school_year,
+                                                    report_type=report_dd.report_type)
+                annual_reports.append((annual_report, report_dd.get_actual_due_date()))
+            except AnnualReport.DoesNotExist:
+                pass
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
-                    school = school, report_due_dates = report_due_dates,
+                    school = school, annual_reports = annual_reports,
                     accreditation_info=accreditation_info,
                   )
 

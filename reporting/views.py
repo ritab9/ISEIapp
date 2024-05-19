@@ -24,16 +24,12 @@ def report_dashboard(request, schoolID, school_yearID):
     # Add your processing here
     return render(request, 'report_dashboard.html')
 
-def student_report(request, schoolID, school_yearID):
-    report_type = get_object_or_404(ReportType, name="Student Enrollment Report")
-    school = get_object_or_404(School, id=schoolID)
-    school_year = get_object_or_404(SchoolYear, id=school_yearID)
+def student_report(request,arID):
 
-    annual_report, created = AnnualReport.objects.get_or_create(
-        school=school,
-        school_year=school_year,
-        report_type=report_type
-    )
+    annual_report = AnnualReport.objects.get(id=arID)
+    report_type = annual_report.report_type
+    school = annual_report.school
+    school_year = annual_report.school_year
 
     if school.address.country.code == "US":
         if school.address.state_us == "TN":
@@ -67,13 +63,13 @@ def student_report(request, schoolID, school_yearID):
                 annual_report.last_update_date = date.today()
                 annual_report.save()
                 #Todo Send email to ISEI about it's completion
-                return redirect('principal_dashboard', request.user.id)
+                return redirect('principal_dashboard', request.user.teacher.school.id)
             elif 'save' in request.POST:
                 annual_report.last_update_date = date.today()
                 annual_report.save()
                 #annual_report.submit_date = None
                 #annual_report.save()
-                return redirect('principal_dashboard', request.user.id)
+                return redirect('principal_dashboard', request.user.teacher.school.id)
 
     else:
         formset = StudentFormSet(queryset=Student.objects.filter(annual_report=annual_report, status='enrolled').order_by('grade_level','name'))
@@ -120,7 +116,6 @@ def student_import_dashboard(request, arID):
 
     annual_report_instance = AnnualReport.objects.get(id=arID)
     school_state = annual_report_instance.school.address.state_us
-
 
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
@@ -298,23 +293,23 @@ def student_import_dashboard(request, arID):
         form = UploadFileForm()
     return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})
 
-def opening_report(request, schoolID, school_yearID):
+def opening_report(request, arID):
     # Add your processing here
     return render(request, 'opening_report.html')
 
-def day190_report(request, schoolID, school_yearID):
+def day190_report(request, arID):
     # Add your processing here
     return render(request, 'day190_report.html')
 
-def employee_report(request, schoolID, school_yearID):
+def employee_report(request, arID):
     # Add your processing here
     return render(request, 'employee_report.html')
 
-def inservice_report(request, schoolID, school_yearID):
+def inservice_report(request, arID):
     # Add your processing here
     return render(request, 'inservice_report.html')
 
-def ap_report(request, schoolID, school_yearID):
+def ap_report(request, arID):
     # Add your processing here
     return render(request, 'student_report.html')
     

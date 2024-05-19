@@ -145,7 +145,7 @@
                      'Click Cancel if you need to review, OK if report if complete.');" >
                 </div>
                 <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Return</a></div>
+                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.teacher.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Return</a></div>
             </div>
         </form>
     </div>

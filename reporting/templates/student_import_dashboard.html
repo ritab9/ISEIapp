@@ -69,7 +69,7 @@
         {% endif %}
         <p>Please review the exported data and mark the report completed if applicable.</p>
         <div class="col">
-            <a class= "btn btn-sm btn-ISEIblue2" href="{% url 'student_report' schoolID=annual_report.school.id school_yearID=annual_report.school_year.id %}">Review and Finalize Report</a>
+            <a class= "btn btn-sm btn-ISEIblue2" href="{% url 'student_report' annual_report.id %}">Review and Finalize Report</a>
         </div>
     </div>
 

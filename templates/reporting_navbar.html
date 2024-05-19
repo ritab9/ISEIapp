@@ -5,10 +5,11 @@
 
 {% block navbar_content %}
     {% if request.user|in_group:"principal, registrar"%}
-    <!-- <div class="principal_links" > -->
+    <!-- Add reporting specific links 
       <li class="nav-item ">
         <a class="nav-link" href="{% url 'principal_dashboard' request.user.id %}" > Home </a>
       </li>
+      -->
     {% endif %}
     
 {% endblock navbar_content%}
