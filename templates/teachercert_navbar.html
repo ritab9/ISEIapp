@@ -40,9 +40,6 @@
                 {% if request.user|in_group:"principal,registrar"%}
 
                     <!-- <div class="principal_links" > -->
-                    <li class="nav-item ">
-                        <a class="nav-link" href="{% url 'principal_dashboard' request.user.id %}" > Home </a>
-                      </li>
                       <li class="nav-item ">
                         <a class="nav-link" href="{% url 'principal_teachercert' request.user.id %}" > Teacher Certification </a>
                       </li>
