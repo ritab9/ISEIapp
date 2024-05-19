@@ -8,7 +8,7 @@
 {% block content %}
 
 
-{% if request.user|in_group:"staff" or request.user|in_group:"principal, registrar"%}
+{% if request.user|in_group:"staff" or request.user|in_group:"principal,registrar"%}
 <!-- filter -->
     <div class="row">
         <div class="card card-body">

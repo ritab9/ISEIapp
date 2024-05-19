@@ -100,6 +100,8 @@ class Teacher(admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter =('school',)
     ordering = ('last_name','joined_at',)
+    search_fields = ['first_name','last_name' ]  # Added this line
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(user__is_active = True)

@@ -11,7 +11,7 @@
 
         <!--if it will be used by any other user-->
 
-    {% if request.user|in_group:"principal" or request.user|in_group:"staff" %}
+    {% if request.user|in_group:"principal,registrar" or request.user|in_group:"staff" %}
         {{ ceu_report.teacher }}
     {% endif %}
 

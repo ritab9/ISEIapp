@@ -8,7 +8,7 @@
 
 {% block content %}
 
-    {% if request.user|in_group:"principal, registrar" or request.user|in_group:"staff" %}
+    {% if request.user|in_group:"principal,registrar" or request.user|in_group:"staff" %}
         {{teacher }}
     {% endif %}
 

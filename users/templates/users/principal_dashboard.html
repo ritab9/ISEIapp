@@ -7,8 +7,44 @@
 
 <div class="row">
 <!-- School Info -->
-    <div class = "col col-auto card card-body">
-
+    <div class = "col col-auto card">
+        <div class="card-body">
+                <h6 class="card-title">{{ school.name }}</h6>
+                <p class="card-text">
+                    <strong>Address:</strong><br>
+                    {{ school.address.address_1 }}<br>
+                    {% if school.address.address_2 %} {{ school.address.address_2 }}<br>{% endif %}
+                    {{ school.address.city }},
+                    {% if school.address.state_us %}{{ school.address.state_us }},{% endif %}
+                    {% if school.address.tn_county %}{ school.address.tn_county }},{% endif %}
+                    {{ school.address.zip_code }}<br>
+                    {{ school.address.country }}
+                </p>
+                {% if school.phone_number %}
+                <p><strong>Phone:</strong> {{ school.phone_number }}</p>
+                {% endif %}
+                {% if school.email %}
+                <p><strong>Email:</strong> <a href="mailto:{{ school.email }}">{{ school.email }}</a></p>
+                {% endif %}
+                {% if school.website %}
+                <p><strong>Website:</strong> <a href="{{ school.website }}">{{ school.website }}</a></p>
+                {% endif %}
+                {% if school.principal %}
+                <p><strong>Principal:</strong> {{ school.principal }}</p>
+                {% endif %}
+                {% if school.president %}
+                <p><strong>President:</strong> {{ school.president }}</p>
+                {% endif %}
+                {% if accreditation_info %}
+                    <strong>Accreditation</strong>
+                    {% for ai in accreditation_info %}
+                    <p class="card-text">
+                        <span class="">{{ ai.agency.abbreviation }}:</span>
+                        <span>{{ ai.start_date|date:"SHORT_DATE_FORMAT" }}-{{ ai.end_date|date:"SHORT_DATE_FORMAT" }}</span>
+                    </p>
+                    {% endfor %}
+                {% endif %}
+            </div>
     </div>
 <!--Reports-->
     <div class="col col-auto card card-body">
@@ -57,7 +93,6 @@
                 </p>
             </div>
     </div>
-
 
 </div>
 

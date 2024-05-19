@@ -65,7 +65,7 @@ def loginpage(request):
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
-                            return redirect('isei_dashboard')
+                            return redirect('isei_teachercert_dashboard')
                     else:
                         messages.info(request, 'User not assigned to a group. Please contact the site administrator.')
                 else:
@@ -192,6 +192,9 @@ def principal_dashboard(request, userID):
     school=principal.school
     school_year=SchoolYear.objects.get(current_school_year=True)
 
+    #school info section
+    accreditation_info = AccreditationInfo.objects.filter(school=school, current_accreditation=True)
+
     teachers = Teacher.objects.filter(school=school, user__is_active=True, user__groups__name__in=['teacher'])
 
     # Teacher Certificates Section
@@ -237,9 +240,11 @@ def principal_dashboard(request, userID):
 
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers, userID = userID,
                     school = principal.school, report_due_dates = report_due_dates,
+                    accreditation_info=accreditation_info,
                   )
 
     return render(request, 'users/principal_dashboard.html', context)
+
 
 #@login_required(login_url='login')
 #@allowed_users(allowed_roles=['staff'])

@@ -32,7 +32,7 @@ def ceu_info(request):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
-def iseidashboard(request):
+def isei_teachercert_dashboard(request):
     # all active teacher
     teachers = Teacher.objects.filter(Q(user__is_active=True), Q(user__groups__name__in=['teacher']))
     # ~Q(school__name__in={'ISEI', 'Sample School'}))
@@ -109,7 +109,7 @@ def iseidashboard(request):
                    cert_dict=cert_dict,
                    )
 
-    return render(request, 'teachercert/isei_dashboard.html', context)
+    return render(request, 'teachercert/isei_teachercert_dashboard.html', context)
 
 
 @login_required(login_url='login')

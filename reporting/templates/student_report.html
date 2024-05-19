@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'reporting_base.html' %}
 
 {% block title %} Student Report {% endblock title %}
 
@@ -58,7 +58,9 @@
                 </div>
 <!-- Global Boarding/or no -->
                  <div class="col col-auto align-right">
-                     <input type="checkbox" id="markAllBoarding"> Mark all students as boarding
+                     <div class=""><label for="global-location"><b>Boarding</b></label></div>
+
+                     <input type="checkbox" id="markAllBoarding">
                  </div>
 <!-- Comments and instructions -->
                 <div class="col col-auto">

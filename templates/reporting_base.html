@@ -1,0 +1,27 @@
+{# base teacher certification templates #}
+
+
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+        <header>
+            {% include 'reporting_navbar.html' %}
+        </header>
+{% endblock header %}   
+ 
+    {# The Footer #}
+{% block footer %}
+    <footer class="footer noprint" >
+        
+    </footer>
+    {{ block.super }}
+{% endblock footer %}
+
+</body>
+
+    {% block footer_javascript %}
+
+    {% endblock footer_javascript %}
+
+</html>
+
