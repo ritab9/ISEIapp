@@ -61,7 +61,7 @@ def loginpage(request):
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
                         return redirect('principal_teachercert', user.id)
-                        #return redirect('principal_dashboard', user.id)
+                        #return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                             return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -186,29 +186,21 @@ def accountsettings(request, userID):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal', 'registrar'])
-def principal_dashboard(request, userID):
+def principal_dashboard(request, schoolID):
 
-    principal = User.objects.get(id=userID).teacher
-    school=principal.school
+    school=School.objects.get(id=schoolID)
     school_year=SchoolYear.objects.get(current_school_year=True)
 
     #school info section
     accreditation_info = AccreditationInfo.objects.filter(school=school, current_accreditation=True)
 
-    teachers = Teacher.objects.filter(school=school, user__is_active=True, user__groups__name__in=['teacher'])
-
     # Teacher Certificates Section
+    teachers = Teacher.objects.filter(school=school, user__is_active=True, user__groups__name__in=['teacher'])
     number_of_teachers = teachers.count()
-    tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False)
-    # Valid certificates and certified teachers
-    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers).order_by('teacher')
-    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct()
+    tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False, renewal_date__gte=date.today())
+    certified_teachers = teachers.filter(tcertificate__in=tcertificates).distinct()
     number_of_certified_teachers = certified_teachers.count()
     percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
-
-    #today = date.today()
-    #in_six_months = today + timedelta(183)
-    #a_year_ago = today - timedelta(365)
 
     # Get all ReportingDueDate objects for this region
     report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')
@@ -238,8 +230,8 @@ def principal_dashboard(request, userID):
             #raise ValueError(f'Invalid report name: {report_dd.report.name}')
 
 
-    context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers, userID = userID,
-                    school = principal.school, report_due_dates = report_due_dates,
+    context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
+                    school = school, report_due_dates = report_due_dates,
                     accreditation_info=accreditation_info,
                   )
 

@@ -22,15 +22,18 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav navbar-nav">
-         {% if request.user|in_group:"principal,registrar"%}
-             <!--  
-            <li class="nav-item ">
-                <a class="nav-link" href="{% url 'principal_dashboard' request.user.id %}" > Home </a>
-              </li> -->
-        {% endif %}
+        <!-- Hide in production for now 
+         { % if request.user|in_group:"principal,registrar"%}
+             <li class="nav-item ">
+                <a class="nav-link" href="{ % url 'principal_dashboard' request.user.teacher.school.id %}"> Home </a>
+              </li> 
+        { % endif %}
+        -->
         
         {% block navbar_content %}
-           
+            <li class="nav-item ">
+                  <a class="nav-link" href="{% url 'principal_teachercert' request.user.id %}" > Teacher Certification </a>
+            </li>
         {% endblock navbar_content %}
         </ul>
   </div>

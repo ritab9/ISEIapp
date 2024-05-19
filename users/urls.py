@@ -23,7 +23,7 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(template_name="users/password_reset_complete.html"),
          name="password_reset_complete"),
 
-    path('principal_dashboard/<str:userID>/', views.principal_dashboard, name='principal_dashboard'),
+    path('principal_dashboard/<str:schoolID>/', views.principal_dashboard, name='principal_dashboard'),
 
     # dashboard urls
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),

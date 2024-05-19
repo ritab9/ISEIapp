@@ -78,7 +78,7 @@
     <div class = "col col-auto card card-body">
 <!-- Teacher Certification Status-->
             <h6 class="mb-3">
-            <a href="{% url 'principal_teachercert' userID %}">Teacher Certification </a>
+            <a href="{% url 'principal_teachercert' request.user.id %}">Teacher Certification </a>
             </h6>
     <!-- Percent of registered teachers -->
             <div class="mb-3">

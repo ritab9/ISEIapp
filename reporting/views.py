@@ -298,8 +298,6 @@ def student_import_dashboard(request, arID):
         form = UploadFileForm()
     return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})
 
-
-
 def opening_report(request, schoolID, school_yearID):
     # Add your processing here
     return render(request, 'opening_report.html')
