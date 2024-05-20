@@ -62,7 +62,12 @@
                         <tbody>
                             {% for report, due_date in annual_reports %}
                                 <tr>
-                                    <td><a href="{% url report.report_type.view_name report.id %}"> {{report.report_type.name}} </a></td>
+                                    <td>{{report.report_type.name}} <br> <a href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                    {% with display_view=report.report_type.view_name|add:"_display" %}
+                                        <a href="{% url display_view report.id %}"> View</a>
+                                    {% endwith %}
+                                    </td>
+
                                     <td>{{due_date}}</td>
                                     <td>{{ report.submit_date|default_if_none:"-" }}</td>
                                     <td>{{ report.last_update_date|default_if_none:"-" }}</td>

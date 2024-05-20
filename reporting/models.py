@@ -54,7 +54,7 @@ class AnnualReport(models.Model):
     submit_date = models.DateField(null=True, blank=True)
     last_update_date = models.DateField(null=True, blank=True)
     def __str__(self):
-        return self.school.name + "," + self.school_year.name + ","+self.report_type.name
+        return self.school.name + ", " + self.school_year.name + ", "+self.report_type.name
 
     class Meta:
         unique_together = (('school', 'school_year', 'report_type'),)

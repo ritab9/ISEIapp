@@ -18,12 +18,14 @@ from django.views import View
 from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
+from .filters import *
 
 
 def report_dashboard(request, schoolID, school_yearID):
     # Add your processing here
     return render(request, 'report_dashboard.html')
 
+#Student Report Views
 def student_report(request,arID):
 
     annual_report = AnnualReport.objects.get(id=arID)
@@ -78,6 +80,42 @@ def student_report(request,arID):
 
     return render(request, 'student_report.html', context)
 
+def student_report_display(request, arID):
+    annual_report = AnnualReport.objects.get(id=arID)
+    students = Student.objects.filter(annual_report=annual_report)
+    filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
+
+
+    if request.GET:
+        if filter_form.is_valid():
+            if 'grade_level' in filter_form.cleaned_data and filter_form.cleaned_data['grade_level']:
+                students = students.filter(grade_level=filter_form.cleaned_data['grade_level'])
+
+            if 'status' in filter_form.cleaned_data and filter_form.cleaned_data['status']:
+                students = students.filter(status=filter_form.cleaned_data['status'])
+
+            if 'location' in filter_form.cleaned_data and filter_form.cleaned_data['location']:
+                students = students.filter(location=filter_form.cleaned_data['location'])
+
+            if 'gender' in filter_form.cleaned_data and filter_form.cleaned_data['gender']:
+                students = students.filter(gender=filter_form.cleaned_data['gender'])
+
+            if 'country' in filter_form.cleaned_data and filter_form.cleaned_data['country']:
+                students = students.filter(country=filter_form.cleaned_data['country'])
+
+            if 'us_state' in filter_form.cleaned_data and filter_form.cleaned_data['us_state']:
+                students = students.filter(us_state=filter_form.cleaned_data['us_state'])
+
+            if 'TN_county' in filter_form.cleaned_data and filter_form.cleaned_data['TN_county']:
+                students = students.filter(TN_county=filter_form.cleaned_data['TN_county'])
+
+
+    context = {
+        'annual_report': annual_report,
+        'students': students,
+        'filter_form': filter_form,
+    }
+    return render(request, 'student_report_display.html', context)
 
 class StudentExcelDownload(View):
     def get(self, request, *args, **kwargs):
@@ -110,7 +148,6 @@ class StudentExcelDownload(View):
         # Create a Fileresponse object using the buffer contents
         response = FileResponse(buf, as_attachment=True, filename='Student_data_template.xlsx')
         return response
-
 
 def student_import_dashboard(request, arID):
 
@@ -259,8 +296,9 @@ def student_import_dashboard(request, arID):
                     # Attempt to map the boarding value to a boolean
                     boarding = valid_boarding_choices[row['boarding']]
                 except KeyError:
-                    messages.error(request, f'Invalid boarding value at row {index + 1} in the Excel file.')
-                    continue  # Skip to next iteration
+                    boarding = False
+                    #messages.error(request, f'Invalid boarding value at row {index + 1} in the Excel file.')
+                    #continue  # Skip to next iteration
 
                 # Create or update instance
                 student, created = Student.objects.update_or_create(
@@ -293,23 +331,40 @@ def student_import_dashboard(request, arID):
         form = UploadFileForm()
     return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})
 
+
 def opening_report(request, arID):
     # Add your processing here
     return render(request, 'opening_report.html')
+def opening_report_display(request, arID):
+    # Add your processing here
+    return render(request, 'opening_report_display.html')
+
 
 def day190_report(request, arID):
     # Add your processing here
     return render(request, 'day190_report.html')
+def day190_report_display(request, arID):
+    # Add your processing here
+    return render(request, 'day190_report_display.html')
 
 def employee_report(request, arID):
     # Add your processing here
     return render(request, 'employee_report.html')
+def employee_report_display(request, arID):
+    # Add your processing here
+    return render(request, 'employee_report_display.html')
 
 def inservice_report(request, arID):
     # Add your processing here
     return render(request, 'inservice_report.html')
+def inservice_report_display(request, arID):
+    # Add your processing here
+    return render(request, 'inservice_report_display.html')
 
 def ap_report(request, arID):
     # Add your processing here
-    return render(request, 'student_report.html')
+    return render(request, 'ap_report.html')
+def ap_report_display(request, arID):
+    # Add your processing here
+    return render(request, 'ap_report_display.html')
     

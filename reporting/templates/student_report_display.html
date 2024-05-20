@@ -1,0 +1,81 @@
+{% extends 'reporting_base.html' %}
+
+{% block title %} Student Report {% endblock title %}
+
+
+{% block content %}
+
+<!-- Student Report -->
+    <div class="card">
+        <div class="col mt-2">
+            <h6>{{ annual_report }}</h6>
+        </div>
+        <div class="col mt-2">
+            <form method="GET">
+                {{ filter_form }}
+                <input class="btn btn-sm btn-ISEIblue4" type="submit" value="Filter">
+                <a class="btn btn-sm btn-ISEIblue4" href="{% url 'student_report_display' annual_report.id %}" class="btn btn-default">Reset</a>
+            </form>
+        </div>
+<!-- table with student data -->
+        <div class="scrollable-table scrollable-table2 mt-2">
+                <table class="table table-light table-striped">
+                    <thead class="thead table-ISEIblue4 sticky_head">
+                        <tr>
+                            <th>Name</th><th>Address</th>
+                            {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
+                                <th>US State</th>
+                                {% if annual_report.school.address.state_us == 'TN' %}
+                                    <th>TN County</th>
+                                {% endif %}
+                            {% endif %}
+                            <th>Country</th>
+                            <th>Grade</th>
+                            <th>Gender</th><th>Birth date</th><th>Age</th>
+                            <th>Boarding</th><th>Baptized</th><th>SDA Parent</th><th>Status</th>
+                            <th>Registration</th><th>Withdraw</th><th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.address }}</td>
+                                {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
+                                    <td>{{ student.us_state|default_if_none:"" }}</td>
+                                    {% if annual_report.school.address.state_us == 'TN' %}
+                                        <td>{{ student.TN_county|default_if_none:"" }}</td>
+                                    {% endif %}
+                                {% endif %}
+                                <td>{{ student.country }}</td>
+                                <td>{{ student.get_grade_level_display }}</td>
+                                <td>{{ student.get_gender_display|default_if_none:"" }}</td>
+                                <td>{{ student.birth_date|default_if_none:"" }}</td>
+                                <td>{{ student.age_at_registration }}</td>
+
+                                <td>{{ student.boarding|default_if_none:"" }}</td>
+                                <td>{{ student.get_baptized_display|default_if_none:"" }}</td>
+                                <td>{{ student.get_parent_sda_display|default_if_none:"" }}</td>
+                                <td>{{ student.get_status_display }}</td>
+
+                                <td>{{ student.registration_date }}</td>
+                                <td>{{ student.withdraw_date|default_if_none:"" }}</td>
+                                <td>{{ student.get_location_display }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+
+<!--buttons-->
+            <div class="row mb-2 mt-2">
+                <div class="col d-flex justify-content-center">
+                    <a class="btn btn-sm btn-ISEIblue4" href="{% url 'principal_dashboard' request.user.teacher.school.id %}">Dashboard</a></div>
+            </div>
+    </div>
+
+
+
+{% endblock %}

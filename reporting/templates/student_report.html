@@ -4,18 +4,7 @@
 
 
 {% block content %}
-<style>
-.scrollable-table2 {
-    max-height: 600px; /* Adjust this value based on your requirements */
-    overflow-y: auto;
-}
 
-.sticky_head {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-</style>
 
 <!-- General Info-->
     <div class="row">
@@ -81,7 +70,7 @@
 <!-- table with student data -->
             <div class="scrollable-table scrollable-table2">
                 <table class="table table-light">
-                    <thead class="thead-dark sticky_head">
+                    <thead class="thead table-ISEIblue4 sticky_head">
                         <tr><th>#</th>
                             {% for field in formset.forms.0.visible_fields %}
                                 <th>

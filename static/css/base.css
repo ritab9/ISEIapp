@@ -8,6 +8,16 @@
 .scrollable-table {
     overflow-x: auto;
 }
+.scrollable-table2 {
+    max-height: 800px; /* Adjust this value based on your requirements */
+    overflow-y: auto;
+}
+
+.sticky_head {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
 
 /* used with JS to show/hide elements in report table*/
 .approvaltable .table{}
