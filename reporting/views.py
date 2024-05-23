@@ -19,6 +19,7 @@ from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
 from .filters import *
+from django.db import transaction
 
 
 def report_dashboard(request, schoolID, school_yearID):
@@ -28,28 +29,21 @@ def report_dashboard(request, schoolID, school_yearID):
 #Student Report Views
 def student_report(request,arID):
 
-    annual_report = AnnualReport.objects.get(id=arID)
-    report_type = annual_report.report_type
+    annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
     school = annual_report.school
-    school_year = annual_report.school_year
 
-    if school.address.country.code == "US":
-        if school.address.state_us == "TN":
-            StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True,
-                                              exclude=('annual_report', 'id', 'age_at_registration'))
-        else:
-            StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True,
-                                                  exclude=('annual_report', 'id', 'age_at_registration', 'TN_county'))
-    else:
-        StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True,
-                                              exclude=('annual_report', 'id', 'age_at_registration', 'us_state',
-                                                       'TN_county'))
+    exclude_fields = ['annual_report', 'id', 'age_at_registration']
+    if school.address.country.code != "US" or school.address.state_us != "TN":
+        exclude_fields.append('TN_county')
+
+    if school.address.country.code != "US":
+        exclude_fields.append('us_state')
+
+    StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True, exclude=exclude_fields)
 
     if request.method == 'POST':
         formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
-        #for form in formset:
-        #    if form.has_changed():
-        #        print("Following fields in the form were changed:", form.changed_data)
+
         if formset.is_valid():
             instances = formset.save(commit=False)
             for instance in instances:
@@ -74,15 +68,51 @@ def student_report(request,arID):
                 return redirect('principal_dashboard', request.user.teacher.school.id)
 
     else:
-        formset = StudentFormSet(queryset=Student.objects.filter(annual_report=annual_report, status='enrolled').order_by('grade_level','name'))
+        students_qs = (Student.objects.filter(annual_report=annual_report, status='enrolled')
+                       .select_related('country', 'TN_county')
+                       .order_by('grade_level', 'name'))
+        formset = StudentFormSet(queryset=students_qs)
 
     context = dict(formset=formset, annual_report=annual_report)
-
     return render(request, 'student_report.html', context)
+
+def import_students_prev_year(request, arID):
+    report = get_object_or_404(AnnualReport, id=arID)
+    prev_school_year = report.school_year.get_previous_school_year()
+
+    if not prev_school_year:
+        messages.error(request, 'No previous school year found.')
+        return redirect('student_report' , arID)  # Update this with where you want to redirect
+
+    prev_report = AnnualReport.objects.filter(school=report.school, school_year=prev_school_year,
+                                              report_type=report.report_type).first()
+
+    if not prev_report:
+        messages.error(request, 'No previous report found.')
+        return redirect('student_report', arID)  # Update this with where you want to redirect
+
+    students_to_import = Student.objects.filter(annual_report=prev_report)
+
+    # Now copy over all students
+    for student in students_to_import:
+        student.pk = None  # Makes Django create a new instance
+        student.annual_report = report
+        if student.age:
+            student.age += 1
+        # Handle grade level (assuming it's not None, add error handling as needed)
+        student.grade_level = student.grade_level + 1 if student.grade_level < 13 else 13
+        # Registration date. Make sure to handle None case if needed
+        student.registration_date = student.registration_date + timedelta(days=365)
+        student.save()
+
+    messages.success(request, 'Students imported successfully.')
+    return redirect('student_report', arID)  # Update this with where you want to redirect after success
+
 
 def student_report_display(request, arID):
     annual_report = AnnualReport.objects.get(id=arID)
-    students = Student.objects.filter(annual_report=annual_report)
+    students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
+                                                                                  'TN_county').order_by('grade_level', 'name')
     filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
 
 
@@ -149,6 +179,7 @@ class StudentExcelDownload(View):
         response = FileResponse(buf, as_attachment=True, filename='Student_data_template.xlsx')
         return response
 
+#import student from Excel
 def student_import_dashboard(request, arID):
 
     annual_report_instance = AnnualReport.objects.get(id=arID)
@@ -326,7 +357,10 @@ def student_import_dashboard(request, arID):
                     created_count += 1
 
             if created_count > 0:
-                messages.success(request,f"{created_count} student record(s) have been created. Data has been imported into Student model.")
+                messages.success(request,f"{created_count} student record(s) have been imported.")
+            else:
+                messages.info(request,f"No student record(s) have been imported. The data is either incomplete or the students are already registered in this report.")
+
     else:
         form = UploadFileForm()
     return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})

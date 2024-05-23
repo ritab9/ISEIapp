@@ -100,6 +100,7 @@ class School(models.Model):
     website = models.URLField(max_length=200, blank=True, null=True)
     principal = models.CharField(max_length=100, blank=True, null=True)
     president = models.CharField(max_length=100, blank=True, null=True)
+    member = models.BooleanField(default=True)
     #address = models.OneToOneField('Address', on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:

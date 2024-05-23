@@ -9,6 +9,7 @@ urlpatterns = [
     path('student_excel_download/', StudentExcelDownload.as_view(), name='student_excel_download'),
     path('student_report_display/<int:arID>/', views.student_report_display,
          name='student_report_display'),
+    path('import_students_prev_year/<int:arID>/', views.import_students_prev_year, name='import_students_prev_year'),
 
 
     path('day190_report/<int:arID>/', views.day190_report, name='day190_report'),

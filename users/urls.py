@@ -23,9 +23,10 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(template_name="users/password_reset_complete.html"),
          name="password_reset_complete"),
 
-    path('principal_dashboard/<str:schoolID>/', views.principal_dashboard, name='principal_dashboard'),
-
     # dashboard urls
+    path('principal_dashboard/<str:schoolID>/', views.principal_dashboard, name='principal_dashboard'),
+    path('isei_dashboard/', views.isei_dashboard, name='isei_dashboard'),
+
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),
 
     #path('transcript_status', views.transcript_status, name='transcript_status')

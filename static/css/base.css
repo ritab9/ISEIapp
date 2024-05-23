@@ -65,6 +65,16 @@ textarea {
 width: 5px;
 }
 
+.success {
+  color: green;
+}
+.info {
+  color: blue;
+}
+.warning {
+  color: orange;
+}
+
 .error {
     color:red;
     font-weight: normal;

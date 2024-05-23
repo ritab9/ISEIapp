@@ -20,7 +20,7 @@
 <!-- table with student data -->
         <div class="scrollable-table scrollable-table2 mt-2">
                 <table class="table table-light table-striped">
-                    <thead class="thead table-ISEIblue4 sticky_head">
+                    <thead class="thead table-dark sticky_head">
                         <tr>
                             <th>Name</th><th>Address</th>
                             {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
@@ -53,7 +53,7 @@
                                 <td>{{ student.birth_date|default_if_none:"" }}</td>
                                 <td>{{ student.age_at_registration }}</td>
 
-                                <td>{{ student.boarding|default_if_none:"" }}</td>
+                                <td>{{ student.boarding.value|yesno:"Yes,No" }}</td>
                                 <td>{{ student.get_baptized_display|default_if_none:"" }}</td>
                                 <td>{{ student.get_parent_sda_display|default_if_none:"" }}</td>
                                 <td>{{ student.get_status_display }}</td>
@@ -72,7 +72,11 @@
 <!--buttons-->
             <div class="row mb-2 mt-2">
                 <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-ISEIblue4" href="{% url 'principal_dashboard' request.user.teacher.school.id %}">Dashboard</a></div>
+                    <a class="btn btn-sm btn-success" href="{% url 'principal_dashboard' request.user.teacher.school.id %}">Dashboard</a>
+                </div>
+                <div class="col d-flex justify-content-center">
+                    <a class="btn btn-sm btn-ISEIblue4" href="{% url 'student_report' annual_report.id %}">Edit Report</a>
+                </div>
             </div>
     </div>
 

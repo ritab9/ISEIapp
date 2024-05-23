@@ -25,7 +25,7 @@
         <!-- Hide in production for now -->
          {% if request.user|in_group:"principal,registrar"%}
              <li class="nav-item ">
-                <a class="nav-link" href="{% url 'principal_dashboard' request.user.teacher.school.id %}"> Home </a>
+                <a class="nav-link" href="{% url 'principal_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
               </li> 
         {% endif %}
        

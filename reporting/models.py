@@ -77,7 +77,7 @@ GRADE_LEVEL_DICT = {
         '12': 12,
     }
 class Student(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, db_index=True)
     address = models.CharField(max_length=500)
     us_state= StateField(verbose_name="US State", blank=True, null=True)
     TN_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
@@ -94,7 +94,7 @@ class Student(models.Model):
     STATUS_CHOICES = [
         ('Y', 'Yes'),
         ('N', 'No'),
-        ('U', 'Unknown'),
+        ('U', '-'),
     ]
     boarding = models.BooleanField(default=False)
 
@@ -103,7 +103,7 @@ class Student(models.Model):
 
     STATUS_CHOICES = [
         ('enrolled', 'Enrolled'),
-        ('graduated', 'Graduated Last Year'),
+        ('graduated', 'Graduated'),
         ('did_not_return', 'Did Not Return'),
     ]
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='enrolled')
@@ -124,6 +124,7 @@ class Student(models.Model):
         (10, '10'),
         (11, '11'),
         (12, '12'),
+        (13, 'Graduated')
     ]
     grade_level =  models.IntegerField(choices=GRADE_LEVEL_CHOICES)
 

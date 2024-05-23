@@ -4,7 +4,13 @@
 
 
 {% block content %}
-
+<style>
+  .sticky-column {
+        position: sticky;
+        left: 0;
+        background-color: white; /* Required, since `position: sticky` elements are transparent */
+    }
+</style>
 
 <!-- General Info-->
     <div class="row">
@@ -25,17 +31,20 @@
     <div class="card mt-3">
             <div class="row mt-1 mb-2 ml-2 ">
 <!-- Global registration date -->
+                 <div class="col col-auto">
+                    <a class="btn btn-sm btn-ISEIblue2 mt-4" href="{% url 'import_students_prev_year' annual_report.id %}">Import Students from {{ annual_report.school_year.get_previous_school_year }}</a>
+                    {% for message in messages %}
+                           {% for message in messages %}
+                                <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+                            {% endfor %}
+                     {% endfor %}
+                 </div>
                 <div class="col col-auto">
                     <div class="text-left"><label for="common-registration-date"><b>Global Registration Date</b></label></div>
                     <div><input type="date" id="common-registration-date" style="width: 150px"/></div>
                     <button class="btn btn-ISEIblue2 btn-sm mt-1" id="add-date-button">Apply</button>
-
+                    <button class="btn btn-ISEIblue2 btn-sm mt-1" id="rewrite-date-button">Rewrite</button>
                 </div>
-                <!-- div class="col col-auto text-left">
-                    <div class="row">
-                        <button class="btn btn-ISEIblue2 btn-sm mt-4 mr-2" id="rewrite-date-button">Rewrite Registration Date</button>
-                    </div>
-                </div -->
  <!-- Global Location -->
                 <div class="col col-auto align-right">
                     <div class=""><label for="global-location"><b>Global Location</b></label></div>
@@ -70,7 +79,7 @@
 <!-- table with student data -->
             <div class="scrollable-table scrollable-table2">
                 <table class="table table-light">
-                    <thead class="thead table-ISEIblue4 sticky_head">
+                    <thead class="thead-dark sticky_head">
                         <tr><th>#</th>
                             {% for field in formset.forms.0.visible_fields %}
                                 <th>
@@ -134,7 +143,7 @@
                      'Click Cancel if you need to review, OK if report if complete.');" >
                 </div>
                 <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.teacher.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Return</a></div>
+                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.teacher.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a></div>
             </div>
         </form>
     </div>
@@ -146,7 +155,14 @@
     </div>
 
 <script>
-
+/*    window.onload = function () {
+        var table = document.querySelector('.table');
+        var headerRow = table.querySelector('thead').rows[0];
+        var stickyCell = headerRow.cells[1]; // Change to the index of your sticky cell
+        var bgColor = window.getComputedStyle(headerRow, null).getPropertyValue('background-color');
+        stickyCell.style.backgroundColor = bgColor;
+    }
+*/
 // To make TN_county available only for TN schools, and add US as country if US state is selected
     $(document).ready(function() {
     // Listen to any change on state fields
@@ -203,37 +219,24 @@
     });
 
 //add common registration date for existing records with no registration date
-    document.getElementById('add-date-button').addEventListener('click', function(e) {
+   document.getElementById('add-date-button').addEventListener('click', function(e) {
         e.preventDefault();  // prevent form submission if the button type is 'submit'
-        var commonDate = document.getElementById('common-registration-date').value;
-        var registrationDateInputs = document.querySelectorAll('input[name$="registration_date"]');
-        registrationDateInputs.forEach(function(input) {
-            if(input.value === '') {
-                input.value = commonDate;
-            }
-        });
+
+        // Confirmation message for adding common registration to existing records
+        var confirmation = confirm('This date is added only to records with blank registration date. Ensure that you are applying the correct date!');
+
+        if(confirmation) {
+            var commonDate = document.getElementById('common-registration-date').value;
+            var registrationDateInputs = document.querySelectorAll('input[name$="registration_date"]');
+            registrationDateInputs.forEach(function(input) {
+                if(input.value === '') {
+                    input.value = commonDate;
+                }
+            });
+        }
     });
 
-//Confirmation message for adding common registration to existing records
-    document.getElementById("add-date-button").onclick = function() {
-        return confirm('This date is added only to records with blank registration date. Ensure that you are applying the correct date!');
-    }
 
-//rewrite common registration date for ALL existing records
-/*    document.getElementById('rewrite-date-button').addEventListener('click', function(e) {
-        e.preventDefault();  // prevent form submission if the button type is 'submit'
-        var commonDate = document.getElementById('common-registration-date').value;
-        var registrationDateInputs = document.querySelectorAll('input[name$="registration_date"]');
-        registrationDateInputs.forEach(function(input) {
-            input.value = commonDate;
-        });
-    });
-
-//Confirmation message for rewriting registration date to existing records
-    document.getElementById("rewrite-date-button").onclick = function() {
-        return confirm(
-            'This date will change ALL registration dates to date entered. Are you sure you want to do this?');
-    } */
 
 // add common registration date when student name is entered
     $(document).on('change', 'input[name^="form-"][name$="-name"]', function() {
@@ -253,6 +256,20 @@
         rowIndex++
     })
 }
+
+//rewrite common registration date for ALL existing records
+  document.getElementById('rewrite-date-button').addEventListener('click', function(e) {
+    e.preventDefault();  // prevent form submission if the button type is 'submit'
+    // Confirmation message for rewriting registration date to existing records
+        var confirmation = confirm('This date will change ALL registration dates to date entered. Are you sure you want to do this?');
+        if(confirmation) {
+            var commonDate = document.getElementById('common-registration-date').value;
+            var registrationDateInputs = document.querySelectorAll('input[name$="registration_date"]');
+            registrationDateInputs.forEach(function(input) {
+                input.value = commonDate;
+            });
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', e => {
     var formset = document.querySelector('#formset');

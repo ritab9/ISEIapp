@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %} ISEI Dashboard {% endblock title %}
+
+
+{% block content %}
+
+<div class="row">
+<!-- School Info -->
+    <div class = "col col-auto card">
+        <div class="card-body scrollable-table2">
+                <table class="table table-striped">
+                  <thead class="thead table-ISEIblue4 sticky_head">
+                    <tr>
+                      <th>Name</th>
+                      <th>Address</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Website</th>
+                      <th>Principal</th>
+                      <th>President</th>
+                      <th>Accreditation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for school in schools %}
+                    <tr>
+                      <td>{{ school.name }}</td>
+                      <td>
+                        {{ school.address.address_1 }}<br>
+                        {% if school.address.address_2 %} {{ school.address.address_2 }}<br>{% endif %}
+                        {{ school.address.city }},
+                        {% if school.address.state_us %}{{ school.address.state_us }},{% endif %}
+                        {% if school.address.tn_county %}{{school.address.tn_county }},{% endif %}
+                        {{ school.address.zip_code }}<br>
+                        {{ school.address.country }}
+                      </td>
+                      <td>{% if school.phone_number %} {{ school.phone_number }} {% else %} - {% endif %}</td>
+                      <td>{% if school.email %} <a href="mailto:{{ school.email }}">{{ school.email }}</a> {% else %} - {% endif %}</td>
+                      <td>{% if school.website %} <a href="{{ school.website }}">{{ school.website }}</a> {% else %} - {% endif %}</td>
+                      <td>{% if school.principal %} {{ school.principal }} {% else %} - {% endif %}</td>
+                      <td>{% if school.president %} {{ school.president }} {% else %} - {% endif %}</td>
+                      <td>
+                        In works
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+        </div>
+    </div>
+<!--Reports-->
+    <div class="col col-auto card card-body">
+        <h6> {{ current_school_year.name }} Reports </h6>
+        <div class="container">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Report</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Submitted On</th>
+                                <th scope="col">Last Update</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report, due_date in annual_reports %}
+                                <tr>
+                                    <td>{{report.report_type.name}} <br> <a href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                    {% with display_view=report.report_type.view_name|add:"_display" %}
+                                        <a href="{% url display_view report.id %}"> View</a>
+                                    {% endwith %}
+                                    </td>
+
+                                    <td>{{due_date}}</td>
+                                    <td>{{ report.submit_date|default_if_none:"-" }}</td>
+                                    <td>{{ report.last_update_date|default_if_none:"-" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+    </div>
+<!-- Teacher Cert -->
+    <div class = "col col-auto card card-body">
+<!-- Teacher Certification Status-->
+            <h6 class="mb-3">
+            <a href="{% url 'principal_teachercert' request.user.id %}">Teacher Certification </a>
+            </h6>
+    <!-- Percent of registered teachers -->
+            <div class="mb-3">
+                <p>Number of registered teachers: {{ number_of_teachers }}</p>
+                <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
+                <p> Percent of registered teachers certified:
+                    {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
+                        {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
+                        {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
+                        {% else %} <span style="color:green">{{ percent_certified }}%</span>
+                    {% endif %}
+                </p>
+            </div>
+    </div>
+
+
+</div>
+
+{% endblock %}

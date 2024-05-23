@@ -18,12 +18,25 @@ class SchoolYear(models.Model):
     country = models.ManyToManyField(Country)
 
     current_school_year = models.BooleanField(default=False)  # added field
+    sequence = models.IntegerField(unique=True)
 
     def save(self, *args, **kwargs):
         if self.current_school_year:
             # Set current_school_year for all other records to False
             SchoolYear.objects.filter(~Q(id=self.id)).update(current_school_year=False)
         super().save(*args, **kwargs)
+
+    def get_next_school_year(self):
+        try:
+            return SchoolYear.objects.get(sequence=self.sequence + 1)
+        except SchoolYear.DoesNotExist:
+            return None
+
+    def get_previous_school_year(self):
+        try:
+            return SchoolYear.objects.get(sequence=self.sequence - 1)
+        except SchoolYear.DoesNotExist:
+            return None
 
     class Meta:
         ordering = ('-name',)

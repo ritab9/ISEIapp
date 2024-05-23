@@ -45,9 +45,11 @@ INSTALLED_APPS = [
     'teachercert',
     'emailing',
     'reporting',
+
     'crispy_forms',
     'storages',
     'jquery',
+    'debug_toolbar',
 # 'captcha',
 ]
 
@@ -59,7 +61,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 
 ROOT_URLCONF = 'ISEIapp.urls'
 

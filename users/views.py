@@ -63,9 +63,11 @@ def loginpage(request):
                         #return redirect('principal_teachercert', user.id)
                         return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
-                            return redirect('teacher_dashboard', user.id)
+                        return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
-                            return redirect('isei_teachercert_dashboard')
+                        #return redirect('isei_teachercert_dashboard')
+                        return redirect('isei_dashboard')
+
                     else:
                         messages.info(request, 'User not assigned to a group. Please contact the site administrator.')
                 else:
@@ -235,3 +237,11 @@ def principal_dashboard(request, schoolID):
 #    return render(request, 'users/transcript_status.html', context)
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_dashboard(request):
+
+    schools=School.objects.filter(member=True).order_by('name')
+
+    context = dict (schools=schools)
+    return render(request, 'users/isei_dashboard.html', context)
