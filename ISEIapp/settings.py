@@ -206,4 +206,10 @@ else:
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
     EMAIL_PORT = 587
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # no of student forms
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # no of student form fields
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}

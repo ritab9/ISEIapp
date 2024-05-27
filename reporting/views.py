@@ -22,6 +22,7 @@ from .filters import *
 from django.db import transaction
 
 
+
 def report_dashboard(request, schoolID, school_yearID):
     # Add your processing here
     return render(request, 'report_dashboard.html')
@@ -43,14 +44,22 @@ def student_report(request,arID):
 
     if request.method == 'POST':
         formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
-
         if formset.is_valid():
-            instances = formset.save(commit=False)
-            for instance in instances:
-                instance.annual_report = annual_report
-                instance.save()
-            for object in formset.deleted_objects:
-                object.delete()
+            if formset.has_changed():
+                for form in formset:
+                    print(f'Changed fields for form {form.instance.pk}:', form.changed_data)
+                    if form.has_changed():
+                        if form.instance.pk is not None:
+                            form.save()
+                        else:
+                            instance=form.save(commit=False)
+                            instance.annual_report = annual_report
+                            instance.save()
+                for form in formset.deleted_forms:
+                    form.instance.delete()
+
+            #for object in formset.deleted_objects:
+            #    object.delete()
 
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
@@ -65,7 +74,7 @@ def student_report(request,arID):
                 annual_report.save()
                 #annual_report.submit_date = None
                 #annual_report.save()
-                return redirect('principal_dashboard', request.user.teacher.school.id)
+                #return redirect('principal_dashboard', request.user.teacher.school.id)
 
     else:
         students_qs = (Student.objects.filter(annual_report=annual_report, status='enrolled')
@@ -110,6 +119,7 @@ def import_students_prev_year(request, arID):
 
 
 def student_report_display(request, arID):
+
     annual_report = AnnualReport.objects.get(id=arID)
     students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
                                                                                   'TN_county').order_by('grade_level', 'name')
