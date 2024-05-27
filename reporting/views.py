@@ -103,7 +103,10 @@ def import_students_prev_year(request, arID):
     students_to_import = Student.objects.filter(annual_report=prev_report)
 
     # Now copy over all students
+    imported_count = 0
     for student in students_to_import:
+        if Student.objects.filter(name=student.name, annual_report=report).exists():
+            continue
         student.pk = None  # Makes Django create a new instance
         student.annual_report = report
         if student.age:
@@ -113,8 +116,9 @@ def import_students_prev_year(request, arID):
         # Registration date. Make sure to handle None case if needed
         student.registration_date = student.registration_date + timedelta(days=365)
         student.save()
+        imported_count += 1  # increment the count of imported students
 
-    messages.success(request, 'Students imported successfully.')
+    messages.success(request, '{} Students imported successfully.'.format(imported_count))
     return redirect('student_report', arID)  # Update this with where you want to redirect after success
 
 
