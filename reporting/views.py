@@ -74,7 +74,7 @@ def student_report(request,arID):
                 annual_report.save()
                 #annual_report.submit_date = None
                 #annual_report.save()
-                #return redirect('principal_dashboard', request.user.teacher.school.id)
+                return redirect('principal_dashboard', request.user.teacher.school.id)
 
     else:
         students_qs = (Student.objects.filter(annual_report=annual_report, status='enrolled')
