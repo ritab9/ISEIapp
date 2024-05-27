@@ -77,9 +77,14 @@ def student_report(request,arID):
                 return redirect('principal_dashboard', request.user.teacher.school.id)
 
     else:
-        students_qs = (Student.objects.filter(annual_report=annual_report, status='enrolled')
-                       .select_related('country', 'TN_county')
-                       .order_by('grade_level', 'name'))
+        if annual_report.submit_date:
+            students_qs = (Student.objects.filter(annual_report=annual_report, status='enrolled')
+                           .select_related('country', 'TN_county')
+                           .order_by('grade_level', 'name'))
+        else:
+            students_qs = (Student.objects.filter(annual_report=annual_report)
+                           .select_related('country', 'TN_county')
+                           .order_by('grade_level', 'name'))
         formset = StudentFormSet(queryset=students_qs)
 
     context = dict(formset=formset, annual_report=annual_report)
@@ -100,7 +105,7 @@ def import_students_prev_year(request, arID):
         messages.error(request, 'No previous report found.')
         return redirect('student_report', arID)  # Update this with where you want to redirect
 
-    students_to_import = Student.objects.filter(annual_report=prev_report)
+    students_to_import = Student.objects.filter(annual_report=prev_report, status='enrolled')
 
     # Now copy over all students
     imported_count = 0
@@ -125,8 +130,13 @@ def import_students_prev_year(request, arID):
 def student_report_display(request, arID):
 
     annual_report = AnnualReport.objects.get(id=arID)
-    students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
+    if annual_report.submit_date:
+        students = Student.objects.filter(annual_report=annual_report, status = "enrolled").select_related('annual_report', 'country',
                                                                                   'TN_county').order_by('grade_level', 'name')
+    else:
+        students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
+                                                                                      'TN_county').order_by('grade_level', 'name')
+
     filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
 
 
