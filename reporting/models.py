@@ -142,7 +142,7 @@ class Student(models.Model):
     annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='students', null=False, blank=False)
 
     class Meta:
-        unique_together = (('name', 'birth_date', 'annual_report'),)
+        unique_together = (('name', 'annual_report'),)
 
     def save(self, *args, **kwargs):
         if self.birth_date and self.registration_date and not self.age_at_registration:
@@ -155,3 +155,6 @@ class Student(models.Model):
 
     def __str__(self):
         return self.name + "," + self.annual_report.school_year.name
+
+class day190_report(models.Model):
+    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='day190', null=False, blank=False)
