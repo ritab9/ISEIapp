@@ -36,8 +36,6 @@
                                 <td style="text-align:left">
                                 <input class="number_input" type="text" id="number_of_weekdays" readonly style="border: none"> </td>
 
-                                <td style="width: 1px; white-space: nowrap;">No. of vacation weekdays</td>
-                                <td style ="text-align: left"><input class="number_input" type="text" id="total_vacation_days" readonly style="border: none"></td>
                               </tr>
                             </table>
                         </div>
@@ -119,9 +117,14 @@
                                         </div>
                                     {% endif %}
                                 {% endfor %}
+
                                 </tbody>
                             </table>
                         </div>
+
+                        <div style="text-align: right" class="mr-5"> No. of vacation weekdays: <input class="number_input" type="text" id="total_vacation_days" readonly style="border: none">
+                        </div>
+
                         <button type="button" class="btn btn-sm btn-ISEIblue2 add-form-button" id="vacation">Add more Vacation</button>
                     </div>
 
