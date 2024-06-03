@@ -398,8 +398,8 @@
       }
 
      // Calculate the number of days and set the value every time when days count or dates could be changed:
-    $(document).on('change', '#id_number_of_sundays', '#inservice_days',
-                    updateNumberOfDays);
+    $(document).on('change', '#id_number_of_sundays',updateNumberOfDays);
+    $(document).on('change', '#id_inservice_days', updateNumberOfDays);
 </script>
 
 {% endblock %}
