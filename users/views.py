@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -16,6 +16,7 @@ from .myfunctions import *
 from emailing.teacher_cert_functions import email_registered_user
 from teachercert.models import Teacher, SchoolYear
 from reporting.models import ReportDueDate, AnnualReport, ReportType
+from users.models import School, Address
 
 
 # authentication functions
@@ -60,8 +61,8 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
-                        #return redirect('principal_teachercert', user.id)
-                        return redirect('principal_dashboard', user.teacher.school.id)
+                        return redirect('principal_teachercert', user.id)
+                        #return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -236,7 +237,6 @@ def principal_dashboard(request, schoolID):
 
 #    return render(request, 'users/transcript_status.html', context)
 
-
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_dashboard(request):
@@ -245,3 +245,28 @@ def isei_dashboard(request):
 
     context = dict (schools=schools)
     return render(request, 'users/isei_dashboard.html', context)
+
+
+def update_school_info(request, schoolID):
+
+    school = get_object_or_404(School, id=schoolID)
+    address = school.address
+
+    if request.method == 'POST':
+        form_school = SchoolForm(request.POST, instance=school)
+        form_address = SchoolAddressForm(request.POST, instance=address)
+        if form_school.is_valid() and form_address.is_valid():
+            form_school.save()
+            form_address.save()
+            return redirect('principal_dashboard', schoolID=schoolID)
+    else:
+        form_school = SchoolForm(instance=school)
+        form_address = SchoolAddressForm(instance=address)
+
+    context = {
+        'form_school': form_school,
+        'form_address': form_address,
+        'schoolID':schoolID,
+    }
+
+    return render(request, 'users/update_school_info.html', context)

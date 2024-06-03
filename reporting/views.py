@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from django.forms import modelformset_factory
 from .models import AnnualReport, ReportType, School, SchoolYear, Student, TNCounty, Country, StateField
-from .forms import StudentForm, UploadFileForm
+from .forms import *
 from datetime import date, timedelta
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -399,8 +399,90 @@ def opening_report_display(request, arID):
 
 
 def day190_report(request, arID):
-    # Add your processing here
-    return render(request, 'day190_report.html')
+    annual_report = AnnualReport.objects.get(id=arID)
+
+    day190, created = Day190.objects.get_or_create(annual_report=annual_report)
+
+    VacationFormSet = modelformset_factory(Vacations, form=VacationsForm, extra=1)
+    InserviceFormSet = modelformset_factory(InserviceDiscretionaryDays, form=InserviceDiscretionaryDaysForm, extra=1)
+    AbbreviatedFormSet = modelformset_factory(AbbreviatedDays, form=AbbreviatedDaysForm, extra=1, max_num=3)
+
+    errors=[]
+
+    if request.method == 'POST':
+        form = Day190Form(request.POST, instance=day190)
+        formset_vacation = VacationFormSet(request.POST, prefix='vacation')
+        formset_inservice = InserviceFormSet(request.POST, prefix='inservice')
+        formset_abbreviated = AbbreviatedFormSet(request.POST, prefix='abbreviated')
+
+        if form.is_valid():
+            day190 = form.save(commit=False)
+            day190.annual_report = annual_report
+            day190.save()
+
+            # handle Vacations instances
+            if any(form.has_changed() for form in formset_vacation):
+                if formset_vacation.is_valid():
+                    for form in formset_vacation:
+                        if form.has_changed():
+                            vacation = form.save(commit=False)
+                            vacation.day190 = day190
+                            vacation.save()
+                else:
+                    errors.append(formset_vacation.errors)
+
+            # handle InserviceDiscretionaryDays instances
+            if any(form.has_changed() for form in formset_inservice):
+                if formset_inservice.is_valid():
+                    for form in formset_inservice:
+                        if form.has_changed():
+                            inservice_days = form.save(commit=False)
+                            inservice_days.day190 = day190
+                            inservice_days.save()
+                else:
+                    errors.append(formset_inservice.errors)
+
+            # handle AbbreviatedDays instances
+            if any(form.has_changed() for form in formset_abbreviated):
+                if formset_abbreviated.is_valid():
+                    for form in formset_abbreviated:
+                        if form.has_changed():
+                            abbreviated_days = form.save(commit=False)
+                            abbreviated_days.day190 = day190
+                            abbreviated_days.save()
+                else:
+                    errors.append(formset_abbreviated.errors)
+
+            if not errors:
+                return redirect('principal_dashboard', annual_report.school.id)
+            else:
+                errors.append(form.errors)
+
+    else:
+        form = Day190Form(instance=day190)
+        formset_vacation = VacationFormSet(queryset=Vacations.objects.filter(day190=day190), prefix='vacation')
+        formset_inservice = InserviceFormSet(queryset=InserviceDiscretionaryDays.objects.filter(day190=day190),
+                                             prefix='inservice')
+        formset_abbreviated = AbbreviatedFormSet(queryset=AbbreviatedDays.objects.filter(day190=day190),
+                                                 prefix='abbreviated')
+
+    # Generate empty forms for the formsets
+    empty_formset_vacation = VacationsForm(prefix='vacation')  # empty form for Vacations formset
+    empty_formset_inservice = InserviceDiscretionaryDaysForm(prefix='inservice')  # empty form for Inservice formset
+    empty_formset_abbreviated = AbbreviatedDaysForm(prefix='abbreviated')  # empty form for Abbreviated formset
+
+    context = {
+        'annual_report': annual_report,
+        'errors':errors,
+        'form': form,
+        'formset_vacation': formset_vacation,
+        'formset_inservice': formset_inservice,
+        'formset_abbreviated': formset_abbreviated,
+        'empty_formsets': [empty_formset_vacation, empty_formset_inservice, empty_formset_abbreviated]
+    }
+
+    return render(request, 'day190_report.html', context)
+
 def day190_report_display(request, arID):
     # Add your processing here
     return render(request, 'day190_report_display.html')

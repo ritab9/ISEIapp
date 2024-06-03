@@ -160,4 +160,11 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
     -moz-appearance:textfield; /* Firefox */
 }
-
+.number_input {
+    width: 50px; /* Adjust according to your needs */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    padding: 5px;
+    border: none;
+    background-color: transparent;
+    text-align: center; /* Optional: for centering the content */
+}

@@ -9,7 +9,7 @@
 <!-- School Info -->
     <div class = "col col-auto card">
         <div class="card-body">
-                <h6 class="card-title">{{ school.name }}</h6>
+            <h6 class="card-title">{{ school.name }}</h6>
                 <p class="card-text">
                     <strong>Address:</strong><br>
                     {{ school.address.address_1 }}<br>
@@ -44,7 +44,8 @@
                     </p>
                     {% endfor %}
                 {% endif %}
-            </div>
+            <a href="{% url 'update_school_info' schoolID=school.id %}" class="btn btn-sm btn-ISEIblue3">Update</a>
+        </div>
     </div>
 <!--Reports-->
     <div class="col col-auto card card-body">

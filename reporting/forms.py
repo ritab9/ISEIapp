@@ -1,5 +1,5 @@
 from django import forms
-from reporting.models import Student
+from reporting.models import Student, Day190, Vacations, InserviceDiscretionaryDays, AbbreviatedDays
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from users.models import Country, TNCounty
 from django.core.cache import cache, caches
@@ -53,3 +53,50 @@ class StudentForm(forms.ModelForm):
 
 
         return cleaned_data
+
+class Day190Form(forms.ModelForm):
+    class Meta:
+        model = Day190
+        exclude = ['id','annual_report']
+
+        widgets = {
+            'start_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'number_of_sundays': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'number_of_days': forms.NumberInput(attrs={'min': 1, 'max': 250, 'style': 'max-width: 30px; border:none'}),
+            'inservice_days': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+        }
+
+
+class VacationsForm(forms.ModelForm):
+    class Meta:
+        model = Vacations
+        exclude = ['id','day190']
+
+        widgets = {
+            'name': forms.TextInput(attrs={'style': 'max-width: 300px;'}),
+            'start_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'weekdays': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+        }
+
+class InserviceDiscretionaryDaysForm(forms.ModelForm):
+    class Meta:
+        model = InserviceDiscretionaryDays
+        exclude = ['id','day190']
+
+        widgets = {
+            'date': forms.TextInput(attrs={'style': 'max-width: 150px;'}),
+            'hours': forms.NumberInput(attrs={'min': 1, 'max': 40, 'style': 'max-width: 30px;'}),
+        }
+
+
+class AbbreviatedDaysForm(forms.ModelForm):
+    class Meta:
+        model = AbbreviatedDays
+        exclude = ['id','day190']
+
+        widgets = {
+            'date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'hours': forms.NumberInput(attrs={'min': 1, 'max': 8, 'style': 'max-width: 30px;'}),
+        }

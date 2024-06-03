@@ -8,6 +8,7 @@ from datetime import date
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django import forms
+import numpy as np
 
 
 class ReportType(models.Model):
@@ -156,5 +157,43 @@ class Student(models.Model):
     def __str__(self):
         return self.name + "," + self.annual_report.school_year.name
 
-class day190_report(models.Model):
+
+class Day190(models.Model):
     annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='day190', null=False, blank=False)
+    start_date = models.DateField(verbose_name= "School-year start date", default=None, null=True, blank=True)
+    end_date = models.DateField(verbose_name= "School-year end date", default=None, null=True, blank=True)
+    number_of_sundays = models.PositiveIntegerField(verbose_name="Number of Sunday school days", default=0)
+    number_of_days = models.PositiveIntegerField(verbose_name= "Number of School Days", default=0)
+    inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
+
+
+
+class Vacations(models.Model):
+    day190 = models.ForeignKey(Day190, related_name='vacations', on_delete=models.CASCADE)
+    name = models.CharField(max_length=25)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    weekdays = models.IntegerField()
+
+
+class InserviceDiscretionaryDays(models.Model):
+    TYPE_CHOICES = [
+        ('CI', 'Curriculum Improvement'),
+        ('II', 'Instructional Improvement'),
+        ('CM', 'Classroom Management'),
+        ('TE', 'Teacher/Administrator Evaluation'),
+        ('TC', 'Teacher Convention'),
+        ('OT', 'Other'),
+        ('DS', 'Discretionary'),
+    ]
+
+    day190 = models.ForeignKey(Day190, related_name='inservice_discretionary_days', on_delete=models.CASCADE)
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES, default='CI')
+    dates = models.CharField(max_length=255)
+    hours = models.PositiveIntegerField()
+
+
+class AbbreviatedDays(models.Model):
+    day190 = models.ForeignKey(Day190, related_name='abbreviated_days', on_delete=models.CASCADE)
+    date = models.CharField(max_length=255)
+    hours = models.PositiveIntegerField()

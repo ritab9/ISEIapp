@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %} Update School Info {% endblock title %}
+
+
+{% block content %}
+
+<div class="card card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col col-auto">
+                    {{ form_school.name|as_crispy_field  }}
+                    {{ form_school.abbreviation|as_crispy_field  }}
+                    {{ form_school.phone_number|as_crispy_field  }}
+                    {{ form_school.website|as_crispy_field  }}
+                </div>
+                <div class="col col-auto">
+                    {{ form_school.principal|as_crispy_field  }}
+                    {{ form_school.president|as_crispy_field  }}
+                    {{ form_school.textapp|as_crispy_field  }}
+                </div>
+                <div class="col col-auto">
+                    {{ form_address|crispy }}
+                </div>
+            </div>
+            <button class="btn btn-ISEIblue3 btn-sm" type="submit">Update</button>
+        </form>
+</div>
+
+{% endblock %}

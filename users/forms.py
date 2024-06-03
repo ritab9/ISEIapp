@@ -87,3 +87,14 @@ class AddressForm(ModelForm):
         model = Address
         fields = ('__all__')
         exclude =['id',]
+
+class SchoolForm(forms.ModelForm):
+    class Meta:
+        model = School
+        fields = ['name', 'abbreviation', 'phone_number', 'website', 'principal', 'president', 'textapp']
+
+
+class SchoolAddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['address_1', 'address_2', 'city', 'state_us', 'zip_code', 'country']

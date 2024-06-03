@@ -30,5 +30,6 @@ urlpatterns = [
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),
 
     #path('transcript_status', views.transcript_status, name='transcript_status')
+    path('update_school_info/<int:schoolID>/', views.update_school_info, name='update_school_info'),
 
 ]
