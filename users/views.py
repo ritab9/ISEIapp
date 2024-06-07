@@ -61,8 +61,8 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
-                        #return redirect('principal_teachercert', user.id)
-                        return redirect('principal_dashboard', user.teacher.school.id)
+                        return redirect('principal_teachercert', user.id)
+                        #return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -242,10 +242,8 @@ def principal_dashboard(request, schoolID):
 @allowed_users(allowed_roles=['staff'])
 def isei_dashboard(request):
 
-    schools=School.objects.filter(member=True).order_by('name')
 
-    context = dict (schools=schools)
-    return render(request, 'users/isei_dashboard.html', context)
+    return render(request, 'users/isei_dashboard.html')
 
 
 def update_school_info(request, schoolID):
