@@ -534,6 +534,27 @@ def employee_report_display(request, arID):
 def inservice_report(request, arID):
     annual_report=AnnualReport.objects.get(id=arID)
     schoolID=annual_report.school.id
+    school_yearID=annual_report.school_year.id
+
+    try:
+        report_type_190_day = ReportType.objects.get(name='190 - Day Report')
+
+        day190report = AnnualReport.objects.get(school_id=schoolID,school_year_id=school_yearID,
+            report_type=report_type_190_day
+        )
+        day190_instance = day190report.day190.first()
+
+        if day190_instance:  # Check if Day190 instance exists
+            planed_inservices = day190_instance.inservice_discretionary_days.exclude(type='DS')
+            planed_hours = sum(inservice.hours for inservice in planed_inservices)
+        else:
+            planed_inservices = None
+            planed_hours = None
+    except ObjectDoesNotExist:
+        planed_inservices = None
+        planed_hours = None
+
+
     InserviceFormset = modelformset_factory(Inservice, form=InserviceForm, extra=3, can_delete=True)
 
     inservices = Inservice.objects.filter(annual_report=annual_report)
@@ -572,6 +593,8 @@ def inservice_report(request, arID):
         'formset':formset,
         'schoolID':schoolID,
         'total_hours':total_hours,
+        'planed_inservices':planed_inservices,
+        'planed_hours':planed_hours
     }
     return render(request, 'inservice_report.html', context)
 

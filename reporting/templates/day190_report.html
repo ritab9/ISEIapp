@@ -128,8 +128,8 @@
                             <table class="table"><tr><td>
                                         <button type="button" class="btn-ISEIblue4 add-form-button" id="vacation">Add rows</button>
                                         </td>
-                                        <td class="text-right"> No. of vacation weekdays: </td>
-                                        <td><input class="number_input text-left" type="text" id="total_vacation_days" readonly style="border: none"></td>
+                                        <td colspan="2" class="text-right"> No. of vacation weekdays: <input class="number_input text-left" type="text" id="total_vacation_days" readonly style="border: none"></td>
+
                                     </tr>
                             </table>
                         </div>
@@ -302,19 +302,37 @@
                 </template>
             </div>
 
-            <div class="row justify-content-center mt-2">
-              <button class="btn btn-sm btn-ISEIblue2 mr-5" type="submit" name="save">Save and Finalize Later</button>
-              <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
+
+
+            <div class="row mt-2">
+                  <div class="col d-flex justify-content-center">
+                    <button class="btn btn-sm btn-ISEIblue2" type="submit" name="save">Save and Finalize Later</button>
+                  </div>
+                  <div class="col d-flex justify-content-center">
+                        <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
+                  </div>
+                  <div class="col d-flex justify-content-center">
+                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.teacher.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
+                  </div>
             </div>
+
+            <div class="row d-flex justify-content-center">
+                <div class="" id="enough_days" style="display: none;">
+                      <span class="error"> Some requirements are not met!</span> <br>
+                      Please check the messages in <span class="error">red</span> before submission.
+                </div>
+            </div>
+
         </form>
 
             <div class="card">
-                <div id="myContent" style="display:none;">
+                <div id="inservice_discretionary_info" style="display:none;">
                     {% include 'inservice_discretionary_info.html' with discretionary_div=True %}
                 </div>
             </div>
 
     </div>
+
 
 
 
@@ -432,6 +450,26 @@
         });
     });
 
+
+// general message if there aren't enough school days, i and d days, or inservice hours planned
+    var enough_school_days = true
+    var enough_i_d_days = true
+    var enough_i_hours = true
+
+    function enough_days() {
+            if (!enough_school_days || !enough_i_d_days || !enough_i_hours) {
+                $('#enough_days').show();
+            } else {
+                $('#enough_days').hide();
+            }
+        }
+
+    $(document).ready(function() {
+        // Call the function initially to set the initial visibility
+        enough_days();
+    });
+
+
 //update number of school days and total days
     function updateNumberOfDays() {
         const totalVacationDays = parseInt($('#total_vacation_days').val()) || 0;
@@ -443,14 +481,17 @@
             $('#id_number_of_days').removeClass('text-success'); // removes the green and yellow colors
             $('#id_number_of_days').addClass('text-danger'); // adds the red color
             $('#no_of_days_message').text('Number of school days is too low!').addClass('text-danger'); // changes the text content of the specific td
+            enough_school_days = false; enough_days();
         } else if (numberOfDays > 220) {
             $('#id_number_of_days').removeClass('text-success'); // removes the green and red colors
             $('#id_number_of_days').addClass('text-danger'); // adds the yellow color
             $('#no_of_days_message').text('That seems like too many days! Did you enter vacations?').addClass('text-danger'); // changes the text content of the specific td
+            enough_school_days = true; enough_days();
         } else {
             $('#id_number_of_days').removeClass('text-danger'); // removes the red and yellow colors
             $('#id_number_of_days').addClass('text-success'); // adds the green color
             $('#no_of_days_message').text(''); // changes the text content of the specific td
+            enough_school_days = true; enough_days();
         }
 
         $('#id_number_of_days').val(numberOfDays);
@@ -472,11 +513,7 @@
     $(document).on('change', '#id_number_of_sundays',updateNumberOfDays);
     $(document).on('change', '#id_inservice_days', updateNumberOfDays);
 
-    $(document).ready(function(){
-        $("#toggleButton").click(function(){
-            $("#myContent").toggle();  // This will hide and show the div with id myContent
-        });
-    });
+
 
 //inservice and discretionary day calculations
 
@@ -491,8 +528,10 @@
 
             if (inserviceDays< 10) {
                  $('#10_day_message').html("There must be a minimum of 10 days.<br> Up to five might be discretionary.")
+                enough_i_d_days = false; enough_days();
             }else{
                 $('#10_day_message').html("");
+                enough_i_d_days = true; enough_days();
             }
 
             var minCalcHours = inserviceDays * 6 - 2;
@@ -516,9 +555,11 @@
             if (inservice < 30) {
                 $('#total_inservice_hours').addClass('text-danger');
                 $('#30_hr_message').html("There must be a minimum of 30 in-service hours");
+                enough_i_hours = false; enough_days();
             } else {
                 $('#total_inservice_hours').removeClass('text-danger');
                  $('#30_hr_message').html("");
+                 enough_i_hours = true; enough_days();
             }
 
             // Checks for at least 30 inservice hours
@@ -545,6 +586,13 @@
         // Calculate totals whenever the hours or type changes on any row
         $('input[id^="id_inservice-"][id$="-hours"], select[id^="id_inservice-"][id$="-type"], #id_inservice_days').change(function () {
             calcTotal();
+        });
+    });
+
+// toggle Info box
+      $(document).ready(function(){
+        $("#toggleButton").click(function(){
+            $("#inserice_discretionary_info").toggle();  // This will hide and show the div with id myContent
         });
     });
 
