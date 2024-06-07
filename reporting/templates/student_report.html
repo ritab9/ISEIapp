@@ -1,4 +1,5 @@
 {% extends 'reporting_base.html' %}
+{% load static %}
 
 {% block title %} Student Report {% endblock title %}
 
@@ -127,11 +128,11 @@
 <!--buttons-->
             <div class="row mb-2 mt-2">
                 <div class="col d-flex justify-content-center">
-                    <button class="btn btn-sm btn-ISEIblue4" type="button" id="add_more">Add More Students</button></div>
+                    <button class="btn btn-sm btn-ISEIblue4" type="button" id="add_more">Add Rows</button></div>
                 <div class="col d-flex justify-content-center">
-                    <input class="btn btn-sm btn-ISEIblue2"  type="submit" name="save"  value="Save and Finalize Later"></div>
+                    <input class="btn btn-sm btn-ISEIblue2 loading_spinner"  type="submit" name="save"  value="Save and Return"></div>
                 <div class="col d-flex justify-content-center">
-                    <input class="btn btn-sm btn-success" type="submit" name="submit"  value="Report Complete"
+                    <input class="btn btn-sm btn-success loading_spinner" type="submit" name="submit"  value="Report Complete"
                     onclick="return confirm('Be sure to check data for all previous students for accuracy: enrollment status, grade level, address, baptismal status, etc. ' +
                      'Click Cancel if you need to review, OK if report if complete.');" >
                 </div>
@@ -147,7 +148,26 @@
         </span>
     </div>
 
+    <!-- Loading spinner -->
+<div id="loading" style="display: none;">
+    <img id="loading-image" src="{% static 'appfiles/Atom.gif' %}" alt="Loading..."/>
+    <p id="loading-text">Please wait, saving your data...</p>
+</div>
+
 <script>
+
+     $(window).on('pageshow', function() {
+            $('#loading').hide();
+        });
+
+    $(document).ready(function() {
+        $('input.loading_spinner').click(function() {
+            $('#loading').show();
+        });
+    });
+
+
+
 /*    window.onload = function () {
         var table = document.querySelector('.table');
         var headerRow = table.querySelector('thead').rows[0];

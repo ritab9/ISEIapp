@@ -61,8 +61,8 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
-                        return redirect('principal_teachercert', user.id)
-                        #return redirect('principal_dashboard', user.teacher.school.id)
+                        #return redirect('principal_teachercert', user.id)
+                        return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -209,6 +209,7 @@ def principal_dashboard(request, schoolID):
     report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')
     annual_reports=[]
     for report_dd in report_due_dates:
+        # isei_created is false for APR (and possibly other reports in the future that need to be created specifically for each school by ISEI)
         if report_dd.report_type.isei_created == False:
             annual_report, created = AnnualReport.objects.get_or_create(school=school, school_year=school_year,
                                               report_type=report_dd.report_type)

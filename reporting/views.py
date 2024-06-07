@@ -3,7 +3,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 
 from django.forms import modelformset_factory
-from .models import AnnualReport, ReportType, School, SchoolYear, Student, TNCounty, Country, StateField
+from django.db.models import Sum
+from .models import *
 from .forms import *
 from datetime import date, timedelta
 from django.contrib import messages
@@ -47,7 +48,6 @@ def student_report(request,arID):
         if formset.is_valid():
             if formset.has_changed():
                 for form in formset:
-                    print(f'Changed fields for form {form.instance.pk}:', form.changed_data)
                     if form.has_changed():
                         if form.instance.pk is not None:
                             form.save()
@@ -64,7 +64,6 @@ def student_report(request,arID):
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
                     annual_report.submit_date = date.today()
-                    annual_report.save()
                 annual_report.last_update_date = date.today()
                 annual_report.save()
                 #Todo Send email to ISEI about it's completion
@@ -124,7 +123,7 @@ def import_students_prev_year(request, arID):
         imported_count += 1  # increment the count of imported students
 
     messages.success(request, '{} Students imported successfully.'.format(imported_count))
-    return redirect('student_report', arID)  # Update this with where you want to redirect after success
+    return redirect('student_report', arID)  # Update this with where you want to redirect after successLEt me
 
 
 def student_report_display(request, arID):
@@ -398,6 +397,7 @@ def opening_report_display(request, arID):
     return render(request, 'opening_report_display.html')
 
 
+#190 Day Report views
 def day190_report(request, arID):
     annual_report = AnnualReport.objects.get(id=arID)
 
@@ -454,7 +454,16 @@ def day190_report(request, arID):
                     errors.append(formset_abbreviated.errors)
 
             if not errors:
+                if 'submit' in request.POST:
+                    if not annual_report.submit_date:
+                            annual_report.submit_date = date.today()
+                    annual_report.last_update_date=date.today()
+                    annual_report.save()
+                elif 'save'in request.POST:
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
                 return redirect('principal_dashboard', annual_report.school.id)
+
             else:
                 errors.append(form.errors)
 
@@ -484,8 +493,36 @@ def day190_report(request, arID):
     return render(request, 'day190_report.html', context)
 
 def day190_report_display(request, arID):
-    # Add your processing here
-    return render(request, 'day190_report_display.html')
+    annual_report = get_object_or_404(AnnualReport, id=arID)
+    try:
+        day190_report = Day190.objects.get(annual_report=annual_report)
+    except Day190.DoesNotExist:
+        messages.error(request, 'Day190 Report not found for this Annual Report')
+        return redirect(request.META.get('HTTP_REFERER', 'fallback_url'))
+
+    if day190_report is not None:
+        vacations_report = Vacations.objects.filter(day190=day190_report)
+        inservice_days_report = InserviceDiscretionaryDays.objects.filter(day190=day190_report)
+        abbreviated_days_report = AbbreviatedDays.objects.filter(day190=day190_report)
+
+        total_inservice_discretionay_hours = sum(inservice_day.hours for inservice_day in inservice_days_report)
+
+        discretionary_hours = inservice_days_report.filter(type='DS')
+        total_discretionary_hours = sum(day.hours for day in discretionary_hours)
+
+        total_inservice_hours = total_inservice_discretionay_hours - total_discretionary_hours
+
+        context = {
+            'day190_report': day190_report,
+            'vacations_report': vacations_report,
+            'inservice_days_report': inservice_days_report,
+            'abbreviated_days_report': abbreviated_days_report,
+            'total_inservice_hours': total_inservice_hours,
+            'total_discretionary_hours': total_discretionary_hours,
+            'total_inservice_dictionary_hours': total_inservice_hours,
+            'arID': arID,
+        }
+        return render(request, 'day190_report_display.html', context)
 
 def employee_report(request, arID):
     # Add your processing here
@@ -495,11 +532,65 @@ def employee_report_display(request, arID):
     return render(request, 'employee_report_display.html')
 
 def inservice_report(request, arID):
-    # Add your processing here
-    return render(request, 'inservice_report.html')
+    annual_report=AnnualReport.objects.get(id=arID)
+    schoolID=annual_report.school.id
+    InserviceFormset = modelformset_factory(Inservice, form=InserviceForm, extra=3, can_delete=True)
+
+    inservices = Inservice.objects.filter(annual_report=annual_report)
+
+    if request.method == 'POST':
+        formset = InserviceFormset(request.POST)
+        if formset.is_valid():
+            for form in formset.forms:
+                if form.has_changed():
+                    instance = form.save(commit=False)
+                    instance.annual_report = annual_report
+                    instance.save()
+            formset.save()
+
+            if 'submit' in request.POST:
+                if not annual_report.submit_date:
+                    annual_report.submit_date = date.today()
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+                return redirect('principal_dashboard', schoolID)
+            elif 'save' in request.POST:
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+                return redirect('principal_dashboard', schoolID)
+            else:
+                return redirect('inservice_report', arID=arID)
+
+    else:
+        formset = InserviceFormset(queryset=inservices)
+
+    total_hours = sum(inservice.hours for inservice in inservices)
+
+    context = {
+        'annual_report': annual_report,
+        'inservices': inservices,
+        'formset':formset,
+        'schoolID':schoolID,
+        'total_hours':total_hours,
+    }
+    return render(request, 'inservice_report.html', context)
+
 def inservice_report_display(request, arID):
-    # Add your processing here
-    return render(request, 'inservice_report_display.html')
+
+    inservices = Inservice.objects.filter(annual_report_id=arID)
+
+    total_hours = inservices.aggregate(Sum('hours'))['hours__sum']
+    if total_hours is None:
+        total_hours = 0
+    if total_hours < 30:
+        enough=False
+    else:
+        enough=True
+
+    context ={'inservices':inservices, 'total_hours':total_hours, 'enough':enough}
+
+    return render(request, 'inservice_report_display.html', context)
+
 
 def ap_report(request, arID):
     # Add your processing here

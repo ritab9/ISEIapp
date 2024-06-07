@@ -1,5 +1,5 @@
 from django import forms
-from reporting.models import Student, Day190, Vacations, InserviceDiscretionaryDays, AbbreviatedDays
+from reporting.models import Student, Day190, Vacations, InserviceDiscretionaryDays, AbbreviatedDays, Inservice
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from users.models import Country, TNCounty
 from django.core.cache import cache, caches
@@ -81,9 +81,22 @@ class VacationsForm(forms.ModelForm):
         }
 
 class InserviceDiscretionaryDaysForm(forms.ModelForm):
+    TYPE_CHOICES = [
+        (None, '--------------'),
+        ('CI', 'Curriculum Improvement'),
+        ('II', 'Instructional Improvement'),
+        ('CM', 'Classroom Management'),
+        ('TE', 'Teacher/Administrator Evaluation'),
+        ('TC', 'Teacher Convention'),
+        ('OT', 'Other'),
+        ('DS', 'Discretionary'),
+    ]
+
+    type = forms.ChoiceField(choices=TYPE_CHOICES, required=True)
+
     class Meta:
         model = InserviceDiscretionaryDays
-        exclude = ['id','day190']
+        exclude = ['id', 'day190']
 
         widgets = {
             'date': forms.TextInput(attrs={'style': 'max-width: 150px;'}),
@@ -99,4 +112,14 @@ class AbbreviatedDaysForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
             'hours': forms.NumberInput(attrs={'min': 1, 'max': 8, 'style': 'max-width: 30px;'}),
+        }
+
+class InserviceForm(forms.ModelForm):
+    class Meta:
+        model = Inservice
+        fields = ['dates', 'topic', 'presenter', 'hours']
+        #exclude=['id','annual_report']
+
+        widgets = {
+            'hours': forms.NumberInput(attrs={'min': 1, 'style': 'max-width: 30px;', 'class':'hours-input'}),
         }

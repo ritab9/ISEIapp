@@ -7,93 +7,98 @@
 {% block content %}
 
     <div class="">
+         <div class="row ml-2">
+            <h6>{{ annual_report }}</h6>
+        </div>
+
         <form method="post" id="my_form">
         {% csrf_token %}
+
  <!-- Day190 form -->
             <div class="card card-body">
-                <div class="row"><div class="col-auto"> <h6>190-day Report</h6></div></div>
-                <div class="row">
-                    <div class="col-5 ">
-                        <div class = "">
-                            <div class="form-group mt-2 ml-2">
-                                {{ form.start_date.errors }}
-                                <b>{{ form.start_date.label_tag }}</b>
-                                {{ form.start_date }}<br>
-                                *First day students are present
 
-                            </div>
-                            <div class="form-group ml-2">
-                                {{ form.end_date.errors }}
-                                <b>{{ form.end_date.label_tag }}</b>
-                                {{ form.end_date }}<br>
-                                *Last school day or graduation day (if all students are present)
-                            </div>
-                        </div>
-                        <div class="">
-                           <table class="table-sm" style="width: 100%">
+                <div class="row justify-content-around">
+                    <div class="col-auto">
+
+                            <table class="table table-sm" style="width: 100%">
+                                <tr>
+                                    <td style="width: 1px; white-space: nowrap;"> <b>{{ form.start_date.label_tag }}</b>
+                                        <br>*First day students are present</td>
+                                    <td>{{ form.start_date }}{{ form.start_date.errors }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 1px; white-space: nowrap;"><b>{{ form.end_date.label_tag }}</b>
+                                        <br>*Last school day or graduation day</td>
+                                    <td> {{ form.end_date }}{{ form.end_date.errors }}</td>
+                                </tr>
+
                               <tr>
                                 <td style="width: 1px; white-space: nowrap;">No. of weekdays (in school year):</td>
                                 <td style="text-align:left">
                                 <input class="number_input" type="text" id="number_of_weekdays" readonly style="border: none"> </td>
-
                               </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="col-7">
-                        <table class="table" style="width: 100%;">
                             <tr>
-                                <td class="pt-3" style="width: auto; white-space: nowrap; text-align: right;">{{ form.number_of_sundays.errors }}
+                                <td class="" style="width: 1px; white-space: nowrap; ">{{ form.number_of_sundays.errors }}
                                     <b>{{ form.number_of_sundays.label_tag }}</b></td>
                                 <td>{{ form.number_of_sundays }}</td>
-                                <td></td>
                             </tr>
-                            <tr>
-                                <td class="pt-3" style="width: auto; white-space: nowrap; text-align: right;">{{ form.inservice_days.errors }}
-                                    <b>In-service Days and <br> Discretionary Days</b>
-                                </td>
-                                <td style="width: 1px; white-space: nowrap; ">{{ form.inservice_days }}</td>
-                                <td colspan="2"><div> *Minimum of 10 days (6-8 hours).
-                                    Up to 5 days can be <b>Discretionary</b> days. <br>
-                                    (Discretionary days are work days provided to teachers for: <br> setting up the classroom at the beginning of the school year, yearly planning, end of term grades, individual PD days, etc.)</div>
-                                </td>
-                            </tr>
-                            <tr><td></td><td></td><td></td></tr>
-                        </table>
+
+
+                            </table>
                     </div>
-                </div>
-                <div class="row mt-2">
+
                     <div class="col-auto">
-                    <table class="table-sm table-bordered">
-                        <tr>
-                            <td style="width: 1px; white-space: nowrap; ">
-                              {{ form.number_of_days.errors }}
-                              <b>{{ form.number_of_days.label_tag }}</b>
-                            </td>
-                            <td style = "text-align-last: left; border:none">{{ form.number_of_days }}</td>
+                            <table class="table table-sm mt-3 mb-3">
 
-                            <td style="width: 1px; white-space: nowrap;"><b>Total Days</b></td>
-                            <td style ="text-align: left"><input class="number_input" type="text" id="total_days" readonly style="border: none"></td>
+                                <tr>
+                                    <td class="" style="width: 1px; white-space: nowrap;">{{ form.inservice_days.errors }}
+                                        <b>In-service and Discretionary days:</b>
+                                    </td>
+                                    <td>{{ form.inservice_days }}</td>
+                                </tr>
 
-                        </tr>
+                                <tr><td colspan="4" id="10_day_message" class="error"></td></tr>
+                                <tr><td colspan="2" class="error" id="inservice_day_message"></td></tr>
 
-                        <tr>
-                            <td colspan="2">*Minimum 180 instructional days</td>
-                            <td colspan="2">*Minimum 190 days</td>
-                        </tr>
-                    </table>
+                            </table>
+                            <button id="toggleButton" type="button" class="btn btn-xs btn-outline-ISEIblue4">In-service and Discretionary Days Info</button>
+
                     </div>
+
+                    <div class="col-auto">
+                             <table class="table-sm table-bordered">
+                                <tr>
+                                    <td style="width: 1px; white-space: nowrap; ">
+                                      {{ form.number_of_days.errors }}
+                                      <b>{{ form.number_of_days.label_tag }}</b>
+                                    </td>
+                                    <td style = "text-align-last: left; border:none">{{ form.number_of_days }}</td>
+
+                                    <td style="width: 1px; white-space: nowrap;"><b>Total Days</b></td>
+                                    <td style ="text-align: left"><input class="number_input" type="text" id="total_days" readonly style="border: none"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">*Minimum 180 instructional days</td>
+                                    <td colspan="2">*Minimum 190 days</td>
+                                </tr>
+                                <tr><td colspan="4" id="no_of_days_message"></td></tr>
+
+                            </table>
+                    </div>
+
                 </div>
             </div>
 
+
             <div class="card card-body">
                 <div class="row justify-content-around">
-            <!-- Vacations formset -->
+<!-- Vacations formset -->
                     <div class="col-auto">
-                        <h6>Vacations</h6>
+                            <h6>Vacations</h6>
                         <div id="vacation-formset">
                             {{ formset_vacation.management_form }}
-                            <table class="table table-bordered" style="table-layout:auto ">
+                            <table class="table-sm" style="table-layout:auto ">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -120,20 +125,27 @@
 
                                 </tbody>
                             </table>
+                            <table class="table"><tr><td>
+                                        <button type="button" class="btn-ISEIblue4 add-form-button" id="vacation">Add rows</button>
+                                        </td>
+                                        <td class="text-right"> No. of vacation weekdays: </td>
+                                        <td><input class="number_input text-left" type="text" id="total_vacation_days" readonly style="border: none"></td>
+                                    </tr>
+                            </table>
                         </div>
 
-                        <div style="text-align: right" class="mr-5"> No. of vacation weekdays: <input class="number_input" type="text" id="total_vacation_days" readonly style="border: none">
+                        <div style="text-align: right" class="mr-5">
                         </div>
 
-                        <button type="button" class="btn btn-sm btn-ISEIblue2 add-form-button" id="vacation">Add more Vacation</button>
                     </div>
 
-            <!-- InserviceDiscretionaryDays formset -->
+<!-- InserviceDiscretionaryDays formset -->
                     <div class="col-auto">
                         <h6>In-service and Discretionary Days</h6>
+
                         <div id="inservice-formset">
                             {{ formset_inservice.management_form }}
-                            <table class="table table-bordered">
+                            <table class="table-sm">
                                 <thead>
                                     <tr>
                                         <th>Type</th>
@@ -141,6 +153,7 @@
                                         <th>Hours</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
                                 {% for form in formset_inservice %}
                                     {{ form.id }}
@@ -155,20 +168,32 @@
                                         </div>
                                     {% endif %}
                                 {% endfor %}
+
                                 </tbody>
                             </table>
+                            <table class="table">
+                                    <tr><td colspan="3" class="text-left"><button type="button" class="btn-ISEIblue4 add-form-button" id="inservice">Add rows</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total: <input class="number_input" type="text" id="total_inservice_discretionary_hours" readonly style="border: none"></td>
+                                        <td>Discretionary: <input class="number_input" type="text" id="total_discretionary_hours" readonly style="border: none"></td>
+                                        <td>Inservice: <input class="number_input" type="text" id="total_inservice_hours" readonly style="border: none"></td>
+                                    </tr>
+                                    <tr><td colspan="3" class="error" id="30_hr_message"></td></tr>
+                            </table>
                         </div>
-                        <button type="button" class="btn btn-sm btn-ISEIblue2 add-form-button" id="inservice">Add more Inservice Discretionary Days</button>
+
+
                     </div>
 
-            <!-- AbbreviatedDays formset -->
+<!-- AbbreviatedDays formset -->
+
                     <div class="col-auto">
                         <h6>Abbreviated Days</h6>
-                        *days less than 6.5 hrs and more than 3.5 hrs<br>
-                        *no more than three (3) per school-year
+
                         <div id="abbreviated-formset">
                             {{ formset_abbreviated.management_form }}
-                            <table class="table table-bordered">
+                            <table class="table-sm">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -188,18 +213,25 @@
                                         </div>
                                     {% endif %}
                                 {% endfor %}
+
                                 </tbody>
                             </table>
                         </div>
-                        <button type="button" class=" btn btn-sm btn-ISEIblue2 add-form-button" id="abbreviated">Add more Abbreviated Days</button>
+                        <table class="table">
+                            <tr><td>
+                                    <button type="button" class="btn-ISEIblue4 add-form-button" id="abbreviated">Add rows</button>
+                                </td>
+
+                            </tr>
+                            <tr><td>*days less than 6.5 hrs and more than 3.5 hrs <br>
+                                    (no more than three per school-year)</td>
+                            </tr>
+                        </table>
+
                     </div>
                 </div>
             </div>
-            <div class="card card-body">
-                <div class="row">
-                    <button class="ml-5 btn btn-sm btn-ISEIblue4" type="submit">Submit</button>
-                </div>
-            </div>
+
             <!-- empty templates -->
             <div>
                 <template id="empty_vacation_form_template">
@@ -269,9 +301,21 @@
                     {% endif %}
                 </template>
             </div>
+
+            <div class="row justify-content-center mt-2">
+              <button class="btn btn-sm btn-ISEIblue2 mr-5" type="submit" name="save">Save and Finalize Later</button>
+              <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
+            </div>
         </form>
-            <div class="row mr-2" style="display: flex; justify-content: flex-end;">{{ annual_report }}</div>
+
+            <div class="card">
+                <div id="myContent" style="display:none;">
+                    {% include 'inservice_discretionary_info.html' with discretionary_div=True %}
+                </div>
+            </div>
+
     </div>
+
 
 
 
@@ -394,15 +438,116 @@
         const numberOfWeekdays = parseInt($('#number_of_weekdays').val()) || 0;
         const numberOfSundays = parseInt($('#id_number_of_sundays').val()) || 0;
         const numberOfDays = numberOfWeekdays - totalVacationDays + numberOfSundays;
+
+        if (numberOfDays < 180) {
+            $('#id_number_of_days').removeClass('text-success'); // removes the green and yellow colors
+            $('#id_number_of_days').addClass('text-danger'); // adds the red color
+            $('#no_of_days_message').text('Number of school days is too low!').addClass('text-danger'); // changes the text content of the specific td
+        } else if (numberOfDays > 220) {
+            $('#id_number_of_days').removeClass('text-success'); // removes the green and red colors
+            $('#id_number_of_days').addClass('text-danger'); // adds the yellow color
+            $('#no_of_days_message').text('That seems like too many days! Did you enter vacations?').addClass('text-danger'); // changes the text content of the specific td
+        } else {
+            $('#id_number_of_days').removeClass('text-danger'); // removes the red and yellow colors
+            $('#id_number_of_days').addClass('text-success'); // adds the green color
+            $('#no_of_days_message').text(''); // changes the text content of the specific td
+        }
+
         $('#id_number_of_days').val(numberOfDays);
          var inserviceDays = parseInt($('#id_inservice_days').val()) || 0;
          var totalDays = numberOfDays + inserviceDays;
+
+         if (totalDays < 190) {
+            $('#total_days').removeClass('text-success'); // removes the green color
+            $('#total_days').addClass('text-danger'); // adds the red color
+        } else {
+            $('#total_days').removeClass('text-danger'); // removes the red color
+            $('#total_days').addClass('text-success'); // adds the green color
+        }
+
          $('#total_days').val(totalDays);
       }
 
      // Calculate the number of days and set the value every time when days count or dates could be changed:
     $(document).on('change', '#id_number_of_sundays',updateNumberOfDays);
     $(document).on('change', '#id_inservice_days', updateNumberOfDays);
+
+    $(document).ready(function(){
+        $("#toggleButton").click(function(){
+            $("#myContent").toggle();  // This will hide and show the div with id myContent
+        });
+    });
+
+//inservice and discretionary day calculations
+
+    $(document).ready(function() {
+        function calcTotal() {
+            var discretionary = 0;
+            var inservice = 0;
+            var total = 0;
+
+            var inserviceDays = parseFloat($("#id_inservice_days").val());
+            if (isNaN(inserviceDays) || inserviceDays == "") { inserviceDays = 0; }
+
+            if (inserviceDays< 10) {
+                 $('#10_day_message').html("There must be a minimum of 10 days.<br> Up to five might be discretionary.")
+            }else{
+                $('#10_day_message').html("");
+            }
+
+            var minCalcHours = inserviceDays * 6 - 2;
+            var maxCalcHours = inserviceDays * 8;
+
+            $('input[id^="id_inservice-"][id$="-hours"]').each(function () {
+                var val = parseFloat($(this).val());
+                if (isNaN(val) || val.length === 0) {
+                    val = 0;
+                }
+                var type = $(this).closest('tr').find('select[id^="id_inservice-"][id$="-type"]').val();
+                if (type === 'DS') {
+                    discretionary += val;
+                } else {
+                    inservice += val;
+                }
+
+                total += val;
+            });
+
+            if (inservice < 30) {
+                $('#total_inservice_hours').addClass('text-danger');
+                $('#30_hr_message').html("There must be a minimum of 30 in-service hours");
+            } else {
+                $('#total_inservice_hours').removeClass('text-danger');
+                 $('#30_hr_message').html("");
+            }
+
+            // Checks for at least 30 inservice hours
+            if (total < minCalcHours || total > maxCalcHours) {
+                 $('#inservice_day_message').html("<ul>" +
+                  " <li>No. of days (above) and no. of hours (below) don't seem to match.</li>" +
+                   "<li>6-8 hours would count as a day</li>"+
+                   "<li>Did you enter planned activities below?</li>");
+            } else {
+                $('#inservice_day_message').html("");
+            }
+
+
+            // Update the values
+            $('#total_discretionary_hours').val(discretionary+' hrs');
+            $('#total_inservice_hours').val(inservice+' hrs');
+            $('#total_inservice_discretionary_hours').val(total+' hrs');
+
+        }
+
+        // Calculate totals on load
+        calcTotal();
+
+        // Calculate totals whenever the hours or type changes on any row
+        $('input[id^="id_inservice-"][id$="-hours"], select[id^="id_inservice-"][id$="-type"], #id_inservice_days').change(function () {
+            calcTotal();
+        });
+    });
+
 </script>
 
 {% endblock %}

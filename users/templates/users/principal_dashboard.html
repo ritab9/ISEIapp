@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} Principal Dashboard {% endblock title %}
 
@@ -6,6 +7,18 @@
 {% block content %}
 
 <div class="row">
+    {% if messages %}
+    {% for message in messages %}
+        <p class="error message {{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<!-- Loading spinner -->
+<div id="loading" style="display: none;">
+    <img id="loading-image" src="{% static 'appfiles/Atom.gif' %}" alt="Loading..."/>
+    <p id="loading-text">Please wait, loading...</p>
+</div>
+
 <!-- School Info -->
     <div class = "col col-auto card">
         <div class="card-body">
@@ -66,7 +79,7 @@
                                     <td>{{report.report_type.name}} <br>
                                         <div class="row">
                                             <div class="col">
-                                            <a class="error" href="{% url report.report_type.view_name report.id %}"> Edit </a></div>
+                                                <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a></div>
                                             <div class="col">
                                             {% with display_view=report.report_type.view_name|add:"_display" %}
                                                 <a class="" href="{% url display_view report.id %}"> View</a>
@@ -104,5 +117,19 @@
     </div>
 
 </div>
+
+<script>
+
+    $(window).on('pageshow', function() {
+        $('#loading').hide();
+    });
+
+    $(document).ready(function() {
+        $('a.report_edit[href*="student_report"]').click(function() {
+            $('#loading').show();
+        });
+    });
+
+</script>
 
 {% endblock %}

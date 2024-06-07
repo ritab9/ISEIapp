@@ -15,6 +15,7 @@ class ReportType(models.Model):
     name = models.CharField(max_length=255)
     order_number = models.PositiveSmallIntegerField(default=0)
     for_all_schools = models.BooleanField(default=False)
+    #isei_created is false for APR (and possibly other reports in the future that need to be created specifically for each school by ISEI)
     isei_created = models.BooleanField(default=False)
     view_name = models.CharField(max_length=255, null=True, blank=True)
 
@@ -55,7 +56,7 @@ class AnnualReport(models.Model):
     submit_date = models.DateField(null=True, blank=True)
     last_update_date = models.DateField(null=True, blank=True)
     def __str__(self):
-        return self.school.name + ", " + self.school_year.name + ", "+self.report_type.name
+        return self.school.name + " " + self.school_year.name + " "+self.report_type.name
 
     class Meta:
         unique_together = (('school', 'school_year', 'report_type'),)
@@ -81,8 +82,8 @@ class Student(models.Model):
     name = models.CharField(max_length=200, db_index=True)
     address = models.CharField(max_length=500)
     us_state= StateField(verbose_name="US State", blank=True, null=True)
-    TN_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
-    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    TN_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True, db_index=True)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, db_index=True)
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
@@ -140,7 +141,7 @@ class Student(models.Model):
     ]
     location = models.CharField(max_length=20, choices=LOCATION_CHOICES, default='on-site')
 
-    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='students', null=False, blank=False)
+    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='students', null=False, blank=False, db_index=True)
 
     class Meta:
         unique_together = (('name', 'annual_report'),)
@@ -167,7 +168,6 @@ class Day190(models.Model):
     inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
 
 
-
 class Vacations(models.Model):
     day190 = models.ForeignKey(Day190, related_name='vacations', on_delete=models.CASCADE)
     name = models.CharField(max_length=25)
@@ -188,7 +188,7 @@ class InserviceDiscretionaryDays(models.Model):
     ]
 
     day190 = models.ForeignKey(Day190, related_name='inservice_discretionary_days', on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=TYPE_CHOICES, default='CI')
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES)
     dates = models.CharField(max_length=255)
     hours = models.PositiveIntegerField()
 
@@ -197,3 +197,13 @@ class AbbreviatedDays(models.Model):
     day190 = models.ForeignKey(Day190, related_name='abbreviated_days', on_delete=models.CASCADE)
     date = models.CharField(max_length=255)
     hours = models.PositiveIntegerField()
+
+class Inservice(models.Model):
+    dates = models.CharField(max_length=255)
+    topic = models.CharField(max_length=255)
+    presenter = models.CharField(max_length=255)
+    hours = models.PositiveIntegerField()
+    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.topic
