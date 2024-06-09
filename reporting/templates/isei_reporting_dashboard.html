@@ -1,0 +1,38 @@
+{% extends 'reporting_base.html' %}
+
+{% block title %} School Reports {% endblock title %}
+
+
+{% block content %}
+
+    <table class="table table-sm">
+        <tr>
+            <th>School</th>
+            {% for report_type in report_types %}
+            <th> {{ report_type.name }} </th>
+            {% endfor %}
+        </tr>
+        {% for school in schools %}
+        <tr>
+            <td>
+                <a class="" href="{% url 'principal_dashboard' school.id %}"> {{school.name}} </a></div>
+            </td>
+            {% for report_type in report_types %}
+            <td>
+                {% for report in school.annual_reports %}
+                    {% if report.report_type.name == report_type.name %}
+                        {% if report.submit_date %}
+                            <a class="success" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Submitted: {{ report.submit_date }} </a></div>
+                            <br><span class="span80"> Update:  {{ report.last_update_date }}</span>
+                        {% elif report.last_update_date %}
+                            <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: {{ report.last_update_date}}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

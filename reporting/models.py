@@ -13,6 +13,7 @@ import numpy as np
 
 class ReportType(models.Model):
     name = models.CharField(max_length=255)
+    code = models.CharField(max_length=3, default="ST")
     order_number = models.PositiveSmallIntegerField(default=0)
     for_all_schools = models.BooleanField(default=False)
     #isei_created is false for APR (and possibly other reports in the future that need to be created specifically for each school by ISEI)

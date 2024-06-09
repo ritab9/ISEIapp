@@ -312,7 +312,7 @@
                         <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
                   </div>
                   <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' request.user.teacher.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
+                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' annual_report.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
                   </div>
             </div>
 

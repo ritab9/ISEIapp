@@ -18,13 +18,15 @@ class ReportDueDateAdmin(admin.ModelAdmin):
 admin.site.register(ReportDueDate, ReportDueDateAdmin)
 
 class ReportTypeAdmin(admin.ModelAdmin):
-    list_display = ['name','order_number','for_all_schools', 'isei_created', 'view_name']
-    list_editable = ['order_number', 'for_all_schools', 'isei_created', 'view_name']
+    list_display = ['name', 'code', 'order_number','for_all_schools', 'isei_created', 'view_name']
+    list_editable = ['order_number', 'for_all_schools', 'isei_created', 'view_name', 'code']
 admin.site.register(ReportType, ReportTypeAdmin)
 
 @admin.register(AnnualReport)
 class AnnualReportAdmin(admin.ModelAdmin):
-    list_display = ['report_type','school_year', 'school']
+    list_display = ['report_type','school_year', 'school', 'submit_date']
+    list_editable = ['submit_date']
+    list_filter = ('school_year', 'report_type', 'school',)
 # customize the AnnualReport admin section here
 
 

@@ -248,3 +248,4 @@ class Address(models.Model):
 
     def __str__(self):
         return self.city + "," + self.country.name
+

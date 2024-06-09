@@ -27,6 +27,7 @@ urlpatterns = [
     path('principal_dashboard/<str:schoolID>/', views.principal_dashboard, name='principal_dashboard'),
     path('isei_dashboard/', views.isei_dashboard, name='isei_dashboard'),
 
+    #teacher account settings
     path('account_settings/<str:userID>/', views.accountsettings, name='account_settings'),
 
     #path('transcript_status', views.transcript_status, name='transcript_status')

@@ -1,4 +1,5 @@
 {% extends 'reporting_base.html' %}
+{% load static %}
 
 {% block title %} Student Report {% endblock title %}
 
@@ -10,12 +11,19 @@
         <div class="col mt-2">
             <h6>{{ annual_report }}</h6>
         </div>
-        <div class="col mt-2">
-            <form method="GET">
-                {{ filter_form }}
-                <input class="btn btn-sm btn-ISEIblue4" type="submit" value="Filter">
-                <a class="btn btn-sm btn-ISEIblue4" href="{% url 'student_report_display' annual_report.id %}" class="btn btn-default">Reset</a>
-            </form>
+        <div class="row">
+            <div class="col col-auto mt-2">
+                <form method="GET">
+                    {{ filter_form }}
+                    <input class="btn btn-sm btn-ISEIblue2" type="submit" value="Filter">
+                    <a class="btn btn-sm btn-ISEIblue2" href="{% url 'student_report_display' annual_report.id %}" class="btn btn-default">Reset</a>
+                </form>
+            </div>
+            <div class="col col-auto">
+                {% if annual_report.school.address.state_us == "TN" %}
+                    <a href="{% url 'tn_student_export' arID=annual_report.id %}">Download Data for TN_Report</a>
+                {% endif %}
+            </div>
         </div>
 <!-- table with student data -->
         <div class="scrollable-table scrollable-table2 mt-2">
@@ -72,14 +80,29 @@
 <!--buttons-->
             <div class="row mb-2 mt-2">
                 <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-success" href="{% url 'principal_dashboard' request.user.teacher.school.id %}">Dashboard</a>
-                </div>
-                <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-ISEIblue4" href="{% url 'student_report' annual_report.id %}">Edit Report</a>
+                    <a class="btn btn-sm btn-ISEIblue2 loading_spinner" href="{% url 'student_report' annual_report.id %}">Edit Report</a>
                 </div>
             </div>
     </div>
 
+        <!-- Loading spinner -->
+        <div id="loading" style="display: none;">
+            <img id="loading-image" src="{% static 'appfiles/Atom.gif' %}" alt="Loading..."/>
+            <p id="loading-text">Please wait, loading...</p>
+        </div>
 
+
+    <script>
+
+         $(window).on('pageshow', function() {
+                $('#loading').hide();
+            });
+
+        $(document).ready(function() {
+            $('a.loading_spinner').click(function() {
+                $('#loading').show();
+            });
+        });
+    </script>
 
 {% endblock %}

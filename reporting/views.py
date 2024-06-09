@@ -20,15 +20,20 @@ from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
 from .filters import *
-from django.db import transaction
+from django.db.models import Prefetch
 
 
+from users.models import AccreditationInfo
 
+
+#individual school reports
+@login_required(login_url='login')
 def report_dashboard(request, schoolID, school_yearID):
     # Add your processing here
     return render(request, 'report_dashboard.html')
 
 #Student Report Views
+@login_required(login_url='login')
 def student_report(request,arID):
 
     annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
@@ -67,13 +72,13 @@ def student_report(request,arID):
                 annual_report.last_update_date = date.today()
                 annual_report.save()
                 #Todo Send email to ISEI about it's completion
-                return redirect('principal_dashboard', request.user.teacher.school.id)
+                return redirect('principal_dashboard', school.id)
             elif 'save' in request.POST:
                 annual_report.last_update_date = date.today()
                 annual_report.save()
                 #annual_report.submit_date = None
                 #annual_report.save()
-                return redirect('principal_dashboard', request.user.teacher.school.id)
+                return redirect('principal_dashboard', school.id)
 
     else:
         if annual_report.submit_date:
@@ -89,6 +94,7 @@ def student_report(request,arID):
     context = dict(formset=formset, annual_report=annual_report)
     return render(request, 'student_report.html', context)
 
+@login_required(login_url='login')
 def import_students_prev_year(request, arID):
     report = get_object_or_404(AnnualReport, id=arID)
     prev_school_year = report.school_year.get_previous_school_year()
@@ -126,14 +132,16 @@ def import_students_prev_year(request, arID):
     return redirect('student_report', arID)  # Update this with where you want to redirect after successLEt me
 
 
+@login_required(login_url='login')
 def student_report_display(request, arID):
 
     annual_report = AnnualReport.objects.get(id=arID)
-    if annual_report.submit_date:
-        students = Student.objects.filter(annual_report=annual_report, status = "enrolled").select_related('annual_report', 'country',
-                                                                                  'TN_county').order_by('grade_level', 'name')
-    else:
-        students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
+    #if annual_report.submit_date:
+    #    students = Student.objects.filter(annual_report=annual_report, status = "enrolled").select_related('annual_report', 'country',
+    #                                                                              'TN_county').order_by('grade_level', 'name')
+    #else:
+
+    students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
                                                                                       'TN_county').order_by('grade_level', 'name')
 
     filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
@@ -170,6 +178,7 @@ def student_report_display(request, arID):
     }
     return render(request, 'student_report_display.html', context)
 
+
 class StudentExcelDownload(View):
     def get(self, request, *args, **kwargs):
         #TODO take out age; it's only for importing old data (or maybe keep it as an alternative to birth_date?)
@@ -203,6 +212,7 @@ class StudentExcelDownload(View):
         return response
 
 #import student from Excel
+@login_required(login_url='login')
 def student_import_dashboard(request, arID):
 
     annual_report_instance = AnnualReport.objects.get(id=arID)
@@ -388,16 +398,94 @@ def student_import_dashboard(request, arID):
         form = UploadFileForm()
     return render(request, 'student_import_dashboard.html', {'form': form, 'annual_report': annual_report_instance})
 
+@login_required(login_url='login')
+def tn_student_export(request, arID):
 
+    annual_report = AnnualReport.objects.get(id=arID)
+    date=annual_report.last_update_date
+    school= annual_report.school
+    school_name = school.name
+    address=school.address
+    school_address = address.address_1
+    school_city = address.city
+    school_zip = address.zip_code
+    school_state = address.state_us
+    school_country = address.country
+    school_phone= school.phone_number
+    school_email = school.email
+    school_principal = school.principal
+
+    accreditations = AccreditationInfo.objects.filter(school=school)
+
+    # extract agency from each accreditation
+    agencies = [accreditation.agency.abbreviation for accreditation in accreditations]
+    agencies_string = ', '.join(agencies)
+
+
+    students = Student.objects.filter(annual_report=annual_report, status = "enrolled").select_related('country',
+                                                                                 'TN_county').order_by('grade_level', 'name')
+    no_students = len(students)
+
+    # Create DataFrame with school's info
+    data = {'Date': [date],
+            'Name of School': [school_name],
+            'Principal or Headmaster': [school_principal],
+            'Address': [school_address],
+            'City': [school_city],
+            'ZIP': [school_zip],
+            'State': [school_state],
+            'Country': [school_country],
+            'Phone': [school_phone],
+            'Email': [school_email],
+            'Member Association': [agencies_string],
+            'Number of pupils enrolled': [no_students]}
+
+    school_df = pd.DataFrame(data)
+
+    student_df=pd.DataFrame.from_records(students.values(
+        'name', 'age_at_registration', 'grade_level', 'address', 'us_state', 'TN_county__name', 'country__name',
+        'registration_date', 'withdraw_date', 'location',
+    ))
+
+    student_df[['address', 'us_state', 'country__name']] = student_df[['address', 'us_state', 'country__name']].fillna('')
+    student_df['address'] = student_df['address'] + ' ' + student_df['us_state'] + ' ' + student_df['country__name']
+
+    student_df = student_df.drop(columns=['us_state', 'country__name'])
+
+    # Write dataframe to an excel object in memory
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        school_df.to_excel(writer, sheet_name="School Info", index=False)
+        student_df.to_excel(writer, sheet_name="Student Info", index=False)
+
+
+    # Set the output's file pointer to the beginning
+    output.seek(0)
+
+    # Create a response with the xlsx file
+    response = HttpResponse(output.read(),
+                            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    filename = "StudentReport.xlsx"
+    # Specify the filename; this will appear when user is saving the file
+    response['Content-Disposition'] = "attachment; filename=" + filename
+
+    return response
+
+
+@login_required(login_url='login')
 def opening_report(request, arID):
     # Add your processing here
     return render(request, 'opening_report.html')
+
+@login_required(login_url='login')
 def opening_report_display(request, arID):
     # Add your processing here
     return render(request, 'opening_report_display.html')
 
 
 #190 Day Report views
+@login_required(login_url='login')
 def day190_report(request, arID):
     annual_report = AnnualReport.objects.get(id=arID)
 
@@ -492,6 +580,7 @@ def day190_report(request, arID):
 
     return render(request, 'day190_report.html', context)
 
+@login_required(login_url='login')
 def day190_report_display(request, arID):
     annual_report = get_object_or_404(AnnualReport, id=arID)
     try:
@@ -524,13 +613,16 @@ def day190_report_display(request, arID):
         }
         return render(request, 'day190_report_display.html', context)
 
+@login_required(login_url='login')
 def employee_report(request, arID):
     # Add your processing here
     return render(request, 'employee_report.html')
+@login_required(login_url='login')
 def employee_report_display(request, arID):
     # Add your processing here
     return render(request, 'employee_report_display.html')
 
+@login_required(login_url='login')
 def inservice_report(request, arID):
     annual_report=AnnualReport.objects.get(id=arID)
     schoolID=annual_report.school.id
@@ -598,6 +690,7 @@ def inservice_report(request, arID):
     }
     return render(request, 'inservice_report.html', context)
 
+@login_required(login_url='login')
 def inservice_report_display(request, arID):
 
     inservices = Inservice.objects.filter(annual_report_id=arID)
@@ -610,15 +703,52 @@ def inservice_report_display(request, arID):
     else:
         enough=True
 
-    context ={'inservices':inservices, 'total_hours':total_hours, 'enough':enough}
+    context ={'inservices':inservices, 'total_hours':total_hours, 'enough':enough, 'arID':arID}
 
     return render(request, 'inservice_report_display.html', context)
 
 
+@login_required(login_url='login')
 def ap_report(request, arID):
     # Add your processing here
     return render(request, 'ap_report.html')
+
+@login_required(login_url='login')
 def ap_report_display(request, arID):
     # Add your processing here
     return render(request, 'ap_report_display.html')
     
+
+# using reported data
+
+def isei_reporting_dashboard(request):
+
+    current_school_year = SchoolYear.objects.get(current_school_year=True)
+    #student_reports = AnnualReport.objects.filter(school_year=current_school_year, report_type__code="SR")
+    #day190_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="190")
+    #employee_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="ER")
+    #inservice_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="IR")
+    #opening_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="OR")
+    #ap_report= AnnualReport.objects.filter(school_year=current_school_year, report_type="APR")
+
+    report_types = ReportType.objects.all()
+    schools = School.objects.filter(member=True)
+
+    # Prefetch the AnnualReports for the selected school year for each school
+    schools = schools.prefetch_related(
+        Prefetch('annualreport_set', queryset=AnnualReport.objects.filter(school_year__id= current_school_year.id),
+                 to_attr='annual_reports')
+    )
+
+    context = {'schools':schools, 'report_types':report_types}
+
+    return render(request, 'isei_reporting_dashboard.html', context)
+
+
+@login_required(login_url='login')
+def school_directory(request):
+    schools = School.objects.filter(member=True).order_by('name')
+
+    context = dict(schools=schools)
+
+    return render(request, 'school_directory.html', context)
