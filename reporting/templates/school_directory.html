@@ -40,7 +40,12 @@
                       <td>{% if school.principal %} {{ school.principal }} {% else %} - {% endif %}</td>
                       <td>{% if school.president %} {{ school.president }} {% else %} - {% endif %}</td>
                       <td>
-                        In works
+                        {% for accreditation_info in school.accreditationinfo_set.all %}
+                            {% if accreditation_info.current_accreditation %}
+                                {{ accreditation_info.agency }}:
+                                        {{ accreditation_info.start_date }}-{{ accreditation_info.end_date }}
+                            {% endif %}
+                        {% endfor %}
                       </td>
                     </tr>
                     {% endfor %}
