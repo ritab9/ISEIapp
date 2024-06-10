@@ -2,7 +2,7 @@ from django import forms
 from reporting.models import Student, Day190, Vacations, InserviceDiscretionaryDays, AbbreviatedDays, Inservice
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from users.models import Country, TNCounty
-from django.core.cache import cache, caches
+from .models import AnnualReport
 
 
 class UploadFileForm(forms.Form):
@@ -10,6 +10,16 @@ class UploadFileForm(forms.Form):
 
 
 class StudentForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        annual_report_id = kwargs.pop('annual_report_id', None)
+        super(StudentForm, self).__init__(*args, **kwargs)
+        if annual_report_id is not None:
+            annual_report = AnnualReport.objects.get(id=annual_report_id)
+            preferential_countries = list(Country.objects.filter(student__annual_report=annual_report).distinct())
+            other_countries = list(Country.objects.exclude(id__in=[country.id for country in preferential_countries]))
+            self.fields['country'].choices = [(country.id, country.name) for country in
+                                              preferential_countries + other_countries]
 
 
     class Meta:
@@ -53,6 +63,7 @@ class StudentForm(forms.ModelForm):
 
 
         return cleaned_data
+
 
 class Day190Form(forms.ModelForm):
     class Meta:

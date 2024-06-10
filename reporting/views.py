@@ -24,6 +24,7 @@ from django.db.models import Prefetch
 
 
 from users.models import AccreditationInfo
+from .functions import update_student_country_occurences
 
 
 #individual school reports
@@ -39,6 +40,7 @@ def student_report(request,arID):
     annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
     school = annual_report.school
 
+
     exclude_fields = ['annual_report', 'id', 'age_at_registration']
     if school.address.country.code != "US" or school.address.state_us != "TN":
         exclude_fields.append('TN_county')
@@ -50,6 +52,7 @@ def student_report(request,arID):
 
     if request.method == 'POST':
         formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
+
         if formset.is_valid():
             if formset.has_changed():
                 for form in formset:
@@ -63,8 +66,7 @@ def student_report(request,arID):
                 for form in formset.deleted_forms:
                     form.instance.delete()
 
-            #for object in formset.deleted_objects:
-            #    object.delete()
+            update_student_country_occurences(annual_report)
 
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
@@ -76,9 +78,9 @@ def student_report(request,arID):
             elif 'save' in request.POST:
                 annual_report.last_update_date = date.today()
                 annual_report.save()
-                #annual_report.submit_date = None
-                #annual_report.save()
+
                 return redirect('principal_dashboard', school.id)
+
 
     else:
         if annual_report.submit_date:

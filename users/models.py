@@ -82,11 +82,12 @@ class Country(models.Model):
     code = models.CharField(max_length=3, unique = True)
     region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
     ordering = ['name']
+    student_occurrence = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
     class Meta:
-        ordering = ['name']
+        ordering = ['-student_occurrence', 'name']
 
 
 class School(models.Model):

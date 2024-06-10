@@ -32,6 +32,8 @@
                             <br><span class="span80"> Update:  {{ report.last_update_date }}</span>
                         {% elif report.last_update_date %}
                             <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: {{ report.last_update_date}}</a>
+                        {% else %}
+                            <span class="spanred"> - </span>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
