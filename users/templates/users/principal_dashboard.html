@@ -29,7 +29,7 @@
                     {% if school.address.address_2 %} {{ school.address.address_2 }}<br>{% endif %}
                     {{ school.address.city }},
                     {% if school.address.state_us %}{{ school.address.state_us }},{% endif %}
-                    {% if school.address.tn_county %}{ school.address.tn_county }},{% endif %}
+                    {% if school.address.tn_county %}{{ school.address.tn_county }},{% endif %}
                     {{ school.address.zip_code }}<br>
                     {{ school.address.country }}
                 </p>
@@ -100,7 +100,7 @@
     <div class = "col col-auto card card-body">
 <!-- Teacher Certification Status-->
             <h6 class="mb-3">
-            <a href="{% url 'principal_teachercert' request.user.id %}">Teacher Certification </a>
+            <a href="{% url 'principal_teachercert' school.id %}">Teacher Certification </a>
             </h6>
     <!-- Percent of registered teachers -->
             <div class="mb-3">

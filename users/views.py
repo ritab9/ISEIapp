@@ -61,7 +61,7 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
-                        return redirect('principal_teachercert', user.id)
+                        return redirect('principal_teachercert', user.techer.school.id)
                         #return redirect('principal_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
@@ -188,7 +188,7 @@ def accountsettings(request, userID):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal', 'registrar'])
+@allowed_users(allowed_roles=['principal', 'registrar','staff'])
 def principal_dashboard(request, schoolID):
 
     school=School.objects.get(id=schoolID)
@@ -203,7 +203,10 @@ def principal_dashboard(request, schoolID):
     tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False, renewal_date__gte=date.today())
     certified_teachers = teachers.filter(tcertificate__in=tcertificates).distinct()
     number_of_certified_teachers = certified_teachers.count()
-    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    if number_of_teachers >0:
+        percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    else:
+        percent_certified = 0
 
     # Get all ReportingDueDate objects for this region
     report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')

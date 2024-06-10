@@ -22,7 +22,14 @@
                 {% for report in school.annual_reports %}
                     {% if report.report_type.name == report_type.name %}
                         {% if report.submit_date %}
-                            <a class="success" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Submitted: {{ report.submit_date }} </a></div>
+                            <a class="" href="{% url report.report_type.view_name|add:'_display' report.id %}">Submitted:</a>
+                            {% if report.submit_date > report.due_date_plus %}
+                                <span class="error">{{ report.submit_date }} </span>
+                            {% elif report.submit_date > report.due_date %}
+                                <span class="warning">{{ report.submit_date }}</span>
+                            {% else %}
+                                <span class="success">{{ report.submit_date }} </span>
+                            {% endif %}
                             <br><span class="span80"> Update:  {{ report.last_update_date }}</span>
                         {% elif report.last_update_date %}
                             <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: {{ report.last_update_date}}</a>

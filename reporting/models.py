@@ -32,12 +32,14 @@ class ReportDueDate(models.Model):
         verbose_name_plural = "Report due dates"
     def __str__(self):
         return self.region.name +", "+ self.report_type.name
-    def get_actual_due_date(self):
-        # Fetch the active school year
-        current_year = SchoolYear.objects.get(current_school_year=True)
+
+    def get_actual_due_date(self, school_year = None):
+        # Fetch the active school year if no school year given
+        if not school_year:
+            school_year = SchoolYear.objects.get(current_school_year=True)
 
         # Extract the start and end years from the active school year
-        start_year, end_year = map(int, current_year.name.split('-'))
+        start_year, end_year = map(int, school_year.name.split('-'))
 
         # Extract the month and day from the due_date field
         month = self.due_date.month
@@ -61,6 +63,20 @@ class AnnualReport(models.Model):
 
     class Meta:
         unique_together = (('school', 'school_year', 'report_type'),)
+
+    def due_date(self):
+        report_due_date = ReportDueDate.objects.filter(report_type=self.report_type,
+                                                       region=self.school.address.country.region).first()
+        if not report_due_date:
+            return None
+
+        return report_due_date.get_actual_due_date(self.school_year)
+
+    def due_date_plus(self,days=None):
+        days = days or 14
+        return self.due_date() + timezone.timedelta(days=days)
+
+
 
 GRADE_LEVEL_DICT = {
         'Pre-K': -2,

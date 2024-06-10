@@ -113,11 +113,11 @@ def isei_teachercert_dashboard(request):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal','registrar'])
-def principalteachercert(request, userID):
-    principal = User.objects.get(id=userID).teacher
+@allowed_users(allowed_roles=['principal','registrar', 'staff'])
+def principalteachercert(request, schoolID):
+    #principal = User.objects.get(id=userID).teacher
 
-    teachers = Teacher.objects.filter(school=principal.school, user__is_active=True, user__groups__name__in=['teacher'])
+    teachers = Teacher.objects.filter(school_id=schoolID, user__is_active=True, user__groups__name__in=['teacher'])
 
     # Teacher Certificates Section
     number_of_teachers = teachers.count()
@@ -157,14 +157,14 @@ def principalteachercert(request, userID):
     else:
         reports_to_review = False
 
-    bc_done = complete_background_checks(principal.school.id)
+    bc_done = complete_background_checks(schoolID)
 
     context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago, percent_certified=percent_certified,
                    valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
                    expired_tcertificates=expired_tcertificates, number_of_expired_teachers=number_of_expired_teachers,
                    non_certified_teachers=non_certified_teachers,
                    number_of_non_certified_teachers=number_of_non_certified_teachers,
-                   number_of_teachers=number_of_teachers, schoolid = principal.school.id,
+                   number_of_teachers=number_of_teachers, schoolid = schoolID,
                    # number_of_academic_teachers = number_of_academic_teachers, number_of_certified_academic_teachers = number_of_certified_academic_teachers,
                    reports_to_review=reports_to_review,
                    bc_done= bc_done)
