@@ -24,11 +24,11 @@
         <ul class="nav navbar-nav">
         
          {% if request.user|in_group:"principal,registrar"%}
-          <!-- Hide in production for now   
+          <!-- Hide in production for now
              <li class="nav-item ">
                 <a class="nav-link" href="{ % url 'principal_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
               </li>
-              -->
+          -->   
          {%elif request.user|in_group:"staff" %}
              <li class="nav-item ">
                 <a class="nav-link" href="{% url 'isei_dashboard' %}"> Dashboard </a>
@@ -38,7 +38,7 @@
         {% block navbar_content %}
             {% if request.user|in_group:"principal,registrar"%}   
                 <li class="nav-item ">
-                      <a class="nav-link" href="{% url 'principal_teachercert' request.user.id %}" > Teacher Certification </a>
+                      <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
                 </li>
             {% elif request.user|in_group:"staff" %}
                  <li class="nav-item ">
