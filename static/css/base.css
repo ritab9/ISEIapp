@@ -203,3 +203,14 @@ input[type='number'] {
     z-index: 101; /* make sure the text stays on top of the image */
     color: #000; /* color of the text */
 }
+
+
+.popover {
+    background: #ffffff;  /* Change color accordingly */
+    z-index: 1060; /* Adjust if necessary */
+}
+
+.popover .popover-body {
+    color: #0B61A4; /* Adjust text color if necessary */
+    background: #f7f7f7;
+}

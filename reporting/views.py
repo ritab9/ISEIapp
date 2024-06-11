@@ -74,12 +74,12 @@ def student_report(request,arID):
                 annual_report.last_update_date = date.today()
                 annual_report.save()
                 #Todo Send email to ISEI about it's completion
-                return redirect('principal_dashboard', school.id)
+                return redirect('school_dashboard', school.id)
             elif 'save' in request.POST:
                 annual_report.last_update_date = date.today()
                 annual_report.save()
 
-                return redirect('principal_dashboard', school.id)
+                return redirect('school_dashboard', school.id)
 
 
     else:
@@ -552,7 +552,7 @@ def day190_report(request, arID):
                 elif 'save'in request.POST:
                     annual_report.last_update_date = date.today()
                     annual_report.save()
-                return redirect('principal_dashboard', annual_report.school.id)
+                return redirect('school_dashboard', annual_report.school.id)
 
             else:
                 errors.append(form.errors)
@@ -668,11 +668,11 @@ def inservice_report(request, arID):
                     annual_report.submit_date = date.today()
                 annual_report.last_update_date = date.today()
                 annual_report.save()
-                return redirect('principal_dashboard', schoolID)
+                return redirect('school_dashboard', schoolID)
             elif 'save' in request.POST:
                 annual_report.last_update_date = date.today()
                 annual_report.save()
-                return redirect('principal_dashboard', schoolID)
+                return redirect('school_dashboard', schoolID)
             else:
                 return redirect('inservice_report', arID=arID)
 

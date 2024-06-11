@@ -15,7 +15,7 @@
         {% for school in schools %}
         <tr>
             <td>
-                <a class="" href="{% url 'principal_dashboard' school.id %}"> {{school.name}} </a></div>
+                <a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></div>
             </td>
             {% for report_type in report_types %}
             <td>

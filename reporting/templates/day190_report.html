@@ -40,10 +40,8 @@
                             <tr>
                                 <td class="" style="width: 1px; white-space: nowrap; ">{{ form.number_of_sundays.errors }}
                                     <b>{{ form.number_of_sundays.label_tag }}</b></td>
-                                <td>{{ form.number_of_sundays }}</td>
-                            </tr>
-
-
+                                <td>{{ form.number_of_sundays }}
+                                <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Work on this"></i>
                             </table>
                     </div>
 
@@ -312,7 +310,7 @@
                         <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
                   </div>
                   <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-danger" href="{% url 'principal_dashboard' annual_report.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
+                    <a class="btn btn-sm btn-danger" href="{% url 'school_dashboard' annual_report.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
                   </div>
             </div>
 
@@ -330,6 +328,7 @@
                     {% include 'inservice_discretionary_info.html' with discretionary_div=True %}
                 </div>
             </div>
+
 
     </div>
 
@@ -592,9 +591,17 @@
 // toggle Info box
       $(document).ready(function(){
         $("#toggleButton").click(function(){
-            $("#inserice_discretionary_info").toggle();  // This will hide and show the div with id myContent
+            $("#inservice_discretionary_info").toggle();  // This will hide and show the div with id myContent
         });
     });
+
+//Popover
+      document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl)
+          })
+        });
 
 </script>
 

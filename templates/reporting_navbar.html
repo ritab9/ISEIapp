@@ -7,7 +7,7 @@
     {% if request.user|in_group:"principal, registrar"%}
     <!-- Add reporting specific links 
       <li class="nav-item ">
-        <a class="nav-link" href="{% url 'principal_dashboard' request.user.id %}" > Dashboard </a>
+        <a class="nav-link" href="{% url 'school_dashboard' request.user.id %}" > Dashboard </a>
       </li>
       -->
     {% endif %}

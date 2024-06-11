@@ -1,13 +1,23 @@
 from django.db.models import Count
 from users.models import Country
 from .models import Student
+from django.db.models import Q
+
 
 def update_student_country_occurences(annual_report):
     # Students who potentially changed
     students_changed = Student.objects.filter(annual_report=annual_report)
 
+    previous_year = annual_report.school_year.get_previous_school_year()
+
     # All students for the count
-    students = Student.objects.filter(annual_report__school_year=annual_report.school_year)
+    if previous_year:
+        # Only current SchoolYear or SchoolYear before
+        students = Student.objects.filter(Q(annual_report__school_year=annual_report.school_year) |
+                                          Q(annual_report__school_year=previous_year))
+    else:
+        # If there is no previous year, we only consider the current year
+        students = Student.objects.filter(annual_report__school_year=annual_report.school_year)
 
     # Get countries ID belonging to students that have possibly changed
     changed_country_ids = students_changed.values_list('country_id', flat=True)
@@ -27,4 +37,3 @@ def update_student_country_occurences(annual_report):
             country.student_occurrence = student_count
             # only one db call if value has changed
             country.save()
-            print(country)

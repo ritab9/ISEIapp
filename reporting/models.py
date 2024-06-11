@@ -215,6 +215,8 @@ class AbbreviatedDays(models.Model):
     date = models.CharField(max_length=255)
     hours = models.PositiveIntegerField()
 
+
+
 class Inservice(models.Model):
     dates = models.CharField(max_length=255)
     topic = models.CharField(max_length=255)

@@ -62,7 +62,7 @@ def loginpage(request):
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
                         return redirect('principal_teachercert', user.teacher.school.id)
-                        #return redirect('principal_dashboard', user.teacher.school.id)
+                        #return redirect('school_dashboard', user.teacher.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -189,7 +189,7 @@ def accountsettings(request, userID):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal', 'registrar','staff'])
-def principal_dashboard(request, schoolID):
+def school_dashboard(request, schoolID):
 
     school=School.objects.get(id=schoolID)
     school_year=SchoolYear.objects.get(current_school_year=True)
@@ -229,7 +229,7 @@ def principal_dashboard(request, schoolID):
                     accreditation_info=accreditation_info,
                   )
 
-    return render(request, 'users/principal_dashboard.html', context)
+    return render(request, 'users/school_dashboard.html', context)
 
 
 #@login_required(login_url='login')
@@ -260,7 +260,7 @@ def update_school_info(request, schoolID):
         if form_school.is_valid() and form_address.is_valid():
             form_school.save()
             form_address.save()
-            return redirect('principal_dashboard', schoolID=schoolID)
+            return redirect('school_dashboard', schoolID=schoolID)
     else:
         form_school = SchoolForm(instance=school)
         form_address = SchoolAddressForm(instance=address)

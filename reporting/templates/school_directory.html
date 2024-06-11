@@ -24,7 +24,7 @@
                   <tbody>
                     {% for school in schools %}
                     <tr>
-                      <td><a class="" href="{% url 'principal_dashboard' school.id %}"> {{school.name}} </a></td>
+                      <td><a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></td>
                       <td>
                         {{ school.address.address_1 }}<br>
                         {% if school.address.address_2 %} {{ school.address.address_2 }}<br>{% endif %}
