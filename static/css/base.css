@@ -213,12 +213,14 @@ input[type='number'] {
 .popover .popover-body {
     color: #0B61A4; /* Adjust text color if necessary */
     background: #f7f7f7;
+    width: 300px; /* Adjust width as needed */
+    padding: 20px;
+    border: 2px solid #0B61A4;
+    max-width: 100%; /* This ensures that the popover does not overflow the viewport */
 }
 
 
 .vertical-divider {
     border-left: 1px solid #ddd;
     height: auto;
-    margin-left: 1rem;
-    margin-right: 1rem;
 }

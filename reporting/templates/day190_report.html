@@ -10,8 +10,6 @@
     <div class="">
          <div class="row ml-2">
             <h6>{{ annual_report }}</h6>
-            <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                data-bs-content="Text Here"></i>
 
         </div>
 
@@ -123,6 +121,11 @@
                             <h6>Sunday School Days</h6>
                         <div id="sunday-formset">
                             {{ formset_sunday.management_form }}
+                            {% if formset_sunday.non_form_errors %}
+                                <div class="alert error">
+                                    {{ formset_sunday.non_form_errors }}
+                                </div>
+                            {% endif %}
                             <table class="table-sm" style="table-layout:auto ">
                                 <thead>
                                     <tr>
@@ -466,17 +469,16 @@
                 </div>
             </div>
 <!-- Error message -->
-            <div class="row d-flex justify-content-center">
-                <div class="" id="enough_days" style="display: none;">
-                      <span class="error"> Some requirements are not met!</span> <br>
-                      Please check the messages in <span class="error">red</span> before submission.
+            <div class="card card-body">
+                <div class="row d-flex justify-content-center">
+                    <div class="" id="enough_days" style="display: none;">
+                          <span class="error"> Some requirements are not met!</span> <br>
+                          Please check the messages in <span class="error">red</span> before submission.
+                    </div>
                 </div>
             </div>
 
         </form>
-
-
-
 
     </div>
 
@@ -782,6 +784,37 @@
         update_enrichment_days();  // call the function to sum up the number of enrichment formsets on page load
     });
 
+// limit dates
+
+    jQuery(function($) {
+
+        // start and end date selectors
+        var start_date_selector = "#id_start_date";
+        var end_date_selector = "#id_end_date";
+
+        // other date field selectors - you'll substitute these with the correct selectors
+        var vacation_start_dates_selector = 'input[id^="id_vacation-"][id$="-start_date"]';
+        var vacation_end_dates_selector = 'input[id^="id_vacation-"][id$="-end_date"]';
+        var sunday_dates_selector = 'input[id^="id_sunday-"][id$="-date"]';
+        var abbreviated_dates_selector = 'input[id^="id_abbreviated-"][id$="-date"]';
+
+        // a function to update min and max for date pickers
+        var update_date_ranges = function() {
+            var start_date = $(start_date_selector).val() || null;
+            var end_date = $(end_date_selector).val() || null;
+
+            $(vacation_start_dates_selector +', ' + vacation_end_dates_selector +', ' + sunday_dates_selector + ', ' + abbreviated_dates_selector)
+                .attr({"min": start_date, "max": end_date});
+        };
+
+        // initial update so values are correct on page load
+        update_date_ranges();
+
+        // listen to changes on start and end fields
+        $(document).on('blur', start_date_selector + ', ' + end_date_selector, update_date_ranges);
+    });
+
+
 // toggle Info box
       $(document).ready(function(){
         $("#toggleButton").click(function(){
@@ -793,11 +826,11 @@
       document.addEventListener("DOMContentLoaded", function(){
           var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
           var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl)
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
           })
         });
-
-
 
 </script>
 

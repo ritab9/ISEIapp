@@ -3,6 +3,7 @@ from reporting.models import *
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from users.models import Country, TNCounty
 from .models import AnnualReport
+from django.forms import BaseModelFormSet
 
 
 class UploadFileForm(forms.Form):
@@ -134,6 +135,25 @@ class SundaySchoolDaysForm(forms.ModelForm):
             'date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
         }
 
+    def clean_date(self):
+        date = self.cleaned_data.get('date')
+        if date.weekday() != 6:  # as Python's weekday function returns 0 for Monday and 6 for Sunday
+            raise ValidationError("The selected date does not fall on a Sunday.")
+        return date
+
+class BaseSundaySchoolDaysFormSet(BaseModelFormSet):
+
+    def clean(self):
+        """Checks that no two days have the same date."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        dates = []
+        for form in self.forms:
+            date = form.cleaned_data.get('date')
+            if date in dates:
+                raise forms.ValidationError("Dates must be unique.")
+            dates.append(date)
 
 
 class EducationalEnrichmentActivityForm(forms.ModelForm):

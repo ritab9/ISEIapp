@@ -496,7 +496,7 @@ def day190_report(request, arID):
     VacationFormSet = modelformset_factory(Vacations, form=VacationsForm, extra=1, can_delete=True)
     InserviceFormSet = modelformset_factory(InserviceDiscretionaryDays, form=InserviceDiscretionaryDaysForm, extra=1, can_delete=True)
     AbbreviatedFormSet = modelformset_factory(AbbreviatedDays, form=AbbreviatedDaysForm, extra=1, max_num=3, can_delete=True)
-    SundayFormSet = modelformset_factory(SundaySchoolDays, form=SundaySchoolDaysForm, extra=1, can_delete=True)
+    SundayFormSet = modelformset_factory(SundaySchoolDays, form=SundaySchoolDaysForm, extra=1, can_delete=True, formset=BaseSundaySchoolDaysFormSet)
     EnrichmentFormSet = modelformset_factory(EducationalEnrichmentActivity, form=EducationalEnrichmentActivityForm, extra=1, can_delete=True)
 
     errors=[]
