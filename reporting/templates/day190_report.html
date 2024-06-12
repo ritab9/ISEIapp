@@ -6,30 +6,42 @@
 
 {% block content %}
 
+
     <div class="">
          <div class="row ml-2">
             <h6>{{ annual_report }}</h6>
+            <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                data-bs-content="Text Here"></i>
+
         </div>
 
+ <!-- Day190 form -->
         <form method="post" id="my_form">
         {% csrf_token %}
+            <!-- To disable Enter submit-->
+            <input type="submit" disabled style="display: none" aria-hidden="true" />
 
- <!-- Day190 form -->
             <div class="card card-body">
-
                 <div class="row justify-content-around">
-                    <div class="col-auto">
 
-                            <table class="table table-sm" style="width: 100%">
+<!-- Overall Info -->
+                    <div class="col-auto vertical-divider">
+<!-- Start and end date -->
+                        <table class="table table-sm" style="width: 100%">
                                 <tr>
-                                    <td style="width: 1px; white-space: nowrap;"> <b>{{ form.start_date.label_tag }}</b>
-                                        <br>*First day students are present</td>
-                                    <td>{{ form.start_date }}{{ form.start_date.errors }}</td>
+                                    <td style="width: 1px; white-space: nowrap;">
+                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="First day students are present"></i>
+                                        <b>{{ day190_form.start_date.label_tag }}</b>
+                                    </td>
+                                    <td>{{ day190_form.start_date }}{{ day190_form.start_date.errors }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 1px; white-space: nowrap;"><b>{{ form.end_date.label_tag }}</b>
-                                        <br>*Last school day or graduation day</td>
-                                    <td> {{ form.end_date }}{{ form.end_date.errors }}</td>
+                                    <td style="width: 1px; white-space: nowrap;">
+                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                data-bs-content="Either the last school day, or graduation date if all students are present for graduation."></i>
+                                        <b>{{ day190_form.end_date.label_tag }}</b>
+                                    </td>
+                                    <td> {{ day190_form.end_date }}{{ day190_form.end_date.errors }}</td>
                                 </tr>
 
                               <tr>
@@ -37,63 +49,31 @@
                                 <td style="text-align:left">
                                 <input class="number_input" type="text" id="number_of_weekdays" readonly style="border: none"> </td>
                               </tr>
-                            <tr>
-                                <td class="" style="width: 1px; white-space: nowrap; ">{{ form.number_of_sundays.errors }}
-                                    <b>{{ form.number_of_sundays.label_tag }}</b></td>
-                                <td>{{ form.number_of_sundays }}
-                                <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Work on this"></i>
                             </table>
-                    </div>
 
-                    <div class="col-auto">
-                            <table class="table table-sm mt-3 mb-3">
-
-                                <tr>
-                                    <td class="" style="width: 1px; white-space: nowrap;">{{ form.inservice_days.errors }}
-                                        <b>In-service and Discretionary days:</b>
-                                    </td>
-                                    <td>{{ form.inservice_days }}</td>
-                                </tr>
-
-                                <tr><td colspan="4" id="10_day_message" class="error"></td></tr>
-                                <tr><td colspan="2" class="error" id="inservice_day_message"></td></tr>
-
-                            </table>
-                            <button id="toggleButton" type="button" class="btn btn-xs btn-outline-ISEIblue4">In-service and Discretionary Days Info</button>
-
-                    </div>
-
-                    <div class="col-auto">
-                             <table class="table-sm table-bordered">
+<!-- 180 / 190 day count -->
+                         <table class="table-sm table-bordered">
                                 <tr>
                                     <td style="width: 1px; white-space: nowrap; ">
-                                      {{ form.number_of_days.errors }}
-                                      <b>{{ form.number_of_days.label_tag }}</b>
+                                      {{ day190_form.number_of_days.errors }}
+                                      <b>{{ day190_form.number_of_days.label_tag }}</b>
                                     </td>
-                                    <td style = "text-align-last: left; border:none">{{ form.number_of_days }}</td>
+                                    <td style = "text-align-last: left; border:none">{{ day190_form.number_of_days }}</td>
 
                                     <td style="width: 1px; white-space: nowrap;"><b>Total Days</b></td>
                                     <td style ="text-align: left"><input class="number_input" type="text" id="total_days" readonly style="border: none"></td>
                                 </tr>
-
                                 <tr>
                                     <td colspan="2">*Minimum 180 instructional days</td>
                                     <td colspan="2">*Minimum 190 days</td>
                                 </tr>
                                 <tr><td colspan="4" id="no_of_days_message"></td></tr>
-
                             </table>
                     </div>
 
-                </div>
-            </div>
-
-
-            <div class="card card-body">
-                <div class="row justify-content-around">
 <!-- Vacations formset -->
-                    <div class="col-auto">
-                            <h6>Vacations</h6>
+                    <div class="col-auto vertical-divider">
+                            <h6>Vacations and School Breaks</h6>
                         <div id="vacation-formset">
                             {{ formset_vacation.management_form }}
                             <table class="table-sm" style="table-layout:auto ">
@@ -102,7 +82,7 @@
                                         <th>Name</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
-                                        <th>Weekdays</th>
+                                        <th>Weekdays</th><th>Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -113,6 +93,7 @@
                                         <td>{{ form.start_date }}<span class="error">{{ form.start_date.errors }}</span></td>
                                         <td>{{ form.end_date }}<span class="error">{{ form.end_date.errors }}</span></td>
                                         <td>{{ form.weekdays }}<span class="error">{{ form.weekdays.errors }}</span></td>
+                                        <td>  {{ form.DELETE }} </td>
                                     </tr>
                                     {% if form.non_field_errors %}
                                         <div class="alert alert-danger">
@@ -137,9 +118,80 @@
 
                     </div>
 
-<!-- InserviceDiscretionaryDays formset -->
-                    <div class="col-auto">
-                        <h6>In-service and Discretionary Days</h6>
+<!-- Sunday School Formset-->
+                    <div class="col-auto vertical-divider">
+                            <h6>Sunday School Days</h6>
+                        <div id="sunday-formset">
+                            {{ formset_sunday.management_form }}
+                            <table class="table-sm" style="table-layout:auto ">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th><th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for form in formset_sunday %}
+                                    {{ form.id }}
+                                    <tr class="individual-form">
+                                        <td>{{ form.date }}<span class="error">{{ form.date.errors }}</span></td>
+                                        <td>{{ form.type }}<span class="error">{{ form.type.errors }}</span></td>
+                                          <td>  {{ form.DELETE }} </td>
+                                    </tr>
+                                    {% if form.non_field_errors %}
+                                        <div class="alert alert-danger danger">
+                                            {{ form.non_field_errors }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                            <table class="table"><tr><td>
+                                        <button type="button" class="btn-ISEIblue4 add-form-button" id="sunday">Add rows</button>
+                                        </td>
+                                        <td colspan="2" class="text-right"> No. of Sunday school days <input class="number_input text-left" type="text" id="total_sunday_school_days" readonly style="border: none"></td>
+
+                                    </tr>
+                            </table>
+                        </div>
+
+                        <div style="text-align: right" class="mr-5">
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+<!-- Other Formsets -->
+            <div class="card card-body">
+                <div class="row justify-content-around">
+
+<!-- Inservice and Discretionary Days and Hours -->
+                    <div class="col-auto vertical-divider">
+                        <h6>
+                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                data-bs-content="In-Services are school-wide planned activities designed to increase the competencies needed by teachers."></i>
+                            In-service and
+                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                data-bs-content="Work days provided to teachers for setting up the classroom at the beginning of the school year (elementary), yearly planning, end of term grades, individual PD days."></i>
+                            Discretionary Days/Hours</h6>
+
+                        <table class="table table-sm ">
+                                <tr>
+                                    <td class="" style="width: 1px; white-space: nowrap;">{{ day190_form.inservice_days.errors }}
+                                        <b>In-service and Discretionary days:</b>
+                                    </td>
+                                    <td>{{ day190_form.inservice_days }}</td>
+                                    <td>
+                                        <button id="toggleButton" type="button" class="btn btn-xs btn-outline-ISEIblue4">Detailed Info</button>
+                                    </td>
+                                </tr>
+
+                                <tr><td colspan="3" id="10_day_message" class="error"></td></tr>
+                                <tr><td colspan="3" class="error" id="inservice_day_message"></td></tr>
+                            </table>
 
                         <div id="inservice-formset">
                             {{ formset_inservice.management_form }}
@@ -148,7 +200,7 @@
                                     <tr>
                                         <th>Type</th>
                                         <th>Dates</th>
-                                        <th>Hours</th>
+                                        <th>Hours</th><th>Delete</th>
                                     </tr>
                                 </thead>
 
@@ -159,6 +211,52 @@
                                         <td>{{ form.type }}<span class="error">{{ form.type.errors }}</span></td>
                                         <td>{{ form.dates }}<span class="error">{{ form.dates.errors }}</span></td>
                                         <td>{{ form.hours }}<span class="error">{{ form.hours.errors }}</span></td>
+                                        <td>  {{ form.DELETE }} </td>
+                                    </tr>
+                                    {% if form.non_field_errors %}
+                                        <div class="alert alert-danger">
+                                            {{ form.non_field_errors }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <table class="table">
+                                    <tr><td class="text-left"><button type="button" class="btn-ISEIblue4 add-form-button" id="inservice">Add rows</button></td>
+                                        <td colspan="3"> *There must be a minimum of 30 in-service hours.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total: <input class="number_input" type="text" id="total_inservice_discretionary_hours" readonly style="border: none"></td>
+                                        <td>Discretionary: <input class="number_input" type="text" id="total_discretionary_hours" readonly style="border: none"></td>
+                                        <td>Inservice: <input class="number_input" type="text" id="total_inservice_hours" readonly style="border: none"></td>
+                                    </tr>
+                                    <tr><td colspan="3" class="error" id="30_hr_message"></td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+<!-- Enrichement Activity Formset-->
+                    <div class="col-auto vertical-divider">
+                        <h6>Educational Enrichment Activity</h6>
+                        <div id="enrichment-formset">
+                            {{ formset_enrichment.management_form }}
+                            <table class="table-sm" style="table-layout:auto ">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Dates</th>
+                                        <th>Days</th><th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for form in formset_enrichment %}
+                                    {{ form.id }}
+                                    <tr class="individual-form">
+                                        <td>{{ form.type }}<span class="error">{{ form.type.errors }}</span></td>
+                                        <td>{{ form.dates }}<span class="error">{{ form.dates.errors }}</span></td>
+                                        <td>{{ form.days }}<span class="error">{{ form.days.errors }}</span></td>
+                                        <td>  {{ form.DELETE }} </td>
                                     </tr>
                                     {% if form.non_field_errors %}
                                         <div class="alert alert-danger">
@@ -169,24 +267,23 @@
 
                                 </tbody>
                             </table>
-                            <table class="table">
-                                    <tr><td colspan="3" class="text-left"><button type="button" class="btn-ISEIblue4 add-form-button" id="inservice">Add rows</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Total: <input class="number_input" type="text" id="total_inservice_discretionary_hours" readonly style="border: none"></td>
-                                        <td>Discretionary: <input class="number_input" type="text" id="total_discretionary_hours" readonly style="border: none"></td>
-                                        <td>Inservice: <input class="number_input" type="text" id="total_inservice_hours" readonly style="border: none"></td>
-                                    </tr>
-                                    <tr><td colspan="3" class="error" id="30_hr_message"></td></tr>
+                            <table class="table"><tr><td>
+                                <button type="button" class="btn-ISEIblue4 add-form-button" id="enrichment">Add rows</button>
+                                </td>
+                                <td colspan="2" class="text-right"> No. of Enrichment Days <input class="number_input text-left" type="text" id="enrichment_days" readonly style="border: none"></td>
+
+                            </tr>
+                                <tr><td colspan="4">*Maximum 20 days per school year (with the majority of the students participating)</td></tr>
                             </table>
                         </div>
 
+                        <div style="text-align: right" class="mr-5">
+                        </div>
 
                     </div>
 
 <!-- AbbreviatedDays formset -->
-
-                    <div class="col-auto">
+                    <div class="col-auto vertical-divider">
                         <h6>Abbreviated Days</h6>
 
                         <div id="abbreviated-formset">
@@ -195,7 +292,7 @@
                                 <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Hours</th>
+                                        <th>Hours</th><th>Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -204,6 +301,7 @@
                                     <tr class="individual-form">
                                         <td>{{ form.date }}<span class="error">{{ form.date.errors }}</span></td>
                                         <td>{{ form.hours }}<span class="error">{{ form.hours.errors }}</span></td>
+                                        <td>  {{ form.DELETE }} </td>
                                     </tr>
                                     {% if form.non_field_errors %}
                                         <div class="alert alert-danger">
@@ -221,12 +319,20 @@
                                 </td>
 
                             </tr>
-                            <tr><td>*days less than 6.5 hrs and more than 3.5 hrs <br>
+                            <tr><td>*less than 6.5 hrs and more than 3.5 hrs <br>
                                     (no more than three per school-year)</td>
                             </tr>
                         </table>
 
                     </div>
+
+                </div>
+            </div>
+
+<!-- Discretionary and inservice Info -->
+            <div class="card">
+                <div id="inservice_discretionary_info" style="display:none;">
+                    {% include 'inservice_discretionary_info.html' with discretionary_div=True %}
                 </div>
             </div>
 
@@ -250,6 +356,7 @@
                             {{ formset_vacation.empty_form.weekdays }}
                             <span class="error">{{ formset_vacation.empty_form.weekdays.errors }}</span>
                         </td>
+                        <td>  {{ form.DELETE }} </td>
                     </tr>
                     {% if formset_vacation.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -257,7 +364,6 @@
                         </div>
                     {% endif %}
                 </template>
-
 
                 <template id="empty_inservice_form_template">
                     <tr class="individual-form">
@@ -273,6 +379,7 @@
                             {{ formset_inservice.empty_form.hours }}
                             <span class="error">{{ formset_inservice.empty_form.hours.errors }}</span>
                         </td>
+                        <td>  {{ form.DELETE }} </td>
                     </tr>
                     {% if formset_inservice.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -291,6 +398,7 @@
                             {{ formset_abbreviated.empty_form.hours }}
                             <span class="error">{{ formset_abbreviated.empty_form.hours.errors }}</span>
                         </td>
+                        <td>  {{ form.DELETE }} </td>
                     </tr>
                     {% if formset_abbreviated.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -298,22 +406,66 @@
                         </div>
                     {% endif %}
                 </template>
+
+                <template id="empty_sunday_form_template">
+                    <tr class="individual-form">
+                        <td>
+                            {{ formset_sunday.empty_form.date }}
+                            <span class="error">{{ formset_sunday.empty_form.date.errors }}</span>
+                        </td>
+                        <td>
+                            {{ formset_sunday.empty_form.type }}
+                            <span class="error">{{ formset_sunday.empty_form.type.errors }}</span>
+                        </td>
+                        <td>  {{ form.DELETE }} </td>
+                    </tr>
+                    {% if formset_sunday.empty_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ formset_sunday.empty_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                </template>
+
+                <template id="empty_enrichment_form_template">
+                    <tr class="individual-form">
+                        <td>
+                            {{ formset_enrichment.empty_form.type }}
+                            <span class="error">{{ formset_enrichment.empty_form.type.errors }}</span>
+                        </td>
+                        <td>
+                            {{ formset_enrichment.empty_form.dates }}
+                            <span class="error">{{ formset_enrichment.empty_form.dates.errors }}</span>
+                        </td>
+                        <td>
+                            {{ formset_enrichment.empty_form.no_school_days }}
+                            <span class="error">{{ formset_enrichment.empty_form.no_school_days.errors }}</span>
+                        </td>
+                        <td>  {{ form.DELETE }} </td>
+                    </tr>
+                    {% if formset_enrichment.empty_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ formset_enrichment.empty_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                </template>
             </div>
 
 
-
-            <div class="row mt-2">
-                  <div class="col d-flex justify-content-center">
-                    <button class="btn btn-sm btn-ISEIblue2" type="submit" name="save">Save and Finalize Later</button>
-                  </div>
-                  <div class="col d-flex justify-content-center">
-                        <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
-                  </div>
-                  <div class="col d-flex justify-content-center">
-                    <a class="btn btn-sm btn-danger" href="{% url 'school_dashboard' annual_report.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
-                  </div>
+<!-- Submission Buttons-->
+            <div class = "card-body card">
+                <div class="row mt-2">
+                      <div class="col d-flex justify-content-center">
+                        <button class="btn btn-sm btn-ISEIblue2" type="submit" name="save">Save and Finalize Later</button>
+                      </div>
+                      <div class="col d-flex justify-content-center">
+                            <button class="btn btn-sm btn-success" type="submit" name="submit">Report Complete</button>
+                      </div>
+                      <div class="col d-flex justify-content-center">
+                        <a class="btn btn-sm btn-danger" href="{% url 'school_dashboard' annual_report.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
+                      </div>
+                </div>
             </div>
-
+<!-- Error message -->
             <div class="row d-flex justify-content-center">
                 <div class="" id="enough_days" style="display: none;">
                       <span class="error"> Some requirements are not met!</span> <br>
@@ -323,11 +475,7 @@
 
         </form>
 
-            <div class="card">
-                <div id="inservice_discretionary_info" style="display:none;">
-                    {% include 'inservice_discretionary_info.html' with discretionary_div=True %}
-                </div>
-            </div>
+
 
 
     </div>
@@ -454,9 +602,10 @@
     var enough_school_days = true
     var enough_i_d_days = true
     var enough_i_hours = true
+    var i_d_match = true
 
     function enough_days() {
-            if (!enough_school_days || !enough_i_d_days || !enough_i_hours) {
+            if (!enough_school_days || !enough_i_d_days || !enough_i_hours || !i_d_match) {
                 $('#enough_days').show();
             } else {
                 $('#enough_days').hide();
@@ -473,7 +622,7 @@
     function updateNumberOfDays() {
         const totalVacationDays = parseInt($('#total_vacation_days').val()) || 0;
         const numberOfWeekdays = parseInt($('#number_of_weekdays').val()) || 0;
-        const numberOfSundays = parseInt($('#id_number_of_sundays').val()) || 0;
+        const numberOfSundays = parseInt($('#total_sunday_school_days').val()) || 0;
         const numberOfDays = numberOfWeekdays - totalVacationDays + numberOfSundays;
 
         if (numberOfDays < 180) {
@@ -509,7 +658,7 @@
       }
 
      // Calculate the number of days and set the value every time when days count or dates could be changed:
-    $(document).on('change', '#id_number_of_sundays',updateNumberOfDays);
+    $(document).on('change', '#total_sunday_school_days',updateNumberOfDays);
     $(document).on('change', '#id_inservice_days', updateNumberOfDays);
 
 
@@ -567,8 +716,10 @@
                   " <li>No. of days (above) and no. of hours (below) don't seem to match.</li>" +
                    "<li>6-8 hours would count as a day</li>"+
                    "<li>Did you enter planned activities below?</li>");
+                    i_d_match = false; enough_days();
             } else {
                 $('#inservice_day_message').html("");
+                i_d_match = true; enough_days();
             }
 
 
@@ -588,6 +739,49 @@
         });
     });
 
+// count number of Sundays
+    $(document).ready(function() {
+        function update_sunday_school_days() {
+            var totalSundaySchoolDays = 0;
+            $("#sunday-formset .individual-form").each(function() {
+                var inputDate = $(this).find("input[name$='date']").val();
+                var inputType = $(this).find("input[name$='type']").val();
+                if(!(inputDate === "" || inputType === "")) {
+                    totalSundaySchoolDays += 1;
+                }
+            });
+            $("#total_sunday_school_days").val(totalSundaySchoolDays).change();
+        }
+
+        $("#sunday").click(function() {
+            setTimeout(update_sunday_school_days, 100);  // delay to allow for row to update
+        });
+
+        $("#sunday-formset").on("change", "input[name$='date'], select[name$='type']", function() {
+            setTimeout(update_sunday_school_days, 100);
+        });
+
+        update_sunday_school_days();  // call the function to count the number of Sunday formsets on page load
+    });
+
+// count enrichment days
+    $(document).ready(function() {
+        function update_enrichment_days() {
+            var totalEnrichmentDays = 0;
+            $("#enrichment-formset .individual-form").each(function() {
+                var noSchoolDays = $(this).find("input[name$='days']").val();
+                totalEnrichmentDays += parseInt(noSchoolDays, 10) || 0;
+            });
+            $("#enrichment_days").val(totalEnrichmentDays);
+        }
+
+        $("#enrichment-formset").on("change", "input[name$='days']", function() {
+            setTimeout(update_enrichment_days, 100);  // delay to allow for form to update
+        });
+
+        update_enrichment_days();  // call the function to sum up the number of enrichment formsets on page load
+    });
+
 // toggle Info box
       $(document).ready(function(){
         $("#toggleButton").click(function(){
@@ -602,6 +796,8 @@
             return new bootstrap.Popover(popoverTriggerEl)
           })
         });
+
+
 
 </script>
 

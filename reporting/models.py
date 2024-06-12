@@ -180,9 +180,11 @@ class Day190(models.Model):
     annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='day190', null=False, blank=False)
     start_date = models.DateField(verbose_name= "School-year start date", default=None, null=True, blank=True)
     end_date = models.DateField(verbose_name= "School-year end date", default=None, null=True, blank=True)
-    number_of_sundays = models.PositiveIntegerField(verbose_name="Number of Sunday school days", default=0)
     number_of_days = models.PositiveIntegerField(verbose_name= "Number of School Days", default=0)
     inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
+
+    def __str__(self):
+        return self.annual_report.report_type.name + ' ' + self.annual_report.school_year.name + " " + self.annual_report.school.name
 
 
 class Vacations(models.Model):
@@ -206,7 +208,7 @@ class InserviceDiscretionaryDays(models.Model):
 
     day190 = models.ForeignKey(Day190, related_name='inservice_discretionary_days', on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=TYPE_CHOICES)
-    dates = models.CharField(max_length=255)
+    dates = models.CharField(max_length=20)
     hours = models.PositiveIntegerField()
 
 
@@ -215,6 +217,40 @@ class AbbreviatedDays(models.Model):
     date = models.CharField(max_length=255)
     hours = models.PositiveIntegerField()
 
+class SundaySchoolDays(models.Model):
+    day190 = models.ForeignKey(Day190, related_name='sunday_school_days', on_delete=models.CASCADE)
+    date = models.DateField()
+    TYPE_CHOICES = [
+        (None, '--------------'),
+        ('RC', 'Regular Classes'),
+        ('FT', 'Field Trip'),
+        ('MT', 'Mission Trip'),
+        ('SL', 'Service Learning'),
+        ('MU', 'Music Trip'),
+        ('OT', 'Other Education Enrichment Activity'),
+        ('ST', 'Standardized Testing'),
+        ('GR', 'Graduation'),
+    ]
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES)
+
+
+
+class EducationalEnrichmentActivity(models.Model):
+    day190 = models.ForeignKey(Day190, related_name='educational_enrichment_activities', on_delete=models.CASCADE)
+    TYPE_CHOICES = [
+        (None, '--------------'),
+        ('FT', 'Field Trip'),
+        ('MT', 'Mission Trip'),
+        ('SL', 'Service Learning'),
+        ('MU', 'Music Trip'),
+        ('OT', 'Other Education Enrichment Activity'),
+    ]
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES)
+    dates = models.CharField(max_length=255)
+    days = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = (('day190', 'dates', 'type'),)
 
 
 class Inservice(models.Model):

@@ -34,3 +34,31 @@ class AnnualReportAdmin(admin.ModelAdmin):
 class StudentAdmin(admin.ModelAdmin):
     list_display = ['name','annual_report']
     list_filter = ['annual_report']
+
+
+
+class VacationsInline(admin.StackedInline):
+    model = Vacations
+
+
+class InserviceDiscretionaryDaysInline(admin.StackedInline):
+    model = InserviceDiscretionaryDays
+
+
+class AbbreviatedDaysInline(admin.StackedInline):
+    model = AbbreviatedDays
+
+
+class SundaySchoolDaysInline(admin.StackedInline):
+    model = SundaySchoolDays
+
+
+class EducationalEnrichmentActivityInline(admin.StackedInline):
+    model = EducationalEnrichmentActivity
+
+
+@admin.register(Day190)
+class Day190Admin(admin.ModelAdmin):
+
+    inlines = [VacationsInline, InserviceDiscretionaryDaysInline, SundaySchoolDaysInline, AbbreviatedDaysInline,
+               EducationalEnrichmentActivityInline]

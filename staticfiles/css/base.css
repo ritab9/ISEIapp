@@ -9,7 +9,7 @@
     overflow-x: auto;
 }
 .scrollable-table2 {
-    max-height: 800px; /* Adjust this value based on your requirements */
+    max-height: 760px; /* Adjust this value based on your requirements */
     overflow-y: auto;
 }
 
@@ -202,4 +202,23 @@ input[type='number'] {
     transform: translate(-50%, -50%); /* centers the text horizontally */
     z-index: 101; /* make sure the text stays on top of the image */
     color: #000; /* color of the text */
+}
+
+
+.popover {
+    background: #ffffff;  /* Change color accordingly */
+    z-index: 1060; /* Adjust if necessary */
+}
+
+.popover .popover-body {
+    color: #0B61A4; /* Adjust text color if necessary */
+    background: #f7f7f7;
+}
+
+
+.vertical-divider {
+    border-left: 1px solid #ddd;
+    height: auto;
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
