@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 
 
+#Annual Report Data
 class ReportDueDateInline(admin.TabularInline):
     model = ReportDueDate
     extra = 1  # Number of extra empty rows to display
@@ -27,16 +28,16 @@ class AnnualReportAdmin(admin.ModelAdmin):
     list_display = ['report_type','school_year', 'school', 'submit_date']
     list_editable = ['submit_date']
     list_filter = ('school_year', 'report_type', 'school',)
-# customize the AnnualReport admin section here
 
 
+#Student Report Data
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ['name','annual_report']
     list_filter = ['annual_report']
 
 
-
+# 190 day report data
 class VacationsInline(admin.StackedInline):
     model = Vacations
 
@@ -62,3 +63,27 @@ class Day190Admin(admin.ModelAdmin):
 
     inlines = [VacationsInline, InserviceDiscretionaryDaysInline, SundaySchoolDaysInline, AbbreviatedDaysInline,
                EducationalEnrichmentActivityInline]
+
+
+#Employee Data
+
+admin.site.register(Degree)
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_filter = ('category',)
+
+@admin.register(StaffPosition)
+class StaffPositionAdmin(admin.ModelAdmin):
+    list_filter = ['category']
+    list_display = ['name', 'category']
+    list_editable = ['category']
+
+
+class PersonnelDegreeInline(admin.TabularInline):
+    model = PersonnelDegree
+
+
+@admin.register(Personnel)
+class PersonnelAdmin(admin.ModelAdmin):
+    inlines = [PersonnelDegreeInline,]

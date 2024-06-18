@@ -2,8 +2,9 @@ from django import forms
 from reporting.models import *
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from users.models import Country, TNCounty
-from .models import AnnualReport
+from .models import *
 from django.forms import BaseModelFormSet
+from django.forms.models import inlineformset_factory
 
 
 class UploadFileForm(forms.Form):
@@ -65,7 +66,7 @@ class StudentForm(forms.ModelForm):
 
         return cleaned_data
 
-
+#Day 190 Forms
 class Day190Form(forms.ModelForm):
     class Meta:
         model = Day190
@@ -78,7 +79,6 @@ class Day190Form(forms.ModelForm):
             'number_of_days': forms.NumberInput(attrs={'min': 1, 'max': 250, 'style': 'max-width: 30px; border:none'}),
             'inservice_days': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
         }
-
 
 class VacationsForm(forms.ModelForm):
     class Meta:
@@ -114,7 +114,6 @@ class InserviceDiscretionaryDaysForm(forms.ModelForm):
             'dates': forms.TextInput(attrs={'style': 'max-width: 150px;'}),
             'hours': forms.NumberInput(attrs={'min': 1, 'max': 40, 'style': 'max-width: 30px;'}),
         }
-
 
 class AbbreviatedDaysForm(forms.ModelForm):
     class Meta:
@@ -167,6 +166,7 @@ class EducationalEnrichmentActivityForm(forms.ModelForm):
 
         }
 
+#Inservice Form
 class InserviceForm(forms.ModelForm):
     class Meta:
         model = Inservice
@@ -176,3 +176,36 @@ class InserviceForm(forms.ModelForm):
         widgets = {
             'hours': forms.NumberInput(attrs={'min': 1, 'style': 'max-width: 30px;', 'class':'hours-input'}),
         }
+
+#Employee Forms
+
+class PersonnelForm(forms.ModelForm):
+
+    phone_number = PhoneNumberField(region="US")
+
+    def __init__(self, *args, **kwargs):
+        schoolID = kwargs.pop('schoolID', None)
+        super().__init__(*args, **kwargs)
+
+        if schoolID is not None:
+            queryset = Teacher.objects.filter(school_id=schoolID, user__is_active=True).select_related('user')
+            self.fields['teacher'].queryset = queryset
+
+    class Meta:
+        model = Personnel
+        fields = ['first_name', 'last_name', 'status', 'teacher',
+                  'years_experience', 'years_at_this_school', 'email_address', 'phone_number',
+                  'positions', 'subjects_teaching', 'subjects_taught']
+
+
+
+PersonnelDegreeFormset = inlineformset_factory(
+    Personnel,
+    PersonnelDegree,
+    fields=('degree', 'area_of_study'),
+    extra=1,
+    can_delete=False,
+)
+
+
+

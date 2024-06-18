@@ -102,7 +102,7 @@ body {
 }
 
 /* if any changes made here please check login and register templates */
-a,h1,h2,h5,h6 {
+a,h1,h2,h5,h6,h7 {
     color: #084574;
  }
 
@@ -223,4 +223,9 @@ input[type='number'] {
 .vertical-divider {
     border-left: 1px solid #ddd;
     height: auto;
+}
+.h7 {
+    display: block;
+    color: #0B61A4;
+    font-weight: bold;
 }

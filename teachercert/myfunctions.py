@@ -132,7 +132,3 @@ def degree(teacher):
         hdegree = "No Degrees Entered. Please go to Personal Info, and update the Colleges Attended List"
 
     return hdegree
-
-
-def somefunction():
-    return 5

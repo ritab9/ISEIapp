@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.forms import modelformset_factory
 from django.db.models import Sum
@@ -8,6 +8,8 @@ from .models import *
 from .forms import *
 from datetime import date, timedelta
 from django.contrib import messages
+from django.db import transaction
+
 from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 import numpy as np
@@ -25,6 +27,7 @@ from django.db.models import Prefetch
 
 from users.models import AccreditationInfo
 from .functions import update_student_country_occurences
+from teachercert.myfunctions import newest_certificate
 
 
 #individual school reports
@@ -626,6 +629,8 @@ def day190_report_display(request, arID):
         vacations_report = Vacations.objects.filter(day190=day190_report)
         inservice_days_report = InserviceDiscretionaryDays.objects.filter(day190=day190_report)
         abbreviated_days_report = AbbreviatedDays.objects.filter(day190=day190_report)
+        sunday_school_days_report = SundaySchoolDays.objects.filter(day190=day190_report)
+        educational_enrichment_activities_report = EducationalEnrichmentActivity.objects.filter(day190=day190_report)
 
         total_inservice_discretionay_hours = sum(inservice_day.hours for inservice_day in inservice_days_report)
 
@@ -634,26 +639,185 @@ def day190_report_display(request, arID):
 
         total_inservice_hours = total_inservice_discretionay_hours - total_discretionary_hours
 
+        sunday_school_days_count = sunday_school_days_report.count()
+
+        educational_enrichment_days_total = educational_enrichment_activities_report.aggregate(total_days=Sum('days'))[
+            'total_days']
+
         context = {
             'day190_report': day190_report,
             'vacations_report': vacations_report,
             'inservice_days_report': inservice_days_report,
             'abbreviated_days_report': abbreviated_days_report,
+            'sunday_school_days_report': sunday_school_days_report,
+            'educational_enrichment_activities_report': educational_enrichment_activities_report,
             'total_inservice_hours': total_inservice_hours,
             'total_discretionary_hours': total_discretionary_hours,
             'total_inservice_dictionary_hours': total_inservice_hours,
+            'sunday_school_days_count': sunday_school_days_count,
+            'educational_enrichment_days_total':educational_enrichment_days_total,
             'arID': arID,
         }
         return render(request, 'day190_report_display.html', context)
 
 @login_required(login_url='login')
 def employee_report(request, arID):
-    # Add your processing here
-    return render(request, 'employee_report.html')
+    all_personnel = Personnel.objects.filter(annual_report__id=arID).select_related('teacher', 'annual_report').prefetch_related(
+        'positions', 'degrees', 'subjects_teaching', 'subjects_taught')
+    annual_report = get_object_or_404(AnnualReport, id=arID)
+    school=annual_report.school.abbreviation
+
+    admin_positions = StaffPosition.objects.filter(category=StaffCategory.ADMINISTRATIVE)
+    teaching_positions = StaffPosition.objects.filter(category=StaffCategory.TEACHING)
+    general_positions = StaffPosition.objects.filter(category=StaffCategory.GENERAL_STAFF)
+
+
+    context={'arID':arID}
+    personnel_groups = []
+    processed_personnel = set()  # keep track of processed personnel
+
+    for group, positions, code in (
+            ('Admin Personnel', admin_positions, 'A'),
+            ('Teaching Personnel', teaching_positions, 'T'),
+            ('General Personnel', general_positions, 'G'),
+    ):
+        group_personnel_list = []
+        for p in all_personnel:
+            if p in processed_personnel:  # check if personnel has been processed
+                continue  # skip to next iteration if personnel already processed
+            if set(p.positions.all()).intersection(positions):
+                personnel_dict = {'personnel': p,}
+                # Add teacher info if available
+                if p.teacher:
+                    newest_cert = newest_certificate(p.teacher)
+                    if newest_cert:
+                        endorsements = newest_cert.tendorsement_set.all()
+                        endorsements_list = [e.endorsement.name for e in endorsements]
+
+                        personnel_dict['certification_type'] = newest_cert.certification_type
+                        personnel_dict['renewal_date'] = newest_cert.renewal_date
+                        personnel_dict['endorsements'] = endorsements_list
+                group_personnel_list.append(personnel_dict)
+                processed_personnel.add(p)  # add personnel to set of processed_personnel
+
+        personnel_groups.append({'group_name': group, 'group_personnel': group_personnel_list, 'code':code })
+
+
+    context['personnel_groups'] = personnel_groups
+    context['arID'] = arID
+    context['map'] = CATEGORY_EXPLANATION_MAP
+    context['school']=school
+
+    return render(request, 'employee_report.html', context)
+
+
+@login_required(login_url='login')
+def employee_add_edit(request, arID, personnelID=None, positionCode=None):
+    annual_report = get_object_or_404(AnnualReport, id=arID)
+    school = get_object_or_404(School, id=annual_report.school_id)
+
+    subject_categories = {
+        "B": {"name": "Bible", "subjects": []},
+        "C": {"name": "Computer/Tech", "subjects": []},
+        "F": {"name": "Fine Arts", "subjects": []},
+        "L": {"name": "Language Arts", "subjects": []},
+        "M": {"name": "Math", "subjects": []},
+        "ML": {"name": "Modern Language", "subjects": []},
+        "SC": {"name": "Science", "subjects": []},
+        "SS": {"name": "Social Studies", "subjects": []},
+        "V": {"name": "Vocational Arts Courses", "subjects": []},
+        "W": {"name": "Wellness/Health/PE", "subjects": []},
+    }
+    subjects = Subject.objects.all().order_by('category', 'name')
+    for subject in subjects:
+        subject_categories[subject.category]["subjects"].append(subject)
+
+    position_categories = {
+        'A': {"name": 'Administrative', "positions": []},
+        'T': {"name": 'Teaching', "positions": []},
+        'G': {"name": 'General_Staff', "positions": []},
+    }
+    positions = StaffPosition.objects.all().order_by('category', 'name')
+    for position in positions:
+        position_categories[position.category]["positions"].append(position)
+
+    if personnelID:
+        personnel_instance = get_object_or_404(Personnel, id=personnelID)
+    else:
+        personnel_instance = Personnel()
+
+    pd_formset = PersonnelDegreeFormset(instance=personnel_instance, prefix='pd_formset')
+
+
+    if request.method == 'POST':
+
+        p_form = PersonnelForm(request.POST, instance=personnel_instance, schoolID=school)
+        pd_formset = PersonnelDegreeFormset(request.POST, instance=personnel_instance, prefix='pd_formset')
+
+        if p_form.is_valid() and pd_formset.is_valid():
+            try:
+                with transaction.atomic():
+                    personnel = p_form.save(commit=False)
+                    personnel.annual_report_id = arID
+                    personnel.save()
+                    p_form.save_m2m()
+
+                    subjects_teaching = p_form.cleaned_data.get('subjects_teaching')
+                    subjects_taught = p_form.cleaned_data.get('subjects_taught')
+                    if subjects_teaching:
+                        subjects_taught_ids = set(subjects_taught.values_list('id', flat=True))
+                        subjects_teaching_ids = set(subjects_teaching.values_list('id', flat=True))
+                        all_subject_ids = list(subjects_taught_ids | subjects_teaching_ids)
+                        personnel.subjects_taught.set(all_subject_ids)
+
+                    pd_formset.save()
+
+                return redirect('employee_report', arID=arID)
+            except Exception as e:
+                print(f"Error saving personnel: {e}")
+                # Log the error or handle it appropriately
+        else:
+            print("Form errors:", p_form.errors)
+            print("Formset errors:", pd_formset.errors)
+
+    else:
+        p_form = PersonnelForm(instance=personnel_instance, schoolID=school)
+
+    context = {
+        'p_form': p_form,
+        'pd_formset': pd_formset,
+        'subject_categories': subject_categories,
+        'position_categories': position_categories,
+        'positionCode': positionCode,
+    }
+
+    return render(request, 'employee_add_edit.html', context)
+
+
 @login_required(login_url='login')
 def employee_report_display(request, arID):
-    # Add your processing here
+
     return render(request, 'employee_report_display.html')
+
+@login_required
+def get_teacher_email(request):
+    # Get the teacher id from the request
+    teacher_id = request.GET.get('teacher_id', None)
+    if teacher_id is not None:
+        # Fetch the teacher instance and its related user's email
+        try:
+            teacher = Teacher.objects.select_related('user').get(id=teacher_id)
+            email = teacher.user.email
+        except Teacher.DoesNotExist:
+            return JsonResponse({"error": "Teacher not found"}, status=404)
+
+        # Return the fetched email as a JsonResponse
+        return JsonResponse({"email": email})
+
+    # Return an error if no teacher id is provided in the request
+    return JsonResponse({"error": "No teacher id provided"}, status=400)
+
+
 
 @login_required(login_url='login')
 def inservice_report(request, arID):

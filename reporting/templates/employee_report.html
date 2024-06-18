@@ -1,9 +1,99 @@
 {% extends 'reporting_base.html' %}
 
+{% load static %}
+
 {% block title %} Employee Report {% endblock title %}
 
 
 {% block content %}
+
+    <div class="card card-body">
+
+     {% for personnel_group in personnel_groups %}
+         <div class="row">
+            <div class="col-auto">
+                <h6>{{ personnel_group.group_name }}</h6></div>
+            <div class="col-auto">
+                 {% for key, explanation in map.items %}
+                    {% if key == personnel_group.code %}
+                        {{ explanation }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+         </div>
+        <table class="table table-sm table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th rowspan="2"></th>
+                    <th rowspan="2">Name</th>
+                    <th rowspan="2">Status</th>
+                    <th rowspan="2">Positions</th>
+                    <th rowspan="2">Degrees</th>
+                    <th colspan="2" style="text-align: center">Years Experience</th>
+                    <th rowspan="2">Email Address</th>
+                    <th rowspan="2">Phone Number</th>
+                    <th colspan="2" style="text-align: center">ISEI/NAD Certification</th>
+                    <th colspan="2" style="text-align: center">Subjects</th>
+                </tr>
+                <tr><th>Total</th>
+                    <th>At {{ school }}</th>
+                    <th>Type & Renewal Date</th>
+                    <th>Endorsements</th>
+                    <th>Teaching Now</th>
+                    <th>All Taught</th>
+                </tr>
+
+            </thead>
+            <tbody>
+            {% for personnel_dict in personnel_group.group_personnel %}
+                 {% with p=personnel_dict.personnel %}
+                <tr>
+                    <td>
+                        <a href="{% url 'employee_edit' arID=arID personnelID=p.id %}">
+                            Edit
+                        </a>
+                    </td>
+                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{{ p.get_status_display }}</td>
+                    <td>{% for pos in p.positions.all %} {{ pos }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
+                    <td>{% for deg in p.personneldegree_set.all %} {{ deg.degree }} - {{ deg.area_of_study }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
+                    <td>{{ p.years_experience }}</td>
+                    <td>{{ p.years_at_this_school }}</td>
+                    <td>{{ p.email_address }}</td>
+                    <td>{{ p.phone_number }}</td>
+                    <td>{% if personnel_dict.certification_type %}
+                            {{ personnel_dict.certification_type }}<br>
+                            {{ personnel_dict.renewal_date }}
+                        {% endif %}</td>
+                    <td>{% for endorsement in personnel_dict.endorsements %}
+                            {{ endorsement }}<br>
+                        {% endfor %}
+                    </td>
+                    <td>{% for subj_teach in p.subjects_teaching.all %} {{ subj_teach }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
+                    <td>{% for subj_t in p.subjects_taught.all %} {{ subj_t }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
+
+                </tr>
+                {% endwith %}
+            {% endfor %}
+                <tr>
+                    <td colspan="14" style="text-align: right">
+                        <a href="{% url 'employee_add' arID=arID positionCode=personnel_group.code %}">
+                          <button>Add</button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endfor %}
+
+    </div>
+
+
+
+<script>
+
+</script>
+
 
 
 {% endblock %}

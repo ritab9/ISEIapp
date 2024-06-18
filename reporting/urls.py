@@ -13,8 +13,11 @@ urlpatterns = [
     path('import_students_prev_year/<int:arID>/', views.import_students_prev_year, name='import_students_prev_year'),
     path('tn_student_export/<int:arID>/', views.tn_student_export, name='tn_student_export'),
 
-    path('day190_report/<int:arID>/', views.day190_report, name='day190_report'),
     path('employee_report/<int:arID>/', views.employee_report, name='employee_report'),
+    path('employee_add_edit/<int:arID>/<int:personnelID>/', views.employee_add_edit, name='employee_edit'),
+    path('employee_add_edit/<int:arID>/<str:positionCode>/', views.employee_add_edit, name='employee_add'),
+
+    path('day190_report/<int:arID>/', views.day190_report, name='day190_report'),
     path('inservice_report/<int:arID>/', views.inservice_report, name='inservice_report'),
     path('opening_report/<int:arID>/', views.opening_report, name='opening_report'),
     path('ap_report/<int:arID>//', views.ap_report, name='ap_report'),
@@ -25,10 +28,14 @@ urlpatterns = [
     path('opening_report_display/<int:arID>/', views.opening_report_display, name='opening_report_display'),
     path('ap_report_display/<int:arID>//', views.ap_report_display, name='ap_report_display'),
 
+
     #directories
     path('school_directory/', views.school_directory, name='school_directory'),
 
     #isei
     path('isei_reporting_dashboard/', views.isei_reporting_dashboard, name='isei_reporting_dashboard'),
+
+    #ajax
+    path('ajax/get-teacher-email/', views.get_teacher_email, name="get_teacher_email"),
 
 ]

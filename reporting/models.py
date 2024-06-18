@@ -1,9 +1,11 @@
 from django.db import models
 #from users.models import *
 import os
+from django.db import models
 
 from users.models import School, Country, Region, StateField, TNCounty
-from teachercert.models import SchoolYear
+from teachercert.models import SchoolYear, Teacher
+from phonenumber_field.modelfields import PhoneNumberField
 from datetime import date
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -76,6 +78,98 @@ class AnnualReport(models.Model):
         days = days or 14
         return self.due_date() + timezone.timedelta(days=days)
 
+
+# Employee Data
+class Degree(models.Model):  # Changed to a model
+    name = models.CharField(max_length=30, unique=True)
+    def __str__(self):
+        return self.name
+
+class SubjectCategory(models.TextChoices):
+    BIBLE = 'B', 'Bible'
+    COMPUTER_TECH = 'C', 'Computer/Tech'
+    FINE_ARTS = 'F', 'Fine Arts'
+    LANGUAGE_ARTS = 'L', 'Language Arts'
+    MATH = 'M', 'Math'
+    MODERN_LANGUAGE = 'ML', 'Modern Language'
+    SCIENCE = 'SC', 'Science'
+    SOCIAL_STUDIES = 'SS', 'Social Studies'
+    VOCATIONAL_ARTS_COURSES = 'V', 'Vocational Arts Courses'
+    WELLNESS_HEALTH_PE = 'W', 'Wellness/Health/PE'
+
+class Subject(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    category = models.CharField(
+        max_length=50,
+        choices=SubjectCategory.choices,
+    )
+
+    class Meta:
+        ordering = ['category', 'name']
+    def __str__(self):
+        return self.name
+
+class StaffCategory(models.TextChoices):
+    ADMINISTRATIVE = 'A', 'Administrative'
+    TEACHING = 'T', 'Teaching'
+    GENERAL_STAFF ='G', 'General_Staff'
+
+CATEGORY_EXPLANATION_MAP = {
+    'A': '(President, Principal, Vice Principal, Business Manager, Registrar, Vocational Coordinator)',
+    'T': '(Teachers, Life Skills Teachers, Deans, Librarian)',
+    'G': '(Administrative Asst, Office staff, Vocational supervisors, Food Service Director, School Nurse, Other support staff)',
+}
+
+class StaffPosition(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    category = models.CharField(
+        max_length=50,
+        choices=StaffCategory.choices,
+    )
+    class Meta:
+        ordering = ['category', 'name']
+    def __str__(self):
+        return self.name
+
+class StaffStatus(models.TextChoices):
+    FULL_TIME = 'FT', 'Full Time'
+    PART_TIME = 'PT', 'Part Time'
+    VOLUNTEER = 'VO', 'Volunteer'
+    NO_LONGER_EMPLOYED = 'NE', 'No Longer Employed'
+    LEAVE_OF_ABSENCE = 'LO', 'Leave of Absence'
+
+class Personnel(models.Model):
+    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+
+    status = models.CharField("status", max_length=2,
+                              choices=StaffStatus.choices, default=StaffStatus.FULL_TIME, )
+
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
+
+    positions = models.ManyToManyField(StaffPosition)
+    degrees = models.ManyToManyField(Degree, through='PersonnelDegree', blank=True)
+
+    subjects_teaching = models.ManyToManyField(Subject, blank=True, related_name="subjects_teaching")
+    subjects_taught = models.ManyToManyField(Subject, blank=True, related_name="subjects_taught")
+
+    years_experience = models.PositiveSmallIntegerField(null=True, blank=True)
+    years_at_this_school = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    email_address = models.EmailField(null=True, blank=True)
+    phone_number = PhoneNumberField(region="US", null=True, blank=True)
+    class Meta:
+        unique_together = (('first_name', 'last_name', 'annual_report'),)
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name
+
+
+class PersonnelDegree(models.Model):  # Now has a foreign key to Degree
+    personnel = models.ForeignKey(Personnel, on_delete=models.CASCADE)
+    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
+    area_of_study = models.CharField(max_length=100, null=False, blank=False)
 
 
 GRADE_LEVEL_DICT = {
@@ -232,7 +326,6 @@ class SundaySchoolDays(models.Model):
         ('GR', 'Graduation'),
     ]
     type = models.CharField(max_length=2, choices=TYPE_CHOICES)
-
 
 
 class EducationalEnrichmentActivity(models.Model):

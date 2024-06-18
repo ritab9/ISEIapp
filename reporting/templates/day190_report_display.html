@@ -7,18 +7,15 @@
 
     <div class="card card-body">
 
-        <div class="row">
+        <div class="row justify-content-around">
 <!-- General Info -->
-            <div class ="col col-auto">
+            <div class ="col col-auto vertical-divider">
                 <h6 style="text-align:center">190 Day Report for {{ current_school_year.name }} School Year</h6>
 
                 <table class="table">
                     <tr>
                         <td>Start-End Date</td>
                         <td>{{day190_report.start_date}} -- {{day190_report.end_date}}</td>
-                    </tr>
-                    <tr>
-                        <td>No. of School Sundays</td> <td>{{day190_report.number_of_sundays}}</td>
                     </tr>
                     <tr>
                         <td>Number of In-service Days</td><td  style="{% if day190_report.inservice_days < 10 %}color: red;{% endif %}">{{day190_report.inservice_days}}</td>
@@ -32,7 +29,7 @@
                 </table>
             </div>
 <!-- Vacations -->
-            <div class="col col-auto">
+            <div class="col col-auto vertical-divider">
                 <h6 style="text-align:center" >Vacations</h6>
                 <table class="table">
                     <thead>
@@ -49,6 +46,46 @@
                     </tbody>
                 </table>
             </div>
+<!-- Abbreviated Days -->
+            <div class="col col-auto vertical-divider">
+                <h6 style="text-align:center">Abbreviated Days</h6>
+                <table class="table">
+                    <thead>
+                        <th>Date</th><th>Hours</th>
+                    </thead>
+                    <tbody>
+                        {% for abbreviated_day in abbreviated_days_report %}
+                            <tr>
+                                <td>Date: {{abbreviated_day.date}}</td>
+                                <td>Hours: {{abbreviated_day.hours}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+<!--Sunday School Days-->
+            <div class="col col-auto vertical-divider">
+                <h6 style="text-align:center">Sunday School Days</h6>
+                <table class="table">
+                    <thead>
+                        <th>Type</th><th>Date</th>
+                    </thead>
+                    <tbody>
+                        {% for day in sunday_school_days_report %}
+                            <tr>
+                                <td>{{day.get_type_display}}</td>
+                                <td>{{day.date}}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td style="text-align: right">Total:</td>
+                            <td><b>{{ sunday_school_days_count }}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-5 justify-content-around">
 <!-- In-service and Discretionary -->
             <div class="col col-auto">
                 <h6 style="text-align:center">In-service and Discretionary Days</h6>
@@ -75,23 +112,29 @@
                     </tbody>
                 </table>
             </div>
-<!-- Abbreviated Days -->
+<!--Educational Enrichment Activities-->
             <div class="col col-auto">
-                <h6 style="text-align:center">Abbreviated Days</h6>
+                <h6 style="text-align:center">Educational Enrichment Activities</h6>
                 <table class="table">
                     <thead>
-                        <th>Date</th><th>Hours</th>
+                        <th>Type</th><th>Dates</th><th>Days</th>
                     </thead>
                     <tbody>
-                        {% for abbreviated_day in abbreviated_days_report %}
+                        {% for activity in educational_enrichment_activities_report %}
                             <tr>
-                                <td>Date: {{abbreviated_day.date}}</td>
-                                <td>Hours: {{abbreviated_day.hours}}</td>
+                                <td>{{activity.get_type_display}}</td>
+                                <td>{{activity.dates}}</td>
+                                <td>{{activity.days}}</td>
                             </tr>
                         {% endfor %}
+                        <tr>
+                            <td colspan="2" style="text-align: right">Total:</td>
+                            <td><b>{{ educational_enrichment_days_total }}</b></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+
         </div>
 
         <div>

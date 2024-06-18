@@ -1,0 +1,235 @@
+{% extends 'reporting_base.html' %}
+
+{% load static %}
+
+{% block title %} Employee Add & Edit {% endblock title %}
+
+
+{% block content %}
+    <div class="card card-body">
+        <h6></h6>
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="row align-content-around">
+
+    <!-- Employee Table -->
+                <div class="col-auto">
+    <!-- General Info -->
+                    <div class="row">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <th>{{ p_form.first_name.label_tag }}</th>
+                            <td>{{ p_form.first_name }} {{ p_form.first_name.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th>{{ p_form.last_name.label_tag }}</th>
+                            <td>{{ p_form.last_name }} {{ p_form.last_name.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th>{{ p_form.status.label_tag }}</th>
+                            <td>{{ p_form.status }} {{ p_form.status.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th>{{ p_form.years_experience.label_tag }}</th>
+                            <td>{{ p_form.years_experience }} {{ p_form.years_experience.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th>{{ p_form.years_at_this_school.label_tag }}</th>
+                            <td>{{ p_form.years_at_this_school }} {{ p_form.years_at_this_school.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th>{{ p_form.email_address.label_tag }}</th>
+                            <td>{{ p_form.email_address }} {{ p_form.email_address.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th>{{ p_form.phone_number.label_tag }}</th>
+                            <td>{{ p_form.phone_number }} {{ p_form.phone_number.errors }}</td>
+                          </tr>
+                          <tr>
+                            <th><i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Teachers in this list have an account on ISEI Teachercertification Platform. Please select if applicable."></i>
+                                TeacherCert Account</th>
+                            <td>{{ p_form.teacher }} {{ p_form.teacher.errors }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {{ p_form.non_field_errors }}
+                  </div>
+    <!-- Personnel Degree and Area of Study -->
+                    <div class="row">
+                        <div class="col">
+                          {% with pd_formset.empty_form as form %}
+                                {{ pd_formset.management_form }}
+                              <table id="pd-formset" class="formset" data-formset-prefix="{{ pd_formset.prefix }}">
+                                <tbody>
+                                  {% for form in pd_formset %}
+                                    <tr class="form-instance">
+                                        {{ form.id }}
+                                      {% for field in form.visible_fields %}
+                                        <tr>
+                                          <th>{{ field.label_tag }}</th>
+                                          <td>{{ field }} {{ field.errors }}</td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                              {{ pd_formset.non_form_errors }}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+
+ <!-- Positions -->
+                <div class="col-auto">
+                    <h6 class=""> Employment</h6>
+                    {% if p_form.positions.errors %}
+                        <div class="error">
+                            {% for error in p_form.positions.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for category_key, category_val in position_categories.items %}
+                        <div class="h7 category-toggle">{{ category_val.name }}</div>
+                        <div class="col-auto position-container vertical-divider {% if category_key == positionCode %}active{% endif %}">
+                            {% for position in category_val.positions %}
+                                <input type="checkbox" name="positions" value="{{ position.id }}"
+                                    id="position_{{ position.id }}"
+                               {% if position.id in p_form.positions.value|default:'' %}checked{% endif %}>
+                                <label for="position_{{ position.id }}">{{ position.name }}</label><br>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+<!-- Add subject teaching now -->
+                <div class="col-auto">
+                    <h6 class=""> Classes Currently Teaching</h6>
+                        {% for category_key, category_val in subject_categories.items %}
+                            <div class="h7 category-toggle">{{ category_val.name }}</div>
+                            <div class="col-auto vertical-divider subject-container">
+                                    <!-- For each subject in the current category's subjects -->
+                                    {% for subject in category_val.subjects %}
+                                        <input type="checkbox" name="subjects_teaching" value="{{ subject.id }}"
+                                                id="subject_{{ subject.id }}"
+                                                {% if subject.id in p_form.subjects_teaching.value|default:'' %}checked{% endif %}>
+                                        <label for="subject_{{ subject.id }}">{{ subject.name }}</label><br>
+                                    {% endfor %}
+                            </div>
+                        {% endfor %}
+                </div>
+
+<!-- Add subjects taught in the past or now -->
+                <div class="col-auto">
+                    <h6 class=""> Classes Taught</h6>
+                    {% for category_key, category_val in subject_categories.items %}
+                        <div class="col-auto vertical-divider subject-category">
+                            <div class="h7 category-toggle">{{ category_val.name }}</div>
+                            <div class="subject-container">
+                                {% for subject in category_val.subjects %}
+                                    <input type="checkbox" name="subjects_taught" value="{{ subject.id }}"
+                                           id="subject_{{ subject.id }}"
+                                           {% if subject.id in p_form.subjects_taught.value|default:'' %}checked{% endif %}>
+                                    <label for="subject_{{ subject.id }}">{{ subject.name }}</label><br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+          <button type="submit">Save</button>
+    </form>
+
+    </div>
+
+
+
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+
+
+<script>
+//toggle categories
+    $(document).ready(function() {
+          // Initially hide all positions and subjects
+          $(".position-container, .subject-container").hide();
+          // Show the container if it has any checked checkbox
+          $(".position-container:has(input:checked), .subject-container:has(input:checked), .position-container.active").show();
+
+          // Show/hide the positions/subjects of clicked category
+          $(".category-toggle").click(function() {
+            $(this).nextAll(".position-container, .subject-container").first().slideToggle();
+          });
+        });
+
+// Apply the dynamic formset plugin to all formsets
+    $(document).ready(function() {
+        $('#pd-formset').formset({
+            addText: 'add more degrees',
+            deleteText: 'remove',
+            prefix: 'pd_formset'
+        });
+
+    });
+
+//automatically select matching teacher if in the system:
+    $(document).ready(function() {
+        $("#id_last_name").change(function() {
+            var firstName = $("#id_first_name").val();
+            var lastName = $("#id_last_name").val();
+
+            $("#id_teacher option").each(function() {
+                // Get the teacher's full name from the option text
+                var teacherName = $(this).text();
+                if (teacherName === lastName + ", " + firstName || teacherName === firstName + ", " + lastName) {
+                    $(this).prop("selected", true).trigger('change');  // Select the matching teacher
+                } else {
+                    $(this).prop("selected", false);
+                }
+            });
+        });
+    });
+
+//import email address from teacher cert users
+     $(document).ready(function() {
+        $("#id_teacher").on('change', function() {
+            var teacherId = $(this).val();
+            if (teacherId) {
+                $.ajax({
+                    url: "{% url 'get_teacher_email' %}",
+                    data: {
+                        'teacher_id': teacherId,
+                        // Include CSRF token in the AJAX request
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.email) {
+                            $('#id_email_address').val(data.email);
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+ //Popover
+      document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
+          })
+        });
+</script>
+
+
+
+{% endblock %}
