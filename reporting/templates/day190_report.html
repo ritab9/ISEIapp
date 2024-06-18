@@ -28,16 +28,16 @@
                         <table class="table table-sm" style="width: 100%">
                                 <tr>
                                     <td style="width: 1px; white-space: nowrap;">
-                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="First day students are present"></i>
                                         <b>{{ day190_form.start_date.label_tag }}</b>
+                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="First day students are present"></i>
                                     </td>
                                     <td>{{ day190_form.start_date }}{{ day190_form.start_date.errors }}</td>
                                 </tr>
                                 <tr>
                                     <td style="width: 1px; white-space: nowrap;">
+                                        <b>{{ day190_form.end_date.label_tag }}</b>
                                         <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
                                                 data-bs-content="Either the last school day, or graduation date if all students are present for graduation."></i>
-                                        <b>{{ day190_form.end_date.label_tag }}</b>
                                     </td>
                                     <td> {{ day190_form.end_date }}{{ day190_form.end_date.errors }}</td>
                                 </tr>
@@ -174,12 +174,12 @@
 <!-- Inservice and Discretionary Days and Hours -->
                     <div class="col-auto vertical-divider">
                         <h6>
-                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                            In-service<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
                                 data-bs-content="In-Services are school-wide planned activities designed to increase the competencies needed by teachers."></i>
-                            In-service and
-                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                            and
+                            Discretionary<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
                                 data-bs-content="Work days provided to teachers for setting up the classroom at the beginning of the school year (elementary), yearly planning, end of term grades, individual PD days."></i>
-                            Discretionary Days/Hours</h6>
+                             Days/Hours</h6>
 
                         <table class="table table-sm ">
                                 <tr>
