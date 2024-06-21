@@ -18,13 +18,13 @@
                         <td>{{day190_report.start_date}} -- {{day190_report.end_date}}</td>
                     </tr>
                     <tr>
-                        <td>Number of In-service Days</td><td  style="{% if day190_report.inservice_days < 10 %}color: red;{% endif %}">{{day190_report.inservice_days}}</td>
+                        <td>School Days (min 180):</td><td><b  style="{% if day190_report.number_of_days < 180 %}color: red;{% endif %}">{{day190_report.number_of_days}}</b></td>
                     </tr>
                     <tr>
-                        <td>School Days:</td><td><b  style="{% if day190_report.number_of_days < 180 %}color: red;{% endif %}">{{day190_report.number_of_days}}</b></td>
+                        <td>Number of In-service Days (min 10):</td><td  style="{% if day190_report.inservice_days < 10 %}color: red;{% endif %}">{{day190_report.inservice_days}}</td>
                     </tr>
                     <tr>
-                        <td>Total Days:</td><td><b style="{% if day190_report.inservice_days|add:day190_report.number_of_days < 190 %}color: red;{% endif %}">{{ day190_report.inservice_days|add:day190_report.number_of_days }}</b></td>
+                        <td>Total Days (min 190):</td><td><b style="{% if day190_report.inservice_days|add:day190_report.number_of_days < 190 %}color: red;{% endif %}">{{ day190_report.inservice_days|add:day190_report.number_of_days }}</b></td>
                     </tr>
                 </table>
             </div>
@@ -41,23 +41,6 @@
                                 <td>{{vacation.name}}</td>
                                 <td>{{vacation.start_date}} -{{vacation.end_date}}</td>
                                 <td style="text-align:center">{{vacation.weekdays}}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-<!-- Abbreviated Days -->
-            <div class="col col-auto vertical-divider">
-                <h6 style="text-align:center">Abbreviated Days</h6>
-                <table class="table">
-                    <thead>
-                        <th>Date</th><th>Hours</th>
-                    </thead>
-                    <tbody>
-                        {% for abbreviated_day in abbreviated_days_report %}
-                            <tr>
-                                <td>Date: {{abbreviated_day.date}}</td>
-                                <td>Hours: {{abbreviated_day.hours}}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -88,7 +71,7 @@
         <div class="row mt-5 justify-content-around">
 <!-- In-service and Discretionary -->
             <div class="col col-auto">
-                <h6 style="text-align:center">In-service and Discretionary Days</h6>
+                <h6 style="text-align:center">In-service and Discretionary Hours</h6>
                 <table class="table">
                     <thead>
                         <th>Type</th><th>Dates</th><th>Hours</th>
@@ -102,11 +85,9 @@
                             </tr>
                         {% endfor %}
                             <tr>
-                                <td colspan="2" style = "text-align: right">Inservice Hours:</td>
+                                <td colspan="" style = "text-align: right">Inservice Hours (min 30):</td>
                                 <td><b style="{% if total_inservice_hours < 30 %} color: red;{% endif %}">{{ total_inservice_hours }}</b></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style = "text-align: right">Total:</td>
+                                <td colspan="" style = "text-align: right">Total:</td>
                                 <td><b style="{% if total_inservice_discretionary_hours < 60 %} color: red;{% endif %}">{{ total_inservice_dictionary_hours}}</b></td>
                             </tr>
                     </tbody>
@@ -128,9 +109,26 @@
                             </tr>
                         {% endfor %}
                         <tr>
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td><b>{{ educational_enrichment_days_total }}</b></td>
+                            <td colspan="2" style="text-align: right">Total (max 20):</td>
+                            <td><b style="{% if educational_enrichment_days_total > 20 %} color: red;{% endif %}">{{ educational_enrichment_days_total }}</b></td>
                         </tr>
+                    </tbody>
+                </table>
+            </div>
+<!-- Abbreviated Days -->
+            <div class="col col-auto vertical-divider">
+                <h6 style="text-align:center">Abbreviated Days</h6>
+                <table class="table">
+                    <thead>
+                        <th>Date</th><th>Hours</th>
+                    </thead>
+                    <tbody>
+                        {% for abbreviated_day in abbreviated_days_report %}
+                            <tr>
+                                <td>Date: {{abbreviated_day.date}}</td>
+                                <td>Hours: {{abbreviated_day.hours}}</td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

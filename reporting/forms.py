@@ -5,6 +5,8 @@ from users.models import Country, TNCounty
 from .models import *
 from django.forms import BaseModelFormSet
 from django.forms.models import inlineformset_factory
+from django.forms.widgets import CheckboxSelectMultiple
+
 
 
 class UploadFileForm(forms.Form):
@@ -149,10 +151,11 @@ class BaseSundaySchoolDaysFormSet(BaseModelFormSet):
             return
         dates = []
         for form in self.forms:
-            date = form.cleaned_data.get('date')
-            if date in dates:
-                raise forms.ValidationError("Dates must be unique.")
-            dates.append(date)
+            if form.is_valid() and form.cleaned_data and 'date' in form.cleaned_data:
+                date = form.cleaned_data.get('date')
+                if date in dates:
+                    raise forms.ValidationError("Dates must be unique.")
+                dates.append(date)
 
 
 class EducationalEnrichmentActivityForm(forms.ModelForm):
@@ -171,7 +174,6 @@ class InserviceForm(forms.ModelForm):
     class Meta:
         model = Inservice
         fields = ['dates', 'topic', 'presenter', 'hours']
-        #exclude=['id','annual_report']
 
         widgets = {
             'hours': forms.NumberInput(attrs={'min': 1, 'style': 'max-width: 30px;', 'class':'hours-input'}),
@@ -181,7 +183,6 @@ class InserviceForm(forms.ModelForm):
 
 class PersonnelForm(forms.ModelForm):
 
-    phone_number = PhoneNumberField(region="US")
 
     def __init__(self, *args, **kwargs):
         schoolID = kwargs.pop('schoolID', None)
@@ -190,6 +191,7 @@ class PersonnelForm(forms.ModelForm):
         if schoolID is not None:
             queryset = Teacher.objects.filter(school_id=schoolID, user__is_active=True).select_related('user')
             self.fields['teacher'].queryset = queryset
+
 
     class Meta:
         model = Personnel
@@ -203,8 +205,8 @@ PersonnelDegreeFormset = inlineformset_factory(
     Personnel,
     PersonnelDegree,
     fields=('degree', 'area_of_study'),
-    extra=1,
-    can_delete=False,
+    extra=0,
+    can_delete=True,
 )
 
 

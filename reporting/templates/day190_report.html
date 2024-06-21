@@ -71,7 +71,8 @@
 
 <!-- Vacations formset -->
                     <div class="col-auto vertical-divider">
-                            <h6>Vacations and School Breaks</h6>
+                            <h6>Vacations and School Breaks<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Vacation weekdays subtracted from no. of weekdays in school year"></i>
+                            </h6>
                         <div id="vacation-formset">
                             {{ formset_vacation.management_form }}
                             <table class="table-sm" style="table-layout:auto ">
@@ -118,7 +119,9 @@
 
 <!-- Sunday School Formset-->
                     <div class="col-auto vertical-divider">
-                            <h6>Sunday School Days</h6>
+                            <h6>Sunday School Days<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                data-bs-content="Days added to no. of school days. These are Sundays on which the majority of the students involved in Educational Activity. "></i>
+                            </h6>
                         <div id="sunday-formset">
                             {{ formset_sunday.management_form }}
                             {% if formset_sunday.non_form_errors %}
@@ -167,7 +170,6 @@
                 </div>
             </div>
 
-<!-- Other Formsets -->
             <div class="card card-body">
                 <div class="row justify-content-around">
 
@@ -179,7 +181,11 @@
                             and
                             Discretionary<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
                                 data-bs-content="Work days provided to teachers for setting up the classroom at the beginning of the school year (elementary), yearly planning, end of term grades, individual PD days."></i>
-                             Days/Hours</h6>
+                             Days/Hours
+                             <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                data-bs-content="Added to the 180 days to make up 190."></i>
+
+                             </h6>
 
                         <table class="table table-sm ">
                                 <tr>
@@ -241,7 +247,11 @@
 
 <!-- Enrichement Activity Formset-->
                     <div class="col-auto vertical-divider">
-                        <h6>Educational Enrichment Activity</h6>
+                        <h6>Educational Enrichment Activity<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                data-bs-content="In lieu of regular classroom instruction. These days do not alter the number of school days."></i>
+
+
+                        </h6>
                         <div id="enrichment-formset">
                             {{ formset_enrichment.management_form }}
                             <table class="table-sm" style="table-layout:auto ">
@@ -287,7 +297,9 @@
 
 <!-- AbbreviatedDays formset -->
                     <div class="col-auto vertical-divider">
-                        <h6>Abbreviated Days</h6>
+                        <h6>Abbreviated Days<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                data-bs-content="Part of the 180 days (last day before break, orientation, graduation, etc.)"></i>
+                        </h6>
 
                         <div id="abbreviated-formset">
                             {{ formset_abbreviated.management_form }}
@@ -359,7 +371,7 @@
                             {{ formset_vacation.empty_form.weekdays }}
                             <span class="error">{{ formset_vacation.empty_form.weekdays.errors }}</span>
                         </td>
-                        <td>  {{ form.DELETE }} </td>
+                        <td>  {{ formset_vacation.empty_form.DELETE }} </td>
                     </tr>
                     {% if formset_vacation.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -382,7 +394,7 @@
                             {{ formset_inservice.empty_form.hours }}
                             <span class="error">{{ formset_inservice.empty_form.hours.errors }}</span>
                         </td>
-                        <td>  {{ form.DELETE }} </td>
+                        <td>  {{ formset_inservice.empty_form.DELETE }} </td>
                     </tr>
                     {% if formset_inservice.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -401,7 +413,7 @@
                             {{ formset_abbreviated.empty_form.hours }}
                             <span class="error">{{ formset_abbreviated.empty_form.hours.errors }}</span>
                         </td>
-                        <td>  {{ form.DELETE }} </td>
+                        <td>  {{ formset_abbreviated.empty_form.DELETE }} </td>
                     </tr>
                     {% if formset_abbreviated.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -420,7 +432,7 @@
                             {{ formset_sunday.empty_form.type }}
                             <span class="error">{{ formset_sunday.empty_form.type.errors }}</span>
                         </td>
-                        <td>  {{ form.DELETE }} </td>
+                        <td>  {{ formset_sunday.empty_form.DELETE }} </td>
                     </tr>
                     {% if formset_sunday.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -443,7 +455,7 @@
                             {{ formset_enrichment.empty_form.no_school_days }}
                             <span class="error">{{ formset_enrichment.empty_form.no_school_days.errors }}</span>
                         </td>
-                        <td>  {{ form.DELETE }} </td>
+                        <td>  {{ formset_enrichment.empty_form.DELETE }} </td>
                     </tr>
                     {% if formset_enrichment.empty_form.non_field_errors %}
                         <div class="alert alert-danger">
@@ -514,6 +526,8 @@
             newForm.className = "individual-form";
             newForm.innerHTML = newFormHtml;
 
+
+
             // Append to the formset
             formset.appendChild(newForm);
 
@@ -521,6 +535,18 @@
             totalForms.value = parseInt(totalForms.value) + 1;
         });
     });
+
+// hide forms marked for deletion
+    $(document).ready(function(){
+        $(document).on('change', ":input[name$='-DELETE']", function() {
+            if(this.checked) {
+                $(this).parents('tr').hide();
+            } else {
+                $(this).parents('tr').show();
+            }
+        });
+    });
+
 
 //calculate no of weekdays between two dates
     function countWeekdays(startDate, endDate) {
@@ -775,6 +801,12 @@
                 totalEnrichmentDays += parseInt(noSchoolDays, 10) || 0;
             });
             $("#enrichment_days").val(totalEnrichmentDays);
+
+            if (totalEnrichmentDays > 20) {
+                $("#enrichment_days").css('color', 'red');
+            } else {
+                $("#enrichment_days").css('color', '');  // default text color
+            }
         }
 
         $("#enrichment-formset").on("change", "input[name$='days']", function() {

@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from localflavor.us.models import USSocialSecurityNumberField
 from datetime import date
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
 
 class TNCounty(models.Model):
     name = models.CharField(max_length=255)
@@ -77,17 +77,19 @@ class Region(models.Model):
     def __str__(self):
         return self.name
 
+
 class Country(models.Model):
     name = models.CharField(max_length=100, unique = True)
     code = models.CharField(max_length=3, unique = True)
     region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
     ordering = ['name']
     student_occurrence = models.PositiveIntegerField(default=0)
+    student_occurrence_log = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
     class Meta:
-        ordering = ['-student_occurrence', 'name']
+        ordering = ['-student_occurrence_log', 'name']
 
 
 class School(models.Model):

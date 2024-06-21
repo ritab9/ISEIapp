@@ -2,6 +2,7 @@ from django.db.models import Count
 from users.models import Country
 from .models import Student
 from django.db.models import Q
+from math import log10, ceil
 
 
 def update_student_country_occurences(annual_report):
@@ -35,5 +36,5 @@ def update_student_country_occurences(annual_report):
 
         if country.student_occurrence != student_count:
             country.student_occurrence = student_count
-            # only one db call if value has changed
+            country.student_occurrence_log = ceil(log10(student_count)) if student_count > 0 else 0            # only one db call if value has changed
             country.save()

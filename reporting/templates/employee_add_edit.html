@@ -11,12 +11,14 @@
         <form method="POST">
             {% csrf_token %}
 
-            <div class="row align-content-around">
+
+            <div class="row justify-content-around">
 
     <!-- Employee Table -->
                 <div class="col-auto">
     <!-- General Info -->
                     <div class="row">
+                         {{ p_form.non_field_errors }}
                       <table>
                         <tbody>
                           <tr>
@@ -47,38 +49,65 @@
                             <th>{{ p_form.phone_number.label_tag }}</th>
                             <td>{{ p_form.phone_number }} {{ p_form.phone_number.errors }}</td>
                           </tr>
+                          <tr style="height:2rem;">
+                               <td colspan="2"></td>
+                            </tr>
                           <tr>
-                            <th><i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Teachers in this list have an account on ISEI Teachercertification Platform. Please select if applicable."></i>
-                                TeacherCert Account</th>
+                            <th>Teacher Certification <br>Account
+                                <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Teachers in this list have an account on ISEI Teachercertification Platform. Please select if applicable."></i>
+                                </th>
                             <td>{{ p_form.teacher }} {{ p_form.teacher.errors }}</td>
                           </tr>
                         </tbody>
                       </table>
-                      {{ p_form.non_field_errors }}
+
                   </div>
     <!-- Personnel Degree and Area of Study -->
-                    <div class="row">
-                        <div class="col">
-                          {% with pd_formset.empty_form as form %}
-                                {{ pd_formset.management_form }}
-                              <table id="pd-formset" class="formset" data-formset-prefix="{{ pd_formset.prefix }}">
-                                <tbody>
-                                  {% for form in pd_formset %}
-                                    <tr class="form-instance">
-                                        {{ form.id }}
-                                      {% for field in form.visible_fields %}
-                                        <tr>
-                                          <th>{{ field.label_tag }}</th>
-                                          <td>{{ field }} {{ field.errors }}</td>
-                                        </tr>
+                    <div class="row mt-5">
+                        {{ pd_formset.management_form }}
+                        <div id="pd-formset" class="formset" data-formset-prefix="{{ pd_formset.prefix }}">
+                            <table>
+                                <thead>
+                                    <tr>
+                                      {% for field in pd_formset.empty_form.visible_fields %}
+                                        <th>{{ field.label }}</th>
                                       {% endfor %}
                                     </tr>
-                                  {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for form in pd_formset %}
+                                        {{ form.id }}
+                                        <tr class="form-instance">
+                                          {% for field in form.visible_fields %}
+                                            <td>{{ field }}{{ field.errors }}</td>
+                                          {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+
+                                    <tr id="empty-form" class="d-none">
+                                      {% for field in pd_formset.empty_form.visible_fields %}
+                                          <td>{{ field }}</td>
+                                      {% endfor %}
+                                    </tr>
+
+                                    <tr id="add-more-row">
+                                        <td colspan="{{ pd_formset.empty_form.visible_fields|length }}">
+                                            <button class="btn-ISEIblue4" id="add-more" type="button">Add rows</button>
+                                        </td>
+                                    </tr>
                                 </tbody>
-                              </table>
-                              {{ pd_formset.non_form_errors }}
-                            {% endwith %}
+                            </table>
                         </div>
+                        {{ pd_formset.non_form_errors }}
+                    </div>
+
+                    <div class="row mt-5">
+                       <div class="col-auto d-flex justify-content-center">
+                            <button class="btn btn-sm btn-ISEIblue2"  type="submit">Save</button>
+                       </div>
+                       <div class="col-auto d-flex justify-content-center">
+                            <a class="btn btn-sm btn-danger" href="{% url 'employee_report' arID %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
+                       </div>
                     </div>
                 </div>
 
@@ -142,21 +171,18 @@
                 </div>
 
             </div>
+        </form>
 
-
-          <button type="submit">Save</button>
-    </form>
-
+        <p style = "text-align: center" class="mt-5">*Click on categories to open lists</p>
     </div>
 
 
 
-    <script src="{% static 'js/jquery.formset.js' %}"></script>
 
 
 <script>
 //toggle categories
-    $(document).ready(function() {
+      $(document).ready(function() {
           // Initially hide all positions and subjects
           $(".position-container, .subject-container").hide();
           // Show the container if it has any checked checkbox
@@ -168,15 +194,28 @@
           });
         });
 
-// Apply the dynamic formset plugin to all formsets
-    $(document).ready(function() {
-        $('#pd-formset').formset({
-            addText: 'add more degrees',
-            deleteText: 'remove',
-            prefix: 'pd_formset'
-        });
+//add new form to formset, hide forms marked for deletion
+     $(document).ready(function() {
+            $('#add-more').on('click', function() {
+                var total_forms = parseInt($('#id_pd_formset-TOTAL_FORMS').val());
+                var new_element = $('#empty-form').clone();
+                new_element.removeClass('d-none');
+                new_element.html(new_element.html().replace(/__prefix__/g, total_forms));
+                    console.log(new_element.html());  // debug HTML after replacement
 
-    });
+                new_element.insertBefore('#add-more-row');
+                $('#id_pd_formset-TOTAL_FORMS').val(total_forms + 1);
+            });
+
+            // Event handler for delete checkboxes
+            $('#pd-formset').on('click', 'input:checkbox[id$="-DELETE"]', function() {
+                if ($(this).is(':checked')) {
+                    $(this).parents('tr').hide();
+                } else {
+                    $(this).parents('tr').show();
+                }
+            });
+        });
 
 //automatically select matching teacher if in the system:
     $(document).ready(function() {

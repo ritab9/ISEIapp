@@ -229,3 +229,14 @@ input[type='number'] {
     color: #0B61A4;
     font-weight: bold;
 }
+
+
+.bg-ISEIblue4 {
+  background-color: #053A64;
+  color: #FFFFFF;
+}
+
+.clickable {
+    cursor: pointer;
+    text-decoration: underline;
+}

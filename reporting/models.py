@@ -5,7 +5,6 @@ from django.db import models
 
 from users.models import School, Country, Region, StateField, TNCounty
 from teachercert.models import SchoolYear, Teacher
-from phonenumber_field.modelfields import PhoneNumberField
 from datetime import date
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -155,10 +154,11 @@ class Personnel(models.Model):
     subjects_taught = models.ManyToManyField(Subject, blank=True, related_name="subjects_taught")
 
     years_experience = models.PositiveSmallIntegerField(null=True, blank=True)
-    years_at_this_school = models.PositiveSmallIntegerField(null=True, blank=True)
+    years_at_this_school = models.PositiveSmallIntegerField(default=1)
 
     email_address = models.EmailField(null=True, blank=True)
-    phone_number = PhoneNumberField(region="US", null=True, blank=True)
+    phone_number = models.CharField(max_length=25, null=True, blank=True)
+
     class Meta:
         unique_together = (('first_name', 'last_name', 'annual_report'),)
 
@@ -258,11 +258,11 @@ class Student(models.Model):
         unique_together = (('name', 'annual_report'),)
 
     def save(self, *args, **kwargs):
-        if self.birth_date and self.registration_date and not self.age_at_registration:
+        if self.birth_date and self.registration_date:
             self.age_at_registration = self.registration_date.year - self.birth_date.year - (
                     (self.registration_date.month, self.registration_date.day) < (
                 self.birth_date.month, self.birth_date.day))
-        elif self.age and not self.age_at_registration:
+        elif self.age:
             self.age_at_registration = self.age
         super().save(*args, **kwargs)
 
@@ -318,9 +318,9 @@ class SundaySchoolDays(models.Model):
         (None, '--------------'),
         ('RC', 'Regular Classes'),
         ('FT', 'Field Trip'),
-        ('MT', 'Mission Trip'),
-        ('SL', 'Service Learning'),
-        ('MU', 'Music Trip'),
+        #('MT', 'Mission Trip'),
+        #('SL', 'Service Learning'),
+        #('MU', 'Music Trip'),
         ('OT', 'Other Education Enrichment Activity'),
         ('ST', 'Standardized Testing'),
         ('GR', 'Graduation'),

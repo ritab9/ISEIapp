@@ -652,8 +652,7 @@ def day190_report_display(request, arID):
             'sunday_school_days_report': sunday_school_days_report,
             'educational_enrichment_activities_report': educational_enrichment_activities_report,
             'total_inservice_hours': total_inservice_hours,
-            'total_discretionary_hours': total_discretionary_hours,
-            'total_inservice_dictionary_hours': total_inservice_hours,
+            'total_inservice_dictionary_hours': total_inservice_discretionay_hours,
             'sunday_school_days_count': sunday_school_days_count,
             'educational_enrichment_days_total':educational_enrichment_days_total,
             'arID': arID,
@@ -663,7 +662,7 @@ def day190_report_display(request, arID):
 @login_required(login_url='login')
 def employee_report(request, arID):
     all_personnel = Personnel.objects.filter(annual_report__id=arID).select_related('teacher', 'annual_report').prefetch_related(
-        'positions', 'degrees', 'subjects_teaching', 'subjects_taught')
+        'positions', 'degrees', 'subjects_teaching', 'subjects_taught').order_by('last_name')
     annual_report = get_object_or_404(AnnualReport, id=arID)
     school=annual_report.school.abbreviation
 
@@ -702,11 +701,22 @@ def employee_report(request, arID):
 
         personnel_groups.append({'group_name': group, 'group_personnel': group_personnel_list, 'code':code })
 
+    if request.method == 'POST':
+        if 'complete' in request.POST:
+            if not annual_report.submit_date:
+                annual_report.submit_date = date.today()
+            annual_report.last_update_date = date.today()
+            annual_report.save()
+        elif 'save' in request.POST:
+            annual_report.last_update_date = date.today()
+            annual_report.save()
+        return redirect('school_dashboard', annual_report.school.id)
 
     context['personnel_groups'] = personnel_groups
     context['arID'] = arID
     context['map'] = CATEGORY_EXPLANATION_MAP
     context['school']=school
+    context['school_year']=annual_report.school_year
 
     return render(request, 'employee_report.html', context)
 
@@ -746,8 +756,6 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
     else:
         personnel_instance = Personnel()
 
-    pd_formset = PersonnelDegreeFormset(instance=personnel_instance, prefix='pd_formset')
-
 
     if request.method == 'POST':
 
@@ -782,6 +790,7 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
 
     else:
         p_form = PersonnelForm(instance=personnel_instance, schoolID=school)
+        pd_formset = PersonnelDegreeFormset(instance=personnel_instance, prefix='pd_formset')
 
     context = {
         'p_form': p_form,
@@ -789,6 +798,7 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
         'subject_categories': subject_categories,
         'position_categories': position_categories,
         'positionCode': positionCode,
+        'arID':arID,
     }
 
     return render(request, 'employee_add_edit.html', context)

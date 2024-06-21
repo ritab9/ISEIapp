@@ -15,7 +15,7 @@ class Region(admin.ModelAdmin):
 
 @admin.register(Country)
 class Country(admin.ModelAdmin):
-    list_display = ('name', 'code', 'region', 'student_occurrence')
+    list_display = ('name', 'code', 'region', 'student_occurrence', 'student_occurrence_log')
     list_editable = ('code', 'region')
     search_fields = ('name',)
     list_filter = ('region',)
