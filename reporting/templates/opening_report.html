@@ -1,9 +1,94 @@
 {% extends 'reporting_base.html' %}
+{% load template_extras %}
 
 {% block title %} Opening Report {% endblock title %}
 
 
 {% block content %}
+    <div class="row">
+        <div class="col" style="display: inline-block;">
+            <div class="mt-3 ml-3 col text-left mt-1">
+                <h6>{{ opening }}</h6>
+            </div>
+        </div>
+    </div>
 
+
+<!-- Current Openning enrollment -->
+    <div class="card mt-3">
+           <p>Opening Enrollment: {{ opening.opening_enrollment }}</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                    {% for grade in grade_counts %}
+                        <th>{{ grade.name }}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    {% for grade in grade_counts %}
+                        <td>{% if grade.count != 0 %}{{ grade.count }}{% endif %}</td>
+                    {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+
+    </div>
+
+
+    <div class="row">
+<!-- Baptismal status -->
+        <div class="col-auto">
+            <div class="card card-body">
+                <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th classs="strong">Baptismal Status</th>
+                        {% for range_name, grade_range in grade_ranges.items %}
+                            <th>{{ grade_ranges_friendly|get_from_dict:range_name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for count_name, count_values in conditions.items %}
+                        <tr>
+                            <td>{{ conditions_friendly|get_from_dict:count_name }}</td>
+                            {% for range_name, grade_range in grade_ranges.items %}
+                                {% with att_name=count_name|add:"_"|add:range_name %}
+                                    <td>{{ opening|getattribute:att_name }}</td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+                <p>Unknown baptismal status for <b>{{ unkown_baptismal_status_count }}</b> students.</p>
+            </div>
+        </div>
+    </div>
+
+<!-- Last year's closing enrollement -->
+    <div class="card mt-3">
+        <p>Last Year's Closing Enrollment: </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for grade_name in grade_names %}
+                        <th>{{ grade_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for grade_name in grade_names %}
+                        {% with field_name='previous_year_'|add:grade_name|add:'_end_count' %}
+                            <td>{% if opening|getattribute:field_name != 0 %}{{ opening|getattribute:field_name }}{% endif %}</td>
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
 {% endblock %}

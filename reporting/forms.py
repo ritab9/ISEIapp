@@ -65,8 +65,15 @@ class StudentForm(forms.ModelForm):
             if us_state=='TN' and not TN_county:
                 self.add_error('TN_county', ValidationError("required for TN students"))
 
-
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if instance.withdraw_date:
+            instance.status = 'withdrawn'
+        if commit:
+            instance.save()
+        return instance
 
 #Day 190 Forms
 class Day190Form(forms.ModelForm):
@@ -196,7 +203,7 @@ class PersonnelForm(forms.ModelForm):
     class Meta:
         model = Personnel
         fields = ['first_name', 'last_name', 'status', 'teacher',
-                  'years_experience', 'years_at_this_school', 'email_address', 'phone_number',
+                  'years_experience', 'years_at_this_school', 'email_address', 'phone_number', 'sda',
                   'positions', 'subjects_teaching', 'subjects_taught']
 
 

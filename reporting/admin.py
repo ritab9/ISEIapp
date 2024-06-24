@@ -87,3 +87,6 @@ class PersonnelDegreeInline(admin.TabularInline):
 @admin.register(Personnel)
 class PersonnelAdmin(admin.ModelAdmin):
     inlines = [PersonnelDegreeInline,]
+
+
+admin.site.register(Opening)

@@ -60,7 +60,7 @@ class AnnualReport(models.Model):
     submit_date = models.DateField(null=True, blank=True)
     last_update_date = models.DateField(null=True, blank=True)
     def __str__(self):
-        return self.school.name + " " + self.school_year.name + " "+self.report_type.name
+        return self.report_type.name + " " + self.school.abbreviation + " (" + self.school_year.name + ")"
 
     class Meta:
         unique_together = (('school', 'school_year', 'report_type'),)
@@ -159,6 +159,8 @@ class Personnel(models.Model):
     email_address = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=25, null=True, blank=True)
 
+    sda=models.BooleanField(default=True, verbose_name="SDA")
+
     class Meta:
         unique_together = (('first_name', 'last_name', 'annual_report'),)
 
@@ -204,20 +206,21 @@ class Student(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)
     age_at_registration = models.PositiveIntegerField()
-    STATUS_CHOICES = [
+    YES_NO_CHOICES = [
         ('Y', 'Yes'),
         ('N', 'No'),
         ('U', '-'),
     ]
     boarding = models.BooleanField(default=False)
 
-    baptized = models.CharField(max_length=1, choices=STATUS_CHOICES, default='U')
-    parent_sda = models.CharField(max_length=1, choices=STATUS_CHOICES, default='U', verbose_name="Parent SDA")
+    baptized = models.CharField(max_length=1, choices=YES_NO_CHOICES, default='U')
+    parent_sda = models.CharField(max_length=1, choices=YES_NO_CHOICES, default='U', verbose_name="Parent SDA")
 
     STATUS_CHOICES = [
         ('enrolled', 'Enrolled'),
         ('graduated', 'Graduated'),
         ('did_not_return', 'Did Not Return'),
+        ('withdrawn', "Withdrawn"),
     ]
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='enrolled')
 
@@ -278,7 +281,7 @@ class Day190(models.Model):
     inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
 
     def __str__(self):
-        return self.annual_report.report_type.name + ' ' + self.annual_report.school_year.name + " " + self.annual_report.school.name
+        return str(self.annual_report)
 
 
 class Vacations(models.Model):
@@ -355,3 +358,81 @@ class Inservice(models.Model):
 
     def __str__(self):
         return self.topic
+
+class Opening(models.Model):
+    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='opening', null=False, blank=False)
+
+#current school year openning enrollment
+    opening_enrollment= models.PositiveSmallIntegerField(null=True, blank=True)
+    pre_k_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    k_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_0_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_1_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_2_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_3_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_4_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_5_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_6_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_7_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_8_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_9_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_10_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_11_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    grade_12_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    graduated_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    did_not_return_count = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    girl_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    boy_count=models.PositiveSmallIntegerField(null=True, blank=True)
+#boarding student count
+    boarding_girl_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    boarding_boy_count = models.PositiveSmallIntegerField(null=True, blank=True)
+
+#baptismal status
+    baptized_parent_sda_count_K = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name= "Baptised with at least one parents SDA K")
+    baptized_parent_non_sda_count_K = models.PositiveSmallIntegerField(null=True, blank=True,  verbose_name= "Baptised with non-SDA parents K")
+    unbaptized_parent_sda_count_K = models.PositiveSmallIntegerField(null=True, blank=True,  verbose_name= "Not baptised with at least one parents SDA K")
+    unbaptized_parent_non_sda_count_K = models.PositiveSmallIntegerField(null=True, blank=True,  verbose_name= "Not baptised with non-SDA parents K")
+
+    baptized_parent_sda_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Baptised with at least one parents SDA")
+    baptized_parent_non_sda_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Baptised with non-SDA parents")
+    unbaptized_parent_sda_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with at least one parents SDA")
+    unbaptized_parent_non_sda_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with non-SDA parents")
+
+    baptized_parent_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Baptised with at least one parents SDA S")
+    baptized_parent_non_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True,verbose_name="Baptised with non-SDA parents S")
+    unbaptized_parent_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with at least one parents SDA S")
+    unbaptized_parent_non_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with non-SDA parents S")
+
+    #staff count
+    teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    general_staff_count = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    non_sda_teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    associate_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    bachelor_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    masters_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    doctorate_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    professional_count = models.PositiveSmallIntegerField(null=True, blank=True)
+
+#closing enrollment from previous school year
+    previous_year_pre_k_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_k_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_0_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_1_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_2_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_3_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_4_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_5_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_6_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_7_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_8_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_9_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_10_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_11_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_grade_12_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    previous_year_withdraw_count = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.annual_report)

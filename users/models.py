@@ -107,6 +107,14 @@ class School(models.Model):
     textapp= models.CharField(max_length=20, blank=True, null=True)
     #address = models.OneToOneField('Address', on_delete=models.CASCADE, blank=True, null=True)
 
+    TYPE_CHOICES = [
+        ('K-8', 'K-8'),
+        ('K-12', 'K-12'),
+        ('9-12', '9-12'),
+    ]
+    type = models.CharField(max_length=5, choices=TYPE_CHOICES, default='9-12',
+                                   verbose_name="Type of School")
+
     class Meta:
         ordering = ('name',)
 

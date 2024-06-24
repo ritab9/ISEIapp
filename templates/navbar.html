@@ -24,10 +24,10 @@
         <ul class="nav navbar-nav">
         
          {% if request.user|in_group:"principal,registrar"%}
-          <!-- Hide in production for now
+          <!-- Hide in production for now -->
              <li class="nav-item ">
                 <a class="nav-link" href="{% url 'school_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
-              </li> -->
+              </li> 
          
          {%elif request.user|in_group:"staff" %}
              <li class="nav-item ">

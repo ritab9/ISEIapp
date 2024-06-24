@@ -8,10 +8,17 @@
 
 <!-- Student Report -->
     <div class="card">
-        <div class="col mt-2">
-            <h6>{{ annual_report }}</h6>
+        <div class="row ml-2">
+            <div class="col mt-2">
+                <h6>{{ annual_report }}</h6>
+            </div>
+            <div class="col col-auto">
+                    {% if annual_report.school.address.state_us == "TN" %}
+                        <a href="{% url 'tn_student_export' arID=annual_report.id %}">Download Data for TN_Report</a>
+                    {% endif %}
+            </div>
         </div>
-        <div class="row">
+        <div class="row ml-2">
             <div class="col col-auto mt-2">
                 <form method="GET">
                     {{ filter_form }}
@@ -19,11 +26,7 @@
                     <a class="btn btn-sm btn-ISEIblue2" href="{% url 'student_report_display' annual_report.id %}" class="btn btn-default">Reset</a>
                 </form>
             </div>
-            <div class="col col-auto">
-                {% if annual_report.school.address.state_us == "TN" %}
-                    <a href="{% url 'tn_student_export' arID=annual_report.id %}">Download Data for TN_Report</a>
-                {% endif %}
-            </div>
+
         </div>
 <!-- table with student data -->
         <div class="scrollable-table scrollable-table2 mt-2">

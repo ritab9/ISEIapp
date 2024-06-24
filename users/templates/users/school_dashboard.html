@@ -57,6 +57,9 @@
                     </p>
                     {% endfor %}
                 {% endif %}
+                {% if school.type %}
+                <p><strong>Type:</strong> {{ school.get_type_display }}</p>
+                {% endif %}
             <a href="{% url 'update_school_info' schoolID=school.id %}" class="btn btn-sm btn-ISEIblue3">Update</a>
         </div>
     </div>

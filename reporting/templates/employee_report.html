@@ -43,7 +43,7 @@
         <table class="table table-sm table-bordered table-striped" id="table-{{ forloop.counter }}" style="display: table;">
             <thead class="table-ISEIblue4">
                 <tr>
-                    {% if 'employee_report' in request.path %}
+                    {% if 'employee_report_display' not in request.path %}
                         <th rowspan="2"></th>
                     {% endif %}
                     <th rowspan="2">Name</th>
@@ -55,6 +55,7 @@
                     <th rowspan="2">Phone Number</th>
                     <th colspan="2" style="text-align: center">ISEI/NAD Certification</th>
                     <th colspan="2" style="text-align: center">Subjects</th>
+                    <th rowspan ="2">SDA</th>
                 </tr>
                 <tr><th>Total</th>
                     <th>At {{ school }}</th>
@@ -94,7 +95,7 @@
                     </td>
                     <td>{% for subj_teach in p.subjects_teaching.all %} {{ subj_teach }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
                     <td>{% for subj_t in p.subjects_taught.all %} {{ subj_t }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
-
+                    <td>{% if p.sda %}Yes{% else %}No{% endif %}</td>
                 </tr>
                 {% endwith %}
             {% endfor %}

@@ -49,6 +49,10 @@
                             <th>{{ p_form.phone_number.label_tag }}</th>
                             <td>{{ p_form.phone_number }} {{ p_form.phone_number.errors }}</td>
                           </tr>
+                           <tr>
+                            <th>{{ p_form.sda.label_tag }}</th>
+                            <td>{{ p_form.sda }} {{ p_form.sda.errors }}</td>
+                          </tr>
                           <tr style="height:2rem;">
                                <td colspan="2"></td>
                             </tr>
@@ -100,6 +104,8 @@
                         </div>
                         {{ pd_formset.non_form_errors }}
                     </div>
+
+    <!-- Submit buttons -->
 
                     <div class="row mt-5">
                        <div class="col-auto d-flex justify-content-center">
