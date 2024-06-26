@@ -202,7 +202,7 @@ class PersonnelForm(forms.ModelForm):
 
     class Meta:
         model = Personnel
-        fields = ['first_name', 'last_name', 'status', 'teacher',
+        fields = ['first_name', 'last_name', 'gender', 'status', 'teacher',
                   'years_experience', 'years_at_this_school', 'email_address', 'phone_number', 'sda',
                   'positions', 'subjects_teaching', 'subjects_taught']
 

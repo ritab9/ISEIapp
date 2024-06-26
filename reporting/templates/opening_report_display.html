@@ -5,5 +5,196 @@
 
 {% block content %}
 
+    <h6 style="text-align: center">{{ annual_report }}</h6>
+
+    <div class="card card-body">
+        <h6> Student Data</h6>
+        <p><b>Enrollment:</b> {{ opening.grade_count.total_count }}
+        </p>
+
+        <div class="row">
+<!-- Enrollement by Grade Level-->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      {% for field_name, value in grade_count_fields %}
+                        <th>{{ field_name }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {% for field_name, value in grade_count_fields %}
+                        <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                      {% endfor %}
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+<!-- Gender -->
+            <div class="col-auto">
+                <table class="table">
+                    <tr>
+                        <td>Girls:</td><td> {{ opening.girl_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Boys:</td><td>{{ opening.boy_count }}</td>
+                    </tr>
+                </table>
+            </div>
+<!-- Graduated / Not Returning -->
+            <div class="col-auto">
+                <table class="table">
+                    <tr>
+                        <td>Graduated:</td><td> {{ opening.graduated_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Did Not Return:</td><td>{{ opening.did_not_return_count }}</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="row">
+<!-- boarding and day students table -->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th colspan="2"> Boarding/Day Students</th>
+                      <th>1-8</th>
+                      <th>9-12</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td rowspan="2">Boarding</td>
+                      <td>Girls</td>
+                      <td>{{ opening.boarding_girl_count_E }}</td>
+                      <td>{{ opening.boarding_girl_count_S }}</td>
+                    </tr>
+                    <tr>
+                      <td>Boys</td>
+                      <td>{{ opening.boarding_boy_count_E }}</td>
+                      <td>{{ opening.boarding_boy_count_S }}</td>
+                    </tr>
+                    <tr>
+                      <td rowspan="2">Day</td>
+                      <td>Girls</td>
+                      <td>{{ opening.day_girl_count_E }}</td>
+                      <td>{{ opening.day_girl_count_S }}</td>
+                    </tr>
+                    <tr>
+                      <td>Boys</td>
+                      <td>{{ opening.day_boy_count_E }}</td>
+                      <td>{{ opening.day_boy_count_S }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+<!-- Baptismal Status -->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th colspan="2"><b>Baptismal Status</b></th>
+                      <th>Pre-K/K</th>
+                      <th>1-8</th>
+                      <th>9-12</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                        <td rowspan="2">Baptised</td>
+                        <td>At least one parent/guardian SDA</td>
+                        <td>{{ opening.baptized_parent_sda_count_K }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_E }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_S }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_K|add:opening.baptized_parent_sda_count_E|add:opening.baptized_parent_sda_count_S }}</td>
+                    </tr>
+                    <tr>
+                        <td>Non-SDA parents/guardians</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_E }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_S }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K|add:opening.baptized_parent_non_sda_count_E|add:opening.baptized_parent_non_sda_count_S }}</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">Not Baptised</td>
+                        <td>At least one parent/guardian SDA</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_E }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_S }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K|add:opening.unbaptized_parent_sda_count_E|add:opening.unbaptized_parent_sda_count_S }}</td>
+                    </tr>
+                    <tr>
+                        <td>Non-SDA parents/guardians</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_E }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_S }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <h6> Employee Data</h6>
+
+        <div class="row">
+<!-- Employee count -->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr style="font-weight: bold;">
+                          <td>Administrative and Teaching Staff</td>
+                            <td>{{ opening.teacher_admin_count }}</td>
+                        </tr>
+                        <tr>
+                          <td>Non-SDA Administrative and Teaching Staff</td>
+                          <td>{{ opening.non_sda_teacher_admin_count }}</td>
+                        </tr>
+                        <tr style="font-weight: bold;">
+                          <td>General Staff</td>
+                            <td>{{ opening.general_staff_count }}</td>
+                        </tr>
+                      </tbody>
+                </table>
+            </div>
+<!-- Degree count -->
+            <div class="col-auto">
+                <table class="table-bordered table">
+                   <thead>
+                        <tr><th colspan="5" style="text-align: center">Highest degree</th></tr>
+                   </thead>
+                    <tbody>
+                        <tr>
+                            <td>Associate</td>
+                            <td>Bachelor</td>
+                            <td>Masters</td>
+                            <td>Doctorate</td>
+                            <td>Professional</td>
+                        </tr>
+
+                        <tr>
+                            <td>{{ opening.associate_count }}</td>
+                            <td>{{ opening.bachelor_count }}</td>
+                            <td>{{ opening.masters_count }}</td>
+                            <td>{{ opening.doctorate_count }}</td>
+                            <td>{{ opening.professional_count }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
 
 {% endblock %}

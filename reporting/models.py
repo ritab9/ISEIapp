@@ -23,6 +23,8 @@ class ReportType(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        ordering = ['order_number']
 
 class ReportDueDate(models.Model):
     due_date = models.DateField()
@@ -81,6 +83,8 @@ class AnnualReport(models.Model):
 # Employee Data
 class Degree(models.Model):  # Changed to a model
     name = models.CharField(max_length=30, unique=True)
+    rank = models.PositiveSmallIntegerField(blank=True, null=True)
+
     def __str__(self):
         return self.name
 
@@ -141,6 +145,11 @@ class Personnel(models.Model):
     annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
     status = models.CharField("status", max_length=2,
                               choices=StaffStatus.choices, default=StaffStatus.FULL_TIME, )
@@ -170,7 +179,7 @@ class Personnel(models.Model):
 
 class PersonnelDegree(models.Model):  # Now has a foreign key to Degree
     personnel = models.ForeignKey(Personnel, on_delete=models.CASCADE)
-    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
+    degree = models.ForeignKey(Degree, on_delete=models.CASCADE, related_name='personnel_degrees')
     area_of_study = models.CharField(max_length=100, null=False, blank=False)
 
 
@@ -359,34 +368,52 @@ class Inservice(models.Model):
     def __str__(self):
         return self.topic
 
+
+class GradeCount(models.Model):
+    pre_k_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Pre-K")
+    k_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="K")
+    grade_0_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="0")
+    grade_1_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="1")
+    grade_2_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="2")
+    grade_3_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="3")
+    grade_4_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="4")
+    grade_5_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="5")
+    grade_6_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="6")
+    grade_7_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="7")
+    grade_8_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="8")
+    grade_9_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="9")
+    grade_10_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="10")
+    grade_11_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="11")
+    grade_12_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="12")
+
+    def total_count(self):
+        return (
+                self.pre_k_count + self.k_count + self.grade_1_count +
+                self.grade_2_count + self.grade_3_count + self.grade_4_count +
+                self.grade_5_count + self.grade_6_count + self.grade_7_count +
+                self.grade_8_count + self.grade_9_count + self.grade_10_count +
+                self.grade_11_count + self.grade_12_count
+        )
+
 class Opening(models.Model):
-    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='opening', null=False, blank=False)
+    annual_report = models.OneToOneField(AnnualReport, on_delete=models.CASCADE, related_name='opening', null=False, blank=False)
+    grade_count=models.OneToOneField(GradeCount, on_delete=models.CASCADE, related_name='opening', null=True, blank=True)
 
-#current school year openning enrollment
-    opening_enrollment= models.PositiveSmallIntegerField(null=True, blank=True)
-    pre_k_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    k_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_0_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_1_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_2_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_3_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_4_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_5_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_6_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_7_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_8_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_9_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_10_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_11_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    grade_12_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    graduated_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    did_not_return_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    graduated_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Graduated")
+    did_not_return_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Did Not Return")
 
-    girl_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    boy_count=models.PositiveSmallIntegerField(null=True, blank=True)
+    girl_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Girls")
+    boy_count=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Boys")
 #boarding student count
-    boarding_girl_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    boarding_boy_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    boarding_girl_count_E = models.PositiveSmallIntegerField(null=True, blank=True,verbose_name="Boarding Girls E")
+    boarding_boy_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Boarding Boys E")
+    boarding_girl_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Boarding Girls S")
+    boarding_boy_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Boarding Boys S")
+
+    day_girl_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Day Girls E")
+    day_boy_count_E = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Day Boys E")
+    day_girl_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Day Girls S")
+    day_boy_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Day Boys S")
 
 #baptismal status
     baptized_parent_sda_count_K = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name= "Baptised with at least one parents SDA K")
@@ -405,34 +432,24 @@ class Opening(models.Model):
     unbaptized_parent_non_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with non-SDA parents S")
 
     #staff count
-    teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    general_staff_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Administrative and Teaching Staff")
+    general_staff_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="General Staff")
 
-    non_sda_teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    non_sda_teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="non-SDA Administrative and Teaching Staff")
 
-    associate_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    bachelor_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    masters_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    doctorate_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    professional_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    associate_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Associate")
+    bachelor_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Bachelor")
+    masters_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Masters")
+    doctorate_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Doctorate")
+    professional_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Professional")
 
-#closing enrollment from previous school year
-    previous_year_pre_k_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_k_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_0_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_1_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_2_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_3_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_4_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_5_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_6_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_7_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_8_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_9_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_10_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_11_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_grade_12_end_count = models.PositiveSmallIntegerField(null=True, blank=True)
-    previous_year_withdraw_count = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def __str__(self):
         return str(self.annual_report)
+
+
+class Closing(models.Model):
+    annual_report = models.OneToOneField(AnnualReport, on_delete=models.CASCADE, related_name='closing')
+    grade_count = models.OneToOneField(GradeCount, on_delete=models.CASCADE, related_name='closing')
+
+    withdrew_count=models.PositiveSmallIntegerField(null=True, blank=True)

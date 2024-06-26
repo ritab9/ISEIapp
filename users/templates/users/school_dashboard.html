@@ -7,11 +7,13 @@
 {% block content %}
 
 <div class="row">
+    <h6 class="error">Under construction - Go to Teacher Certification from Menu above</h6>
     {% if messages %}
-    {% for message in messages %}
-        <p class="error message {{ message.tags }}">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+        {% for message in messages %}
+            <p class="error message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+</div>
 
 <!-- Loading spinner -->
 <div id="loading" style="display: none;">
@@ -19,6 +21,7 @@
     <p id="loading-text">Please wait, loading...</p>
 </div>
 
+<div class="row">
 <!-- School Info -->
     <div class = "col col-auto card">
         <div class="card-body">
@@ -117,7 +120,7 @@
                     {% endif %}
                 </p>
             </div>
-    </div>
+</div>
 
 </div>
 

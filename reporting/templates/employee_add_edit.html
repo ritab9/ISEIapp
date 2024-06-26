@@ -30,6 +30,10 @@
                             <td>{{ p_form.last_name }} {{ p_form.last_name.errors }}</td>
                           </tr>
                           <tr>
+                            <th>{{ p_form.gender.label_tag }}</th>
+                            <td>{{ p_form.gender }} {{ p_form.gender.errors }}</td>
+                          </tr>
+                          <tr>
                             <th>{{ p_form.status.label_tag }}</th>
                             <td>{{ p_form.status }} {{ p_form.status.errors }}</td>
                           </tr>
@@ -129,7 +133,7 @@
                     {% endif %}
 
                     {% for category_key, category_val in position_categories.items %}
-                        <div class="h7 category-toggle">{{ category_val.name }}</div>
+                        <div class="h7 category-toggle toggle-table clickable">{{ category_val.name }}</div>
                         <div class="col-auto position-container vertical-divider {% if category_key == positionCode %}active{% endif %}">
                             {% for position in category_val.positions %}
                                 <input type="checkbox" name="positions" value="{{ position.id }}"
@@ -145,7 +149,7 @@
                 <div class="col-auto">
                     <h6 class=""> Classes Currently Teaching</h6>
                         {% for category_key, category_val in subject_categories.items %}
-                            <div class="h7 category-toggle">{{ category_val.name }}</div>
+                            <div class="h7 category-toggle toggle-table clickable">{{ category_val.name }}</div>
                             <div class="col-auto vertical-divider subject-container">
                                     <!-- For each subject in the current category's subjects -->
                                     {% for subject in category_val.subjects %}
@@ -160,10 +164,10 @@
 
 <!-- Add subjects taught in the past or now -->
                 <div class="col-auto">
-                    <h6 class=""> Classes Taught</h6>
+                    <h6 class=""> History of Classes Taught</h6>
                     {% for category_key, category_val in subject_categories.items %}
                         <div class="col-auto vertical-divider subject-category">
-                            <div class="h7 category-toggle">{{ category_val.name }}</div>
+                            <div class="h7 category-toggle toggle-table clickable">{{ category_val.name }}</div>
                             <div class="subject-container">
                                 {% for subject in category_val.subjects %}
                                     <input type="checkbox" name="subjects_taught" value="{{ subject.id }}"
@@ -257,6 +261,9 @@
                     success: function(data) {
                         if (data.email) {
                             $('#id_email_address').val(data.email);
+                        }
+                         if (data.phone_number) {
+                            $('#id_phone_number').val(data.phone_number);
                         }
                     }
                 });

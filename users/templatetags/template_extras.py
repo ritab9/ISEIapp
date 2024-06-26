@@ -4,7 +4,7 @@ register = template.Library()
 
 
 @register.filter
-def getattribute(value, arg):
+def get_attribute(value, arg):
     return getattr(value, arg)
 
 @register.filter

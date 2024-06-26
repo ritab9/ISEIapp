@@ -13,7 +13,7 @@ class ReportAdmin(admin.ModelAdmin):
 class ReportDueDateAdmin(admin.ModelAdmin):
     list_display = ['region','report_type', 'due_date','opening_report']
     list_display_links = ['report_type']
-    list_filter = ['region']
+    list_filter = ['region', 'report_type']
     list_editable = ['due_date', 'opening_report']
 
 admin.site.register(ReportDueDate, ReportDueDateAdmin)
@@ -67,7 +67,10 @@ class Day190Admin(admin.ModelAdmin):
 
 #Employee Data
 
-admin.site.register(Degree)
+@admin.register(Degree)
+class DegreeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'rank']
+    list_editable = ['rank']
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):

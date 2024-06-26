@@ -22,6 +22,7 @@
                 {% for report in school.annual_reports %}
                     {% if report.report_type.name == report_type.name %}
                         {% if report.submit_date %}
+                            <i class="fas fa-check"></i>
                             {% if report.submit_date > report.due_date_plus %}
                                 <a class="error" href="{% url report.report_type.view_name|add:'_display' report.id %}">{{ report.submit_date }}:</a>
                             {% elif report.submit_date > report.due_date %}
@@ -31,9 +32,22 @@
                             {% endif %}
                             <br><span class="span80"> Update:  {{ report.last_update_date }}</span>
                         {% elif report.last_update_date %}
-                            <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: {{ report.last_update_date}}</a>
+                            <i class="fas fa-sync"></i>
+                             {% now "Y-m-d" as todays_date %}
+                                {% if report.due_date > todays_date %}
+                                    <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: {{ report.last_update_date}}</a>
+                                {% else %}
+                                    <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: <span class="error">{{ report.last_update_date}}</span></a>
+                                {% endif %}
                         {% else %}
-                            <span class="spanred"> - </span>
+                            {% now "Y-m-d" as todays_date %}
+                            {% if report.due_date > todays_date %}
+                                <span class="span80"> Due date: {{ report.due_date }}</span>
+                            {% elif report.due_date_plus > todays_date %}
+                                <span class="span80"> Due date: <span class="warning">{{ report.due_date }}</span></span>
+                            {% else %}
+                                <span class="span80"> Due date: <span class="error">{{ report.due_date }}</span></span>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endfor %}
