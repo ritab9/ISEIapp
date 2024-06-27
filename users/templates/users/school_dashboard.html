@@ -85,7 +85,18 @@
                                     <td>{{report.report_type.name}} <br>
                                         <div class="row">
                                             <div class="col">
-                                                <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a></div>
+                                                {% if report.report_type.code == "OR" or report.report_type.code == "CR"%}
+                                                    {% if sr_er_submitted is True %}
+                                                        <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                                    {% else %}
+                                                        <span style="color: gray;">Edit</span>
+                                                        <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                                                          data-bs-content="Student and Employee report needs to be submitted first."></i>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                                {% endif %}
+                                            </div>
                                             <div class="col">
                                             {% with display_view=report.report_type.view_name|add:"_display" %}
                                                 <a class="" href="{% url display_view report.id %}"> View</a>
@@ -135,6 +146,15 @@
             $('#loading').show();
         });
     });
+
+    document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
+          })
+        });
 
 </script>
 

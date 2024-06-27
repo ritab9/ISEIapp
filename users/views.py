@@ -194,6 +194,16 @@ def school_dashboard(request, schoolID):
     school=School.objects.get(id=schoolID)
     school_year=SchoolYear.objects.get(current_school_year=True)
 
+    sr_report_type = ReportType.objects.get(code='SR')
+    er_report_type = ReportType.objects.get(code='ER')
+    submit_dates = AnnualReport.objects.filter(school=school, school_year=school_year,
+                                    report_type__in=[sr_report_type, er_report_type]).exclude(
+    submit_date__isnull=True).values_list('report_type__code', flat=True)
+    if len(submit_dates) == 2:
+        sr_er_submitted=True
+    else:
+        sr_er_submitted = False
+
     #school info section
     accreditation_info = AccreditationInfo.objects.filter(school=school, current_accreditation=True)
 
@@ -224,9 +234,11 @@ def school_dashboard(request, schoolID):
                 annual_reports.append((annual_report, report_dd.get_actual_due_date()))
             except AnnualReport.DoesNotExist:
                 pass
+
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
                     accreditation_info=accreditation_info,
+                    sr_er_submitted = sr_er_submitted,
                   )
 
     return render(request, 'users/school_dashboard.html', context)

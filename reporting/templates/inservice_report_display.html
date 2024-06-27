@@ -1,53 +1,9 @@
 {% extends 'reporting_base.html' %}
 
-{% block title %} Inservice Report {% endblock title %}
+{% block title %} Opening Report {% endblock title %}
 
 
 {% block content %}
 
-          <h6 style="text-align:right">{{ annual_report }})</h6>
-
-    <div class="card">
-        <div class="card-body" style="display: inline-block; width: auto;">
-            <table style="width:auto" class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Dates</th>
-                        <th scope="col">Topic</th>
-                        <th scope="col">Presenter</th>
-                        <th scope="col">Hours</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for inservice in inservices %}
-                        <tr>
-                            <td>{{ inservice.dates }}</td>
-                            <td>{{ inservice.topic }}</td>
-                            <td>{{ inservice.presenter }}</td>
-                            <td>{{ inservice.hours }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="4">No data available</td>
-                        </tr>
-                    {% endfor %}
-                        <tr>
-                            <td></td><td></td>
-                            <td>Total Hours:</td>
-                            <td>{% if enough %}
-                                    <span class="spangreen">{{ total_hours }}</span>
-                                {% else %}
-                                    <span class="spanred">{{ total_hours }}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                </tbody>
-            </table>
-
-            <div>
-                <a href="{% url 'inservice_report' arID %}" class="btn btn-sm btn-ISEIblue2">Edit Report</a>
-            </div>
-        </div>
-    </div>
 
 {% endblock %}

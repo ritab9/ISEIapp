@@ -938,12 +938,8 @@ def opening_report(request, arID):
             grade_count = GradeCount.objects.create(**grade_counts)
             opening.grade_count = grade_count
 
-            display_grade_names = ["Pre K", "K"] + list(map(str, range(0, 13)))
-            grade_count_keys = ["pre_k_count", "k_count"] + ["grade_{}_count".format(i) for i in range(0, 13)]
-
-            grade_data = [(display_name, grade_counts[grade_name]) for display_name, grade_name in
-                          zip(display_grade_names, grade_count_keys)]
-
+            grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
+                                  GradeCount._meta.fields if field.name != 'id']
 
             opening.girl_count = students.filter(gender="F").count()
             opening.boy_count = students.filter(gender="M").count()
@@ -951,7 +947,6 @@ def opening_report(request, arID):
             opening.did_not_return_count = Student.objects.filter(annual_report=annual_report_student, status="did_not_return").count()
 
             grade_ranges = {'K': range(-2, 0), 'E': range(0, 9), 'S': range(9, 13), }
-            grade_ranges_friendly = {'K': 'Pre-K/K', 'E': '1-8', 'S': '9-12'}
 
             opening.boarding_girl_count_E = students.filter(gender="F", boarding=True, grade_level__in=grade_ranges['E']).count()
             opening.boarding_boy_count_E=students.filter(gender="M", boarding=True, grade_level__in=grade_ranges['E']).count()
@@ -970,14 +965,7 @@ def opening_report(request, arID):
                 'unbaptized_parent_sda_count': ('N', 'Y'),
                 'unbaptized_parent_non_sda_count': ('N', ['N','U']),
             }
-            conditions_friendly = {
-                'baptized_parent_sda_count': 'Baptized, SDA parents',
-                'baptized_parent_non_sda_count': 'Baptized, Non-SDA parents (or unknown)',
-                'unbaptized_parent_sda_count': 'Unbaptized, SDA parents',
-                'unbaptized_parent_non_sda_count': 'Unbaptized, Non-SDA parents (or unknown)',
-            }
 
-            baptism_counts =[]
             for range_name, grade_range in grade_ranges.items():
                 for count_name, (baptized, parent_sda) in conditions.items():
                     field_name = f"{count_name}_{range_name}"
@@ -986,11 +974,7 @@ def opening_report(request, arID):
                         parent_sda__in=parent_sda,
                         grade_level__in=grade_range).count()
                     setattr(opening, field_name, count)
-                    baptism_counts.append({
-                        'field_name': field_name,
-                        'friendly_name': f"{conditions_friendly[count_name]} ({grade_ranges_friendly[range_name]})",
-                        'count': count
-                    })
+
             unkown_baptismal_status_count = students.filter(baptized='U').count()
 
         personnel = Personnel.objects.filter(annual_report=annual_report_personnel).annotate(highest_degree_rank=Max('degrees__rank'))
@@ -1011,15 +995,12 @@ def opening_report(request, arID):
 
         opening.save()
 
-    context = dict(opening=opening, arStudentID= arStudentID, arEmployeeID=arEmployeeID,
-                   grade_data = grade_data,
-
-                   grade_ranges=grade_ranges, conditions=conditions, unkown_baptismal_status_count= unkown_baptismal_status_count,
-                   grade_ranges_friendly=grade_ranges_friendly,conditions_friendly=conditions_friendly,
-                   boarding_rows= { 'boarding_girl': 'Boarding Students - Girls', 'boarding_boy': 'Boarding Students - Boys',
-                            'day_girl': 'Day Students - Girls','day_boy': 'Day Students - Boys'},
-                   grade_range_names =['E','S']
+    context = dict(arStudentID= arStudentID, arEmployeeID=arEmployeeID,
+                    opening=opening,
+                   grade_count_fields=grade_count_fields,
+                   unkown_baptismal_status_count=unkown_baptismal_status_count,
                    )
+
 
     return render(request, 'opening_report.html', context)
 
@@ -1036,19 +1017,79 @@ def opening_report_display(request, arID):
         opening = None
         grade_count_fields = None
 
-    context = dict(opening=opening, grade_count_fields = grade_count_fields,
-                   annual_report=annual_report, arID=arID)
+    context = dict(opening=opening, grade_count_fields = grade_count_fields, display=True )
 
-    return render(request, 'opening_report_display.html', context)
+    return render(request, 'opening_report.html', context)
 
 @login_required(login_url='login')
 def closing_report(request, arID):
-    return render(request, 'closing_report.html')
+
+    annual_report = AnnualReport.objects.get(id=arID)
+    closing, created = Closing.objects.get_or_create(annual_report=annual_report)
+
+    if request.method == 'POST':
+        form = ClosingForm(request.POST, instance=closing)
+        if form.is_valid():
+            form.save()
+
+            if 'submit' in request.POST:
+                if not annual_report.submit_date:
+                    annual_report.submit_date = date.today()
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+                return redirect('school_dashboard', annual_report.school.id)
+            elif 'save' in request.POST:
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+                return redirect('school_dashboard', annual_report.school.id)
+            else:
+                return redirect('closing_report', arID=arID)
+
+    else:
+        form = ClosingForm(instance=closing)
+
+
+    annual_report_student = AnnualReport.objects.get(report_type__code='SR', school=annual_report.school,
+                                                     school_year=annual_report.school_year)
+    arStudentID = annual_report_student.id
+
+    with transaction.atomic():
+        students = Student.objects.filter(annual_report=annual_report_student,  status__in=['enrolled', 'withdrawn'])
+
+        if students.exists():
+            grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
+            grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
+            grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
+
+            grade_count = GradeCount.objects.create(**grade_counts)
+            closing.grade_count = grade_count
+
+            grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
+                                  GradeCount._meta.fields if field.name != 'id']
+
+            closing.withdraw_count=students.filter(status="withdrawn").count()
+
+        closing.save()
+    context = dict(form=form, closing=closing, grade_count_fields = grade_count_fields, arStudentID=arStudentID)
+
+    return render(request, 'closing_report.html', context)
 
 @login_required(login_url='login')
 def closing_report_display(request, arID):
-    # Add your processing here
-    return render(request, 'closing_report_display.html')
+
+    annual_report = AnnualReport.objects.get(id=arID)
+    if hasattr(annual_report, 'closing'):
+        closing = annual_report.closing
+        grade_count = closing.grade_count
+        grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
+                              GradeCount._meta.fields if field.name != 'id']
+
+    else:
+        closing = None
+        grade_count_fields = None
+
+    context = dict(closing=closing, grade_count_fields=grade_count_fields)
+    return render(request, 'closing_report_display.html', context)
 
 
 @login_required(login_url='login')
@@ -1075,7 +1116,7 @@ def isei_reporting_dashboard(request):
     #ap_report= AnnualReport.objects.filter(school_year=current_school_year, report_type="APR")
 
     report_types = ReportType.objects.all()
-    schools = School.objects.filter(member=True)
+    schools = School.objects.filter(member=True).exclude(name="ISEI")
 
     # Prefetch the AnnualReports for the selected school year for each school
     schools = schools.prefetch_related(

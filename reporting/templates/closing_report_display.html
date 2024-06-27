@@ -1,0 +1,148 @@
+{% extends 'reporting_base.html' %}
+
+{% block title %} Closing Report {% endblock title %}
+
+
+{% block content %}
+
+       <h6 style="text-align: center">{{ closing }}</h6>
+
+    <!-- Enrollment Data -->
+         <div class="card card-body">
+            <div class="row ml-5">
+                <h6> Student Data</h6>
+            </div>
+
+
+            <div class="row">
+    <!-- Enrollement by Grade Level-->
+                <div class="col-auto">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          {% for field_name, value in grade_count_fields %}
+                            <th>{{ field_name }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          {% for field_name, value in grade_count_fields %}
+                            <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                          {% endfor %}
+                        </tr>
+                      </tbody>
+                    </table>
+                Students withdrawn during the school year: {{ closing.withdraw_count }}
+                </div>
+            </div>
+         </div>
+
+        <div class="card card-body">
+                <div class="mt-2">
+                    
+                    <strong>Final date school was in full session </strong> (last academic school day):
+                    {{ closing.final_school_day }}
+                </div>
+         </div>
+<!-- Evangelism Data -->
+        <div class="card card-body">
+              <h6 class="ml-5 mb-3"> Evangelism Data</h6>
+            <div class="row align-content-around">
+                <div class="col-auto vertical-divider">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mission Trips</th><th></th><th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    Mission trips your students participated in</td>
+                                <td>{{ closing.no_mission_trips }}</td>
+                            </tr>
+                             <tr>
+                                <td colspan="2">
+                                    Mission trips planned or executed by your school</td>
+                                <td>{{ closing.no_mission_trips_school }}</td>
+                            </tr>
+                             <tr>
+                                <td>
+                                    Location of Mission trips</td>
+                                <td>{{ closing.mission_trip_locations }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-auto vertical-divider">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Evangelistic Meetings</th><th></th><th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    Student lead Evangelistic Meetings</td>
+                                <td>{{ closing.student_lead_evangelistic_meetings }}</td>
+                            </tr>
+                             <tr>
+                                <td colspan="2">
+                                    Baptisms as a result of student evangelism
+                                    <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                        data-bs-content="Does not include student baptisms"></i>
+                                </td>
+                                <td>{{ closing.student_evangelistic_meetings_baptism }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                   Location of Evangelistic Meetings</td>
+                                <td>{{ closing.evangelistic_meeting_locations }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="col-auto vertical-divider">
+                    <table class="table">
+                     <thead>
+                            <tr>
+                                <th colspan="2">Student Baptism in the last 12 months</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>SDA Parents/Guardians</td>
+                                <td>
+                                   {{ closing.student_baptism_sda_parent }}</td>
+                            </tr>
+                            <tr><td>Non-SDA Parents/Guardians</td>
+                                <td>
+                                   {{ closing.student_baptism_non_sda_parent }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}
+
+{% block footer_javascript %}
+    <script>
+    //Popover
+      document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
+          })
+        });
+
+    </script>
+
+{% endblock %}

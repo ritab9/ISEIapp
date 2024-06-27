@@ -3,7 +3,7 @@ from reporting.models import *
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from users.models import Country, TNCounty
 from .models import *
-from django.forms import BaseModelFormSet
+from django.forms import BaseModelFormSet, TextInput, NumberInput, DateInput
 from django.forms.models import inlineformset_factory
 from django.forms.widgets import CheckboxSelectMultiple
 
@@ -207,7 +207,6 @@ class PersonnelForm(forms.ModelForm):
                   'positions', 'subjects_teaching', 'subjects_taught']
 
 
-
 PersonnelDegreeFormset = inlineformset_factory(
     Personnel,
     PersonnelDegree,
@@ -216,5 +215,33 @@ PersonnelDegreeFormset = inlineformset_factory(
     can_delete=True,
 )
 
+from django import forms
+from .models import Closing
+
+
+class ClosingForm(forms.ModelForm):
+    class Meta:
+        model = Closing
+        fields = [
+                  'final_school_day', 'no_mission_trips',
+                  'no_mission_trips_school',
+                  'mission_trip_locations',
+                  'student_lead_evangelistic_meetings',
+                  'evangelistic_meeting_locations',
+                  'student_evangelistic_meetings_baptism',
+                  'student_baptism_sda_parent',
+                  'student_baptism_non_sda_parent']
+
+        widgets = {
+             'final_school_day': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
+            'no_mission_trips': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'no_mission_trips_school': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'mission_trip_locations': TextInput(attrs={'style': 'max-width: 300px;'}),
+            'student_lead_evangelistic_meetings': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'evangelistic_meeting_locations': TextInput(attrs={'style': 'max-width: 300px;'}),
+            'student_evangelistic_meetings_baptism': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'student_baptism_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'student_baptism_non_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+        }
 
 

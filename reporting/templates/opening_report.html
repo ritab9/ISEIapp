@@ -5,159 +5,216 @@
 
 
 {% block content %}
-    <div class="row">
-        <div class="col" style="display: inline-block;">
-            <div class="mt-1 col text-center ">
-                <h6>{{ opening }}</h6>
-            </div>
+
+     <h6 style="text-align: center">{{ opening }}</h6>
+
+    <div class="card card-body">
+        <div class="row ml-5">
+            <h6> Student Data</h6>
+            {% if not display %}
+                <a class="btn btn-xs btn-ISEIblue2 mb-3 ml-3" href="{% url 'student_report' arStudentID %}"> Edit </a>
+            {% endif %}
         </div>
+        <p><b>Enrollment:</b> {{ opening.grade_count.total_count }}
+        </p>
+
+        <div class="row">
+<!-- Enrollement by Grade Level-->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      {% for field_name, value in grade_count_fields %}
+                        <th>{{ field_name }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {% for field_name, value in grade_count_fields %}
+                        <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                      {% endfor %}
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+<!-- Gender -->
+            <div class="col-auto">
+                <table class="table">
+                    <tr>
+                        <td>Girls:</td><td> {{ opening.girl_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Boys:</td><td>{{ opening.boy_count }}</td>
+                    </tr>
+                </table>
+            </div>
+<!-- Graduated / Not Returning -->
+            <div class="col-auto">
+                <table class="table">
+                    <tr>
+                        <td>Graduated:</td><td> {{ opening.graduated_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Did Not Return:</td><td>{{ opening.did_not_return_count }}</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="row">
+<!-- boarding and day students table -->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th colspan="2"> Boarding/Day Students</th>
+                      <th>1-8</th>
+                      <th>9-12</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td rowspan="2">Boarding</td>
+                      <td>Girls</td>
+                      <td>{{ opening.boarding_girl_count_E }}</td>
+                      <td>{{ opening.boarding_girl_count_S }}</td>
+                    </tr>
+                    <tr>
+                      <td>Boys</td>
+                      <td>{{ opening.boarding_boy_count_E }}</td>
+                      <td>{{ opening.boarding_boy_count_S }}</td>
+                    </tr>
+                    <tr>
+                      <td rowspan="2">Day</td>
+                      <td>Girls</td>
+                      <td>{{ opening.day_girl_count_E }}</td>
+                      <td>{{ opening.day_girl_count_S }}</td>
+                    </tr>
+                    <tr>
+                      <td>Boys</td>
+                      <td>{{ opening.day_boy_count_E }}</td>
+                      <td>{{ opening.day_boy_count_S }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+<!-- Baptismal Status -->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th colspan="2"><b>Baptismal Status</b></th>
+                      <th>Pre-K/K</th>
+                      <th>1-8</th>
+                      <th>9-12</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                        <td rowspan="2">Baptised</td>
+                        <td>At least one parent/guardian SDA</td>
+                        <td>{{ opening.baptized_parent_sda_count_K }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_E }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_S }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_K|add:opening.baptized_parent_sda_count_E|add:opening.baptized_parent_sda_count_S }}</td>
+                    </tr>
+                    <tr>
+                        <td>Non-SDA parents/guardians</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_E }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_S }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K|add:opening.baptized_parent_non_sda_count_E|add:opening.baptized_parent_non_sda_count_S }}</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">Not Baptised</td>
+                        <td>At least one parent/guardian SDA</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_E }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_S }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K|add:opening.unbaptized_parent_sda_count_E|add:opening.unbaptized_parent_sda_count_S }}</td>
+                    </tr>
+                    <tr>
+                        <td>Non-SDA parents/guardians</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_E }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_S }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+
+        </div>
+
     </div>
 
+    <div class="card card-body">
+        <div class="row ml-5">
+            <h6> Employee Data</h6>
+            {% if not display %}
+                <a class=" btn btn-xs btn-ISEIblue2 mb-3 ml-3" href="{% url 'employee_report' arEmployeeID %}"> Edit </a>
+            {% endif %}
+        </div>
 
-
-    <div class="card">
-        <h6 class="row mt-2 ml-3"> Student Data Summary</h6>
-        <div class="row ml-2 mt-2">
-<!-- Current Openning enrollment -->
-            <div class="col col-auto">
-                <table class="table">
-                    <thead>
-                        <tr>
-                          {% for display_grade_name, count in grade_data %}
-                              <th>{{ display_grade_name }}</th>
-                          {% endfor %}
+        <div class="row">
+<!-- Employee count -->
+            <div class="col-auto">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr style="font-weight: bold;">
+                          <td>Administrative and Teaching Staff</td>
+                            <td>{{ opening.teacher_admin_count }}</td>
                         </tr>
-                      </thead>
-                      <tbody>
                         <tr>
-                          {% for display_grade_name, count in grade_data %}
-                              <td>{% if count != 0 %}{{ count }}{% endif %}</td>
-                          {% endfor %}
+                          <td>Non-SDA Administrative and Teaching Staff</td>
+                          <td>{{ opening.non_sda_teacher_admin_count }}</td>
+                        </tr>
+                        <tr style="font-weight: bold;">
+                          <td>General Staff</td>
+                            <td>{{ opening.general_staff_count }}</td>
                         </tr>
                       </tbody>
                 </table>
-
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <table class="table">
-                                <tr>
-                                    <th colspan='2'>Opening Enrollment: {{ opening.grade_count.total_count }}</th>
-                                </tr>
-                                <tr>
-                                    <td>Girls: {{ opening.girl_count }}</td>
-                                    <td>Boys: {{ opening.boy_count }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col">
-                            <table class="table">
-                                <tr>
-                                    <td>Graduated Last Year: </td><td> {{ opening.graduated_count }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Did not Return:</td><td> {{ opening.did_not_return_count }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="container">
-                    <a class=" btn btn-sm btn-ISEIblue2 mb-2" href="{% url 'student_report' arStudentID %}"> Edit Student Opening Report </a>
-                </div>
             </div>
-
-<!-- Boarding and Day students -->
-            <div class="col col-auto">
-                    <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Boarding Status/Grade Level</th>
-                                    <th>1-8</th>
-                                    <th>9-12</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row_key, row_name in boarding_rows.items %}
-                                    <tr>
-                                        <td>{{ row_name}}</td>  {# this will make the first character uppercase #}
-                                        {% for grade_range_name in grade_range_names %}
-                                            {% with att_name=row_key|add:'_count_'|add:grade_range_name %}
-                                                <td>{{ opening|get_attribute:att_name }}</td>
-                                            {% endwith %}
-                                        {% endfor %}
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-            </div>
-
-<!-- Baptismal status -->
+<!-- Degree count -->
             <div class="col-auto">
-                <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th classs="strong">Baptismal Status</th>
-                        {% for range_name, grade_range in grade_ranges.items %}
-                            <th>{{ grade_ranges_friendly|get_from_dict:range_name }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for count_name, count_values in conditions.items %}
+                <table class="table-bordered table">
+                   <thead>
+                        <tr><th colspan="5" style="text-align: center">Highest degree</th></tr>
+                   </thead>
+                    <tbody>
                         <tr>
-                            <td>{{ conditions_friendly|get_from_dict:count_name }}</td>
-                            {% for range_name, grade_range in grade_ranges.items %}
-                                {% with att_name=count_name|add:"_"|add:range_name %}
-                                    <td>{{ opening|get_attribute:att_name }}</td>
-                                {% endwith %}
-                            {% endfor %}
+                            <td>Associate</td>
+                            <td>Bachelor</td>
+                            <td>Masters</td>
+                            <td>Doctorate</td>
+                            <td>Professional</td>
                         </tr>
-                    {% endfor %}
-                </tbody>
+
+                        <tr>
+                            <td>{{ opening.associate_count }}</td>
+                            <td>{{ opening.bachelor_count }}</td>
+                            <td>{{ opening.masters_count }}</td>
+                            <td>{{ opening.doctorate_count }}</td>
+                            <td>{{ opening.professional_count }}</td>
+                        </tr>
+                    </tbody>
                 </table>
-                <p>Unknown baptismal status for <b>{{ unkown_baptismal_status_count }}</b> students.</p>
-            </div>
-        </div>
-    </div>
-
-<!-- Personnel Data Summary -->
-    <div class="card">
-        <h6 class="row mt-2 ml-3">Personnel Data Summary</h6>
-        <div class="row ml-2 mt-2">
-            <div class="col">
-                <h7>Personnel Count by Role</h7>
-                <ul>
-                    <li>Teacher/Admin Count: {{ opening.teacher_admin_count }}</li>
-                    <li>General Staff Count: {{ opening.general_staff_count }}</li>
-                    <li>Non-SDA Teacher/Admin Count: {{ opening.non_sda_teacher_admin_count }}</li>
-
-                </ul>
-            </div>
-            <div class="col">
-                <h7>Personnel Count by Highest Degree Earned</h7>
-                <ul>
-                    <li>Professional Degree Count: {{ opening.professional_count }}</li>
-                    <li>Doctorate Degree Count: {{ opening.doctorate_count }}</li>
-                    <li>Masters Degree Count: {{ opening.masters_count }}</li>
-                    <li>Bachelor Degree Count: {{ opening.bachelor_count }}</li>
-                    <li>Associate Degree Count: {{ opening.associate_count }}</li>
-                </ul>
             </div>
         </div>
 
-        <div class="row ml-2">
-            <div class="col-auto">
-                <a class=" btn btn-sm btn-ISEIblue2 mb-2" href="{% url 'employee_report' arEmployeeID %}"> Edit Employee Opening Report </a>
-            </div>
-        </div>
     </div>
 
-    <div class="mt-2 text-center">
-        <form method="POST">
-        {% csrf_token %}
-        <button class="btn btn-sm btn-success" type="submit">Report Complete</button>
-    </form>
-    </div>
+    {% if not display %}
+        <div class="mt-2 text-center">
+            <form method="POST">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-success" type="submit">Report Complete</button>
+        </form>
+        </div>
+    {% endif %}
+
 {% endblock %}
