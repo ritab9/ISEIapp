@@ -99,6 +99,7 @@ class SubjectCategory(models.TextChoices):
     SOCIAL_STUDIES = 'SS', 'Social Studies'
     VOCATIONAL_ARTS_COURSES = 'V', 'Vocational Arts Courses'
     WELLNESS_HEALTH_PE = 'W', 'Wellness/Health/PE'
+    ELEMENTARY = 'E', 'Elementary'
 
 class Subject(models.Model):
     name = models.CharField(max_length=100, unique=True)
