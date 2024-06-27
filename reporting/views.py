@@ -727,6 +727,7 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
         "SS": {"name": "Social Studies", "subjects": []},
         "V": {"name": "Vocational Arts Courses", "subjects": []},
         "W": {"name": "Wellness/Health/PE", "subjects": []},
+        "E": {"name": "Elementary", "subjects": []},
     }
     subjects = Subject.objects.all().order_by('category', 'name')
     for subject in subjects:
