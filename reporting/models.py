@@ -100,6 +100,7 @@ class SubjectCategory(models.TextChoices):
     VOCATIONAL_ARTS_COURSES = 'V', 'Vocational Arts Courses'
     WELLNESS_HEALTH_PE = 'W', 'Wellness/Health/PE'
     ELEMENTARY = 'E', 'Elementary'
+    MENTORSHIP = 'MT', 'Mentorship'
 
 class Subject(models.Model):
     name = models.CharField(max_length=100, unique=True)

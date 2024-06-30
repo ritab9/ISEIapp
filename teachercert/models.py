@@ -166,7 +166,7 @@ class CEUInstance(models.Model):
 
 
     class Meta:
-        ordering = ['ceu_report']
+        ordering = ['ceu_report', 'date_completed']
         unique_together = ['ceu_report','date_completed', 'description']
 
     @property

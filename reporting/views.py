@@ -728,6 +728,7 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
         "V": {"name": "Vocational Arts Courses", "subjects": []},
         "W": {"name": "Wellness/Health/PE", "subjects": []},
         "E": {"name": "Elementary", "subjects": []},
+        "MT": {"name": "Mentorship", "subjects": []},
     }
     subjects = Subject.objects.all().order_by('category', 'name')
     for subject in subjects:
@@ -753,6 +754,10 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
         p_form = PersonnelForm(request.POST, instance=personnel_instance, schoolID=school)
         pd_formset = PersonnelDegreeFormset(request.POST, instance=personnel_instance, prefix='pd_formset')
 
+        if 'delete' in request.POST:
+            personnel_instance.delete()
+            return redirect('employee_report', arID=arID)
+
         if p_form.is_valid() and pd_formset.is_valid():
             try:
                 with transaction.atomic():
@@ -771,7 +776,11 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
 
                     pd_formset.save()
 
-                return redirect('employee_report', arID=arID)
+                if 'submit' in request.POST:
+                    return redirect('employee_report', arID=arID)
+                else:
+                    return redirect('employee_add', arID=arID, positionCode=positionCode)
+
             except Exception as e:
                 print(f"Error saving personnel: {e}")
                 # Log the error or handle it appropriately
