@@ -1,5 +1,5 @@
 from .models import *
-from teachercert.models import TCertificate, TeacherCertificationApplication
+from teachercert.models import TCertificate, TeacherCertificationApplication, SchoolYear
 from datetime import date
 
 
@@ -36,3 +36,16 @@ def application_submitted(teacher):
 
 def get_today():
     return date.today()
+
+
+def current_school_year_function(request):
+    if request.user.is_authenticated:
+        try:
+            school =request.user.teacher.school
+            current_school_year=school.current_school_year
+        except AttributeError:
+            current_school_year = SchoolYear.objects.filter(current_school_year=True).first()
+    else:
+        current_school_year = SchoolYear.objects.filter(current_school_year=True).first()
+
+    return current_school_year

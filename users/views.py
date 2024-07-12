@@ -17,6 +17,7 @@ from emailing.teacher_cert_functions import email_registered_user
 from teachercert.models import Teacher, SchoolYear
 from reporting.models import ReportDueDate, AnnualReport, ReportType
 from users.models import School, Address
+from django.http import HttpResponseRedirect
 
 
 # authentication functions
@@ -192,7 +193,7 @@ def accountsettings(request, userID):
 def school_dashboard(request, schoolID):
 
     school=School.objects.get(id=schoolID)
-    school_year=SchoolYear.objects.get(current_school_year=True)
+    school_year=school.current_school_year
 
     sr_report_type = ReportType.objects.get(code='SR')
     er_report_type = ReportType.objects.get(code='ER')
@@ -226,12 +227,12 @@ def school_dashboard(request, schoolID):
         if report_dd.report_type.isei_created == False:
             annual_report, created = AnnualReport.objects.get_or_create(school=school, school_year=school_year,
                                               report_type=report_dd.report_type)
-            annual_reports.append((annual_report, report_dd.get_actual_due_date()))
+            annual_reports.append((annual_report, report_dd.get_actual_due_date(school_year=school_year)))
         else:
             try:
                 annual_report, created = AnnualReport.objects.get(school=school,school_year=school_year,
                                                     report_type=report_dd.report_type)
-                annual_reports.append((annual_report, report_dd.get_actual_due_date()))
+                annual_reports.append((annual_report, report_dd.get_actual_due_date(school_year=school_year)))
             except AnnualReport.DoesNotExist:
                 pass
 
@@ -284,3 +285,34 @@ def update_school_info(request, schoolID):
     }
 
     return render(request, 'users/update_school_info.html', context)
+
+
+def change_school_year(request):
+
+    if request.user.is_authenticated:
+        try:
+            current_school_year = request.user.teacher.school.current_school_year
+        except AttributeError:
+            current_school_year = SchoolYear.objects.get(current_school_year=True)
+        form = SchoolYearForm(initial={'school_year': current_school_year})
+    else:
+        form=None
+
+    if request.method == 'POST':
+        form = SchoolYearForm(request.POST)
+        if form.is_valid():
+            assigned_school_year = form.cleaned_data['school_year']
+
+            if request.user.is_authenticated:
+                try:
+                    school = request.user.teacher.school
+                    school.current_school_year = assigned_school_year
+                    school.save()
+                except AttributeError:
+                    school_year_to_set_current = SchoolYear.objects.get(name=assigned_school_year)
+                    school_year_to_set_current.current_school_year = True
+                    school_year_to_set_current.save()
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+    return {'navbar_schoolyear_form': form}

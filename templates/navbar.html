@@ -52,7 +52,14 @@
 {% if user.is_authenticated and user.is_active%}
     <span class ="name-msg">
       {{ request.user.teacher.school }}<br>
-          {{ current_school_year.name }}
+        {% if request.user|in_group:"principal,registrar,staff" %}
+            <form method="post" id="schoolYearForm" action="{% url 'change_school_year' %}">
+                {% csrf_token %}
+                <span class="span80">{{ navbar_schoolyear_form }}</span>
+            </form>
+        {% else %}
+            {{ current_school_year.name }}
+        {% endif %}
   </span>
   <span class ="name-msg"> {{request.user.first_name}} {{request.user.last_name}}<br>
       <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a>
@@ -60,20 +67,25 @@
 {% endif %}
 
 <script>
-    $(function () {
-  // this will get the full URL at the address bar
-  var url = window.location.href;
-  // passes on every "a" tag
-  $(".navbar-nav .nav-link").each(function () {
-    // checks if its the same on the address bar
-    if (url == (this.href)) {
-      $(this).closest("li").addClass("active");
-      //for making parent of submenu active
-      $(this).closest("li").parent().parent().addClass("active");
-    }
-  });
-});
-
+        $(function () {
+          // this will get the full URL at the address bar
+          var url = window.location.href;
+          // passes on every "a" tag
+          $(".navbar-nav .nav-link").each(function () {
+            // checks if its the same on the address bar
+            if (url == (this.href)) {
+              $(this).closest("li").addClass("active");
+              //for making parent of submenu active
+              $(this).closest("li").parent().parent().addClass("active");
+            }
+          });
+        });
+        
+        const dropdown = document.getElementById('schoolYearDropdown');
+        dropdown.addEventListener('change', function() {
+            document.getElementById('schoolYearForm').submit();
+        });
+        
 </script>
 
   </div>

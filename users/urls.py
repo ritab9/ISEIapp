@@ -33,4 +33,5 @@ urlpatterns = [
     #path('transcript_status', views.transcript_status, name='transcript_status')
     path('update_school_info/<int:schoolID>/', views.update_school_info, name='update_school_info'),
 
+    path('change_school_year/', views.change_school_year, name='change_school_year'),
 ]

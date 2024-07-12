@@ -15,10 +15,10 @@ class SchoolYear(models.Model):
     start_date = models.DateField(default=date.today)
     end_date = models.DateField(default=date.today)
     active_year = models.BooleanField(default=False)
-    country = models.ManyToManyField(Country)
+    country = models.ManyToManyField(Country, blank=True)
 
     current_school_year = models.BooleanField(default=False)  # added field
-    sequence = models.IntegerField(unique=True)
+    sequence = models.IntegerField(unique=True, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.current_school_year:

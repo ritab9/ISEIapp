@@ -10,7 +10,14 @@ from django.contrib.auth.models import User
 from django.forms.models import BaseInlineFormSet
 from .models import *
 from localflavor.us.forms import USStateField
+from teachercert.models import SchoolYear
 
+class SchoolYearForm(forms.Form):
+    school_year = forms.ModelChoiceField(
+        queryset=SchoolYear.objects.filter(active_year=True),
+        empty_label=None,
+        widget=forms.Select(attrs={'id': 'schoolYearDropdown','width': '150px' }),
+    )
 
 class CreateUserForm(UserCreationForm):
     #captcha = CaptchaField()
