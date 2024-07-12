@@ -67,6 +67,8 @@ urlpatterns = [
     path('isei_ceu_approval/', views.isei_ceu_approval, name='isei_ceu_approval'),
     path('isei_ceu_approval/<str:repID>/', views.isei_ceu_approval, name='isei_ceu_approval'),
     path('isei_ceu_approval/<str:repID>/<str:instID>/', views.isei_ceu_approval, name='isei_ceu_approval'),
+    path('isei_ceu_report_approval/<str:repID>', views.isei_ceu_report_approval,name='isei_ceu_report_approval'),
+    path('isei_ceu_report_approval/<str:repID>/<str:instID>/', views.isei_ceu_report_approval, name='isei_ceu_report_approval'),
 
     #pdf of approved activities - unused
     #path('approved_pdf/', views.approved_pdf, name='approved_pdf'),

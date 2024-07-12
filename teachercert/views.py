@@ -685,7 +685,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
                                                       teacher__in=teachers).order_by('date_submitted')
 
     # ceu_reports approved or denied within a year
-    year_ago = datetime.today() - timedelta(days=366)
+    year_ago = datetime.today() - timedelta(days=300)
     ceu_report_approved = CEUReport.objects.filter(isei_reviewed='a', reviewed_at__gt=year_ago,
                                                    teacher__in=teachers).order_by("reviewed_at").order_by("school_year")
     ceu_report_denied = CEUReport.objects.filter(isei_reviewed='d', reviewed_at__gt=year_ago,
@@ -751,6 +751,68 @@ def isei_ceu_approval(request, repID=None, instID=None):
                    ceu_instance_notreviewed=ceu_instance_notreviewed)
     return render(request, 'teachercert/isei_ceu_approval.html', context)
 
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_ceu_report_approval(request, repID, instID=None):
+
+    ceu_report = CEUReport.objects.get(id=repID)
+
+    if request.method == 'POST':
+        if request.POST.get('approveinst'):
+            CEUInstance.objects.filter(id=instID).update(isei_reviewed='a',
+                                                         approved_ceu=request.POST.get('approved_ceu'),
+                                                         reviewed_at=Now(), isei_comment=None)
+            this_activity = CEUInstance.objects.get(id=instID)
+
+    if request.method == 'POST':
+        if request.POST.get('denyinst'):
+            CEUInstance.objects.filter(id=instID).update(isei_reviewed='d',
+                                                         isei_comment=request.POST.get('isei_comment'),
+                                                         principal_reviewed='n', date_resubmitted=None,
+                                                         reviewed_at=Now())
+            this_activity = CEUInstance.objects.get(id=instID)
+
+    if request.method == 'POST':
+        if request.POST.get('cancelinst'):
+            CEUInstance.objects.filter(id=instID).update(isei_reviewed='n', principal_reviewed='a',
+                                                         date_resubmitted=F('updated_at'))
+
+    if request.method == 'POST':
+        if request.POST.get('approved'):
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='a', isei_comment=None,
+                                                                   reviewed_at=Now())
+            CEUInstance.objects.filter(ceu_report=ceu_report).update(isei_reviewed='a', reviewed_at=Now())
+            this_report = CEUReport.objects.get(id=repID)
+
+            email_CEUReport_approved_by_ISEI(this_report.teacher, this_report.school_year.name)
+
+    if request.method == 'POST':
+        if request.POST.get('denied'):
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='d', date_submitted=None,
+                                                                   principal_reviewed='n',
+                                                                   isei_comment=request.POST.get('isei_comment'),
+                                                                   reviewed_at=Now())
+            CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed='n', isei_reviewed='d',
+                                                                     date_resubmitted=None, reviewed_at=Now())
+            this_report = CEUReport.objects.get(id=repID)
+
+            email_CEUReport_denied_by_ISEI(this_report.teacher, this_report.school_year.name, this_report.isei_comment)
+
+    if request.method == 'POST':
+        if request.POST.get('cancel'):
+            ceu_report = CEUReport.objects.filter(id=repID).update(isei_reviewed='n', date_submitted=F('last_submitted'),
+                                                                   principal_reviewed='a')
+            CEUInstance.objects.filter(ceu_report=ceu_report).update(principal_reviewed='a', isei_reviewed='n',
+                                                                     date_resubmitted=Now())
+            this_report = CEUReport.objects.get(id=repID)
+
+            email_CEUReport_retracted_by_ISEI(this_report.teacher, this_report.school_year.name)
+
+    context = dict(p=ceu_report)
+
+    return render(request, 'teachercert/isei_ceu_report_approval.html', context)
 
 # create a pdf with approved CEUs
 # @login_required(login_url='login')

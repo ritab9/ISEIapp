@@ -1,0 +1,214 @@
+{%  extends 'teachercert_base.html' %}
+{% load static %}
+
+{% block content %}
+
+ <div class="card card-body">
+     <table class="table table-sm table-light">
+                      <tbody>
+                        <tr>
+                            <td><b>{{p.teacher}}, {{ p.teacher.school }}</b> </td>
+                            <td>{{p.school_year}}</td>
+                            <td>Date Submitted: {{ p.date_submitted }}</td>
+                            <td><a class ="btn btn-sm btn-ISEIblue3" href="{% url "standard_checklist" p.teacher.id %}">Edit Checklist</a>
+                            </td>
+                        </tr>
+                        <tr><td>    </td></tr><tr><td>    </td></tr>
+                        <tr><td colspan="4"> <b>Summary:</b> &nbsp; {{ p.summary}}</td></tr>
+                        <tr>
+                            <td>
+                             {% if p.isei_comment %}
+                                 <p><b> Previous denial comment: </b>
+                                     {{p.isei_comment }}</p>
+                             {% endif %}
+                            </td>
+                        </tr>
+                        <!--
+                        <tr><td>
+                            <div class ="enablebtn" id='{ { p.id }}'>
+                            <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Enable submission"  id="enablebtn{{ p.id }}">
+                            </div>
+                        </td></tr> -->
+                        <tr>
+                            <td>
+                                {% if p.reading_ceu > 3 %}
+                                <div style="color:red">
+                                         The submitted reading CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be approved for those activities.
+                                </div>
+                                {% endif %}
+                                {% if p.travel_ceu > 3 %}
+                                    <div style="color:red">
+                                             The submitted travel CEUs have surpassed the cap of 3 CEUs / year. A maximum of three (3) CEUs will be approved for those activities.
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                          <td colspan="4">
+                            <div class="approvaltable">
+                            <table class="table mb-0 table-hover" id='table{{ p.id }}'>
+                             <thead class="table-light">
+                                <th>Date Completed</th><th>Type</th><th>Description</th><th>Amount</th>
+                                <th><div class="span80">Evidence / Supporting Documentation</div></th><th>Approved CEUs</th>
+                              </thead>
+                              <tbody>
+                                {% for i in p.ceuinstance_set.all %}
+
+                                  {% if i.isei_reviewed == 'n' %}
+                                    <tr>
+                                    <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
+                                    <td>{{ i.amount }}{{ i.get_units_display }}
+                                    <td><div class = "span80">
+                                                    {% if i.evidence or i.file %}
+                                                        {% if i.file %}
+                                                             <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                                        {% endif %}
+                                                        {% if i.evidence %} {{ i.evidence }} {% endif %}
+                                                    {% else %}
+                                                        <div class="spanred">None</div>
+                                                    {% endif %}
+                                        </div>
+                                    </td>
+
+                                    <form action="{% url 'isei_ceu_report_approval' p.id i.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <td>
+                                            <div class="row">
+                                            <input type="number" value ={{ i.suggested_ceu }} step=".01" name="approved_ceu" class="form-control" style="width: 4em; height: 30px" required>&nbsp;
+                                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Approve" id="approveinst" name="approveinst" style = "width: 5em; height: 27px; vertical-align: middle" >
+                                            </div>
+                                        </td>
+                                    </form>
+                                </tr>
+
+                                    <tr>
+                                      <form action="{% url 'isei_ceu_report_approval' p.id i.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <td colspan="6">
+                                                <input type="text" name="isei_comment" class="form-control"   placeholder="If denied please explain why activity isn't approved." required>&nbsp;
+                                            </td>
+                                            <td><input  class = "btn btn-sm btn-danger" type="submit" value="Deny" name= "denyinst" id="denyinst" style = "width: 5em; height: 27px; vertical-align: middle; horiz-align: right" >
+                                             </td>
+                                      </form>
+                                    </tr>
+                                  {% endif %}
+                                  <!--approved instances-->
+                                  {% if i.isei_reviewed == 'a' %}
+                                    <tr>
+                                    <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}} </td>
+                                    <td>{{ i.amount }}{{ i.get_units_display }}</td>
+                                    <td><div class="span80">
+                                        {% if i.evidence or i.file %}
+                                            {% if i.file %}
+                                                <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                            {% endif %}
+                                            {% if i.evidence %} {{ i.evidence }} {% endif %}
+                                        {% else %}
+                                            <div class="spanred">None</div>
+                                        {% endif %}</div>
+                                    </td>
+                                    <td>{{ i.approved_ceu}}</td>
+
+                                    <form action="{% url 'isei_ceu_report_approval' p.id i.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <td>
+                                            <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancelinst" name="cancelinst" style = "width: 5em; height: 27px; bottom: 0px" >
+                                        </td>
+                                    </form>
+                                </tr>
+
+                                  {% endif %}
+        <!--denied instances--><!-- denied instances-->
+                                  {% if i.isei_reviewed == 'd' %}
+                                    <tr>
+                                        <td>{{i.date_completed}}</td><td>{{ i.ceu_type }}</td><td>{{i.description}}</td>
+                                        <td>{{ i.amount }}</td>
+                                        <td><div class="span80">
+                                            {% if i.evidence or i.file %}
+                                                {% if i.file %}
+                                                    <a href="{% get_media_prefix %}{{ i.file }}"> {{ i.file }}</a>
+                                                {% endif %}
+                                                {% if i.evidence %} {{ i.evidence }} {% endif %}
+                                            {% else %}
+                                                <div class="spanred">None</div>
+                                            {% endif %}</div></td>
+
+                                        <td><div class="spanred"> Not approved</div></td>
+                                    </tr>
+                                      <tr> <td colspan="7">{{ i.isei_comment }}</td>
+                                        <form action="{% url 'isei_ceu_report_approval' p.id i.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <td>
+                                                <input  class ="btn btn-sm btn-ISEIblue3" type="submit" value="Cancel" id="cancelinst" name="cancelinst" style = "width: 5em; height: 27px; vertical-align: middle" >
+                                            </td>
+                                        </form>
+                                      </tr>
+
+                                  {% endif %}
+
+
+                                  <tr> <td colspan="7" style ="background: #95b3c6;" > </td></tr>
+                              {% endfor %}
+                              </tbody>
+                            </table>
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                            <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="approvebtn" id="approvebtn{{ p.id }}">
+                                        <input  class = "btn btn-sm btn-ISEIblue3" type="submit" value="Approve Submission" name="approved" id='approved' align="right" >
+                                    </div>
+                                        <br>
+                                    <span style="font-size: 80%" color="red"> *Before approval please ensure that supporting documentation has been submitted and a summary written.
+                                    </span>
+                                    <p><span class="span80">Supporting documentation examples: Certificates for CEU courses and workshops, reports for books and educational trips, etc.</span>
+                                    </p>
+                                </form>
+                        </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">
+                            <form action="{% url 'isei_ceu_report_approval' p.id %}" method="POST">
+                                    {% csrf_token %}
+                                <input type="text" name="isei_comment" placeholder="  " class="form-control" required>
+                                <div class="denybtn" id="denybtn{{ p.id }}">
+                                <input  class = "btn btn-sm btn-danger" type="submit" value="Deny Submission" name="denied" id="denied" >
+                                </div>
+                            </form>
+                            </td>
+                        </tr>
+                        <tr><td colspan="4" style ="background: #2F3E48"> </td></tr>
+                      </tbody>
+
+                    </table><br>
+ </div>
+
+<div class="row">
+<!-- Instructions for activity revision -->
+    <div class="col-sm-10">
+        <div class="card card-body">
+            <b> Review submitted teacher activities: </b>
+            <span style ="font-size:80%">
+            <ul>
+                <li>If the submission is accepted (summary is well written and there is supporting documentation):
+                    <ol><li>Enter Approved CEUs and "Approve" each activity.</li>
+                        <li>If there are activities that are incomplete "Deny" them individually. Teachers can resubmit those activities.</li>
+                        <li>"Approve Submission"</li>
+                    </ol>
+                <li>If the submission is not accepted, "Deny Submission". This will send all activities back to the teacher for resubmission.</li>
+            </ul>
+            </span>
+        </div>
+    </div>
+    <div class="col-sm-2">
+           <br> <a class = "btn-sm btn-ISEIblue3" href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
+    </div>
+</div>
+
+{% endblock %}
