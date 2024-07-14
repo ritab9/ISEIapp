@@ -90,6 +90,7 @@ class PersonnelDegreeInline(admin.TabularInline):
 @admin.register(Personnel)
 class PersonnelAdmin(admin.ModelAdmin):
     inlines = [PersonnelDegreeInline,]
+    list_filter = ('annual_report',)
 
 
 admin.site.register(Opening)

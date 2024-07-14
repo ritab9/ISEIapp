@@ -24,7 +24,7 @@
             <div class="row mt-1 mb-2 ml-2 ">
 <!-- Global registration date -->
                  <div class="col col-auto">
-                    <a class="btn btn-sm btn-ISEIblue2 mt-4" href="{% url 'import_students_prev_year' annual_report.id %}">Import Students from {{ annual_report.school_year.get_previous_school_year }}</a>
+                    <a class="btn btn-sm btn-ISEIyellow mt-4" href="{% url 'import_students_prev_year' annual_report.id %}">Import Students from {{ annual_report.school_year.get_previous_school_year }}</a>
                     {% for message in messages %}
                            {% for message in messages %}
                                 <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>

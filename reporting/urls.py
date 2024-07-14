@@ -16,6 +16,7 @@ urlpatterns = [
     path('employee_report/<int:arID>/', views.employee_report, name='employee_report'),
     path('employee_add_edit/<int:arID>/<int:personnelID>/', views.employee_add_edit, name='employee_edit'),
     path('employee_add_edit/<int:arID>/<str:positionCode>/', views.employee_add_edit, name='employee_add'),
+    path('import_employee_prev_year/<int:arID>/', views.import_employee_prev_year, name='import_employee_prev_year'),
 
     path('day190_report/<int:arID>/', views.day190_report, name='day190_report'),
     path('inservice_report/<int:arID>/', views.inservice_report, name='inservice_report'),

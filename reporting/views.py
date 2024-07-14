@@ -803,6 +803,65 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
 
     return render(request, 'employee_add_edit.html', context)
 
+@login_required(login_url='login')
+def import_employee_prev_year(request, arID):
+
+    report = get_object_or_404(AnnualReport, id=arID)
+    prev_school_year = report.school_year.get_previous_school_year()
+
+    if not prev_school_year:
+        messages.error(request, 'No previous school year found.')
+        return redirect('employee_report' , arID)  # Update this with where you want to redirect
+
+    prev_report = AnnualReport.objects.filter(school=report.school, school_year=prev_school_year,
+                                              report_type=report.report_type).first()
+
+    if not prev_report:
+        messages.error(request, 'No previous report found.')
+        return redirect('student_report', arID)  # Update this with where you want to redirect
+
+    employee_to_import = Personnel.objects.filter(annual_report=prev_report).exclude(status=StaffStatus.NO_LONGER_EMPLOYED)
+
+
+    # Now copy over all staff
+    imported_count = 0
+    not_imported_people = []
+    for e in employee_to_import:
+
+        old_positions = e.positions.all()
+        old_degrees = PersonnelDegree.objects.filter(personnel=e)
+        old_subjects_teaching = e.subjects_teaching.all()
+        old_subjects_taught = e.subjects_taught.all()
+
+        if Personnel.objects.filter(last_name=e.last_name, first_name=e.first_name, annual_report=report).exists():
+            not_imported_people.append(f'{e.first_name} {e.last_name}')
+            continue
+
+        e.pk = None  # Makes Django create a new instance
+        e.annual_report = report
+        if e.years_experience:
+            e.years_experience += 1
+        if e.years_at_this_school:
+            e.years_at_this_school += 1
+        e.save()
+        e.positions.set(old_positions)
+        for d in old_degrees:
+            PersonnelDegree.objects.create(
+                personnel=e,
+                degree=d.degree,
+                area_of_study=d.area_of_study
+            )
+        e.subjects_teaching.set(old_subjects_teaching)
+        e.subjects_taught.set(old_subjects_taught)
+
+        imported_count += 1  # increment the count of imported students
+
+    if imported_count > 0:
+        messages.success(request, '{} Employees imported successfully.'.format(imported_count))
+    if not_imported_people:
+        messages.info(request, f'These employees were already entered in the report: {", ".join(not_imported_people)}')
+
+    return redirect('employee_report', arID)  # Update this with where you want to redirect after successLEt me
 
 #@login_required(login_url='login')
 #def employee_report_display(request, arID):
@@ -1114,7 +1173,7 @@ def ap_report_display(request, arID):
     
 
 # using reported data
-
+@login_required(login_url='login')
 def isei_reporting_dashboard(request):
 
     current_school_year = SchoolYear.objects.get(current_school_year=True)
