@@ -211,7 +211,7 @@ PersonnelDegreeFormset = inlineformset_factory(
     Personnel,
     PersonnelDegree,
     fields=('degree', 'area_of_study'),
-    extra=0,
+    extra=1,
     can_delete=True,
 )
 
