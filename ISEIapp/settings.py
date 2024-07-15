@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'teachercert',
     'emailing',
     'reporting',
+    'services',
 
     'crispy_forms',
     'storages',

@@ -4,7 +4,6 @@ from django.http import HttpResponse, JsonResponse
 
 from django.forms import modelformset_factory
 from django.db.models import Sum
-from .models import *
 from .forms import *
 from datetime import date, timedelta
 from django.contrib import messages

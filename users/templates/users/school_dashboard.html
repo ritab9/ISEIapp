@@ -7,7 +7,6 @@
 {% block content %}
 
 <div class="row">
-    <h6 class="error">Under construction - Go to Teacher Certification from Menu above</h6>
     {% if messages %}
         {% for message in messages %}
             <p class="error message {{ message.tags }}">{{ message }}</p>
@@ -117,7 +116,7 @@
     <div class = "col col-auto card card-body">
 <!-- Teacher Certification Status-->
             <h6 class="mb-3">
-            <a href="{% url 'principal_teachercert' school.id %}">Teacher Certification </a>
+                <a href="{% url 'principal_teachercert' school.id %}">Teacher Certification </a>
             </h6>
     <!-- Percent of registered teachers -->
             <div class="mb-3">
@@ -131,7 +130,17 @@
                     {% endif %}
                 </p>
             </div>
-</div>
+    </div>
+
+    <div class="col col-auto card card-body">
+        <h6 class="mb-3">
+            <a href="{% url 'test_order' school.id %}">IOWA Test Ordering </a>
+        </h6>
+            {% for order in test_orders %}
+                <a href="{% url 'test_order' school.id order.id %}">{{ order }}</a>
+            {% endfor %}
+
+    </div>
 
 </div>
 

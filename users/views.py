@@ -18,6 +18,7 @@ from teachercert.models import Teacher, SchoolYear
 from reporting.models import ReportDueDate, AnnualReport, ReportType
 from users.models import School, Address
 from django.http import HttpResponseRedirect
+from services.models import TestOrder
 
 
 # authentication functions
@@ -236,10 +237,13 @@ def school_dashboard(request, schoolID):
             except AnnualReport.DoesNotExist:
                 pass
 
+    test_orders = TestOrder.objects.filter(school=school)
+
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
                     accreditation_info=accreditation_info,
                     sr_er_submitted = sr_er_submitted,
+                    test_orders = test_orders,
                   )
 
     return render(request, 'users/school_dashboard.html', context)

@@ -1,0 +1,382 @@
+{% extends 'reporting_base.html' %}
+
+{% load static %}
+{% block title %} Test Order Form {% endblock title %}
+
+
+{% block content %}
+
+
+     <h6> {{ school }} Test Order Form</h6>
+
+    <form method="POST">
+        {% csrf_token %}
+<!-- General Order Info -->
+        <div class="card card-body">
+            <div class="row">
+                {% for error in order_form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+                <div class="col col-auto">
+                    <b>{{ order_form.testing_dates.label_tag }}</b> {{ order_form.testing_dates }}{{ order_form.testing_dates.errors }}
+                </div>
+                <div class="col col-auto">
+                    <b>{{ order_form.order_date.label_tag }}</b> {{ order_form.order_date}}{{ order_form.order_date.errors }}
+                </div>
+                <div class="col col-auto">
+                    <b>{{ order_form.no_students_testing.label_tag }}</b> {{ order_form.no_students_testing}}{{ order_form.no_students_testing.errors }}
+                </div>
+                <div class="col col-auto">
+                    Approximate test scoring price/student: ${{ test_scoring.price }}<br>
+                    Approximate total scoring price: $<input class="number_input" type="text" id="subtotal_scoring" readonly style="border: none">
+                </div>
+            </div>
+        </div>
+
+         <div class="card card-body">
+            <div class="row justify-content-around">
+<!--Answer Sheets -->
+                <div class="col-auto ">
+                    <div class="row">
+                        <h6 class="col-auto">Answer Sheets<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Order one per student"></i>
+                        </h6>
+                        <div class="col-auto"> Price: ${{ answer_sheet.price }}</div>
+                    </div>
+                    <div id="answer-formset">
+                        {{ answer_sheet_formset.management_form|safe }}
+                        <table class="table-sm" style="table-layout:auto ">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Count</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 {% for form in answer_sheet_formset %}
+                                    {{ form.id }}
+
+                                 <tr class="individual-form">
+                                     <td>{{ form.level }}<span class="error">{{ form.level.errors }}</span></td>
+                                     <td>{{ form.count }}<span class="error">{{ form.count.errors }}</span></td>
+                                     <td>  {{ form.DELETE }} </td>
+                                 </tr>
+                                 {% if form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                               {% endfor %}
+                            </tbody>
+                        </table>
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn-ISEIblue4 add-form-button" id="answer">Add rows</button>
+                                </td>
+                                <td colspan="2" class="text-right">
+                                    Total Answer Sheets: <input class="number_input text-left" type="text" id="total_count_answer_sheets" readonly style="border: none">
+                                    Price: $<input class="number_input text-left" type="text" id="subtotal_answer_sheet" readonly style="border: none">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+<!-- Booklets -->
+                <div class="col-auto ">
+                    <div class="row">
+                        <h6 class="col-auto">Reusable Test Booklets<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Can be reused from previous year. Only order if more students are taking the test then booklets already available at the school."></i>
+                        </h6>
+                        <div class="col-auto"> Price: ${{ test_material_booklet.price }}</div>
+                    </div>
+                    <div id="booklet-formset">
+                        {{ booklet_formset.management_form|safe }}
+                        <table class="table-sm" style="table-layout:auto ">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Count</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 {% for form in booklet_formset %}
+                                    {{ form.id }}
+
+                                 <tr class="individual-form">
+                                     <td>{{ form.level }}<span class="error">{{ form.level.errors }}</span></td>
+                                     <td>{{ form.count }}<span class="error">{{ form.count.errors }}</span></td>
+                                     <td>  {{ form.DELETE }} </td>
+                                 </tr>
+                                 {% if form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                               {% endfor %}
+                            </tbody>
+                        </table>
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn-ISEIblue4 add-form-button" id="booklet">Add rows</button>
+                                </td>
+                                <td colspan="2" class="text-right">
+                                    Total Booklets: <input class="number_input text-left" type="text" id="total_count_booklets" readonly style="border: none">
+                                    Price: $<input class="number_input text-left" type="text" id="subtotal_direct_booklet" readonly style="border: none">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+<!--Direction Booklets -->
+                <div class="col-auto ">
+                    <div class="row">
+                        <h6 class="col-auto">Admin Direction Booklets <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Only one needed of each type."></i>
+                        </h6>
+                        <div class="col-auto"> Price: ${{ admin_directions_booklet.price }}</div>
+                    </div>
+                    <div id="direction-formset">
+                        {{ direction_formset.management_form|safe }}
+                        <table class="table-sm" style="table-layout:auto ">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Count</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 {% for form in direction_formset %}
+                                    {{ form.id }}
+
+                                 <tr class="individual-form">
+                                     <td>{{ form.level }}<span class="error">{{ form.level.errors }}</span></td>
+                                     <td>{{ form.count }}<span class="error">{{ form.count.errors }}</span></td>
+                                     <td>  {{ form.DELETE }} </td>
+                                 </tr>
+                                 {% if form.non_field_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                               {% endfor %}
+                            </tbody>
+                        </table>
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn-ISEIblue4 add-form-button" id="direction">Add rows</button>
+                                </td>
+                                <td colspan="2 text-right">
+                                    Price: $<input class="number_input text-left" type="text" id="subtotal_test_booklet" readonly style="border: none">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card card-body">
+            <div class="row">
+                <p> Prices are approximate as of {{ latest_update }}, and are subject to change.</p>
+            </div>
+            <div class="row">
+                <div class="col col-auto">
+
+                    <b>Subtotal:</b> <input id="id_sub_total" type="text" name="{{ order_form.sub_total.name }}" value="{{ order_form.sub_total.value }}" readonly style="border: none;">{% if order_form.sub_total.errors %}<div class="alert alert-danger">{{ order_form.sub_total.errors }}</div>{% endif %}
+                </div>
+                <div class="col col-auto">
+                    <input class="btn-ISEIblue2" type="submit" value="Submit Order">
+                </div>
+
+            </div>
+        </div>
+
+
+    </form>
+
+<!--Empty formsets -->
+    <div>
+        <template id="empty_booklet_form_template">
+            <tr class="individual-form">
+                <td>{{ booklet_formset.empty_form.level }}<span class="error">{{ booklet_formset.empty_form.level.errors }}</span></td>
+                <td>{{ booklet_formset.empty_form.count }}<span class="error">{{ booklet_formset.empty_form.count.errors }}</span></td>
+                <td> {{ booklet_formset.empty_form.DELETE }} </td>
+            </tr>
+            {% if booklet_formset.empty_form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ booklet_formset.empty_form.non_field_errors }}
+                </div>
+            {% endif %}
+        </template>
+
+        <template id="empty_answer_form_template">
+            <tr class="individual-form">
+                <td>{{ answer_sheet_formset.empty_form.level }}<span class="error">{{ answer_sheet_formset.empty_form.level.errors }}</span></td>
+                <td>{{ answer_sheet_formset.empty_form.count }}<span class="error">{{ answer_sheet_formset.empty_form.count.errors }}</span></td>
+                <td> {{ answer_sheet_formset.empty_form.DELETE }} </td>
+            </tr>
+            {% if answer_sheet_formset.empty_form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ answer_sheet_formset.empty_form.non_field_errors }}
+                </div>
+            {% endif %}
+        </template>
+
+        <template id="empty_direction_form_template">
+            <tr class="individual-form">
+                <td>{{ direction_formset.empty_form.level }}<span class="error">{{ direction_formset.empty_form.level.errors }}</span></td>
+                <td>{{ direction_formset.empty_form.count }}<span class="error">{{ direction_formset.empty_form.count.errors }}</span></td>
+                <td> {{ direction_formset.empty_form.DELETE }} </td>
+            </tr>
+            {% if direction_formset.empty_form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ direction_formset.empty_form.non_field_errors }}
+                </div>
+            {% endif %}
+        </template>
+    </div>
+
+{% endblock %}
+
+{% block footer_javascript %}
+
+    <script>
+
+//add new forms in the formset
+        $(document).ready(function(){
+        $(".add-form-button").click(function(){
+            var buttonId = $(this).attr("id");
+
+            // target formset inside the tbody
+            var formset = document.querySelector(`#${buttonId}-formset table tbody`);
+
+            var emptyFormTemplate = document.getElementById("empty_" + buttonId + "_form_template");
+            var totalForms = document.querySelector(`input[name="${buttonId}-TOTAL_FORMS"]`);
+
+            var newIndex = formset.getElementsByClassName("individual-form").length;
+            var newFormHtml = emptyFormTemplate.innerHTML.replace(/__prefix__/g, newIndex);
+
+            // Create new form DOM Element
+            var newForm = document.createElement("tr");
+            newForm.className = "individual-form";
+            newForm.innerHTML = newFormHtml;
+
+            // Append to the formset
+            formset.appendChild(newForm);
+
+            // Increase the value of TOTAL_FORMS.
+            totalForms.value = parseInt(totalForms.value) + 1;
+        });
+    });
+
+// hide forms marked for deletion
+        $(document).ready(function(){
+            $(document).on('change', ":input[name$='-DELETE']", function() {
+                if(this.checked) {
+                    $(this).parents('tr').hide();
+                } else {
+                    $(this).parents('tr').show();
+                }
+            });
+        });
+
+//Popover
+      document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
+          })
+        });
+
+//Calculate Subtotal
+    function calculateTotalSum() {
+        let totalSum = (parseFloat(subtotalAnswerSheetsField.value) || 0) + (parseFloat(subtotalTestBookletsField.value) || 0) + (parseFloat(subtotalAdminDirectionBookletField.value) || 0) + (parseFloat(subtotalScoringField.value) || 0);
+        document.getElementById('id_sub_total').value = totalSum.toFixed(2);
+    }
+
+//Count and calculate answer sheet price
+    let answerSheetPrice = parseFloat('{{ answer_sheet.price }}');
+    let answerSheetCounts = document.querySelectorAll('input[name^="answer_sheets"][name$="-count"]');
+    let totalAnswerSheetsField = document.getElementById('total_count_answer_sheets');
+    let subtotalAnswerSheetsField = document.getElementById('subtotal_answer_sheet');
+
+    function calculateAnswerSheets() {
+        let totalAnswerSheets = 0;
+        answerSheetCounts.forEach(function(count) {
+            totalAnswerSheets += Number(count.value || 0);
+        });
+        let subtotalAnswerSheets = totalAnswerSheets * answerSheetPrice;
+        totalAnswerSheetsField.value = totalAnswerSheets;
+        subtotalAnswerSheetsField.value = subtotalAnswerSheets.toFixed(2);
+        calculateTotalSum();
+    }
+    answerSheetCounts.forEach(function(count) {
+        count.addEventListener('input', calculateAnswerSheets);
+    });
+
+//Count and Calculate Test Booklet Price
+    let testMaterialBookletPrice = parseFloat('{{ test_material_booklet.price }}');
+    let testBookletCounts = document.querySelectorAll('input[name^="test_booklets"][name$="-count"]');
+    let totalTestBookletsField = document.getElementById('total_count_booklets');
+    let subtotalTestBookletsField = document.getElementById('subtotal_direct_booklet');
+
+    function calculateTestBooklets() {
+        let totalTestBooklets = 0;
+        testBookletCounts.forEach(function(count) {
+            totalTestBooklets += Number(count.value || 0);
+        });
+        let subtotalTestBooklets = totalTestBooklets * testMaterialBookletPrice;
+        totalTestBookletsField.value = totalTestBooklets;
+        subtotalTestBookletsField.value = subtotalTestBooklets.toFixed(2);
+        calculateTotalSum();
+    }
+    testBookletCounts.forEach(function(count) {
+        count.addEventListener('input', calculateTestBooklets);
+    });
+
+// Handling admin direction booklets
+    let adminDirectionBookletPrice = parseFloat('{{ admin_directions_booklet.price }}');
+    let adminDirectionBookletCounts = document.querySelectorAll('input[name^="direction_booklets"][name$="-count"]');
+    let subtotalAdminDirectionBookletField = document.getElementById('subtotal_test_booklet');
+
+    function calculateAdminDirectionBooklet() {
+        let totalAdminDirectionBooklet = 0;
+        adminDirectionBookletCounts.forEach(function(count) {
+            totalAdminDirectionBooklet += Number(count.value || 0);
+        });
+        let subtotalAdminDirectionBooklet = totalAdminDirectionBooklet * adminDirectionBookletPrice;
+        subtotalAdminDirectionBookletField.value = subtotalAdminDirectionBooklet.toFixed(2);
+        calculateTotalSum();
+    }
+    adminDirectionBookletCounts.forEach(function(count) {
+        count.addEventListener('input', calculateAdminDirectionBooklet);
+    });
+
+//Scoring Charges
+    let testScoringPrice = {{ test_scoring.price }};
+    let noStudentsTestingField = document.getElementById('id_no_students_testing');  // Replace 'id_no_students_testing' with actual id of the field
+    let subtotalScoringField = document.getElementById('subtotal_scoring');
+
+    function calculateScoringSubtotal() {
+        let scoring = parseFloat(testScoringPrice) * parseFloat(noStudentsTestingField.value);
+        subtotalScoringField.value = scoring.toFixed(2);
+        calculateTotalSum();
+    }
+
+    noStudentsTestingField.addEventListener('input', calculateScoringSubtotal);
+
+     window.onload = function() {
+        calculateTotalSum();
+    };
+
+    </script>
+
+{% endblock footer_javascript %}
