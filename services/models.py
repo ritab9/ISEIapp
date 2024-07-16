@@ -21,10 +21,11 @@ class TestOrder(models.Model):
     testing_dates=models.CharField(max_length=255, verbose_name="Testing dates")
     order_date=models.DateField(verbose_name="Order date")
     no_students_testing=models.PositiveSmallIntegerField(verbose_name="Number of students testing")
-    sub_total=models.PositiveSmallIntegerField(verbose_name="Sub total")
-    shipping=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Shipping")
-    total=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Total")
-
+    sub_total=models.DecimalField(max_digits=6, decimal_places=2,verbose_name="Sub total")
+    shipping=models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="Shipping")
+    total=models.DecimalField(max_digits=6, decimal_places=2,null=True, blank=True, verbose_name="Total")
+    submitted=models.BooleanField(default=False, verbose_name="Submitted")
+    finalized=models.BooleanField(default=False, verbose_name="Finalized")
     def __str__(self):
         return f'{self.school} - {self.order_date}'
 

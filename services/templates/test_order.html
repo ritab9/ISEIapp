@@ -187,11 +187,14 @@
             </div>
             <div class="row">
                 <div class="col col-auto">
-
-                    <b>Subtotal:</b> <input id="id_sub_total" type="text" name="{{ order_form.sub_total.name }}" value="{{ order_form.sub_total.value }}" readonly style="border: none;">{% if order_form.sub_total.errors %}<div class="alert alert-danger">{{ order_form.sub_total.errors }}</div>{% endif %}
+                    <b>Subtotal:</b> $<input id="id_sub_total" type="text" name="{{ order_form.sub_total.name }}" value="{{ order_form.sub_total.value }}" readonly style="border: none;">{% if order_form.sub_total.errors %}<div class="alert alert-danger">{{ order_form.sub_total.errors }}</div>{% endif %}
                 </div>
                 <div class="col col-auto">
-                    <input class="btn-ISEIblue2" type="submit" value="Submit Order">
+                    <input class="btn-ISEIblue2" type="submit" name="save" value="Save and Finalize Later">
+                </div>
+
+                <div class="col col-auto">
+                    <input class="btn-success" type="submit" name="submit" value="Submit Order">
                 </div>
 
             </div>
@@ -374,8 +377,11 @@
     noStudentsTestingField.addEventListener('input', calculateScoringSubtotal);
 
      window.onload = function() {
-        calculateTotalSum();
-    };
+        calculateAnswerSheets();
+        calculateTestBooklets();
+        calculateAdminDirectionBooklet();
+        calculateScoringSubtotal();
+     };
 
     </script>
 

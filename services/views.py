@@ -10,8 +10,13 @@ def test_order(request, schoolID, orderID=None):
     school = get_object_or_404(School, id=schoolID)
     order = get_object_or_404(TestOrder, id=orderID) if orderID else None
 
+    booklet_formset = ReusableTestBookletFormSet(instance=order or TestOrder())
+    answer_sheet_formset = AnswerSheetFormSet(instance=order or TestOrder())
+    direction_formset = DirectionBookletFormSet(instance=order or TestOrder())
+
     if request.method == 'POST':
         order_form = TestOrderForm(request.POST, instance=order)
+
         if order_form.is_valid():
             order = order_form.save(commit=False)
             order.school = school
@@ -37,6 +42,11 @@ def test_order(request, schoolID, orderID=None):
                     count = form.cleaned_data.get('count', 0)
                     if count is not None and int(count) > 0:
                         form.save()
+
+                if 'submit' in request.POST:
+                    order.submitted=True
+                    order.save()
+
                 return redirect('school_dashboard',school.id)
     else:
         order_form = TestOrderForm(instance=order)

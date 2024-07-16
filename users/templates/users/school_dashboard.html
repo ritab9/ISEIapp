@@ -134,12 +134,34 @@
 
     <div class="col col-auto card card-body">
         <h6 class="mb-3">
-            <a href="{% url 'test_order' school.id %}">IOWA Test Ordering </a>
+            IOWA Test Ordering
         </h6>
-            {% for order in test_orders %}
-                <a href="{% url 'test_order' school.id order.id %}">{{ order }}</a>
-            {% endfor %}
 
+            <table class="table table-bordered">
+                <thead>
+                    <th>Date</th><th>Status</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="{% url 'test_order' school.id %}">New Order </a>
+                        </td>
+                    </tr>
+                    {% for order in test_orders %}
+                        <tr>
+                            <td>{{ order.order_date}}</td>
+                            <td>
+                                {% if not order.submitted %}
+                                    <a href="{% url 'test_order' school.id order.id %}"> Edit </a>
+                                {% else %}
+                                    <a href="{% url 'test_order' school.id order.id %}"> Submitted </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
     </div>
 
 </div>
