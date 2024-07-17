@@ -938,6 +938,9 @@ def inservice_report(request, arID):
                 return redirect('school_dashboard', schoolID)
             else:
                 return redirect('inservice_report', arID=arID)
+        else:
+            for form in formset:
+                print(form.errors)
 
     else:
         formset = InserviceFormset(queryset=inservices)
