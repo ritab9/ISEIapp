@@ -66,6 +66,7 @@ class AnnualReport(models.Model):
 
     class Meta:
         unique_together = (('school', 'school_year', 'report_type'),)
+        ordering = ('school_year', 'school', 'report_type')
 
     def due_date(self):
         report_due_date = ReportDueDate.objects.filter(report_type=self.report_type,
