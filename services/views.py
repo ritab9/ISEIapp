@@ -4,6 +4,7 @@ from .forms import *
 from .models import *
 from .functions import *
 from django.db import transaction
+import sys
 
 
 def test_order(request, schoolID, orderID=None):
@@ -15,6 +16,7 @@ def test_order(request, schoolID, orderID=None):
     direction_formset = DirectionBookletFormSet(instance=order or TestOrder())
 
     if request.method == 'POST':
+
         order_form = TestOrderForm(request.POST, instance=order)
 
         if order_form.is_valid():
@@ -24,6 +26,13 @@ def test_order(request, schoolID, orderID=None):
             booklet_formset = ReusableTestBookletFormSet(request.POST, instance=order)
             answer_sheet_formset = AnswerSheetFormSet(request.POST, instance=order)
             direction_formset = DirectionBookletFormSet(request.POST, instance=order)
+
+            if booklet_formset.is_valid():
+                print("Valid")
+                print(booklet_formset.cleaned_data)
+            else:
+                print("Not Valid")
+                print(booklet_formset.errors)
 
             if booklet_formset.is_valid() and answer_sheet_formset.is_valid() and direction_formset.is_valid():
                 order.save()
@@ -70,5 +79,6 @@ def test_order(request, schoolID, orderID=None):
                    booklet_formset=booklet_formset, answer_sheet_formset=answer_sheet_formset, direction_formset=direction_formset,
                    test_material_booklet=test_material_booklet, answer_sheet=answer_sheet, admin_directions_booklet=admin_directions_booklet,
                    test_scoring=test_scoring, latest_update=latest_update)
+    print(context)
 
     return render(request, 'test_order.html', context)

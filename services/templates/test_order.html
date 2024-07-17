@@ -116,6 +116,12 @@
                                     </div>
                                 {% endif %}
                                {% endfor %}
+                                {% if booklet_formset.non_form_errors %}
+                                    <div class="alert alert-danger">
+                                        {{ booklet_formset.non_form_errors }}
+                                    </div>
+                                {% endif %}
+
                             </tbody>
                         </table>
                         <table class="table">

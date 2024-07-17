@@ -64,9 +64,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
-if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+#if DEBUG:
+#    INSTALLED_APPS += ['debug_toolbar']
+#    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
 
 INTERNAL_IPS = [

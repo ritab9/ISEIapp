@@ -319,4 +319,4 @@ def change_school_year(request):
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-    return {'navbar_schoolyear_form': form}
+    return {'navbar_schoolyear_form': form} or {}

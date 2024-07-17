@@ -11,4 +11,4 @@ def current_school_year_processor(request):
     else:
         current_school_year = SchoolYear.objects.filter(current_school_year=True).first()
 
-    return {'current_school_year': current_school_year}
+    return {'current_school_year': current_school_year} or {}
