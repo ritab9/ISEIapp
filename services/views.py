@@ -27,30 +27,12 @@ def test_order(request, schoolID, orderID=None):
             answer_sheet_formset = AnswerSheetFormSet(request.POST, instance=order)
             direction_formset = DirectionBookletFormSet(request.POST, instance=order)
 
-            if booklet_formset.is_valid():
-                print("Valid")
-                print(booklet_formset.cleaned_data)
-            else:
-                print("Not Valid")
-                print(booklet_formset.errors)
-
             if booklet_formset.is_valid() and answer_sheet_formset.is_valid() and direction_formset.is_valid():
                 order.save()
-                # Save the forms only if count > 0
-                for form in booklet_formset:
-                    count = form.cleaned_data.get('count', 0)
-                    if count is not None and int(count) > 0:
-                        form.save()
+                booklet_formset.save()
+                answer_sheet_formset.save()
+                direction_formset.save()
 
-                for form in answer_sheet_formset:
-                    count = form.cleaned_data.get('count', 0)
-                    if count is not None and int(count) > 0:
-                        form.save()
-
-                for form in direction_formset:
-                    count = form.cleaned_data.get('count', 0)
-                    if count is not None and int(count) > 0:
-                        form.save()
 
                 if 'submit' in request.POST:
                     order.submitted=True
@@ -79,6 +61,5 @@ def test_order(request, schoolID, orderID=None):
                    booklet_formset=booklet_formset, answer_sheet_formset=answer_sheet_formset, direction_formset=direction_formset,
                    test_material_booklet=test_material_booklet, answer_sheet=answer_sheet, admin_directions_booklet=admin_directions_booklet,
                    test_scoring=test_scoring, latest_update=latest_update)
-    print(context)
 
     return render(request, 'test_order.html', context)

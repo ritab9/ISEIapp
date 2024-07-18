@@ -293,15 +293,6 @@ def update_school_info(request, schoolID):
 
 def change_school_year(request):
 
-    if request.user.is_authenticated:
-        try:
-            current_school_year = request.user.teacher.school.current_school_year
-        except AttributeError:
-            current_school_year = SchoolYear.objects.get(current_school_year=True)
-        form = SchoolYearForm(initial={'school_year': current_school_year})
-    else:
-        form=None
-
     if request.method == 'POST':
         form = SchoolYearForm(request.POST)
         if form.is_valid():
@@ -318,5 +309,5 @@ def change_school_year(request):
                     school_year_to_set_current.save()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-    return {'navbar_schoolyear_form': form} or {}
+    else:
+        return HttpResponseRedirect('/')  # or any default redirect
