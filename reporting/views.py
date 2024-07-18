@@ -57,6 +57,7 @@ def student_report(request,arID):
 
         if formset.is_valid():
             if formset.has_changed():
+
                 for form in formset:
                     if form.has_changed():
                         if form.instance.pk is not None:
