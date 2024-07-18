@@ -128,7 +128,10 @@ def import_students_prev_year(request, arID):
         # Handle grade level (assuming it's not None, add error handling as needed)
         student.grade_level = student.grade_level + 1 if student.grade_level < 13 else 13
         # Registration date. Make sure to handle None case if needed
-        student.registration_date = student.registration_date + timedelta(days=365)
+        if student.grade_level < 13:
+            student.registration_date = student.registration_date + timedelta(days=365)
+        else:
+            student.status="graduated"
         student.save()
         imported_count += 1  # increment the count of imported students
 
