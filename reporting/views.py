@@ -27,6 +27,7 @@ from django.db.models import Prefetch, Max
 from users.models import AccreditationInfo
 from .functions import update_student_country_occurences
 from teachercert.myfunctions import newest_certificate
+from django.db import IntegrityError
 
 
 #individual school reports
@@ -762,10 +763,12 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
             return redirect('employee_report', arID=arID)
 
         if p_form.is_valid() and pd_formset.is_valid():
+
+            personnel = p_form.save(commit=False)
+            personnel.annual_report_id = arID
+
             try:
                 with transaction.atomic():
-                    personnel = p_form.save(commit=False)
-                    personnel.annual_report_id = arID
                     personnel.save()
                     p_form.save_m2m()
 
@@ -784,9 +787,10 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
                 else:
                     return redirect('employee_add', arID=arID, positionCode=positionCode)
 
-            except Exception as e:
-                print(f"Error saving personnel: {e}")
-                # Log the error or handle it appropriately
+
+            except IntegrityError:
+                p_form.add_error(None, "Personnel with this name already exists in this report.")
+
         else:
             print("Form errors:", p_form.errors)
             print("Formset errors:", pd_formset.errors)

@@ -54,14 +54,23 @@ class StudentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
+        #name = cleaned_data.get('name')
+        #if name and Student.objects.filter(name=name, annual_report_id=self.annual_report_id).exists():
+        #    self.add_error('name', 'A student with this name already exists in this annual report.')
+
+        age = cleaned_data.get("age")
+        birth_date = cleaned_data.get("birth_date")
+        if not (age or birth_date):
+            raise forms.ValidationError(
+                "Student must have either their age at registration or a birth date entered."
+            )
+
         country = cleaned_data.get('country')
         TN_county = cleaned_data.get('TN_county')
-
         if country and country.code == 'US':
             us_state = cleaned_data.get('us_state')
             if not us_state:
                 self.add_error('us_state', ValidationError("required for US address"))
-
             if us_state=='TN' and not TN_county:
                 self.add_error('TN_county', ValidationError("required for TN students"))
 
