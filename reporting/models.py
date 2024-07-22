@@ -230,6 +230,7 @@ class Student(models.Model):
 
     STATUS_CHOICES = [
         ('enrolled', 'Enrolled'),
+        ('part-time', 'Part Time'),
         ('graduated', 'Graduated'),
         ('did_not_return', 'Did Not Return'),
         ('withdrawn', "Withdrawn"),
@@ -398,9 +399,36 @@ class GradeCount(models.Model):
                 self.grade_11_count + self.grade_12_count
         )
 
+class PartTimeGradeCount(models.Model):
+    pre_k_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Pre-K")
+    k_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="K")
+    grade_0_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="0")
+    grade_1_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="1")
+    grade_2_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="2")
+    grade_3_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="3")
+    grade_4_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="4")
+    grade_5_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="5")
+    grade_6_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="6")
+    grade_7_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="7")
+    grade_8_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="8")
+    grade_9_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="9")
+    grade_10_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="10")
+    grade_11_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="11")
+    grade_12_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="12")
+
+    def total_count(self):
+        return (
+                self.pre_k_count + self.k_count + self.grade_1_count +
+                self.grade_2_count + self.grade_3_count + self.grade_4_count +
+                self.grade_5_count + self.grade_6_count + self.grade_7_count +
+                self.grade_8_count + self.grade_9_count + self.grade_10_count +
+                self.grade_11_count + self.grade_12_count
+        )
+
 class Opening(models.Model):
     annual_report = models.OneToOneField(AnnualReport, on_delete=models.CASCADE, related_name='opening', null=False, blank=False)
     grade_count=models.OneToOneField(GradeCount, on_delete=models.CASCADE, related_name='opening', null=True, blank=True)
+    part_time_grade_count=models.OneToOneField(PartTimeGradeCount, on_delete=models.CASCADE, related_name='opening', null=True, blank=True)
 
     graduated_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Graduated")
     did_not_return_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Did Not Return")

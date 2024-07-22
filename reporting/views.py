@@ -88,7 +88,7 @@ def student_report(request,arID):
 
     else:
         if annual_report.submit_date:
-            students_qs = (Student.objects.filter(annual_report=annual_report,  status__in=['enrolled', 'withdrawn'])
+            students_qs = (Student.objects.filter(annual_report=annual_report,  status__in=['enrolled', 'withdrawn', 'part-time'])
                            .select_related('country', 'TN_county')
                            .order_by('status','grade_level', 'name'))
         else:
@@ -116,7 +116,7 @@ def import_students_prev_year(request, arID):
         messages.error(request, 'No previous report found.')
         return redirect('student_report', arID)  # Update this with where you want to redirect
 
-    students_to_import = Student.objects.filter(annual_report=prev_report, status='enrolled')
+    students_to_import = Student.objects.filter(annual_report=prev_report, status__in=['enrolled','part-time'])
 
     # Now copy over all students
     imported_count = 0
@@ -150,7 +150,7 @@ def student_report_display(request, arID):
     #                                                                              'TN_county').order_by('grade_level', 'name')
     #else:
 
-    students = Student.objects.filter(annual_report=annual_report, status__in=['enrolled','withdrawn']).select_related('annual_report', 'country',
+    students = Student.objects.filter(annual_report=annual_report, status__in=['enrolled','part-time','withdrawn']).select_related('annual_report', 'country',
                                                                                       'TN_county').order_by('grade_level', 'name')
 
     filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
@@ -229,7 +229,7 @@ def student_import_dashboard(request, arID):
 
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
-    valid_statuses = ['enrolled', 'graduated', 'did_not_return']
+    valid_statuses = ['enrolled', 'part-time', 'graduated', 'did_not_return']
     valid_locations = ['on-site', 'satellite', 'distance-learning']
     valid_gender = ['M', 'F']
     valid_boarding_choices = {'Yes': True, 'No': False}
@@ -431,7 +431,7 @@ def tn_student_export(request, arID):
     agencies_string = ', '.join(agencies)
 
 
-    students = Student.objects.filter(annual_report=annual_report, status = "enrolled").select_related('country',
+    students = Student.objects.filter(annual_report=annual_report, status__in = ["enrolled"]).select_related('country',
                                                                                  'TN_county').order_by('grade_level', 'name')
     no_students = len(students)
 
@@ -1002,13 +1002,25 @@ def opening_report(request, arID):
     annual_report_personnel = AnnualReport.objects.get(report_type__code='ER', school= annual_report.school, school_year= annual_report.school_year)
     arEmployeeID = annual_report_personnel.id
 
-
+    part_time_grade_count_fields=None
 
     with transaction.atomic():
         opening, created = Opening.objects.get_or_create(annual_report=annual_report)
 
-        students= Student.objects.filter(annual_report=annual_report_student, status = "enrolled")
+        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time")
+        if part_time_students.exists():
+            part_time_grade_counts = {'grade_{}_count'.format(i): part_time_students.filter(grade_level=i).count() for i in range(-2, 13)}
+            part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
+            part_time_grade_counts["k_count"] = part_time_grade_counts.pop("grade_-1_count")
 
+            part_time_grade_count = PartTimeGradeCount.objects.create(**part_time_grade_counts)
+            opening.part_time_grade_count = part_time_grade_count
+
+            part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
+                                  PartTimeGradeCount._meta.fields if field.name != 'id']
+
+
+        students= Student.objects.filter(annual_report=annual_report_student, status="enrolled")
         if students.exists():
             grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
             grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
@@ -1059,11 +1071,11 @@ def opening_report(request, arID):
         personnel = Personnel.objects.filter(annual_report=annual_report_personnel).annotate(highest_degree_rank=Max('degrees__rank'))
 
         if personnel.exists():
-            teacher_admin=Personnel.objects.filter(
+            teacher_admin=personnel.filter(
                 Q(positions__category=StaffCategory.ADMINISTRATIVE) |
                 Q(positions__category=StaffCategory.TEACHING))
             opening.teacher_admin_count=teacher_admin.count()
-            opening.general_staff_count=Personnel.objects.filter(positions__category=StaffCategory.GENERAL_STAFF).count()
+            opening.general_staff_count=personnel.filter(positions__category=StaffCategory.GENERAL_STAFF).count()
             opening.non_sda_teacher_admin_count=teacher_admin.filter(sda=False).count()
 
             opening.professional_count = personnel.filter(highest_degree_rank=1).count()
@@ -1076,7 +1088,7 @@ def opening_report(request, arID):
 
     context = dict(arStudentID= arStudentID, arEmployeeID=arEmployeeID,
                     opening=opening,
-                   grade_count_fields=grade_count_fields,
+                   grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields,
                    unkown_baptismal_status_count=unkown_baptismal_status_count,
                    )
 
@@ -1133,7 +1145,7 @@ def closing_report(request, arID):
     arStudentID = annual_report_student.id
 
     with transaction.atomic():
-        students = Student.objects.filter(annual_report=annual_report_student,  status__in=['enrolled', 'withdrawn'])
+        students = Student.objects.filter(annual_report=annual_report_student,  status__in=['enrolled', 'withdrawn', 'part-time'])
 
         if students.exists():
             grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
