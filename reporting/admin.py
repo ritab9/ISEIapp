@@ -33,8 +33,8 @@ class AnnualReportAdmin(admin.ModelAdmin):
 #Student Report Data
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ['name','annual_report']
-    list_filter = ['annual_report']
+    list_display = ['name','annual_report', 'status', 'grade_level']
+    list_filter = ['status', 'grade_level']
 
 
 # 190 day report data
@@ -94,3 +94,6 @@ class PersonnelAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Opening)
+
+admin.site.register(GradeCount)
+admin.site.register(PartTimeGradeCount)

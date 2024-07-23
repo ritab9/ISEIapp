@@ -14,6 +14,12 @@
             <h6> Student Data</h6>
                 <a class="btn btn-xs btn-ISEIblue2 mb-3 ml-3" href="{% url 'student_report' arStudentID %}"> Edit </a>
         </div>
+        <p><b>Enrollment:</b> {{ closing.grade_count.total_count }}
+             {% if part_time_grade_count_fields %}
+                 (+ {{ closing.part_time_grade_count.total_count }} part time)
+             {% endif %}
+        </p>
+
 
 
         <div class="row">
@@ -22,6 +28,9 @@
                 <table class="table table-bordered">
                   <thead>
                     <tr>
+                        {% if part_time_grade_count_fields %}
+                            <th></th>
+                        {% endif %}
                       {% for field_name, value in grade_count_fields %}
                         <th>{{ field_name }}</th>
                       {% endfor %}
@@ -29,13 +38,25 @@
                   </thead>
                   <tbody>
                     <tr>
+                        {% if part_time_grade_count_fields %}
+                            <td>Full-time</td>
+                        {% endif %}
                       {% for field_name, value in grade_count_fields %}
+                        <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                      {% endfor %}
+                    </tr>
+                    <tr>
+                        {% if part_time_grade_count_fields %}
+                            <td>Part-time</td>
+                        {% endif %}
+                      {% for field_name, value in part_time_grade_count_fields %}
                         <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
                       {% endfor %}
                     </tr>
                   </tbody>
                 </table>
-            Students withdrawn during the school year: {{ closing.withdraw_count }}
+            Students withdrawn during the school year: {{ closing.withdraw_count }}<br>
+            Students enrolled later: {{ closing.new_student_count }}
             </div>
         </div>
 
@@ -61,17 +82,17 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Mission Trips</th><th></th><th>Count</th>
+                                <th>Mission Trips</th><th>Count</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2">{{ form.no_mission_trips.errors }}
+                                <td >{{ form.no_mission_trips.errors }}
                                     {{ form.no_mission_trips.label_tag }}</td>
                                 <td>{{ form.no_mission_trips }}</td>
                             </tr>
                              <tr>
-                                <td colspan="2">{{ form.no_mission_trips_school.errors }}
+                                <td>{{ form.no_mission_trips_school.errors }}
                                     {{ form.no_mission_trips_school.label_tag }}</td>
                                 <td>{{ form.no_mission_trips_school }}</td>
                             </tr>
@@ -133,6 +154,15 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div class="row">
+                    <table class="table">
+                        <thead><th>Other Outreach Activities</th></thead>
+                        <tbody><tr><td>
+                        {{ form.outreach }}
+                        {{ form.outreach.errors }}
+                        </td></tr></tbody>
+                    </table>
             </div>
                 {{ form.non_field_errors }}
         </div>

@@ -198,6 +198,9 @@ def school_dashboard(request, schoolID):
 
     sr_report_type = ReportType.objects.get(code='SR')
     er_report_type = ReportType.objects.get(code='ER')
+    or_submitted=AnnualReport.objects.filter(school=school, school_year=school_year,
+                                    report_type__code="OR").exclude(submit_date__isnull=True).values_list('report_type__code', flat=True)
+
     submit_dates = AnnualReport.objects.filter(school=school, school_year=school_year,
                                     report_type__in=[sr_report_type, er_report_type]).exclude(
     submit_date__isnull=True).values_list('report_type__code', flat=True)
@@ -242,7 +245,7 @@ def school_dashboard(request, schoolID):
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
                     accreditation_info=accreditation_info,
-                    sr_er_submitted = sr_er_submitted,
+                    sr_er_submitted = sr_er_submitted, or_submitted=or_submitted,
                     test_orders = test_orders,
                   )
 

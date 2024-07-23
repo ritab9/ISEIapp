@@ -483,20 +483,23 @@ class Closing(models.Model):
     annual_report = models.OneToOneField(AnnualReport, on_delete=models.CASCADE, related_name='closing')
 
     grade_count = models.OneToOneField(GradeCount, on_delete=models.CASCADE, related_name='closing', null=True, blank=True)
+    part_time_grade_count = models.OneToOneField(PartTimeGradeCount, on_delete=models.CASCADE, related_name='closing', null=True, blank=True)
     withdraw_count=models.PositiveSmallIntegerField(null=True, blank=True)
+    new_student_count=models.PositiveSmallIntegerField(null=True, blank=True)
 
     final_school_day=models.DateField(null=True, blank=True, verbose_name="Final date school was in full session (last academic school day)")
 
-    no_mission_trips = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of Mission trips your students participated in")
-    no_mission_trips_school=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of Mission trips planned or executed by your school")
+    no_mission_trips = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not organized by the school")
+    no_mission_trips_school=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Planned or executed by your school")
     mission_trip_locations=models.CharField(max_length=255, null=True, blank=True, verbose_name="Location of Mission trips")
     student_lead_evangelistic_meetings=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of Student Lead Evangelistic Meetings")
     evangelistic_meeting_locations=models.CharField(max_length=255, null=True, blank=True, verbose_name="Location of Evangelistic Meetings")
 
     student_evangelistic_meetings_baptism= models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Total number of baptisms as a result of student evangelism")
-
     student_baptism_sda_parent = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Student Baptised during the past 12 months (SDA parent(s))")
     student_baptism_non_sda_parent = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Student Baptised with non-SDA parent(s)")
+
+    outreach = models.TextField(null=True, blank=True, verbose_name="Other Outreach Activities")
 
     def __str__(self):
         return str(self.annual_report)

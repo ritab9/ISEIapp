@@ -1007,27 +1007,35 @@ def opening_report(request, arID):
     with transaction.atomic():
         opening, created = Opening.objects.get_or_create(annual_report=annual_report)
 
-        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time")
+        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time", registration_date__lt=annual_report_student.submit_date)
         if part_time_students.exists():
             part_time_grade_counts = {'grade_{}_count'.format(i): part_time_students.filter(grade_level=i).count() for i in range(-2, 13)}
             part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
             part_time_grade_counts["k_count"] = part_time_grade_counts.pop("grade_-1_count")
 
-            part_time_grade_count = PartTimeGradeCount.objects.create(**part_time_grade_counts)
-            opening.part_time_grade_count = part_time_grade_count
+            part_time_grade_count, created = PartTimeGradeCount.objects.update_or_create(
+                opening=opening,
+                defaults=part_time_grade_counts)
+
+            #part_time_grade_count = PartTimeGradeCount.objects.create(**part_time_grade_counts)
+            #opening.part_time_grade_count = part_time_grade_count
 
             part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
 
 
-        students= Student.objects.filter(annual_report=annual_report_student, status="enrolled")
+        students= Student.objects.filter(annual_report=annual_report_student, status="enrolled",  registration_date__lt=annual_report_student.submit_date)
         if students.exists():
             grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
             grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
             grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
 
-            grade_count = GradeCount.objects.create(**grade_counts)
-            opening.grade_count = grade_count
+            grade_count, created = GradeCount.objects.update_or_create(
+                opening=opening,
+                defaults=grade_counts)
+
+            #grade_count = GradeCount.objects.create(**grade_counts)
+            #opening.grade_count = grade_count
 
             grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                                   GradeCount._meta.fields if field.name != 'id']
@@ -1104,11 +1112,17 @@ def opening_report_display(request, arID):
         grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                               GradeCount._meta.fields if field.name != 'id']
 
+        part_time_grade_count = opening.part_time_grade_count
+        if part_time_grade_count:
+            part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in PartTimeGradeCount._meta.fields if field.name != 'id']
+        else:
+            part_time_grade_count_fields = None
     else:
         opening = None
         grade_count_fields = None
 
-    context = dict(opening=opening, grade_count_fields = grade_count_fields, display=True )
+    context = dict(opening=opening, grade_count_fields = grade_count_fields, part_time_grade_count_fields = part_time_grade_count_fields,
+                   display=True )
 
     return render(request, 'opening_report.html', context)
 
@@ -1144,24 +1158,52 @@ def closing_report(request, arID):
                                                      school_year=annual_report.school_year)
     arStudentID = annual_report_student.id
 
+    opening_report = AnnualReport.objects.filter(school_year=annual_report.school_year, school=annual_report.school,
+                                                 report_type__code="OR").first()
+    if opening_report:
+        start_date = opening_report.submit_date
+    else:
+        start_date = None
+
     with transaction.atomic():
-        students = Student.objects.filter(annual_report=annual_report_student,  status__in=['enrolled', 'withdrawn', 'part-time'])
+        students = Student.objects.filter(annual_report=annual_report_student,  status__in=['enrolled', 'part-time'])
 
         if students.exists():
-            grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
+            closing.withdraw_count = Student.objects.filter(annual_report=annual_report_student,
+                                                            status="withdrawn").count()
+            closing.new_student_count = students.filter(annual_report=annual_report_student,
+                                                        registration_date__gt=start_date).count()
+
+            full_time_students = Student.objects.filter(annual_report=annual_report_student, status='enrolled')
+            grade_counts = {'grade_{}_count'.format(i): full_time_students.filter(grade_level=i).count() for i in range(-2, 13)}
             grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
             grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
 
-            grade_count = GradeCount.objects.create(**grade_counts)
-            closing.grade_count = grade_count
-
+            grade_count, created = GradeCount.objects.update_or_create(
+                closing=closing,
+                defaults=grade_counts)
             grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                                   GradeCount._meta.fields if field.name != 'id']
 
-            closing.withdraw_count=students.filter(status="withdrawn").count()
+            part_time_students = Student.objects.filter(annual_report=annual_report_student, status='part-time')
+            if part_time_students.exists():
+                part_time_grade_counts = {'grade_{}_count'.format(i): part_time_students.filter(grade_level=i).count() for i in
+                                range(-2, 13)}
+                part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
+                part_time_grade_counts["k_count"] = part_time_grade_counts.pop("grade_-1_count")
 
-        closing.save()
-    context = dict(form=form, closing=closing, grade_count_fields = grade_count_fields, arStudentID=arStudentID)
+                part_time_grade_count, created = PartTimeGradeCount.objects.update_or_create(
+                    closing=closing,
+                    defaults=part_time_grade_counts)
+                part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
+                                  PartTimeGradeCount._meta.fields if field.name != 'id']
+            else:
+                part_time_grade_count_fields = None
+
+    closing.save()
+    context = dict(form=form, closing=closing, grade_count_fields = grade_count_fields,
+                   part_time_grade_count_fields = part_time_grade_count_fields,
+                   arStudentID=arStudentID)
 
     return render(request, 'closing_report.html', context)
 
@@ -1174,12 +1216,15 @@ def closing_report_display(request, arID):
         grade_count = closing.grade_count
         grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                               GradeCount._meta.fields if field.name != 'id']
+        part_time_grade_count = closing.part_time_grade_count
+        part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
+                              PartTimeGradeCount._meta.fields if field.name != 'id']
 
     else:
         closing = None
         grade_count_fields = None
 
-    context = dict(closing=closing, grade_count_fields=grade_count_fields)
+    context = dict(closing=closing, grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields)
     return render(request, 'closing_report_display.html', context)
 
 

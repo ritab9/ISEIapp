@@ -12,6 +12,11 @@
             <div class="row ml-5">
                 <h6> Student Data</h6>
             </div>
+            <p><b>Enrollment:</b> {{ closing.grade_count.total_count }}
+             {% if part_time_grade_count_fields %}
+                 (+ {{ closing.part_time_grade_count.total_count }} part time)
+             {% endif %}
+        </p>
 
 
             <div class="row">
@@ -20,6 +25,9 @@
                     <table class="table table-bordered">
                       <thead>
                         <tr>
+                        {% if part_time_grade_count_fields %}
+                            <th></th>
+                        {% endif %}
                           {% for field_name, value in grade_count_fields %}
                             <th>{{ field_name }}</th>
                           {% endfor %}
@@ -27,13 +35,26 @@
                       </thead>
                       <tbody>
                         <tr>
+                            {% if part_time_grade_count_fields %}
+                            <td>Full-time</td>
+                        {% endif %}
                           {% for field_name, value in grade_count_fields %}
                             <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
                           {% endfor %}
                         </tr>
+                        <tr>
+                        {% if part_time_grade_count_fields %}
+                            <td>Part-time</td>
+                        {% endif %}
+                      {% for field_name, value in part_time_grade_count_fields %}
+                        <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                      {% endfor %}
+                    </tr>
                       </tbody>
                     </table>
-                Students withdrawn during the school year: {{ closing.withdraw_count }}
+                Students withdrawn during the school year: {{ closing.withdraw_count }}<br>
+                            Students enrolled later: {{ closing.new_student_count }}
+
                 </div>
             </div>
          </div>

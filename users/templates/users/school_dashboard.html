@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Principal Dashboard {% endblock title %}
+{% block title %} School Dashboard {% endblock title %}
 
 
 {% block content %}
@@ -85,13 +85,25 @@
                                         <div class="row">
                                             <div class="col">
                                                 {% if report.report_type.code == "OR" or report.report_type.code == "CR"%}
-                                                    {% if sr_er_submitted is True %}
-                                                        <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
-                                                    {% else %}
-                                                        <span style="color: gray;">Edit</span>
-                                                        <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                                                          data-bs-content="Student and Employee report needs to be submitted first."></i>
+                                                    {% if report.report_type.code == "OR" %}
+                                                        {% if sr_er_submitted is True %}
+                                                            <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                                        {% else %}
+                                                            <span style="color: gray;">Edit</span>
+                                                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                                                              data-bs-content="Student and Employee report needs to be submitted first."></i>
+                                                        {% endif %}
                                                     {% endif %}
+                                                    {% if report.report_type.code == "CR" %}
+                                                        {% if or_submitted %}
+                                                            <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                                        {% else %}
+                                                            <span style="color: gray;">Edit</span>
+                                                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                                                              data-bs-content="Opening report needs to be submitted first."></i>
+                                                        {% endif %}
+                                                    {% endif %}
+
                                                 {% else %}
                                                     <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
                                                 {% endif %}
@@ -137,6 +149,13 @@
             IOWA Test Ordering
         </h6>
 
+        <table class="table">
+            <thead><th></th><th>Order Deadline</th><th>Testing Window</th></thead>
+            <tbody>
+            <tr><td>Fall</td><td>July 30</td><td>September 2-19</td></tr>
+            <tr><td>Spring</td><td>March 15</td><td>March 24-April 10</td></tr>
+            </tbody>
+        </table>
             <table class="table table-bordered">
                 <thead>
                     <th>Date</th><th>Status</th>
@@ -162,6 +181,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+
     </div>
 
 </div>

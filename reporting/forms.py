@@ -239,7 +239,8 @@ class ClosingForm(forms.ModelForm):
                   'evangelistic_meeting_locations',
                   'student_evangelistic_meetings_baptism',
                   'student_baptism_sda_parent',
-                  'student_baptism_non_sda_parent']
+                  'student_baptism_non_sda_parent',
+                  'outreach']
 
         widgets = {
              'final_school_day': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
