@@ -499,7 +499,7 @@ def day190_report(request, arID):
     errors=[]
 
     if request.method == 'POST':
-        day190_form = Day190Form(request.POST, instance=day190)
+        day190_form = Day190Form(request.POST, request.FILES or None, instance=day190)
         formset_vacation = VacationFormSet(request.POST, prefix='vacation')
         formset_inservice = InserviceFormSet(request.POST, prefix='inservice')
         formset_abbreviated = AbbreviatedFormSet(request.POST, prefix='abbreviated')

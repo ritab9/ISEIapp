@@ -14,7 +14,7 @@
         </div>
 
  <!-- Day190 form -->
-        <form method="post" id="my_form">
+        <form method="post" id="my_form" enctype="multipart/form-data">
         {% csrf_token %}
             <!-- To disable Enter submit-->
             <input type="submit" disabled style="display: none" aria-hidden="true" />
@@ -67,6 +67,13 @@
                                 </tr>
                                 <tr><td colspan="4" id="no_of_days_message"></td></tr>
                             </table>
+
+                         <div class="mt-3">
+                         <b>Please upload School Calendar:<br></b>{{ day190_form.file }}
+                         {% if day190_form.instance.file %}
+                            <p class="mt-2">Current file: <a href="{{ day190_form.instance.file.url }}">{{ day190_form.instance.file.name }}</a></p>
+                        {% endif %}
+                        </div>
                     </div>
 
 <!-- Vacations formset -->

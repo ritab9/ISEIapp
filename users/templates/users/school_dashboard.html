@@ -44,6 +44,9 @@
                 {% if school.website %}
                 <p><strong>Website:</strong> <a href="{{ school.website }}">{{ school.website }}</a></p>
                 {% endif %}
+                {% if school.textapp %}
+                <p><strong>Text App:</strong> {{ school.textapp}}</p>
+                {% endif %}
                 {% if school.principal %}
                 <p><strong>Principal:</strong> {{ school.principal }}</p>
                 {% endif %}

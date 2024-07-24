@@ -9,7 +9,7 @@
     overflow-x: auto;
 }
 .scrollable-table2 {
-    max-height: 760px; /* Adjust this value based on your requirements */
+    max-height: 660px; /* Adjust this value based on your requirements */
     overflow-y: auto;
 }
 

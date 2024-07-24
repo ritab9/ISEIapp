@@ -96,6 +96,7 @@ class Day190Form(forms.ModelForm):
             #'number_of_sundays': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
             'number_of_days': forms.NumberInput(attrs={'min': 1, 'max': 250, 'style': 'max-width: 30px; border:none'}),
             'inservice_days': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'file': forms.FileInput(attrs={'size': 1}),
         }
 
 class VacationsForm(forms.ModelForm):
