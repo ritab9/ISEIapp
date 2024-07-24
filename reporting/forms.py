@@ -29,8 +29,8 @@ class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         #exclude = ('annual_report', 'id', 'age_at_registration')
-        fields=('name', 'gender', 'address', 'us_state', 'TN_county', 'country', 'birth_date','age', 'grade_level', 'baptized','parent_sda',
-                'status', 'registration_date','withdraw_date', 'boarding', 'location')
+        fields=( 'name', 'grade_level', 'birth_date', 'age', 'gender', 'address', 'us_state', 'TN_county', 'country',  'boarding', 'baptized',
+                'parent_sda', 'status', 'registration_date', 'withdraw_date',  'boarding', 'location')
         field_order = ( 'name', 'grade_level', 'birth_date', 'age', 'gender', 'address', 'us_state', 'TN_county', 'country',  'boarding', 'baptized',
                 'parent_sda', 'status', 'registration_date', 'withdraw_date',  'boarding', 'location')
 
@@ -116,6 +116,7 @@ class InserviceDiscretionaryDaysForm(forms.ModelForm):
         ('CI', 'Curriculum Improvement'),
         ('II', 'Instructional Improvement'),
         ('CM', 'Classroom Management'),
+        ('IS', 'ISEI Workshop'),
         ('TE', 'Teacher/Administrator Evaluation'),
         ('TC', 'Teacher Convention'),
         ('OT', 'Other'),

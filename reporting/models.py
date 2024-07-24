@@ -310,6 +310,7 @@ class InserviceDiscretionaryDays(models.Model):
         ('CI', 'Curriculum Improvement'),
         ('II', 'Instructional Improvement'),
         ('CM', 'Classroom Management'),
+        ('IS', 'ISEI Workshop'),
         ('TE', 'Teacher/Administrator Evaluation'),
         ('TC', 'Teacher Convention'),
         ('OT', 'Other'),

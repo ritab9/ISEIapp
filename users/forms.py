@@ -98,7 +98,7 @@ class AddressForm(ModelForm):
 class SchoolForm(forms.ModelForm):
     class Meta:
         model = School
-        fields = ['name', 'abbreviation', 'phone_number', 'website', 'principal', 'president', 'textapp', 'type']
+        fields = ['name', 'phone_number', 'website', 'principal', 'president', 'textapp', 'type']
 
 
 class SchoolAddressForm(forms.ModelForm):
