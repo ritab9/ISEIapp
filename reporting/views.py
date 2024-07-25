@@ -145,13 +145,10 @@ def import_students_prev_year(request, arID):
 def student_report_display(request, arID):
 
     annual_report = AnnualReport.objects.get(id=arID)
-    #if annual_report.submit_date:
-    #    students = Student.objects.filter(annual_report=annual_report, status = "enrolled").select_related('annual_report', 'country',
-    #                                                                              'TN_county').order_by('grade_level', 'name')
-    #else:
-
-    students = Student.objects.filter(annual_report=annual_report, status__in=['enrolled','part-time','withdrawn']).select_related('annual_report', 'country',
-                                                                                      'TN_county').order_by('grade_level', 'name')
+    students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
+                                                                                 'TN_county').order_by('grade_level', 'name')
+    #students = Student.objects.filter(annual_report=annual_report, status__in=['enrolled','part-time','withdrawn']).select_related('annual_report', 'country',
+                                                                                      #'TN_county').order_by('grade_level', 'name')
 
     filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
 
@@ -846,8 +843,14 @@ def import_employee_prev_year(request, arID):
 
         e.pk = None  # Makes Django create a new instance
         e.annual_report = report
-        if e.years_experience:
-            e.years_experience += 1
+
+        if e.positions.filter(category__name='A').exists():
+            e.years_administrative_experience +=1
+        if e.positions.filter(category__name='T').exists():
+            e.years_administrative_experience +=1
+        if e.positions.filter(category__name='G').exists():
+            e.years_administrative_experience += 1
+
         if e.years_at_this_school:
             e.years_at_this_school += 1
         e.save()

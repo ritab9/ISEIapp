@@ -165,7 +165,10 @@ class Personnel(models.Model):
     subjects_teaching = models.ManyToManyField(Subject, blank=True, related_name="subjects_teaching")
     subjects_taught = models.ManyToManyField(Subject, blank=True, related_name="subjects_taught")
 
-    years_experience = models.PositiveSmallIntegerField(null=True, blank=True)
+    years_work_experience = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Years of Work Experience")
+    years_teaching_experience = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Years of Teaching Experience")
+    years_administrative_experience = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Years of Administrative Experience")
+
     years_at_this_school = models.PositiveSmallIntegerField(default=1)
 
     email_address = models.EmailField(null=True, blank=True)

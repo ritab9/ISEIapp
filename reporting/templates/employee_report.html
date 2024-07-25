@@ -93,7 +93,16 @@
                     <td>{{ p.get_status_display }}</td>
                     <td>{% for pos in p.positions.all %} {{ pos }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
                     <td>{% for deg in p.personneldegree_set.all %} {{ deg.degree }} - {{ deg.area_of_study }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
-                    <td>{{ p.years_experience|default_if_none:""  }}</td>
+                    <td>{% if p.years_administrative_experience %}
+                            Administrative: {{ p.years_administrative_experience|default_if_none:""  }}<br>
+                        {% endif %}
+                        {% if p.years_teaching_experience %}
+                            Teaching: {{ p.years_teaching_experience|default_if_none:""  }}<br>
+                        {% endif %}
+                        {% if p.years_work_experience %}
+                            {{ p.years_work_experience|default_if_none:""  }}
+                        {% endif %}
+                    </td>
                     <td>{{ p.years_at_this_school|default_if_none:""  }}</td>
                     <td>{{ p.email_address|default_if_none:""  }}</td>
                     <td>{{ p.phone_number|default_if_none:""  }}</td>

@@ -29,10 +29,10 @@ class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         #exclude = ('annual_report', 'id', 'age_at_registration')
-        fields=( 'name', 'grade_level', 'birth_date', 'age', 'gender', 'address', 'us_state', 'TN_county', 'country',  'boarding', 'baptized',
-                'parent_sda', 'status', 'registration_date', 'withdraw_date',  'boarding', 'location')
-        field_order = ( 'name', 'grade_level', 'birth_date', 'age', 'gender', 'address', 'us_state', 'TN_county', 'country',  'boarding', 'baptized',
-                'parent_sda', 'status', 'registration_date', 'withdraw_date',  'boarding', 'location')
+        fields=( 'name', 'grade_level', 'status', 'registration_date', 'withdraw_date',  'birth_date', 'age', 'gender', 'boarding', 'location', 'address', 'us_state', 'TN_county', 'country',  'boarding', 'baptized',
+                'parent_sda')
+        field_order = ( 'name', 'grade_level', 'status', 'registration_date', 'withdraw_date',  'birth_date', 'age', 'gender', 'boarding', 'location', 'address', 'us_state', 'TN_county', 'country',  'boarding', 'baptized',
+                'parent_sda')
 
         widgets = {
             'name': forms.TextInput(attrs={'style': 'max-width: 300px;'}),
@@ -214,7 +214,7 @@ class PersonnelForm(forms.ModelForm):
     class Meta:
         model = Personnel
         fields = ['first_name', 'last_name', 'gender', 'status', 'teacher',
-                  'years_experience', 'years_at_this_school', 'email_address', 'phone_number', 'sda',
+                  'years_administrative_experience', 'years_teaching_experience', 'years_work_experience', 'years_at_this_school', 'email_address', 'phone_number', 'sda',
                   'positions', 'subjects_teaching', 'subjects_taught']
 
 
