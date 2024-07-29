@@ -222,7 +222,8 @@ class Student(models.Model):
     age = models.PositiveIntegerField(blank=True, null=True)
     age_at_registration = models.PositiveIntegerField()
     YES_NO_CHOICES = [
-        ('Y', 'Yes'),
+        ('Y', 'Yes, SDA'),
+        ('O', 'Yes, non-SDA'),
         ('N', 'No'),
         ('U', '-'),
     ]

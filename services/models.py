@@ -30,7 +30,8 @@ class TestOrder(models.Model):
         return f'{self.school} - {self.order_date}'
 
 LEVEL_CHOICES = [
-        (9, 'Grade 3, Level 9'),
+        (8, 'Grade 3 without listening, Level 9'),
+        (9, 'Grade 3 with listening, Level 9'),
         (10, 'Grade 4, Level 10'),
         (11, 'Grade 5, Level 11'),
         (12, 'Grade 6, Level 12'),

@@ -1,0 +1,130 @@
+{% extends 'reporting_base.html' %}
+
+{% load static %}
+{% block title %} Test Order Form {% endblock title %}
+
+
+{% block content %}
+
+<!-- Orders by school -->
+    <div class="card card-body">
+        <table class="table table-sm table-striped">
+        <tr>
+            <th>School</th>
+            <th>Testing Dates</th>
+            <th>Order Date</th>
+            <th># of Students</th>
+            <th colspan="2" >Reusable Test Booklets</th>
+            <th colspan="2" >Answer Sheets</th>
+            <th colspan="2" >Direction Booklets</th>
+            <th>~ Sub Total</th>
+            <th>Complete</th>
+            <!-- and so on for other fields -->
+        </tr>
+        <tr><th></th><th></th><th></th><th></th>
+            <th>Level</th><th style="text-align:left;">Count</th>
+            <th>Level</th><th>Count</th>
+            <th>Level</th><th>Count</th>
+            <th></th><th></th>
+        </tr>
+        {% for order in test_orders %}
+        <tr>
+            <td>{{ order.school }}</td>
+            <td>{{ order.testing_dates }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.no_students_testing }}</td>
+            <td class="align-right">
+                {% for booklet in order.test_booklets.all %}
+                    {{ booklet.get_level_display }}<br>
+                 {% endfor %}
+            </td>
+            <td class="align-left">
+                {% for booklet in order.test_booklets.all %}
+                    {{ booklet.count }}<br>
+                {% endfor %}
+            </td>
+
+            <td class="align-right">
+            {% for sheet in order.answer_sheets.all %}
+                {{ sheet.get_level_display }}<br>
+             {% endfor %}
+            </td>
+            <td class="align-left">
+                {% for sheet in order.answer_sheets.all %}
+                    {{ sheet.count }}<br>
+                {% endfor %}
+            </td>
+
+            <td class="align-right">
+                {% for booklet in order.direction_booklets.all %}
+                    {{ booklet.get_level_display }}<br>
+                {% endfor %}
+            </td>
+            <td class="align-left">
+                {% for booklet in order.direction_booklets.all %}
+                    {{ booklet.count }}<br>
+                {% endfor %}
+            </td>
+
+            <td>${{ order.sub_total }}</td>
+            <!-- and so on for other fields -->
+            <td><a href="{% url 'finalize_order' order.id %}">Complete Order</a></td>
+        </tr>
+        {% endfor %}
+</table>
+    </div>
+
+<!-- Orders totals -->
+    <div class="card card_body">
+
+        <div class="row justify-content-around">
+            <div class="col col-auto">
+            <h6>Reusable Test Booklets</h6>
+            <table class="table table-sm">
+                <thead><th>Level</th><th>Count</th></thead>
+                <tbody>
+                    {% for level_count in test_booklets_counts %}
+                        <tr><td>{{ level_count.level }}</td><td>{{ level_count.total }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+            <div class="col col-auto">
+            <h6>Answer Sheets</h6>
+            <table class="table table-sm">
+                <thead><th>Level</th><th>Count</th></thead>
+                <tbody>
+                    {% for level_count in answer_sheets_counts %}
+                        <tr><td>{{ level_count.level }}</td><td>{{ level_count.total }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+            <div class="col col-auto">
+            <h6>Direction Booklets</h6>
+            <table class="table table-sm">
+                <thead><th>Level</th><th>Count</th></thead>
+                <tbody>
+                    {% for level_count in direction_booklets_counts %}
+                        <tr><td>{{ level_count.level }}</td><td>{{ level_count.total }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block footer_javascript %}
+
+    <script>
+
+
+
+    </script>
+
+{% endblock footer_javascript %}

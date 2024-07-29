@@ -1,12 +1,14 @@
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from users.decorators import allowed_users
+from django.db.models import Sum
+
 from .forms import *
 from .models import *
-from .functions import *
-from django.db import transaction
-import sys
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar','staff'])
 def test_order(request, schoolID, orderID=None):
     school = get_object_or_404(School, id=schoolID)
     order = get_object_or_404(TestOrder, id=orderID) if orderID else None
@@ -63,3 +65,29 @@ def test_order(request, schoolID, orderID=None):
                    test_scoring=test_scoring, latest_update=latest_update)
 
     return render(request, 'test_order.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_test_order(request):
+
+    test_orders = TestOrder.objects.filter(finalized=False).exclude(school__abbreviation='SS')
+
+    test_booklets_counts = ReusableTestBookletOrdered.objects.filter(order__in=test_orders).values('level').annotate(
+        total=Sum('count')).order_by('level')
+    answer_sheets_counts = AnswerSheetOrdered.objects.filter(order__in=test_orders).values('level').annotate(
+        total=Sum('count')).order_by('level')
+    direction_booklets_counts = DirectionBookletOrdered.objects.filter(order__in=test_orders).values('level').annotate(
+        total=Sum('count')).order_by('level')
+
+    context=dict(test_orders=test_orders,
+                 test_booklets_counts=test_booklets_counts, answer_sheets_counts=answer_sheets_counts,direction_booklets_counts=direction_booklets_counts)
+    return render(request, 'isei_test_order.html', context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def finalize_order(request, order_id):
+    order = get_object_or_404(TestOrder, id=order_id)
+    order.finalized = True
+    order.save()
+    return redirect('isei_test_order')
