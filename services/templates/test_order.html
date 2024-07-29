@@ -193,7 +193,7 @@
             </div>
             <div class="row">
                 <div class="col col-auto">
-                    <b>Subtotal:</b> $<input id="id_sub_total" type="text" name="{{ order_form.sub_total.name }}" value="{{ order_form.sub_total.value }}" readonly style="border: none;">{% if order_form.sub_total.errors %}<div class="alert alert-danger">{{ order_form.sub_total.errors }}</div>{% endif %}
+                    <b>Subtotal for testing materials:</b> $<input id="id_sub_total" type="text" name="{{ order_form.sub_total.name }}" value="{{ order_form.sub_total.value }}" readonly style="border: none;">{% if order_form.sub_total.errors %}<div class="alert alert-danger">{{ order_form.sub_total.errors }}</div>{% endif %}
                 </div>
                 <div class="col col-auto">
                     <input class="btn-ISEIblue2" type="submit" name="save" value="Save and Finalize Later">
@@ -307,7 +307,7 @@
 
 //Calculate Subtotal
     function calculateTotalSum() {
-        let totalSum = (parseFloat(subtotalAnswerSheetsField.value) || 0) + (parseFloat(subtotalTestBookletsField.value) || 0) + (parseFloat(subtotalAdminDirectionBookletField.value) || 0) + (parseFloat(subtotalScoringField.value) || 0);
+        let totalSum = (parseFloat(subtotalAnswerSheetsField.value) || 0) + (parseFloat(subtotalTestBookletsField.value) || 0) + (parseFloat(subtotalAdminDirectionBookletField.value) || 0);
         document.getElementById('id_sub_total').value = totalSum.toFixed(2);
     }
 
@@ -377,7 +377,6 @@
     function calculateScoringSubtotal() {
         let scoring = parseFloat(testScoringPrice) * parseFloat(noStudentsTestingField.value);
         subtotalScoringField.value = scoring.toFixed(2);
-        calculateTotalSum();
     }
 
     noStudentsTestingField.addEventListener('input', calculateScoringSubtotal);
