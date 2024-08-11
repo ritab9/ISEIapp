@@ -1,0 +1,54 @@
+{% extends 'reporting_base.html' %}
+{% load verbose_name %}
+
+{% block title %} Worthy Student Scholarship {% endblock title %}
+
+
+{% block content %}
+     <h6 style="text-align: center">{{ wss }}</h6>
+
+<!-- Enrollment Data -->
+     <div class="card card-body">
+        <div class="row ml-5">
+        </div>
+        <p><b>Opening Enrollment:</b> {{ wss.opening_enrollment}}
+        </p>
+        <p> <b>Closing Enrollment:</b> {{ wss.closing_enrollment }} </p>
+     </div>
+
+
+         <div class="card card-body">
+             <div class="col">
+                <table class="table table w-auto">
+                    <tbody>
+                        <tr>
+                            <td class="text-right">{{ wss|verbose_name:"school_generated_fund" }}</td>
+                            <td class="text-left">${{ wss.school_generated_fund }}</td>
+                            <td class="text-right">{{ wss|verbose_name:'students_assisted_total' }}</td>
+                            <td class="text-left">{{ wss.students_assisted_total }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">{{ wss|verbose_name:'wss_fund' }}</td>
+                            <td class="text-left">${{ wss.wss_fund }}</td>
+                            <td class="text-right">{{ wss|verbose_name:'students_assisted_wss' }}</td>
+                            <td class="text-left">{{ wss.students_assisted_wss }}</td>
+                        </tr>
+                        <tr>
+                             <td class="text-right">{{ wss|verbose_name:'next_year_budget' }}</td>
+                            <td class="text-left">${{ wss.next_year_budget }}</td>
+                            <td></td><td></td>
+                        </tr>
+                    </tbody>
+                </table>
+             </div>
+         </div>
+
+
+
+
+{% endblock %}
+
+{% block footer_javascript %}
+
+
+{% endblock %}

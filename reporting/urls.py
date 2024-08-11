@@ -31,6 +31,9 @@ urlpatterns = [
     path('opening_report_display/<int:arID>/', views.opening_report_display, name='opening_report_display'),
     path('closing_report_display/<int:arID>/', views.closing_report_display, name='closing_report_display'),
 
+    path('worthy_student_scholarship/<int:arID>/', views.worthy_student_scholarship, name='worthy_student_scholarship'),
+    path('worthy_student_scholarship_display/<int:arID>/', views.worthy_student_scholarship_display, name='worthy_student_scholarship_display'),
+
     path('ap_report_display/<int:arID>//', views.ap_report_display, name='ap_report_display'),
 
 

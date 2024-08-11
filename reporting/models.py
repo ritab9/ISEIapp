@@ -405,6 +405,10 @@ class GradeCount(models.Model):
                 self.grade_11_count + self.grade_12_count
         )
 
+    def academy_count(self):
+        return (self.grade_9_count + self.grade_10_count +
+                self.grade_11_count + self.grade_12_count)
+
 class PartTimeGradeCount(models.Model):
     pre_k_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Pre-K")
     k_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="K")
@@ -509,3 +513,24 @@ class Closing(models.Model):
 
     def __str__(self):
         return str(self.annual_report)
+
+
+class WorthyStudentScholarship(models.Model):
+    annual_report = models.OneToOneField(AnnualReport, on_delete=models.CASCADE, related_name='worthy_student')
+
+    opening_enrollment = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Opening Enrollment (9-12th grade)")
+    closing_enrollment = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Closing Enrollment (9-12th grade)")
+
+    school_generated_fund=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Academy Generated Worthy Student Fund distributed")
+    wss_fund = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Worthy Student Scholarship Fund money distributed")
+
+    students_assisted_total=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of students assisted from ALL funds")
+    students_assisted_wss= models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of students assisted from Worthy Student Scholarship Fund")
+
+    next_year_budget=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Amount of academy generated worthy student money budgeted for next year")
+
+    def __str__(self):
+        return str(self.annual_report)
+
+    def get_verbose_field_name(self, field_name):
+        return str(self._meta.get_field(field_name).verbose_name)

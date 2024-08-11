@@ -257,3 +257,20 @@ class ClosingForm(forms.ModelForm):
         }
 
 
+
+class WorthyStudentScholarshipForm(forms.ModelForm):
+    class Meta:
+        model = WorthyStudentScholarship
+        fields = [
+                  'school_generated_fund', 'wss_fund',
+                    'students_assisted_total', 'students_assisted_wss',
+                    'next_year_budget'
+                  ]
+
+        widgets = {
+            'school_generated_fund': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'wss_fund': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'students_assisted_total': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'students_assisted_wss': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'next_year_budget': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+        }

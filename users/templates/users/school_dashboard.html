@@ -95,6 +95,22 @@
                         </thead>
                         <tbody>
                             {% for report, due_date in annual_reports %}
+                                 {% if report.report_type.code == "WS" %}
+                                        {% if wss == True %}
+                                            <td>{{report.report_type.name}} <br>
+                                                <div class="row">
+                                                    <div class="col">
+                                                    {% if cr_submitted %}
+                                                        <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
+                                                    {% else %}
+                                                        <span style="color: gray;">Edit</span>
+                                                        <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
+                                                                                          data-bs-content="Opening report needs to be submitted first."></i>
+                                                    {% endif %}
+                                                {% endif %}
+                                                </div>
+                                 </div>
+                                {% else %}
                                 <tr>
                                     <td>{{report.report_type.name}} <br>
                                         <div class="row">
@@ -134,6 +150,7 @@
                                     <td>{{ report.submit_date|default_if_none:"-" }}</td>
                                     <td>{{ report.last_update_date|default_if_none:"-" }}</td>
                                 </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

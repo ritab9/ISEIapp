@@ -1230,6 +1230,56 @@ def closing_report_display(request, arID):
     context = dict(closing=closing, grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields)
     return render(request, 'closing_report_display.html', context)
 
+@login_required(login_url='login')
+def worthy_student_scholarship(request, arID):
+
+    annual_report = AnnualReport.objects.get(id=arID)
+    wss, created = WorthyStudentScholarship.objects.get_or_create(annual_report=annual_report)
+
+    if request.method == 'POST':
+        form = WorthyStudentScholarshipForm(request.POST, instance=wss)
+        if form.is_valid():
+            form.save()
+
+            if 'submit' in request.POST:
+                if not annual_report.submit_date:
+                    annual_report.submit_date = date.today()
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+                return redirect('school_dashboard', annual_report.school.id)
+            elif 'save' in request.POST:
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+                return redirect('school_dashboard', annual_report.school.id)
+            else:
+                return redirect('worthy_student_scholarship', arID=arID)
+
+    else:
+        form = WorthyStudentScholarshipForm(instance=wss)
+
+
+    opening_report = AnnualReport.objects.filter(school_year=annual_report.school_year, school=annual_report.school,
+                                                 report_type__code="OR").first()
+    opening=Opening.objects.get(annual_report=opening_report)
+    wss.opening_enrollment = opening.grade_count.academy_count()
+    closing_report = AnnualReport.objects.filter(school_year=annual_report.school_year, school=annual_report.school,
+                                                 report_type__code="CR").first()
+    closing=Closing.objects.get(annual_report=closing_report)
+    wss.closing_enrollment = closing.grade_count.academy_count()
+
+    wss.save()
+
+    context = dict(form=form, wss=wss, opening_enrollment=wss.opening_enrollment, closing_enrollment=wss.closing_enrollment)
+
+    return render(request, 'worthy_student_scholarship.html', context)
+
+@login_required(login_url='login')
+def worthy_student_scholarship_display(request, arID):
+    annual_report = AnnualReport.objects.get(id=arID)
+    wss=WorthyStudentScholarship.objects.get(annual_report=annual_report)
+
+    context = dict(wss=wss)
+    return render(request, 'worthy_student_scholarship_display.html', context)
 
 @login_required(login_url='login')
 def ap_report(request, arID):
