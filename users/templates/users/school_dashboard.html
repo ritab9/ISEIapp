@@ -97,6 +97,7 @@
                             {% for report, due_date in annual_reports %}
                                  {% if report.report_type.code == "WS" %}
                                         {% if wss == True %}
+                                        <tr>
                                             <td>{{report.report_type.name}} <br>
                                                 <div class="row">
                                                     <div class="col">
@@ -107,9 +108,20 @@
                                                         <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
                                                                                           data-bs-content="Opening report needs to be submitted first."></i>
                                                     {% endif %}
-                                                {% endif %}
+                                                    </div>
+                                                    <div class="col">
+                                                    {% if report.submit_date %}
+                                                        {% with display_view=report.report_type.view_name|add:"_display" %}
+                                                            <a class="" href="{% url display_view report.id %}"> View</a>
+                                                        {% endwith %}</div>
+                                                    {% endif %}
                                                 </div>
-                                 </div>
+                                            </td>
+                                            <td>{{due_date}}</td>
+                                            <td>{{ report.submit_date|default_if_none:"-" }}</td>
+                                            <td>{{ report.last_update_date|default_if_none:"-" }}</td>
+                                        </tr>
+                                        {% endif %}
                                 {% else %}
                                 <tr>
                                     <td>{{report.report_type.name}} <br>
@@ -141,7 +153,9 @@
                                             </div>
                                             <div class="col">
                                             {% with display_view=report.report_type.view_name|add:"_display" %}
+                                                {% if report.submit_date %}
                                                 <a class="" href="{% url display_view report.id %}"> View</a>
+                                                {% endif %}
                                             {% endwith %}</div>
                                         </div>
                                     </td>

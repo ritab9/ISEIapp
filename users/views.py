@@ -255,7 +255,7 @@ def school_dashboard(request, schoolID):
     else:
         is_old=None
 
-    if school.address.country.code == "US" and school.abbreviation != "AAA":
+    if school.address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
         wss=True
     else:
         wss=False
