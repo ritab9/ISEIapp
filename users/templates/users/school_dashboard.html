@@ -65,6 +65,18 @@
                 {% if school.type %}
                 <p><strong>Type:</strong> {{ school.get_type_display }}</p>
                 {% endif %}
+
+                {% if school.address.state_us == "TN"  %}
+                    <p>Date of last <b>Fire Marshal Inspection</b>: <br>
+                        {% if is_old == None %}
+                            <span class="error">Required! Please Update!!!</span>
+                        {% elif is_old == True %}
+                            <span class="error">{{ fire_marshal_date }} Please Update! </span>
+                        {% else %}
+                            <span class="success">{{ fire_marshal_date }}</span>
+                        {% endif %}
+                    </p>
+                {% endif %}
             <a href="{% url 'update_school_info' schoolID=school.id %}" class="btn btn-sm btn-ISEIblue3">Update</a>
         </div>
     </div>

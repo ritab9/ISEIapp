@@ -242,11 +242,23 @@ def school_dashboard(request, schoolID):
 
     test_orders = TestOrder.objects.filter(school=school)
 
+    fire_marshal_date=school.fire_marshal_date
+    if fire_marshal_date:
+        one_year_ago = (timezone.now() - timezone.timedelta(days=365)).date()
+        if fire_marshal_date <= one_year_ago:
+            is_old=True
+        else:
+            is_old=False
+    else:
+        is_old=None
+
+
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
                     accreditation_info=accreditation_info,
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted,
                     test_orders = test_orders,
+                    is_old = is_old, fire_marshal_date=fire_marshal_date,
                   )
 
     return render(request, 'users/school_dashboard.html', context)
@@ -265,7 +277,6 @@ def school_dashboard(request, schoolID):
 @allowed_users(allowed_roles=['staff'])
 def isei_dashboard(request):
 
-
     return render(request, 'users/isei_dashboard.html')
 
 
@@ -273,6 +284,21 @@ def update_school_info(request, schoolID):
 
     school = get_object_or_404(School, id=schoolID)
     address = school.address
+
+    if address.state_us == "TN":
+        tn_school=True
+        fire_marshal_date = school.fire_marshal_date
+        if fire_marshal_date:
+            one_year_ago = (timezone.now() - timezone.timedelta(days=365)).date()
+            if fire_marshal_date <= one_year_ago:
+                is_old = True
+            else:
+                is_old = False
+        else:
+            is_old = True
+    else:
+        tn_school=False
+        is_old=False
 
     if request.method == 'POST':
         form_school = SchoolForm(request.POST, instance=school)
@@ -289,6 +315,7 @@ def update_school_info(request, schoolID):
         'form_school': form_school,
         'form_address': form_address,
         'schoolID':schoolID,
+        'tn_school':tn_school, 'is_old':is_old,
     }
 
     return render(request, 'users/update_school_info.html', context)

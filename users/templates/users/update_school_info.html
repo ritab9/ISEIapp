@@ -15,6 +15,16 @@
                     {{ form_school.name|as_crispy_field  }}
                     {{ form_school.phone_number|as_crispy_field  }}
                     {{ form_school.website|as_crispy_field  }}
+                    <br><br>
+                    {% if tn_school %}
+                        {% if is_old %}
+                            <span class="error">
+                                {{ form_school.fire_marshal_date|as_crispy_field }}
+                            </span>
+                        {% else %}
+                            {{ form_school.fire_marshal_date|as_crispy_field }}
+                        {% endif %}
+                    {% endif %}
                 </div>
                 <div class="col col-auto">
                     {{ form_school.principal|as_crispy_field  }}

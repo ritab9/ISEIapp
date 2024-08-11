@@ -105,6 +105,7 @@ class School(models.Model):
     president = models.CharField(max_length=100, blank=True, null=True)
     member = models.BooleanField(default=True)
     textapp= models.CharField(max_length=20, blank=True, null=True)
+    fire_marshal_date = models.DateField(blank=True, null=True, verbose_name='Date of Last Fire Marshal Inspection')
 
     TYPE_CHOICES = [
         ('K-8', 'K-8'),
