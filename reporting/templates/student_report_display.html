@@ -85,6 +85,9 @@
                 <div class="col d-flex justify-content-center">
                     <a class="btn btn-sm btn-ISEIblue2 loading_spinner" href="{% url 'student_report' annual_report.id %}">Edit Report</a>
                 </div>
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-sm btn-ISEIblue2 loading_spinner" onclick="printTable()">Print Table</button>
+                </div>
             </div>
     </div>
 
@@ -106,6 +109,23 @@
                 $('#loading').show();
             });
         });
+
+
+        function printTable() {
+            var printContents = document.querySelector('.scrollable-table2').outerHTML;
+            var myWindow = window.open('', '', 'height=600,width=800');
+            myWindow.document.write('<html><head><title>Print</title>');
+            myWindow.document.write('<style>/* Your CSS for printed table here */</style>');
+            myWindow.document.write('</head><body>');
+            myWindow.document.write(printContents);
+            myWindow.document.write('</body></html>');
+            myWindow.document.close();
+            myWindow.onload=function(){
+                myWindow.focus();
+                myWindow.print();
+            }
+        }
+
     </script>
 
 {% endblock %}
