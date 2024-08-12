@@ -1006,6 +1006,7 @@ def opening_report(request, arID):
     arEmployeeID = annual_report_personnel.id
 
     part_time_grade_count_fields=None
+    grade_count_fields=None
 
     with transaction.atomic():
         opening, created = Opening.objects.get_or_create(annual_report=annual_report)
@@ -1027,7 +1028,12 @@ def opening_report(request, arID):
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
 
 
+
         students= Student.objects.filter(annual_report=annual_report_student, status="enrolled",  registration_date__lt=annual_report_student.submit_date)
+        if not students.exists():
+            students = Student.objects.filter(annual_report=annual_report_student, status="enrolled",
+                                              registration_date__lt=annual_report_student.submit_date + timedelta(weeks=3))
+
         if students.exists():
             grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
             grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
