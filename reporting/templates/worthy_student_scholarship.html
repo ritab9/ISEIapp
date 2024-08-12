@@ -18,7 +18,7 @@
 
 
 <!-- Form Data -->
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
          <div class="card card-body">
@@ -40,7 +40,13 @@
                         <tr>
                              <td class="text-right">{{ form.next_year_budget.label_tag }}</td>
                             <td class="text-left">${{ form.next_year_budget }}</td>
-                            <td></td><td></td>
+                            <td class="text-right"><b>{{ form.letter.label_tag }}</b></td>
+                            <td class="text-left">
+                                {% if form.instance.letter %}
+                                    <p>Existing document: <a href="{{ form.instance.letter.url }}">{{ form.instance.letter.name }}</a></p>
+                                     <p>If you would like to <b>replace</b> it upload a new file. If you have more than one letter please save them together in one PDF. </p>
+                                {% endif %}
+                                {{ form.letter }}</td>
                         </tr>
                     </tbody>
                 </table>

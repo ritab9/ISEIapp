@@ -264,7 +264,7 @@ class WorthyStudentScholarshipForm(forms.ModelForm):
         fields = [
                   'school_generated_fund', 'wss_fund',
                     'students_assisted_total', 'students_assisted_wss',
-                    'next_year_budget'
+                    'next_year_budget', 'letter'
                   ]
 
         widgets = {
@@ -273,4 +273,6 @@ class WorthyStudentScholarshipForm(forms.ModelForm):
             'students_assisted_total': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
             'students_assisted_wss': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
             'next_year_budget': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'letter': forms.FileInput(attrs={'size': 1}),
+
         }

@@ -529,6 +529,7 @@ class WorthyStudentScholarship(models.Model):
 
     next_year_budget=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Amount of academy generated worthy student money budgeted for next year")
 
+    letter = models.FileField(upload_to='wss_letters/%Y', null=True, blank=True, verbose_name="Thank you letter")
     def __str__(self):
         return str(self.annual_report)
 

@@ -1237,7 +1237,7 @@ def worthy_student_scholarship(request, arID):
     wss, created = WorthyStudentScholarship.objects.get_or_create(annual_report=annual_report)
 
     if request.method == 'POST':
-        form = WorthyStudentScholarshipForm(request.POST, instance=wss)
+        form = WorthyStudentScholarshipForm(request.POST, request.FILES or None, instance=wss)
         if form.is_valid():
             form.save()
 
@@ -1313,9 +1313,24 @@ def isei_reporting_dashboard(request):
                  to_attr='annual_reports')
     )
 
-    context = {'schools':schools, 'report_types':report_types}
+    wss_schools = School.objects.filter(address__country__code='US').exclude(abbreviation__in=["AAA", "LBE", "AIS"])
+
+    context = {'schools':schools, 'wss_schools':wss_schools, 'report_types':report_types, 'todays_date': date.today()}
 
     return render(request, 'isei_reporting_dashboard.html', context)
+
+
+@login_required(login_url='login')
+def isei_worthy_student_scholarship(request):
+
+    current_school_year = SchoolYear.objects.get(current_school_year=True)
+
+    annual_reports=AnnualReport.objects.filter(school_year=current_school_year, report_type__code="WS")
+
+    wssr=WorthyStudentScholarship.objects.filter(annual_report__in=annual_reports)
+
+    context=dict(wssr=wssr, current_school_year=current_school_year)
+    return render(request, 'isei_worthy_student_scholarship.html', context)
 
 
 @login_required(login_url='login')

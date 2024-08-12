@@ -36,7 +36,12 @@
                         <tr>
                              <td class="text-right">{{ wss|verbose_name:'next_year_budget' }}</td>
                             <td class="text-left">${{ wss.next_year_budget }}</td>
-                            <td></td><td></td>
+                            <td class="text-right">{{ wss|verbose_name:'letter' }}</td>
+                            {% if wss.letter %}
+                                <td class="text-left"><a href="{{ wss.letter.url }}">View Uploaded Letter</a></td>
+                            {% else %}
+                                <td class="text-left">No letter uploaded</td>
+                            {% endif %}
                         </tr>
                     </tbody>
                 </table>

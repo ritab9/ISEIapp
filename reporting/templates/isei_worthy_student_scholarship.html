@@ -1,0 +1,55 @@
+{% extends 'reporting_base.html' %}
+{% load verbose_name %}
+
+{% block title %} Worthy Student Scholarship {% endblock title %}
+
+
+{% block content %}
+     <h6 style="text-align: center">Worthy Student Scholarship (WSS) Reports Summary for {{ current_school_year }}</h6>
+
+<!-- Enrollment Data -->
+        <table class="table table-ISEIblue4 table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th rowspan="2">School</th>
+                    <th colspan="2" class="text-center">Enrollment</th>
+                    <th colspan="2" class="text-center">Funds</th>
+                    <th colspan="2" class="text-center">No. of Students assisted</th>
+                    <th rowspan="2">Next Year's Budget for WS</th>
+                    <th rowspan="2">Thank you Letter</th>
+                </tr>
+                <tr>
+                    <th>Opening</th><th>Closing</th>
+                    <th>School Generated</th><th>Worthy Student Scholarship</th>
+                    <th>From all funds</th><th>From Worthy Student Scholarship</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for wss in wssr %}
+                    <tr>
+                        <td>{{ wss.annual_report.school }}</td>
+                        <td>{{ wss.opening_enrollment}}</td><td>{{ wss.closing_enrollment }}</td>
+                        <td>${{ wss.school_generated_fund }}</td><td>${{ wss.wss_fund }}</td>
+                        <td>{{ wss.students_assisted_total }}</td><td>{{ wss.students_assisted_wss }}</td>
+                        <td>${{ wss.next_year_budget }}</td>
+
+                        {% if wss.letter %}
+                            <td class="text-left"><a href="{{ wss.letter.url }}">View Uploaded Letter</a></td>
+                        {% else %}
+                            <td class="text-left">No letter uploaded</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+
+{% endblock %}
+
+{% block footer_javascript %}
+
+
+{% endblock %}

@@ -226,15 +226,21 @@ def school_dashboard(request, schoolID):
     else:
         percent_certified = 0
 
+    if school.address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
+        wss=True
+    else:
+        wss=False
+
     # Get all ReportingDueDate objects for this region
     report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')
     annual_reports=[]
     for report_dd in report_due_dates:
         # isei_created is false for APR (and possibly other reports in the future that need to be created specifically for each school by ISEI)
         if report_dd.report_type.isei_created == False:
-            annual_report, created = AnnualReport.objects.get_or_create(school=school, school_year=school_year,
-                                              report_type=report_dd.report_type)
-            annual_reports.append((annual_report, report_dd.get_actual_due_date(school_year=school_year)))
+            if report_dd.report_type.code != "WS" or wss:
+                annual_report, created = AnnualReport.objects.get_or_create(school=school, school_year=school_year,
+                                                  report_type=report_dd.report_type)
+                annual_reports.append((annual_report, report_dd.get_actual_due_date(school_year=school_year)))
         else:
             try:
                 annual_report, created = AnnualReport.objects.get(school=school,school_year=school_year,
@@ -255,10 +261,6 @@ def school_dashboard(request, schoolID):
     else:
         is_old=None
 
-    if school.address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
-        wss=True
-    else:
-        wss=False
 
 
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
