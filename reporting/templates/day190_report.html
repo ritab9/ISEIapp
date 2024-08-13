@@ -557,7 +557,8 @@
 
 
 //calculate no of weekdays between two dates
- /*   function countWeekdays(startDate, endDate) {
+/* tested and it doesn't work US
+  function countWeekdays(startDate, endDate) {
     var weekdays = 0;
     var currentDate = new Date(startDate);
     while (currentDate <= endDate) {
@@ -568,25 +569,39 @@
         currentDate.setDate(currentDate.getDate() + 1)
     }
     return weekdays;
-  } */
+  }
+*/
 
-  function countWeekdays(startDate, endDate) {
-      // Convert the dates to UTC to ensure timezone independence
-      let start = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
-      let end = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()));
+/*
+    function countWeekdays(startDate, endDate) {
+      // create Date objects from UTC strings
+      var start = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+      var end = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()));
 
-      let weekdays = 0;
+      var weekdays = 0;
 
-      // Iterate through each day in the date range
       while (start <= end) {
-        const dayOfWeek = start.getUTCDay();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // 0 = Sunday, 6 = Saturday
+        if (start.getUTCDay() !== 0 && start.getUTCDay() !== 6) {
           weekdays++;
         }
         start.setUTCDate(start.getUTCDate() + 1);
       }
-
       return weekdays;
+    }
+ */
+
+    function countWeekdays(startInput, endInput) {
+        const startDate = new Date(startInput); // parse input
+        const endDate = new Date(endInput);
+        let count = 0;
+        for (let d = new Date(new Date(startDate).setHours(0, 0, 0, 0)); d <= endDate; d.setDate(d.getDate() + 1)) {
+            const day = d.getDay();
+            if (day !== 0 && day != 6) {
+                // it's a week day
+                count++;
+            }
+        }
+        return count;
     }
 
 
