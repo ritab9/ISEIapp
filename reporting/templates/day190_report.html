@@ -604,6 +604,7 @@
         return count;
     }
 */
+
     function countWeekdays(d0, d1) {
         var startDate = parseDate(d0);
         var endDate = parseDate(d1);
@@ -645,7 +646,7 @@
          var year = input.getFullYear();
         var month = input.getMonth();
         var date = input.getDate();
-        var parsedDate = new Date(year, month, date);
+        var parsedDate = new Date(Date.UTC(year, month, date));
         return parsedDate;
     }
 
