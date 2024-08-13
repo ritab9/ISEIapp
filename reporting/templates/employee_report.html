@@ -100,7 +100,7 @@
                             Teaching: {{ p.years_teaching_experience|default_if_none:""  }}<br>
                         {% endif %}
                         {% if p.years_work_experience %}
-                            {{ p.years_work_experience|default_if_none:""  }}
+                            Work: {{ p.years_work_experience|default_if_none:""  }}
                         {% endif %}
                     </td>
                     <td>{{ p.years_at_this_school|default_if_none:""  }}</td>

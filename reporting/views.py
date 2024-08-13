@@ -843,18 +843,34 @@ def import_employee_prev_year(request, arID):
 
         e.pk = None  # Makes Django create a new instance
         e.annual_report = report
+        e.save()
+        e.positions.set(old_positions)
 
-        if e.positions.filter(category__name='A').exists():
-            e.years_administrative_experience +=1
-        if e.positions.filter(category__name='T').exists():
-            e.years_administrative_experience +=1
-        if e.positions.filter(category__name='G').exists():
-            e.years_administrative_experience += 1
+        if e.years_administrative_experience is None:
+            e.years_administrative_experience = 0
+
+
+        if e.positions.filter(category='A').exists():
+            if e.years_administrative_experience is None:
+                e.years_administrative_experience = 1
+            else:
+                e.years_administrative_experience +=1
+        if e.positions.filter(category='T').exists():
+            if e.years_teaching_experience is None:
+                e.years_teaching_experience = 1
+            else:
+                e.years_teaching_experience +=1
+        if e.positions.filter(category='G').exists():
+            if e.years_work_experience is None:
+                e.years_work_experience = 1
+            else:
+                e.years_work_experience += 1
 
         if e.years_at_this_school:
             e.years_at_this_school += 1
+
         e.save()
-        e.positions.set(old_positions)
+
         for d in old_degrees:
             PersonnelDegree.objects.create(
                 personnel=e,
