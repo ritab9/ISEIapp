@@ -614,8 +614,8 @@
 
         // Calculate days between dates
         var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
-        startDate.setHours(0,0,0,1);  // Start just after midnight
-        endDate.setHours(23,59,59,999);  // End just before midnight
+        startDate.setUTCHours(0,0,0,1);  // Start just after midnight
+        endDate.setUTCHours(23,59,59,999);  // End just before midnight
         var diff = endDate - startDate;  // Milliseconds between datetime objects
         var days = Math.ceil(diff / millisecondsPerDay);
 
@@ -624,8 +624,8 @@
         days = days - (weeks * 2);
 
         // Handle special cases
-        var startDay = startDate.getDay();
-        var endDay = endDate.getDay();
+        var startDay = startDate.getUTCDay();
+        var endDay = endDate.getUTCDay();
 
         // Remove weekend not previously removed.
         if (startDay - endDay > 1)
@@ -643,9 +643,9 @@
     }
 
     function parseDate(input) {
-         var year = input.getFullYear();
-        var month = input.getMonth();
-        var date = input.getDate();
+        var year = input.getUTCFullYear();
+        var month = input.getUTCMonth();
+        var date = input.getUTCDate();
         var parsedDate = new Date(Date.UTC(year, month, date));
         return parsedDate;
     }
