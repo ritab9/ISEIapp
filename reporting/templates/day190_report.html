@@ -7,9 +7,9 @@
 {% block content %}
 
 
-    <h6 class="error">
+    <p class="error">
          It has come to our attention that under certain time conditions, the weekday count displayed might be one day more than expected. Please be assured that we're actively working on this matter. We sincerely apologize for any inconvenience this may cause and appreciate your understanding.
-    </h6>
+    </p>
 
     <div class="">
          <div class="row ml-2">
@@ -557,7 +557,7 @@
 
 
 //calculate no of weekdays between two dates
-    function countWeekdays(startDate, endDate) {
+ /*   function countWeekdays(startDate, endDate) {
     var weekdays = 0;
     var currentDate = new Date(startDate);
     while (currentDate <= endDate) {
@@ -568,7 +568,28 @@
         currentDate.setDate(currentDate.getDate() + 1)
     }
     return weekdays;
-  }
+  } */
+
+  function countWeekdays(startDate, endDate) {
+      // Convert the dates to UTC to ensure timezone independence
+      let start = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+      let end = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()));
+
+      let weekdays = 0;
+
+      // Iterate through each day in the date range
+      while (start <= end) {
+        const dayOfWeek = start.getUTCDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // 0 = Sunday, 6 = Saturday
+          weekdays++;
+        }
+        start.setUTCDate(start.getUTCDate() + 1);
+      }
+
+      return weekdays;
+    }
+
+
 
   // Function to calculate total vacation weekdays
     function calculateTotalVacationDays() {
