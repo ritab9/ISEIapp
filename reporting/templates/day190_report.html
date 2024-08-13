@@ -646,7 +646,7 @@
         var year = input.getUTCFullYear();
         var month = input.getUTCMonth();
         var date = input.getUTCDate();
-        var parsedDate = new Date(Date.UTC(year, month, date));
+        var parsedDate = new Date(Date.UTC(year, month, date, 12, 0, 0));
         return parsedDate;
     }
 
