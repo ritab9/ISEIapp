@@ -191,7 +191,7 @@ class CEUInstance(models.Model):
 class AcademicClass(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     university = models.CharField(max_length=50, blank=False)
-    name = models.CharField(max_length=50, blank=False)
+    name = models.CharField(max_length=50, blank=False, verbose_name="Course Name")
     date_completed = models.DateField(blank=False)
     transcript_requested = models.BooleanField(default=False)
     transcript_received = models.BooleanField(default=False)
