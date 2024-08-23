@@ -140,7 +140,10 @@ def principalteachercert(request, schoolID):
     non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates))
     number_of_non_certified_teachers = non_certified_teachers.count()
 
-    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    if number_of_teachers > 0:
+        percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
+    else:
+        percent_certified = 0
 
     today = date.today()
     in_six_months = today + timedelta(183)
@@ -749,6 +752,7 @@ def isei_ceu_approval(request, repID=None, instID=None):
     context = dict(teachers=teachers, ceu_report_notreviewed=ceu_report_notreviewed,
                    ceu_report_approved=ceu_report_approved, ceu_report_denied=ceu_report_denied,
                    ceu_instance_notreviewed=ceu_instance_notreviewed)
+
     return render(request, 'teachercert/isei_ceu_approval.html', context)
 
 
