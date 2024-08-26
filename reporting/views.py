@@ -1099,7 +1099,8 @@ def opening_report(request, arID):
                         grade_level__in=grade_range).count()
                     setattr(opening, field_name, count)
 
-            unkown_baptismal_status_count = students.filter(baptized='U').count()
+            opening.unkown_baptismal_status_count = students.filter(baptized='U').count()
+            opening.baptized_non_sda_count = students.filter(baptized='O').count()
 
         personnel = Personnel.objects.filter(annual_report=annual_report_personnel).annotate(highest_degree_rank=Max('degrees__rank'))
 
@@ -1108,7 +1109,10 @@ def opening_report(request, arID):
                 Q(positions__category=StaffCategory.ADMINISTRATIVE) |
                 Q(positions__category=StaffCategory.TEACHING))
             opening.teacher_admin_count=teacher_admin.count()
-            opening.general_staff_count=personnel.filter(positions__category=StaffCategory.GENERAL_STAFF).count()
+
+            general_staff = personnel.filter(positions__category=StaffCategory.GENERAL_STAFF).exclude(id__in=teacher_admin)
+            opening.general_staff_count=general_staff.count()
+
             opening.non_sda_teacher_admin_count=teacher_admin.filter(sda=False).count()
 
             opening.professional_count = personnel.filter(highest_degree_rank=1).count()
@@ -1122,7 +1126,6 @@ def opening_report(request, arID):
     context = dict(arStudentID= arStudentID, arEmployeeID=arEmployeeID,
                     opening=opening,
                    grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields,
-                   unkown_baptismal_status_count=unkown_baptismal_status_count,
                    )
 
 

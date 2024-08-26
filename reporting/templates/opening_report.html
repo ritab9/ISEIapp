@@ -160,6 +160,18 @@
                         <td>{{ opening.unbaptized_parent_non_sda_count_S }}</td>
                         <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S }}</td>
                     </tr>
+
+                    {% if opening.baptized_non_sda_count > 0 %}
+                    <tr>
+                        <td colspan="5">Baptised Non-SDA</td><td>{{ opening.baptized_non_sda_count }}<tr>
+                    </tr>
+                    {% endif %}
+                     {% if opening.unkown_baptismal_status_count > 0 %}
+                   <tr>
+                        <td colspan="5">Unknown baptismal status</td><td>{{ opening.unkown_baptismal_status_count }}<tr>
+                    </tr>
+                    {% endif %}
+
                   </tbody>
                 </table>
             </div>

@@ -472,6 +472,9 @@ class Opening(models.Model):
     unbaptized_parent_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with at least one parents SDA S")
     unbaptized_parent_non_sda_count_S = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Not baptised with non-SDA parents S")
 
+    unknown_baptismal_statut_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Unknown baptismal status")
+    baptized_non_sda_count=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Baptised with non-SDA count")
+
     #staff count
     teacher_admin_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Administrative and Teaching Staff")
     general_staff_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="General Staff")
