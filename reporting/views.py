@@ -651,9 +651,20 @@ def day190_report_display(request, arID):
         return render(request, 'day190_report_display.html', context)
 
 @login_required(login_url='login')
-def employee_report(request, arID):
-    all_personnel = Personnel.objects.filter(annual_report__id=arID).exclude(status=StaffStatus.NO_LONGER_EMPLOYED).select_related('teacher', 'annual_report').prefetch_related(
-        'positions', 'degrees', 'subjects_teaching', 'subjects_taught').order_by('last_name')
+def employee_report(request, arID, show_all=False):
+    #all_personnel = Personnel.objects.filter(annual_report__id=arID).exclude(status=StaffStatus.NO_LONGER_EMPLOYED).select_related('teacher', 'annual_report').prefetch_related(
+    #    'positions', 'degrees', 'subjects_teaching', 'subjects_taught').order_by('last_name')
+    if show_all:
+        all_personnel = Personnel.objects.filter(annual_report__id=arID).select_related(
+            'teacher', 'annual_report').prefetch_related(
+            'positions', 'degrees', 'subjects_teaching', 'subjects_taught').order_by('last_name')
+    else:
+        all_personnel = Personnel.objects.filter(annual_report__id=arID).exclude(
+            status=StaffStatus.NO_LONGER_EMPLOYED).select_related('teacher', 'annual_report').prefetch_related(
+            'positions', 'degrees', 'subjects_teaching', 'subjects_taught').order_by('last_name')
+
+
+
     annual_report = get_object_or_404(AnnualReport, id=arID)
     school=annual_report.school.abbreviation
 

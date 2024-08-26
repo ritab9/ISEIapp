@@ -14,6 +14,7 @@ urlpatterns = [
     path('tn_student_export/<int:arID>/', views.tn_student_export, name='tn_student_export'),
 
     path('employee_report/<int:arID>/', views.employee_report, name='employee_report'),
+    path('employee/report/<int:arID>/all/', views.employee_report, {'show_all': True}, name='employee_report_all'),
     path('employee_add_edit/<int:arID>/<int:personnelID>/', views.employee_add_edit, name='employee_edit'),
     path('employee_add_edit/<int:arID>/<str:positionCode>/', views.employee_add_edit, name='employee_add'),
     path('import_employee_prev_year/<int:arID>/', views.import_employee_prev_year, name='import_employee_prev_year'),

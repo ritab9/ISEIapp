@@ -23,11 +23,6 @@ class ReportTypeAdmin(admin.ModelAdmin):
     list_editable = ['order_number', 'for_all_schools', 'isei_created', 'view_name', 'code']
 admin.site.register(ReportType, ReportTypeAdmin)
 
-@admin.register(AnnualReport)
-class AnnualReportAdmin(admin.ModelAdmin):
-    list_display = ['report_type','school_year', 'school', 'submit_date']
-    list_editable = ['submit_date']
-    list_filter = ('school_year', 'report_type', 'school',)
 
 
 #Student Report Data
@@ -97,3 +92,26 @@ admin.site.register(Opening)
 
 admin.site.register(GradeCount)
 admin.site.register(PartTimeGradeCount)
+
+class PersonnelInline(admin.TabularInline):  # or admin.StackedInline
+    model = Personnel
+    extra = 0
+
+
+
+
+@admin.register(AnnualReport)
+class AnnualReportAdmin(admin.ModelAdmin):
+    list_display = ['report_type','school_year', 'school', 'submit_date']
+    list_editable = ['submit_date']
+    list_filter = ('school_year', 'report_type', 'school',)
+
+    inlines = [PersonnelInline]
+
+    def get_formsets_with_inlines(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            if isinstance(inline, PersonnelInline) and obj is not None and obj.report_type.code != 'ER':
+                continue
+            yield inline.get_formset(request, obj), inline
+
+

@@ -22,6 +22,9 @@
                     <div class="col d-flex justify-content-center">
                         <button class="btn btn-sm btn-success" type="submit" name="complete">Report Complete</button>
                     </div>
+                    <div class="col d-flex justify-content-center">
+                        <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'employee_report_all' arID %}">Include No Longer Employed Personnel</a>
+                    </div>
                 </div>
 
             </form>
@@ -71,7 +74,7 @@
                 </tr>
                 <tr><th>Total</th>
                     <th>At {{ school }}</th>
-                    <th>Type & Renewal Date</th>
+                    <th>Type<br> Renewal Date</th>
                     <th>Endorsements</th>
                     <th>Teaching Now</th>
                     <th>All Taught</th>
