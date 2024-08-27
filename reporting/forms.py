@@ -5,6 +5,8 @@ from users.models import Country, TNCounty
 from .models import *
 from django.forms import BaseModelFormSet, TextInput, NumberInput, DateInput
 from django.forms.models import inlineformset_factory
+from django.forms import modelformset_factory
+
 from django.forms.widgets import CheckboxSelectMultiple
 
 
@@ -12,19 +14,20 @@ from django.forms.widgets import CheckboxSelectMultiple
 class UploadFileForm(forms.Form):
     file = forms.FileField()
 
+def my_formset_factory(model, form, extra, can_delete, exclude, is_us_school, is_tn_school):
+    class _StudentForm(form):  # This way `form` parameter used
+        def __init__(self, *args, **kwargs):
+            super().__init__(is_us_school=is_us_school, is_tn_school=is_tn_school, *args, **kwargs)
+
+    return modelformset_factory(model=model, form=_StudentForm, extra=extra, can_delete=can_delete, exclude=exclude)
+
 
 class StudentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        annual_report_id = kwargs.pop('annual_report_id', None)
-        super(StudentForm, self).__init__(*args, **kwargs)
-        if annual_report_id is not None:
-            annual_report = AnnualReport.objects.get(id=annual_report_id)
-            preferential_countries = list(Country.objects.filter(student__annual_report=annual_report).distinct())
-            other_countries = list(Country.objects.exclude(id__in=[country.id for country in preferential_countries]))
-            self.fields['country'].choices = [(country.id, country.name) for country in
-                                              preferential_countries + other_countries]
-
+        self.is_us_school = kwargs.pop('is_us_school', False)
+        self.is_tn_school = kwargs.pop('is_tn_school', False)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Student
@@ -54,10 +57,6 @@ class StudentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        #name = cleaned_data.get('name')
-        #if name and Student.objects.filter(name=name, annual_report_id=self.annual_report_id).exists():
-        #    self.add_error('name', 'A student with this name already exists in this annual report.')
-
         age = cleaned_data.get("age")
         birth_date = cleaned_data.get("birth_date")
         if not (age or birth_date):
@@ -65,14 +64,18 @@ class StudentForm(forms.ModelForm):
                 "Student must have either their age at registration or a birth date entered."
             )
 
-        country = cleaned_data.get('country')
-        TN_county = cleaned_data.get('TN_county')
-        if country and country.code == 'US':
-            us_state = cleaned_data.get('us_state')
-            if not us_state:
-                self.add_error('us_state', ValidationError("required for US address"))
-            #if us_state=='TN' and not TN_county:
-            #    self.add_error('TN_county', ValidationError("required for TN students"))
+
+
+        if self.is_us_school:
+            country = cleaned_data.get('country')
+            if country and country.code == 'US':
+                us_state = cleaned_data.get('us_state')
+                if not us_state:
+                    self.add_error('us_state', ValidationError("Required for US address"))
+                if self.is_tn_school:
+                    tn_county = cleaned_data.get('TN_county')
+                    if us_state == 'TN' and not tn_county:
+                        self.add_error('TN_county', ValidationError("Required for TN students"))
 
         return cleaned_data
 
@@ -83,6 +86,8 @@ class StudentForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
 
 #Day 190 Forms
 class Day190Form(forms.ModelForm):

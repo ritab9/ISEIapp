@@ -23,11 +23,13 @@ from reporting.models import GRADE_LEVEL_DICT
 from .filters import *
 from django.db.models import Prefetch, Max
 
-
 from users.models import AccreditationInfo
 from .functions import update_student_country_occurences
 from teachercert.myfunctions import newest_certificate
 from django.db import IntegrityError
+
+from django.utils.dateparse import parse_date
+
 
 
 #individual school reports
@@ -43,18 +45,30 @@ def student_report(request,arID):
     annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
     school = annual_report.school
 
+    # Determine if the school is in US and in TN
+    is_us_school = school.address.country.code == "US"
+    is_tn_school = is_us_school and school.address.state_us == "TN"
 
     exclude_fields = ['annual_report', 'id', 'age_at_registration']
-    if school.address.country.code != "US" or school.address.state_us != "TN":
+    if not is_us_school or not is_tn_school:
         exclude_fields.append('TN_county')
 
-    if school.address.country.code != "US":
+    if not is_us_school:
         exclude_fields.append('us_state')
 
-    StudentFormSet = modelformset_factory(Student, form=StudentForm, extra=1, can_delete=True, exclude=exclude_fields)
+    StudentFormSet = my_formset_factory(Student, form=StudentForm, extra=1, can_delete=True, exclude=exclude_fields,
+                                          is_us_school=is_us_school, is_tn_school=is_tn_school)
 
     if request.method == 'POST':
         formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
+
+        for form in formset:
+            if 'registration_date' in form.data:
+                date_string = form.data['registration_date']
+                registration_date = parse_date(date_string)
+                if registration_date is None:
+                    raise ValueError(f"Could not parse date: {date_string}")
+                form.data['registration_date'] = registration_date.isoformat()
 
         if formset.is_valid():
             if formset.has_changed():
