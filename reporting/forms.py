@@ -71,8 +71,8 @@ class StudentForm(forms.ModelForm):
             us_state = cleaned_data.get('us_state')
             if not us_state:
                 self.add_error('us_state', ValidationError("required for US address"))
-            if us_state=='TN' and not TN_county:
-                self.add_error('TN_county', ValidationError("required for TN students"))
+            #if us_state=='TN' and not TN_county:
+            #    self.add_error('TN_county', ValidationError("required for TN students"))
 
         return cleaned_data
 
