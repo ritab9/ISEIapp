@@ -75,7 +75,7 @@
             {% endfor %}
 <!-- table with student data -->
             <div class="scrollable-table scrollable-table2">
-                <table class="table table-light">
+                <table class="table table-light table-striped">
                     <thead class="thead table-ISEIblue4 sticky_head">
                         <tr><th>#</th>
                             {% for field in formset.forms.0.visible_fields %}
@@ -287,29 +287,29 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', e => {
-    var formset = document.querySelector('#formset');
+  document.addEventListener('DOMContentLoaded', e => {
+        var formset = document.querySelector('#formset');
 
-    updateRowNumbers();
+        updateRowNumbers();
 
-    // Create a callback function for the observer to run when mutations are observed
-    var callback = function (mutationsList, observer) {
-        for (let mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                if(mutation.addedNodes.length > 0){ // Check if nodes were added
-                    // A child was added to the node, call updateRowNumbers()
-                    updateRowNumbers();
+        // Create a callback function for the observer to run when mutations are observed
+        var callback = function (mutationsList, observer) {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    if(mutation.addedNodes.length > 0){ // Check if nodes were added
+                        // A child was added to the node, call updateRowNumbers()
+                        updateRowNumbers();
+                    }
                 }
             }
-        }
-    };
+        };
 
-    // Create an observer instance and pass in the callback function
-    var observer = new MutationObserver(callback);
+        // Create an observer instance and pass in the callback function
+        var observer = new MutationObserver(callback);
 
-    // Start observing the target node for configured mutations
-    observer.observe(formset, {childList: true});
-});
+        // Start observing the target node for configured mutations
+        observer.observe(formset, {childList: true});
+    });
 
 //apply global location for all records
     $(document).ready(function(){
