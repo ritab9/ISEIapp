@@ -97,7 +97,9 @@ class PersonnelInline(admin.TabularInline):  # or admin.StackedInline
     model = Personnel
     extra = 0
 
-
+class StudentInline(admin.TabularInline):  # or admin.StackedInline
+    model = Student
+    extra = 0
 
 
 @admin.register(AnnualReport)
@@ -106,11 +108,13 @@ class AnnualReportAdmin(admin.ModelAdmin):
     list_editable = ['submit_date']
     list_filter = ('school_year', 'report_type', 'school',)
 
-    inlines = [PersonnelInline]
+    inlines = [PersonnelInline, StudentInline]
 
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             if isinstance(inline, PersonnelInline) and obj is not None and obj.report_type.code != 'ER':
+                continue
+            if isinstance(inline, StudentInline) and obj is not None and obj.report_type.code != 'SR':
                 continue
             yield inline.get_formset(request, obj), inline
 

@@ -75,11 +75,11 @@
             {% endfor %}
 <!-- table with student data -->
             <div class="scrollable-table scrollable-table2">
-                <table class="table table-light table-striped">
+                <table class="table table-light">
                     <thead class="thead table-ISEIblue4 sticky_head">
                         <tr><th>#</th>
                             {% for field in formset.forms.0.visible_fields %}
-                                <th>
+                                <th {% if forloop.counter == 1 %}class="sticky-column"{% endif %}>
                                     <div style="display: flex; justify-content: space-between;">
                                         <span>{{ field.label }}</span>
                                             {% if field.label == "Birth date" %}
@@ -95,7 +95,7 @@
                                 <tr class="form">
                                     <td></td>
                                     {% for field in form %}
-                                        <td style="text-align: center;"> {{ field }}
+                                        <td style="text-align: center;" {% if forloop.counter == 1 %}class="sticky-column"{% endif %}> {{ field }}
                                          {% if field.errors %}
                                             <div class="text-danger">
                                                 {{ field.errors }}
@@ -171,14 +171,16 @@
 
 
 
-/*    window.onload = function () {
+    window.onload = function () {
         var table = document.querySelector('.table');
         var headerRow = table.querySelector('thead').rows[0];
         var stickyCell = headerRow.cells[1]; // Change to the index of your sticky cell
         var bgColor = window.getComputedStyle(headerRow, null).getPropertyValue('background-color');
         stickyCell.style.backgroundColor = bgColor;
     }
-*/
+
+
+
 // To make TN_county available only for TN schools, and add US as country if US state is selected
     $(document).ready(function() {
     // Listen to any change on state fields
