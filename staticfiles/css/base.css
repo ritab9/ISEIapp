@@ -9,7 +9,7 @@
     overflow-x: auto;
 }
 .scrollable-table2 {
-    max-height: 760px; /* Adjust this value based on your requirements */
+    max-height: 500px; /* Adjust this value based on your requirements */
     overflow-y: auto;
 }
 
@@ -17,6 +17,12 @@
     position: sticky;
     top: 0;
     z-index: 10;
+}
+
+.sticky-column {
+    position: sticky;
+    left: 0;
+    background-color: white;
 }
 
 /* used with JS to show/hide elements in report table*/
