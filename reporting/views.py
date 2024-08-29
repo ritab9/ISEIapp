@@ -7,7 +7,7 @@ from django.db.models import Sum
 from .forms import *
 from datetime import date, timedelta
 from django.contrib import messages
-from django.db import transaction
+from django.db import transaction, OperationalError
 
 from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
@@ -21,7 +21,7 @@ from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
 from .filters import *
-from django.db.models import Prefetch, Max
+from django.db.models import Prefetch, Max, Case, When, Value, IntegerField
 
 from users.models import AccreditationInfo
 from .functions import update_student_country_occurences
@@ -41,75 +41,107 @@ def report_dashboard(request, schoolID, school_yearID):
 #Student Report Views
 @login_required(login_url='login')
 def student_report(request,arID):
+    try:
+        annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
+        school = annual_report.school
 
-    annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
-    school = annual_report.school
+        # Determine if the school is in US and in TN
+        is_us_school = school.address.country.code == "US"
+        is_tn_school = is_us_school and school.address.state_us == "TN"
 
-    # Determine if the school is in US and in TN
-    is_us_school = school.address.country.code == "US"
-    is_tn_school = is_us_school and school.address.state_us == "TN"
+        exclude_fields = ['annual_report', 'id', 'age_at_registration']
+        if not is_us_school or not is_tn_school:
+            exclude_fields.append('TN_county')
 
-    exclude_fields = ['annual_report', 'id', 'age_at_registration']
-    if not is_us_school or not is_tn_school:
-        exclude_fields.append('TN_county')
+        if not is_us_school:
+            exclude_fields.append('us_state')
 
-    if not is_us_school:
-        exclude_fields.append('us_state')
+        StudentFormSet = my_formset_factory(Student, form=StudentForm, extra=1, can_delete=True, exclude=exclude_fields,
+                                              is_us_school=is_us_school, is_tn_school=is_tn_school)
 
-    StudentFormSet = my_formset_factory(Student, form=StudentForm, extra=1, can_delete=True, exclude=exclude_fields,
-                                          is_us_school=is_us_school, is_tn_school=is_tn_school)
+        if request.method == 'POST':
 
-    if request.method == 'POST':
-        formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
+            formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
 
-        for form in formset:
-            if 'registration_date' in form.data:
-                date_string = form.data['registration_date']
-                registration_date = parse_date(date_string)
-                if registration_date is None:
-                    raise ValueError(f"Could not parse date: {date_string}")
-                form.data['registration_date'] = registration_date.isoformat()
+            for form in formset:
+                if 'registration_date' in form.data:
+                    date_string = form.data['registration_date']
+                    registration_date = parse_date(date_string)
+                    if registration_date is None:
+                        raise ValueError(f"Could not parse date: {date_string}")
+                    form.data['registration_date'] = registration_date.isoformat()
 
-        if formset.is_valid():
-            if formset.has_changed():
+            if formset.is_valid():
+                try:
+                    with transaction.atomic():
 
-                for form in formset:
-                    if form.has_changed():
-                        if form.instance.pk is not None:
-                            form.save()
-                        else:
-                            instance=form.save(commit=False)
-                            instance.annual_report = annual_report
-                            instance.save()
-                for form in formset.deleted_forms:
-                    form.instance.delete()
+                        if formset.has_changed():
+                            for form in formset:
+                                if form.has_changed():
+                                    if form.instance.pk is not None:
+                                        form.save()
+                                    else:
+                                        instance=form.save(commit=False)
+                                        instance.annual_report = annual_report
+                                        instance.save()
+                            for form in formset.deleted_forms:
+                                form.instance.delete()
 
-            update_student_country_occurences(annual_report)
+                        update_student_country_occurences(annual_report)
 
-            if 'submit' in request.POST:
-                if not annual_report.submit_date:
-                    annual_report.submit_date = date.today()
-                annual_report.last_update_date = date.today()
-                annual_report.save()
-                #Todo Send email to ISEI about it's completion
-                return redirect('school_dashboard', school.id)
-            elif 'save' in request.POST:
-                annual_report.last_update_date = date.today()
-                annual_report.save()
+                        if 'submit' in request.POST:
+                            if not annual_report.submit_date:
+                                annual_report.submit_date = date.today()
+                            annual_report.last_update_date = date.today()
+                            annual_report.save()
+                            #Todo Send email to ISEI about it's completion
+                            return redirect('school_dashboard', school.id)
+                        elif 'save' in request.POST:
+                            annual_report.last_update_date = date.today()
+                            annual_report.save()
 
-                return redirect('school_dashboard', school.id)
+                            return redirect('school_dashboard', school.id)
+                except Exception as e:
+                    # Log the error here
+                    print(str(e))
+                    # error_message can be something custom or str(e), according to your use case
+                    error_message = 'There was an error processing your request.'
+                    messages.error(request, error_message)
 
-
-    else:
-        if annual_report.submit_date:
-            students_qs = (Student.objects.filter(annual_report=annual_report,  status__in=['enrolled', 'withdrawn', 'part-time'])
-                           .select_related('country', 'TN_county')
-                           .order_by('status','grade_level', 'name'))
         else:
-            students_qs = (Student.objects.filter(annual_report=annual_report)
-                           .select_related('country', 'TN_county')
-                           .order_by('grade_level', 'name'))
-        formset = StudentFormSet(queryset=students_qs)
+
+            status_order = Case(
+                When(status='enrolled', then=Value(1)),
+                When(status='part-time', then=Value(2)),
+                When(status='withdrawn', then=Value(3)),
+                When(status='graduated', then=Value(4)),
+                When(status='did_not_return', then=Value(5)),
+                default=Value(6),
+                output_field=IntegerField()
+            )
+
+            if annual_report.submit_date:
+                students_qs = (Student.objects.filter(annual_report=annual_report,  status__in=['enrolled', 'withdrawn', 'part-time'])
+                               .select_related('country', 'TN_county')
+                               .order_by(status_order,'grade_level', 'name'))
+            else:
+                students_qs = (Student.objects.filter(annual_report=annual_report)
+                               .select_related('country', 'TN_county')
+                               .order_by(status_order,'grade_level', 'name'))
+            formset = StudentFormSet(queryset=students_qs)
+
+    except OperationalError as e:
+        error_message = "Database connection error. Please try again later."
+        messages.error(request, error_message)
+        context = dict(formset=formset, annual_report=annual_report)  # You may need to adjust this
+        return render(request, 'student_report.html', context)  # Assuming 'student_report.html' is your template
+
+    except Exception as e:
+        error_message = 'An error occurred while processing your request.'
+        messages.error(request, error_message)
+        context = dict(formset=formset, annual_report=annual_report)  # You may need to adjust this
+        return render(request, 'student_report.html', context)  # Assuming 'student_report.html' is your template
+
 
     context = dict(formset=formset, annual_report=annual_report)
     return render(request, 'student_report.html', context)
@@ -159,13 +191,23 @@ def import_students_prev_year(request, arID):
 def student_report_display(request, arID):
 
     annual_report = AnnualReport.objects.get(id=arID)
+    status_order = Case(
+        When(status='enrolled', then=Value(1)),
+        When(status='part-time', then=Value(2)),
+        When(status='withdrawn', then=Value(3)),
+        When(status='graduated', then=Value(4)),
+        When(status='did_not_return', then=Value(5)),
+        default=Value(6),
+        output_field=IntegerField()
+    )
     students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
-                                                                                 'TN_county').order_by('grade_level', 'name')
+                                                                                 'TN_county').order_by(status_order,'grade_level', 'name')
     #students = Student.objects.filter(annual_report=annual_report, status__in=['enrolled','part-time','withdrawn']).select_related('annual_report', 'country',
                                                                                       #'TN_county').order_by('grade_level', 'name')
 
+    #status = 'enrolled'
     filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
-
+    #initial = {'status': status}
 
     if request.GET:
         if filter_form.is_valid():
@@ -190,7 +232,7 @@ def student_report_display(request, arID):
             if 'TN_county' in filter_form.cleaned_data and filter_form.cleaned_data['TN_county']:
                 students = students.filter(TN_county=filter_form.cleaned_data['TN_county'])
 
-
+    #students=students.filter(status=status)
     context = {
         'annual_report': annual_report,
         'students': students,
@@ -944,6 +986,8 @@ def inservice_report(request, arID):
     annual_report=AnnualReport.objects.get(id=arID)
     schoolID=annual_report.school.id
     school_yearID=annual_report.school_year.id
+
+    print(SchoolYear.objects.get(id=school_yearID))
 
     try:
         report_type_190_day = ReportType.objects.get(name='190 - Day Report')

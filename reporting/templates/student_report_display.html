@@ -32,7 +32,7 @@
         <div class="scrollable-table scrollable-table2 mt-2">
                 <table class="table table-striped">
                     <thead class="thead table-ISEIblue4 sticky_head">
-                        <tr>
+                        <tr><th>#</th>
                             <th>Name</th><th>Address</th>
                             {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
                                 <th>US State</th>
@@ -50,6 +50,7 @@
                     <tbody>
                         {% for student in students %}
                             <tr>
+                                <td>{{ forloop.counter }}</td>
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.address }}</td>
                                 {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
