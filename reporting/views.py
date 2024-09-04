@@ -429,7 +429,7 @@ def student_import_dashboard(request, arID):
                 # Create or update instance
                 student, created = Student.objects.update_or_create(
                     name=name,
-                    birth_date=birth_date,
+                    annual_report=annual_report_instance,
                     defaults = {
                         'address': address,
                         'us_state': us_state,
@@ -441,11 +441,11 @@ def student_import_dashboard(request, arID):
                         'parent_sda': parent_sda,
                         'status': status,
                         'age':age,
+                        'birth_date': birth_date,
                         'grade_level': grade_level,
                         'registration_date': registration_date,
                         'withdraw_date': withdraw_date,
                         'location': location,
-                        'annual_report': annual_report_instance
                     }
                 )
                 if created:
