@@ -1,6 +1,7 @@
 from django import forms
-from .models import Student
-from users.models import Country, TNCounty, StateField
+from .models import Student, StaffStatus, StaffPosition, Degree, Subject
+from users.models import Country, TNCounty, StateField, School
+
 
 class StudentFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -25,3 +26,12 @@ class StudentFilterForm(forms.Form):
 
             if annual_report.school.address.state_us == 'TN':
                 self.fields['TN_county'] = forms.ModelChoiceField(queryset=TNCounty.objects.all(), required=False)
+
+
+class EmployeeFilterForm(forms.Form):
+    school = forms.ModelChoiceField(queryset=School.objects.filter(active=True, test=False), required=False)
+    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '15'}))
+    status = forms.ChoiceField(choices=[('', 'All')] + list(StaffStatus.choices), required=False)
+    position = forms.ModelChoiceField(queryset=StaffPosition.objects.all(), required=False)
+    degree = forms.ModelChoiceField(queryset=Degree.objects.all(), required=False)
+    subjects_teaching = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False)

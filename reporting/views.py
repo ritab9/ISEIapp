@@ -15,6 +15,7 @@ import numpy as np
 
 from django.http import FileResponse
 from django.views import View
+from django.views.generic import ListView
 from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
@@ -1524,3 +1525,59 @@ def download_TN_reports(request, schoolyearID):
 
     return response
 
+
+class PersonnelListView(ListView):
+    model = Personnel
+    template_name = 'personnel_directory.html'  # change this to your desired template name
+    filter_form=EmployeeFilterForm
+
+    def get_form(self):
+        if not self.request.GET:
+            data = {'status': 'Active', 'position': 'Manager'}  # Default filter values
+            form = self.filter_form(data)
+        else:
+            form = self.filter_form(self.request.GET)
+        return form
+
+    def get_queryset(self):
+        school_year_id = self.kwargs.get('schoolyearID')  # assuming school year is passed via URL
+        if school_year_id:
+            school_year = SchoolYear.objects.get(id=school_year_id)
+        else:
+            school_year = SchoolYear.objects.get(current_school_year=True)
+        report_type = ReportType.objects.get(code="ER")
+
+        #school=School.objects.get(abbreviation = "AAA")
+        #annual_employee_reports = AnnualReport.objects.filter(school_year=school_year, report_type=report_type, school=school)
+        annual_employee_reports = AnnualReport.objects.filter(school_year=school_year,report_type=report_type)
+        queryset = Personnel.objects.filter(annual_report__in=annual_employee_reports).order_by('annual_report','last_name')
+
+        form = self.filter_form(self.request.GET)
+        if form.is_valid():
+            last_name = form.cleaned_data.get('last_name')
+            school = form.cleaned_data.get('school')
+            status = form.cleaned_data.get('status')
+            position = form.cleaned_data.get('position')
+            degree = form.cleaned_data.get('degree')
+            subjects_teaching = form.cleaned_data.get('subjects_teaching')
+
+            if last_name:
+                queryset = queryset.filter(last_name__icontains=last_name)
+            if school:  # if a school was provided, filter by it
+                school_obj = School.objects.get(abbreviation=school.abbreviation)
+                queryset = queryset.filter(annual_report__school=school_obj)
+            if status and status != '':
+                queryset = queryset.filter(status=status)
+            if position:
+                queryset = queryset.filter(position=position)
+            if degree:
+                queryset = queryset.filter(degrees=degree)
+            if subjects_teaching:
+                queryset = queryset.filter(subjects_teaching=subjects_teaching)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.filter_form(self.request.GET)
+        return context
