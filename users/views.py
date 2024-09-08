@@ -147,7 +147,12 @@ def accountsettings(request, userID):
     if request.method == 'POST' and request.POST.get('school_of_employment'):
         school_of_employment_formset = SchoolOfEmploymentFormSet(request.POST, instance = teacher)
         if school_of_employment_formset.is_valid():
-            school_of_employment_formset.save()
+            instances = school_of_employment_formset.save(commit=False)
+            for obj in school_of_employment_formset.deleted_objects:
+                obj.delete()
+            for instance in instances:
+               instance.save()
+            return redirect(request.path)
             messages.success(request, 'Your Schools of Employment List was successfully updated!')
         else:
             #messages.error(request, school_of_employment_formset.errors)
@@ -158,7 +163,12 @@ def accountsettings(request, userID):
     if request.method == 'POST' and request.POST.get('college_attended'):
         college_attended_formset = CollegeAttendedFormSet(request.POST, instance=teacher)
         if college_attended_formset.is_valid():
-            college_attended_formset.save()
+            instances = college_attended_formset.save(commit=False)
+            for obj in college_attended_formset.deleted_objects:
+                obj.delete()
+            for instance in instances:
+                instance.save()
+            return redirect(request.path)
             messages.success(request, 'Your Colleges Attended List was successfully updated!')
         else:
             #messages.error(request, college_attended_formset.errors)
