@@ -287,7 +287,10 @@ def school_dashboard(request, schoolID):
 @allowed_users(allowed_roles=['staff'])
 def isei_dashboard(request):
 
-    return render(request, 'users/isei_dashboard.html')
+    current_school_year = SchoolYear.objects.filter(current_school_year=True).first()
+
+    context = dict(schoolyearID=current_school_year.id)
+    return render(request, 'users/isei_dashboard.html', context)
 
 
 def update_school_info(request, schoolID):

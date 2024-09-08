@@ -47,6 +47,11 @@
                                 <span class="span80"> Due date: <span class="error">{{ report.due_date }}</span></span>
                             {% endif %}
                         {% endif %}
+
+                            {% if report.day190.first.file %}
+                               <br><span class="span80 success">calendar</span>
+                            {% endif %}
+
                     {% endif %}
                 {% endfor %}
             </td>

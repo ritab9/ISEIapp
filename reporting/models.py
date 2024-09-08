@@ -132,6 +132,7 @@ class StaffPosition(models.Model):
         max_length=50,
         choices=StaffCategory.choices,
     )
+    teaching_position=models.BooleanField(default=False)
     class Meta:
         ordering = ['category', 'name']
     def __str__(self):

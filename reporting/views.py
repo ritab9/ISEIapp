@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 
 from django.forms import modelformset_factory
-from django.db.models import Sum
+from django.db.models import Sum, Q, Count, Prefetch, Max, Case, When, Value, IntegerField
 from .forms import *
 from datetime import date, timedelta
 from django.contrib import messages
@@ -13,15 +13,12 @@ from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 import numpy as np
 
-from django.db.models import Q
-
 from django.http import FileResponse
 from django.views import View
 from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
 from .filters import *
-from django.db.models import Prefetch, Max, Case, When, Value, IntegerField
 
 from users.models import AccreditationInfo
 from .functions import update_student_country_occurences
@@ -29,6 +26,7 @@ from teachercert.myfunctions import newest_certificate
 from django.db import IntegrityError
 
 from django.utils.dateparse import parse_date
+from pandas import ExcelWriter
 
 
 
@@ -1434,3 +1432,95 @@ def school_directory(request):
     context = dict(schools=schools)
 
     return render(request, 'school_directory.html', context)
+
+@login_required(login_url='login')
+def download_TN_reports(request, schoolyearID):
+
+    school_year=SchoolYear.objects.get(id=schoolyearID)
+
+    annual_student_reports = AnnualReport.objects.filter(
+        school_year=school_year,
+        report_type__code="SR",
+        school__address__state_us='TN'
+    )
+
+    # Prepare data for DataFrame
+    data = []
+    for report in annual_student_reports:
+        school = report.school
+        annual_employee_reports = AnnualReport.objects.filter(
+            school_year=school_year,
+            report_type__code="ER",
+            school=school,
+        )
+        teacher_count = 0
+        for employee_report in annual_employee_reports:
+            teacher_count += Personnel.objects.filter(
+                annual_report=employee_report,
+                positions__teaching_position=True,
+                status__in=[StaffStatus.FULL_TIME, StaffStatus.PART_TIME, StaffStatus.VOLUNTEER]
+            ).distinct().count()
+
+        student_count = report.students.filter(status="enrolled").count()
+        data.append({
+            'School name': school.name,
+            'Address': school.address.address_1,
+            'City': school.address.city,
+            'Zip code': school.address.zip_code,
+            'TN County': school.address.tn_county,
+            'Principal': school.principal,
+            'Email': school.email,
+            'Phone number': school.phone_number,
+            'School website': school.website,
+            'Date of last Fire marshal': str(school.fire_marshal_date) if school.fire_marshal_date else None,
+            'Enrollment': student_count,
+            '# Teachers': teacher_count,
+        })
+
+    df = pd.DataFrame(data)
+
+    # Prepare Excel file
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = f'attachment; filename=Annual_Reports_SR_{school_year.name}.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        # Write the school data to excel file
+        df.to_excel(writer, index=False, sheet_name='Schools')
+
+        # For storing school and counties
+        county_records = {}
+
+        # Now let's fetch Student data for all the TN schools and write it to a new sheet
+        for report in annual_student_reports:
+            school = report.school
+
+            student_data = []
+            students = Student.objects.filter(annual_report=report, us_state='TN', status='enrolled').order_by('TN_county')
+
+            for student in students:
+                student_data.append({
+                    'Student Name': student.name,
+                    'Age': student.age_at_registration,
+                    'Address': student.address,
+                    'TN County': student.TN_county.name if student.TN_county else None,
+                })
+
+            df_students = pd.DataFrame(student_data)
+            df_students.to_excel(writer, index=False,
+                                 sheet_name=f'{school.name[:28]}')  # Shortened school name to avoid Excel tab name length limit
+
+            school_counties = students.values('TN_county').distinct()
+            school_counties_list = [TNCounty.objects.get(id=county['TN_county']).name for county in school_counties
+                                    if county['TN_county'] is not None]
+
+            # Create a DataFrame for counties of the current school
+            county_df = pd.DataFrame(school_counties_list, columns=[school.name])
+            county_records[school.name] = county_df
+
+        # Concatenate all the dataframes, pre-padding county lists of shorter length schools with null
+        final_df = pd.concat(county_records.values(), ignore_index=True, axis=1)
+        final_df.columns = county_records.keys()
+        final_df.to_excel(writer, index=False, sheet_name='School and Counties')
+
+    return response
+

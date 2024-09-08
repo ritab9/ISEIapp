@@ -48,4 +48,7 @@ urlpatterns = [
     #ajax
     path('ajax/get-teacher-email/', views.get_teacher_email, name="get_teacher_email"),
 
+    #TN Reporting
+    path('TN_reports/download/<str:schoolyearID>', views.download_TN_reports, name='download_TN_reports'),
+
 ]

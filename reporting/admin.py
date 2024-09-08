@@ -74,8 +74,8 @@ class SubjectAdmin(admin.ModelAdmin):
 @admin.register(StaffPosition)
 class StaffPositionAdmin(admin.ModelAdmin):
     list_filter = ['category']
-    list_display = ['name', 'category']
-    list_editable = ['category']
+    list_display = ['name', 'category', 'teaching_position']
+    list_editable = ['category', 'teaching_position']
 
 
 class PersonnelDegreeInline(admin.TabularInline):
