@@ -22,7 +22,7 @@ def email_registered_user(teacher):
     subject = "ISEI Teacher Certification Account"
     message = "Dear "+  str(teacher.first_name) + ", " + "\n" + "\n" + \
                "Welcome! " + "\n" + \
-               "An account has been created for you on the ISEI platform." + \
+               "An account has been created for you on the ISEI platform. (ISEI is an Education Association that your school is member of / accredited by.)" + \
               "\n" + "\n " + "Your username is: " + str(teacher.first_name) + "." + str(teacher.last_name) + \
               "\n" + "As a first time user follow this link to create a password for your account: https://isei1.org/reset_password/ "+ \
               "\n" + "\n " + "If you are a teacher:"+ \
