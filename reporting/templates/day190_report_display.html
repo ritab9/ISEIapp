@@ -27,13 +27,19 @@
                         <td>Total Days (min 190):</td><td><b style="{% if day190_report.inservice_days|add:day190_report.number_of_days < 190 %}color: red;{% endif %}">{{ day190_report.inservice_days|add:day190_report.number_of_days }}</b></td>
                     </tr>
                 </table>
+
+
+                <table class="table table-sm mt-5" style="table-layout: auto; width: initial;">
+                    <tr><td>School Calendar:</td>
                     {% if day190_report.file %}
-                        <p>School Calendar: <a href="{{ day190_report.file.url }}">{{ day190_report.file.name|filename }}</a></p>
+                        <td><a href="{{ day190_report.file.url }}">{{ day190_report.file.name|filename }}</a></td>
                     {% elif day190_report.calendar_link %}
-                        School Calendar: {{ day190_report.calendar_link }}
+                        <td><a href=" {{ day190_report.calendar_link }}">Link</a></td>
                     {% else %}
-                        <p class="spanred">School Calendar Missing</p>
+                        <td><span class="spanred">Missing</span></td>
                     {% endif %}
+                    </tr>
+                </table>
             </div>
 <!-- Vacations -->
             <div class="col col-auto vertical-divider">
