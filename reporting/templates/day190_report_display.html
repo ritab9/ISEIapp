@@ -1,4 +1,5 @@
 {% extends 'reporting_base.html' %}
+{% load template_extras %}
 
 {% block title %} 190-Day Report {% endblock title %}
 
@@ -27,7 +28,11 @@
                     </tr>
                 </table>
                     {% if day190_report.file %}
-                        <p>School Calendar: <a href="{{ day190_report.file.url }}">{{ day190_report.file.name }}</a></p>
+                        <p>School Calendar: <a href="{{ day190_report.file.url }}">{{ day190_report.file.name|filename }}</a></p>
+                    {% elif day190_report.calendar_link %}
+                        School Calendar: {{ day190_report.calendar_link }}
+                    {% else %}
+                        <p class="spanred">School Calendar Missing</p>
                     {% endif %}
             </div>
 <!-- Vacations -->
