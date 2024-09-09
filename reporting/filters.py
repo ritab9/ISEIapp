@@ -29,7 +29,7 @@ class StudentFilterForm(forms.Form):
 
 
 class EmployeeFilterForm(forms.Form):
-    school = forms.ModelChoiceField(queryset=School.objects.filter(active=True, test=False), required=False)
+    school = forms.ModelChoiceField(queryset=School.objects.filter(active=True,), required=False)
     last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '15'}))
     status = forms.ChoiceField(choices=[('', 'All')] + list(StaffStatus.choices), required=False)
     position = forms.ModelChoiceField(queryset=StaffPosition.objects.all(), required=False)

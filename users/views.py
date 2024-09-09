@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User
+
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -16,9 +18,12 @@ from .myfunctions import *
 from emailing.teacher_cert_functions import email_registered_user
 from teachercert.models import Teacher, SchoolYear
 from reporting.models import ReportDueDate, AnnualReport, ReportType
-from users.models import School, Address
+from users.models import School, Address, Teacher
+from reporting.models import Personnel
 from django.http import HttpResponseRedirect
 from services.models import TestOrder
+import random
+import string
 
 
 # authentication functions
@@ -48,6 +53,43 @@ def register_teacher(request):
     context = {'form': form, 'school':school}
     return render(request, 'users/register_teacher.html', context)
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def register_teacher_from_employee_report(request, personnelID):
+    personnel = Personnel.objects.get(id=personnelID)
+    school = personnel.annual_report.school
+
+    # Generate a random password
+    password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+    username = personnel.first_name + "." + personnel.last_name
+
+    new_user = User.objects.create_user(
+        username=username,
+        password=password,
+        email=personnel.email_address,
+        first_name=personnel.first_name,
+        last_name=personnel.last_name
+    )
+    group = Group.objects.get(name='teacher')
+    new_user.groups.add(group)
+
+    teacher = Teacher.objects.create(
+        user=new_user,
+        first_name=personnel.first_name,
+        last_name=personnel.last_name,
+        school=school,
+        phone_number=personnel.phone_number,
+        joined_at=timezone.now()  # make sure `joined_at` attribute is available in the `Personnel` model
+    )
+    personnel.teacher = teacher
+    personnel.save()
+
+    email_registered_user(teacher)
+
+    messages.success(request, 'Account was created for ' + username)
+
+    return redirect('personnel_directory', schoolID=school.id)
 
 @unauthenticated_user
 def loginpage(request):

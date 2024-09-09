@@ -1525,7 +1525,6 @@ def download_TN_reports(request, schoolyearID):
 
     return response
 
-
 class PersonnelListView(ListView):
     model = Personnel
     template_name = 'personnel_directory.html'  # change this to your desired template name
@@ -1534,28 +1533,32 @@ class PersonnelListView(ListView):
     def get_form(self):
         if not self.request.GET:
             data = {'status': 'Active', 'position': 'Manager'}  # Default filter values
-            form = self.filter_form(data)
+            school=self.kwargs.get('school')
+            if school:
+                data.update({'school': school})
+            form=self.filter_form(data)
         else:
             form = self.filter_form(self.request.GET)
         return form
 
     def get_queryset(self):
-        school_year_id = self.kwargs.get('schoolyearID')  # assuming school year is passed via URL
-        if school_year_id:
-            school_year = SchoolYear.objects.get(id=school_year_id)
-        else:
-            school_year = SchoolYear.objects.get(current_school_year=True)
-        report_type = ReportType.objects.get(code="ER")
+        school=None
+        school_id = self.kwargs.get('schoolID')  # assuming school year is passed via URL
+        if school_id:
+            school = School.objects.get(id=school_id)
 
-        #school=School.objects.get(abbreviation = "AAA")
-        #annual_employee_reports = AnnualReport.objects.filter(school_year=school_year, report_type=report_type, school=school)
-        annual_employee_reports = AnnualReport.objects.filter(school_year=school_year,report_type=report_type)
-        queryset = Personnel.objects.filter(annual_report__in=annual_employee_reports).order_by('annual_report','last_name')
+        school_year = SchoolYear.objects.get(current_school_year=True)
+        report_type = ReportType.objects.get(code="ER")
 
         form = self.filter_form(self.request.GET)
         if form.is_valid():
+            if not school:
+                school = form.cleaned_data.get('school')
+
+            annual_employee_reports = AnnualReport.objects.filter(school_year=school_year,report_type=report_type, school=school)
+            queryset = Personnel.objects.filter(annual_report__in=annual_employee_reports).order_by('annual_report','last_name')
+
             last_name = form.cleaned_data.get('last_name')
-            school = form.cleaned_data.get('school')
             status = form.cleaned_data.get('status')
             position = form.cleaned_data.get('position')
             degree = form.cleaned_data.get('degree')
@@ -1563,21 +1566,24 @@ class PersonnelListView(ListView):
 
             if last_name:
                 queryset = queryset.filter(last_name__icontains=last_name)
-            if school:  # if a school was provided, filter by it
-                school_obj = School.objects.get(abbreviation=school.abbreviation)
-                queryset = queryset.filter(annual_report__school=school_obj)
             if status and status != '':
                 queryset = queryset.filter(status=status)
             if position:
-                queryset = queryset.filter(position=position)
+                queryset = queryset.filter(positions=position)
             if degree:
                 queryset = queryset.filter(degrees=degree)
             if subjects_teaching:
                 queryset = queryset.filter(subjects_teaching=subjects_teaching)
-
+        else:
+            annual_employee_reports = AnnualReport.objects.filter(school_year=school_year, report_type=report_type,
+                                                                  school=school)
+            queryset = Personnel.objects.filter(annual_report__in=annual_employee_reports).order_by('annual_report',
+                                                                                                    'last_name')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filter_form(self.request.GET)
+        school_id = self.kwargs.get('schoolID')
+        context['disable_school_select'] = bool(school_id)
         return context

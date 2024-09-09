@@ -158,7 +158,7 @@ class Personnel(models.Model):
     status = models.CharField("status", max_length=2,
                               choices=StaffStatus.choices, default=StaffStatus.FULL_TIME, )
 
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
+    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, blank=True)
 
     positions = models.ManyToManyField(StaffPosition)
     degrees = models.ManyToManyField(Degree, through='PersonnelDegree', blank=True)
