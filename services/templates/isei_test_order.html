@@ -8,62 +8,59 @@
 
 <!-- Orders by school -->
     <div class="card card-body">
-        <table class="table table-sm table-striped">
+        <table class="table table-sm">
         <tr>
             <th>School</th>
-            <th>Testing Dates</th>
             <th>Order Date</th>
-            <th># of Students</th>
-            <th colspan="2" >Reusable Test Booklets</th>
-            <th colspan="2" >Answer Sheets</th>
-            <th colspan="2" >Direction Booklets</th>
+            <th>Reusable Test Booklets</th>
+            <th>Answer Sheets</th>
+            <th>Direction Booklets</th>
             <th>~ Sub Total</th>
             <th>Complete</th>
-            <!-- and so on for other fields -->
         </tr>
-        <tr><th></th><th></th><th></th><th></th>
-            <th>Level</th><th style="text-align:left;">Count</th>
-            <th>Level</th><th>Count</th>
-            <th>Level</th><th>Count</th>
+        <tr><th># of Students</th><th>Testing Dates</th>
+            <th>Count / Level</th>
+            <th>Count / Level</th>
+            <th>Count / Level</th>
             <th></th><th></th>
         </tr>
         {% for order in test_orders %}
         <tr>
-            <td>{{ order.school }}</td>
-            <td>{{ order.testing_dates }}</td>
-            <td>{{ order.order_date }}</td>
-            <td>{{ order.no_students_testing }}</td>
+            <td>{{ order.school }}<br>
+                {{ order.no_students_testing }} students
+            </td>
+            <td>{{ order.order_date }}<br>
+                {{ order.testing_dates }}
+            </td>
             <td class="align-right">
+                <table class="table table-sm">
                 {% for booklet in order.test_booklets.all %}
-                    {{ booklet.get_level_display }}<br>
+                    <tr>
+                        <td>{{ booklet.count }}</td><td>{{ booklet.get_level_display }}</td>
+                    </tr>
                  {% endfor %}
-            </td>
-            <td class="align-left">
-                {% for booklet in order.test_booklets.all %}
-                    {{ booklet.count }}<br>
-                {% endfor %}
+                </table>
             </td>
 
             <td class="align-right">
-            {% for sheet in order.answer_sheets.all %}
-                {{ sheet.get_level_display }}<br>
-             {% endfor %}
-            </td>
-            <td class="align-left">
-                {% for sheet in order.answer_sheets.all %}
-                    {{ sheet.count }}<br>
-                {% endfor %}
+                <table class="table table-sm">
+                    {% for sheet in order.answer_sheets.all %}
+                        <tr>
+                            <td>{{ sheet.count }}</td><td>{{ sheet.get_level_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </td>
 
             <td class="align-right">
-                {% for booklet in order.direction_booklets.all %}
-                    {{ booklet.get_level_display }}<br>
-                {% endfor %}
-            </td>
-            <td class="align-left">
-                {% for booklet in order.direction_booklets.all %}
-                    {{ booklet.count }}<br>
-                {% endfor %}
+                <table class="table table-sm">
+                    {% for booklet in order.direction_booklets.all %}
+                        <tr>
+                            <td>{{ booklet.count }}</td>
+                            <td>{{ booklet.get_level_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </td>
 
             <td>${{ order.sub_total }}</td>

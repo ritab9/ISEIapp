@@ -1095,7 +1095,7 @@ def opening_report(request, arID):
     with transaction.atomic():
         opening, created = Opening.objects.get_or_create(annual_report=annual_report)
 
-        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time", registration_date__lt=annual_report_student.submit_date)
+        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time", registration_date__lte=annual_report_student.submit_date)
         if part_time_students.exists():
             part_time_grade_counts = {'grade_{}_count'.format(i): part_time_students.filter(grade_level=i).count() for i in range(-2, 13)}
             part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
@@ -1113,10 +1113,10 @@ def opening_report(request, arID):
 
 
 
-        students= Student.objects.filter(annual_report=annual_report_student, status="enrolled",  registration_date__lt=annual_report_student.submit_date)
+        students= Student.objects.filter(annual_report=annual_report_student, status="enrolled",  registration_date__lte=annual_report_student.submit_date)
         if not students.exists():
             students = Student.objects.filter(annual_report=annual_report_student, status="enrolled",
-                                              registration_date__lt=annual_report_student.submit_date + timedelta(weeks=3))
+                                              registration_date__lte=annual_report_student.submit_date + timedelta(weeks=3))
 
         if students.exists():
             grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
