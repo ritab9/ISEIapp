@@ -75,6 +75,8 @@ def student_report(request,arID):
                     with transaction.atomic():
 
                         if formset.has_changed():
+                            for form in formset.deleted_forms:
+                                form.instance.delete()
                             for form in formset:
                                 if form.has_changed():
                                     if form.instance.pk is not None:
@@ -83,8 +85,7 @@ def student_report(request,arID):
                                         instance=form.save(commit=False)
                                         instance.annual_report = annual_report
                                         instance.save()
-                            for form in formset.deleted_forms:
-                                form.instance.delete()
+
 
                         update_student_country_occurences(annual_report)
 
@@ -104,7 +105,7 @@ def student_report(request,arID):
                     # Log the error here
                     print(str(e))
                     # error_message can be something custom or str(e), according to your use case
-                    error_message = 'There was an error processing your request.'
+                    error_message = 'There was an error processing your request.' + str(e)
                     messages.error(request, error_message)
 
         else:
@@ -1476,6 +1477,7 @@ def download_TN_reports(request, schoolyearID):
             'Date of last Fire marshal': str(school.fire_marshal_date) if school.fire_marshal_date else None,
             'Enrollment': student_count,
             '# Teachers': teacher_count,
+            'Grade Span': school.type,
         })
 
     df = pd.DataFrame(data)
