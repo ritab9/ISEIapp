@@ -75,8 +75,7 @@ def student_report(request,arID):
                     with transaction.atomic():
 
                         if formset.has_changed():
-                            for form in formset.deleted_forms:
-                                form.instance.delete()
+
                             for form in formset:
                                 if form.has_changed():
                                     if form.instance.pk is not None:
@@ -86,6 +85,8 @@ def student_report(request,arID):
                                         instance.annual_report = annual_report
                                         instance.save()
 
+                            for form in formset.deleted_forms:
+                                form.instance.delete()
 
                         update_student_country_occurences(annual_report)
 
@@ -299,6 +300,7 @@ def student_import_dashboard(request, arID):
             data = data.replace({np.nan: None})
 
             created_count = 0  # initialize counter
+            updated_count = 0
 
             for index, row in data.iterrows():
 
@@ -450,9 +452,13 @@ def student_import_dashboard(request, arID):
                 )
                 if created:
                     created_count += 1
+                else:
+                    updated_count += 1
 
             if created_count > 0:
-                messages.success(request,f"{created_count} student record(s) have been imported.")
+                messages.success(request,f"{created_count} student record(s) have been created.")
+            elif updated_count > 0:
+                messages.success(request, f"{updated_count} student record(s) have been updated.")
             else:
                 messages.info(request,f"No student record(s) have been imported. The data is either incomplete or the students are already registered in this report.")
 
