@@ -50,6 +50,7 @@
              <th>TC Acc.</th>
              <th>Subjects Teaching</th>
               <th>Email Address</th>
+                 <th>Phone Number</th>
             </tr>
         </thead>
         {% for personnel in object_list %}
@@ -85,6 +86,7 @@
               {% endfor %}
             </td>
             <td>{{ personnel.email_address }}</td>
+            <td>{{ personnel.phone_number }}</td>
           </tr>
         {% endfor %}
       </table>

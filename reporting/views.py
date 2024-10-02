@@ -1405,7 +1405,7 @@ def isei_reporting_dashboard(request):
     #ap_report= AnnualReport.objects.filter(school_year=current_school_year, report_type="APR")
 
     report_types = ReportType.objects.all()
-    schools = School.objects.filter(member=True).exclude(name="ISEI")
+    schools = School.objects.filter(member=True, active = True).exclude(Q(name="ISEI") | Q(name="Sample School"))
 
     # Prefetch the AnnualReports for the selected school year for each school
     schools = schools.prefetch_related(
