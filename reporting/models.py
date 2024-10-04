@@ -489,6 +489,9 @@ class Opening(models.Model):
     doctorate_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Doctorate")
     professional_count = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Professional")
 
+    @property
+    def opening_enrollment(self):
+        return (self.girl_count or 0) + (self.boy_count or 0)
 
     def __str__(self):
         return str(self.annual_report)

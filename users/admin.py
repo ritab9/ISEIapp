@@ -36,8 +36,8 @@ class AccreditationInfoInline(admin.StackedInline):
 @admin.register(School)
 class School(admin.ModelAdmin):
     inlines = [AccreditationInfoInline, SchoolAddressInLine,]
-    list_display = ('name', 'abbreviation', 'type', 'current_school_year')
-    list_editable = ('current_school_year',)
+    list_display = ('name', 'abbreviation', 'type', 'current_school_year','initial_accreditation_date')
+    list_editable = ('current_school_year','initial_accreditation_date')
 
 @admin.register(AccreditationAgency)
 class AccreditationAgencyAdmin(admin.ModelAdmin):

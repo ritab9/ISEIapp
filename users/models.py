@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from datetime import date
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.db.models import Q
+
 
 
 class TNCounty(models.Model):
@@ -108,6 +110,7 @@ class School(models.Model):
     fire_marshal_date = models.DateField(blank=True, null=True, verbose_name='Date of Last Fire Marshal Inspection')
     active=models.BooleanField(default=True)
     test=models.BooleanField(default=False)
+    initial_accreditation_date= models.DateField(blank=True, null=True)
 
     TYPE_CHOICES = [
         ('K-8', 'K-8'),

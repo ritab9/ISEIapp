@@ -1533,6 +1533,70 @@ def download_TN_reports(request, schoolyearID):
 
     return response
 
+@login_required(login_url='login')
+def download_NCPSA_directory(request, schoolyearID):
+
+    school_year=SchoolYear.objects.get(id=schoolyearID)
+
+    annual_opening_reports = AnnualReport.objects.filter(
+        school_year=school_year,
+        report_type__code="OR",
+    )
+
+    # Prepare data for DataFrame
+    data = []
+    for report in annual_opening_reports:
+        school = report.school
+
+        try:
+            enrollment = report.opening.opening_enrollment
+        except Opening.DoesNotExist:
+            enrollment = None
+
+        current_accreditation_info = AccreditationInfo.objects.filter(school=school, current_accreditation=True).first()
+
+        if current_accreditation_info:
+            accreditation_status = "Accredited"
+            accreditation_end_date = current_accreditation_info.end_date.strftime(
+                '%m/%d/%Y') if current_accreditation_info.end_date else None
+            initial_accreditation_date = school.initial_accreditation_date.strftime(
+                '%m/%d/%Y') if school.initial_accreditation_date else None
+        else:
+            accreditation_status = "Candidate"
+            accreditation_end_date = None
+            initial_accreditation_date = None
+
+        data.append({
+            'Institution': school.name,
+            'Representative': school.principal,
+            'Address': school.address.address_1,
+            'City': school.address.city,
+            'Zip code': school.address.zip_code,
+            'State': school.address.state_us,
+            'Country':school.address.country,
+            'Phone': school.phone_number,
+            'E-mail': school.email,
+            'Website': school.website,
+            'Public/Private': "Private",
+            'Grades': school.type,
+            'Enrollment': enrollment,
+            'Accreditation Status':accreditation_status,
+            'Initial Accreditation Date': initial_accreditation_date,
+            'Accreditation Expiration Date': accreditation_end_date,
+        })
+
+    df = pd.DataFrame(data)
+
+    # Prepare Excel file
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = f'attachment; filename=Annual_Reports_SR_{school_year.name}.xlsx'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        # Write the school data to excel file
+        df.to_excel(writer, index=False, sheet_name='Schools')
+
+    return response
+
 class PersonnelListView(ListView):
     model = Personnel
     template_name = 'personnel_directory.html'  # change this to your desired template name
