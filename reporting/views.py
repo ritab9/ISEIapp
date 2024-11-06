@@ -1659,3 +1659,49 @@ class PersonnelListView(ListView):
         school_id = self.kwargs.get('schoolID')
         context['disable_school_select'] = bool(school_id)
         return context
+
+
+@login_required(login_url='login')
+def school_personnel_directory(request):
+    filter_form=PersonnelFilterForm(request.GET)
+
+    schools = School.objects.filter(active=True).exclude(Q(name="ISEI") | Q(name="Sample School"))
+    school_year = SchoolYear.objects.get(current_school_year=True)
+    report_type = ReportType.objects.get(code="ER")
+
+    if filter_form.is_valid():
+        if filter_form.cleaned_data['school']:
+            schools = schools.filter(name=filter_form.cleaned_data['school'])
+
+    personnel_list = []
+
+    for school in schools:
+        personnel_data = {}
+
+        annual_employee_report = AnnualReport.objects.get(
+            school_year=school_year, report_type=report_type, school=school
+        )
+
+        staff = Personnel.objects.filter(annual_report=annual_employee_report).order_by('last_name')
+        if filter_form.cleaned_data['position']:
+            staff = staff.filter(positions__name=filter_form.cleaned_data['position'])
+        if filter_form.cleaned_data['subject']:
+            staff = staff.filter(subjects_teaching__name=filter_form.cleaned_data['subject'])
+
+        personnel_data["school"] = school
+        personnel_data["staff"] = [{
+            "last_name": person.last_name,
+            "first_name": person.first_name,
+            "positions": [position.name for position in person.positions.all()],
+            "subjects": [subject.name for subject in person.subjects_teaching.all()],
+            "email_address": person.email_address,
+            "phone_number":person.phone_number,
+        } for person in staff]
+
+        personnel_list.append(personnel_data)
+
+    context = {
+        "school_personnel": personnel_list, "filter_form": filter_form,
+    }
+
+    return render(request, 'school_personnel_directory.html', context)

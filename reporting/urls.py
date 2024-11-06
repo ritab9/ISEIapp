@@ -42,6 +42,7 @@ urlpatterns = [
     path('school_directory/', views.school_directory, name='school_directory'),
     path('personnel_directory/', PersonnelListView.as_view(), name='personnel_directory'),
     path('personnel_directory/<str:schoolID>/', PersonnelListView.as_view(), name='personnel_directory'),
+    path('school_personnel_directory/', views.school_personnel_directory, name='school_personnel_directory'),
 
     #isei
     path('isei_reporting_dashboard/', views.isei_reporting_dashboard, name='isei_reporting_dashboard'),

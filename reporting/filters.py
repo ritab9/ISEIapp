@@ -28,6 +28,7 @@ class StudentFilterForm(forms.Form):
                 self.fields['TN_county'] = forms.ModelChoiceField(queryset=TNCounty.objects.all(), required=False)
 
 
+#used on the ISEI personnel_directory
 class EmployeeFilterForm(forms.Form):
     school = forms.ModelChoiceField(queryset=School.objects.filter(active=True,), required=False)
     last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '15'}))
@@ -35,3 +36,10 @@ class EmployeeFilterForm(forms.Form):
     position = forms.ModelChoiceField(queryset=StaffPosition.objects.all(), required=False)
     degree = forms.ModelChoiceField(queryset=Degree.objects.all(), required=False)
     subjects_teaching = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False)
+
+#used on school_personnel_directory (the public directory)
+class PersonnelFilterForm(forms.Form):
+    school = forms.ModelChoiceField(queryset=School.objects.all(), required=False)
+    position = forms.ModelChoiceField(queryset=StaffPosition.objects.values_list('name', flat=True).distinct(),
+                                      required=False)
+    subject = forms.ModelChoiceField(queryset=Subject.objects.values_list('name', flat=True).distinct(), required=False)
