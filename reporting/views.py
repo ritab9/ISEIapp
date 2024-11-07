@@ -1682,10 +1682,10 @@ def school_personnel_directory(request):
             school_year=school_year, report_type=report_type, school=school
         )
 
-        staff = Personnel.objects.filter(annual_report=annual_employee_report).order_by('last_name')
-        if filter_form.cleaned_data['position']:
+        staff = Personnel.objects.filter(annual_report=annual_employee_report).exclude(status="NE").order_by('last_name')
+        if filter_form.cleaned_data.get('position'):
             staff = staff.filter(positions__name=filter_form.cleaned_data['position'])
-        if filter_form.cleaned_data['subject']:
+        if filter_form.cleaned_data.get('subject'):
             staff = staff.filter(subjects_teaching__name=filter_form.cleaned_data['subject'])
 
         personnel_data["school"] = school

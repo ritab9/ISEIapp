@@ -40,6 +40,11 @@ class EmployeeFilterForm(forms.Form):
 #used on school_personnel_directory (the public directory)
 class PersonnelFilterForm(forms.Form):
     school = forms.ModelChoiceField(queryset=School.objects.all(), required=False)
-    position = forms.ModelChoiceField(queryset=StaffPosition.objects.values_list('name', flat=True).distinct(),
-                                      required=False)
-    subject = forms.ModelChoiceField(queryset=Subject.objects.values_list('name', flat=True).distinct(), required=False)
+    position = forms.ChoiceField(
+        choices=[('', '---------')] + list(StaffPosition.objects.values_list('name', 'name').distinct()),
+        required=False
+    )
+    subject = forms.ChoiceField(
+        choices=[('', '---------')] + list(Subject.objects.values_list('name', 'name').distinct()),
+        required=False
+    )

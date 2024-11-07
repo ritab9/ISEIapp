@@ -23,6 +23,7 @@
         <form method="GET">
             {{ filter_form.as_table }}
             <input type="submit" value="Filter">
+             <a href="{% url 'school_personnel_directory' %}">Clear filter</a>
         </form>
     </div>
 
@@ -56,7 +57,7 @@
         </table>
 
  <!-- Personnel Data Table -->
-        <table class="table">
+        <table class="table mb-5">
             <thead class="table-ISEIblue4">
              <tr> <th>#</th>
               <th>Name</th>
