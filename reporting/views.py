@@ -43,6 +43,8 @@ def report_dashboard(request, schoolID, school_yearID):
 #Student Report Views
 @login_required(login_url='login')
 def student_report(request,arID):
+
+    redirect_to_school_dashboard = False
     try:
         annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
         school = annual_report.school
