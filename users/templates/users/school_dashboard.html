@@ -171,8 +171,9 @@
                 </div>
     </div>
 <!-- Teacher Cert -->
-    <div class = "col col-auto card card-body">
+    <div class = "col col-auto ">
 <!-- Teacher Certification Status-->
+        <div class ="row card card-body">
             <h6 class="mb-3">
                 <a href="{% url 'principal_teachercert' school.id %}">Teacher Certification </a>
             </h6>
@@ -188,6 +189,14 @@
                     {% endif %}
                 </p>
             </div>
+        </div>
+        <div class="row card card-body">
+            <h6 class="mb-3">
+                Resources:
+            </h6>
+            <a href="{% url 'school_personnel_directory' %}"> ISEI Directory</a>
+        </div>
+
     </div>
 
     <div class="col col-auto card card-body">

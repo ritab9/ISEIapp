@@ -2,6 +2,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 
+from django.http import HttpResponsePermanentRedirect
+from django.urls import reverse
+
 from django.forms import modelformset_factory
 from django.db.models import Sum, Q, Count, Prefetch, Max, Case, When, Value, IntegerField
 from .forms import *
@@ -61,56 +64,71 @@ def student_report(request,arID):
         if request.method == 'POST':
 
             formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
+            all_forms_valid = True
+            formset_instances = []
+
 
             for form in formset:
-                if 'registration_date' in form.data:
-                    date_string = form.data['registration_date']
-                    registration_date = parse_date(date_string)
-                    if registration_date is None:
-                        raise ValueError(f"Could not parse date: {date_string}")
-                    form.data['registration_date'] = registration_date.isoformat()
 
-            if formset.is_valid():
-                try:
-                    with transaction.atomic():
+                if form.has_changed():
 
-                        if formset.has_changed():
+                    if 'registration_date' in form.data:
+                        date_string = form.data['registration_date']
+                        registration_date = parse_date(date_string)
+                        if registration_date is None:
+                            raise ValueError(f"Could not parse date: {date_string}")
+                        form.data['registration_date'] = registration_date.isoformat()
 
-                            for form in formset:
-                                if form.has_changed():
-                                    if form.instance.pk is not None:
-                                        form.save()
-                                    else:
-                                        instance=form.save(commit=False)
-                                        instance.annual_report = annual_report
-                                        instance.save()
+                    if form.is_valid():
 
-                            for form in formset.deleted_forms:
-                                form.instance.delete()
+                        if form.instance.pk is not None:
+                            form.save()
+                        else:
+                            instance=form.save(commit=False)
+                            instance.annual_report = annual_report
+                            formset_instances.append(instance)
+                    else:
+                        all_forms_valid = False
 
-                        update_student_country_occurences(annual_report)
 
-                        if 'submit' in request.POST:
-                            if not annual_report.submit_date:
-                                annual_report.submit_date = date.today()
-                            annual_report.last_update_date = date.today()
-                            annual_report.save()
-                            #Todo Send email to ISEI about it's completion
-                            return redirect('school_dashboard', school.id)
-                        elif 'save' in request.POST:
-                            annual_report.last_update_date = date.today()
-                            annual_report.save()
+            if formset_instances:
+                for instance in formset_instances:
+                    if instance.birth_date and instance.registration_date:
+                        instance.age_at_registration = instance.registration_date.year - instance.birth_date.year - (
+                                (instance.registration_date.month, instance.registration_date.day) < (
+                            instance.birth_date.month, instance.birth_date.day))
+                    elif instance.age:
+                        instance.age_at_registration = instance.age
 
-                            return redirect('school_dashboard', school.id)
-                except Exception as e:
-                    # Log the error here
-                    print(str(e))
-                    # error_message can be something custom or str(e), according to your use case
-                    error_message = 'There was an error processing your request.' + str(e)
-                    messages.error(request, error_message)
+                Student.objects.bulk_create(formset_instances)
+                update_student_country_occurences(annual_report)
+
+
+            for form in formset.deleted_forms:
+                if form.instance.id:
+                    form.instance.delete()
+
+            if all_forms_valid:
+                redirect_to_school_dashboard = True
+                if 'submit' in request.POST:
+                    if not annual_report.submit_date:
+                        annual_report.submit_date = date.today()
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
+                    #To do Send email to ISEI about it's completion
+                    return redirect('school_dashboard', school.id)
+
+                elif 'save' in request.POST:
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
+                    #return redirect('school_dashboard', school.id)
+                    return HttpResponsePermanentRedirect(reverse('school_dashboard', args=[school.id]))
+            else:
+                redirect_to_school_dashboard = False
+                messages.error(request, 'Some forms are invalid. Please check your inputs.')
 
         else:
-
+            redirect_to_school_dashboard = False
             status_order = Case(
                 When(status='enrolled', then=Value(1)),
                 When(status='part-time', then=Value(2)),
@@ -131,21 +149,21 @@ def student_report(request,arID):
                                .order_by(status_order,'grade_level', 'name'))
             formset = StudentFormSet(queryset=students_qs)
 
+
+
+    except AnnualReport.DoesNotExist:
+        messages.error(request, f"AnnualReport with id {arID} doesn't exist.")
     except OperationalError as e:
-        error_message = "Database connection error. Please try again later."
-        messages.error(request, error_message)
-        context = dict(formset=formset, annual_report=annual_report)  # You may need to adjust this
-        return render(request, 'student_report.html', context)  # Assuming 'student_report.html' is your template
-
+        messages.error(request, f"Database connection error: {str(e)}. Please try again later.")
+    except ValidationError as e:
+        messages.error(request, f"Validation error: {str(e)}")
     except Exception as e:
-        error_message = 'An error occurred while processing your request.'
-        messages.error(request, error_message)
-        context = dict(formset=formset, annual_report=annual_report)  # You may need to adjust this
-        return render(request, 'student_report.html', context)  # Assuming 'student_report.html' is your template
-
-
-    context = dict(formset=formset, annual_report=annual_report)
-    return render(request, 'student_report.html', context)
+        messages.error(request, f'An error occurred while processing your request: {str(e)}')
+    finally:
+        if redirect_to_school_dashboard == False:
+            return render(request, 'student_report.html', {'formset': formset, 'annual_report': annual_report})
+        else:
+            return redirect('school_dashboard', school.id)
 
 @login_required(login_url='login')
 def import_students_prev_year(request, arID):

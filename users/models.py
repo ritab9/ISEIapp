@@ -111,6 +111,7 @@ class School(models.Model):
     active=models.BooleanField(default=True)
     test=models.BooleanField(default=False)
     initial_accreditation_date= models.DateField(blank=True, null=True)
+    worthy_student_report_needed = models.BooleanField(default=False)
 
     TYPE_CHOICES = [
         ('K-8', 'K-8'),

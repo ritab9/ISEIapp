@@ -278,7 +278,8 @@ def school_dashboard(request, schoolID):
     else:
         percent_certified = 0
 
-    if school.address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
+    #if school.address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
+    if school.worthy_student_report_needed:
         wss=True
     else:
         wss=False
