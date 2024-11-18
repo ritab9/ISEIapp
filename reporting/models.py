@@ -216,8 +216,9 @@ class Student(models.Model):
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
+        ('U', 'Unspecified'),
     ]
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='U')
 
     birth_date = models.DateField(null=True, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)

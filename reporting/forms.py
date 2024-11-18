@@ -64,6 +64,9 @@ class StudentForm(forms.ModelForm):
                 "Student must have either their age at registration or a birth date entered."
             )
 
+        gender = cleaned_data.get('gender')
+        if gender == 'U':
+            self.add_error('gender', ValidationError("Select Gender."))
 
 
         if self.is_us_school:
