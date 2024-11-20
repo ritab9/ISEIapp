@@ -97,7 +97,7 @@ class Country(models.Model):
 class School(models.Model):
     name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
                             null=False)
-    abbreviation = models.CharField(max_length=4, default=" ", help_text=' Enter the abbreviation for this school')
+    abbreviation = models.CharField(max_length=6, default=" ", help_text=' Enter the abbreviation for this school')
     ordering = ['name']
     foundation = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=20, null=True, blank=True)

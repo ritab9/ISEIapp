@@ -1000,7 +1000,6 @@ def get_teacher_email(request):
             return JsonResponse({"error": "Teacher not found"}, status=404)
 
         # Return the fetched email as a JsonResponse
-        print(phone_number)
         return JsonResponse({"email": email, "phone_number": phone_number})
 
     # Return an error if no teacher id is provided in the request
@@ -1012,8 +1011,6 @@ def inservice_report(request, arID):
     annual_report=AnnualReport.objects.get(id=arID)
     schoolID=annual_report.school.id
     school_yearID=annual_report.school_year.id
-
-    print(SchoolYear.objects.get(id=school_yearID))
 
     try:
         report_type_190_day = ReportType.objects.get(name='190 - Day Report')
