@@ -68,9 +68,9 @@ class SchoolOfEmploymentForm(ModelForm):
         exclude = ['teacher', 'id']
         widgets = {
             'start_date': forms.DateInput(format='%m/%d/%Y',
-                                             attrs={'placeholder': 'yyyy'}),
+                                               attrs={'placeholder': 'yyyy'}),
             'end_date': forms.DateInput(format='%m/%d/%Y',
-                                            attrs={'placeholder': 'yyyy or to date'}),
+                                             attrs={'placeholder': 'yyyy or to date'}),
         }
 
 
@@ -82,8 +82,8 @@ class CollegeAttendedForm(ModelForm):
         fields = '__all__'
         exclude = ['teacher', 'id' ]
         widgets = {
-            'start_date': forms.Textarea(attrs={'rows':1, 'cols':4, 'placeholder': 'yyyy',}),
-            'end_date': forms.Textarea(attrs={'rows':1, 'cols':4,'placeholder': 'yyyy', }),
+            'start_date': forms.Textarea(attrs={'rows':1, 'cols':4, 'placeholder': 'yyyy', }),
+            'end_date': forms.Textarea(attrs={'rows':1, 'cols':4, 'placeholder': 'yyyy', }),
             'transcript_received': forms.HiddenInput(),
         }
 

@@ -1,0 +1,17 @@
+<!-- html from bootstrap for navigation bar -->
+{% extends "navbar.html" %}
+{% load static %}
+{% load group_tags %}
+
+{% block navbar_content %}
+    {% if request.user|in_group:"staff"%}
+    
+      <li class="nav-item ">
+        <a class="nav-link" href="{% url 'isei_accreditation_dashboard' %}" > Accreditation </a>
+      </li>
+      <li class="nav-item ">  
+        <a class="nav-link" href="{% url 'add_accreditation' %}">Add New Accreditation</a>
+      </li>
+    {% endif %}
+    
+{% endblock navbar_content%}

@@ -1,0 +1,52 @@
+{% extends 'accreditation_base.html' %}
+
+{% block title %} ISEI Accreditation Dashboard {% endblock title %}
+
+
+{% block content %}
+
+<div class="">
+    <div class="card card-body">
+        <table class="table">
+    <thead>
+      <tr>
+          <th>School</th>
+          <th>Visit dates</th>
+          <th> Accreditation Term</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Edit</th><th>Delete</th>
+          <th>APR</th><th>APR Progress</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for accreditation in accreditations %}
+        <tr>
+          <td>{{ accreditation.school }}</td>
+            <td>{{ accreditation.visit_start_date }} - {{ accreditation.visit_end_date }}</td>
+            <td> {{ accreditation.term }}</td>
+            <td>{{ accreditation.term_start_date }}</td><td>{{ accreditation.term_end_date }}</td>
+            <td><a class="" href="{% url 'edit_accreditation' id=accreditation.id %}">Edit Accred.</a></td>
+            <td><a class="text-danger" href="{% url 'delete_accreditation' id=accreditation.id %}">Delete</a></td>
+            <td>
+                <a class="" href="{% url 'manage_apr' accreditation.id %}">
+                    {% if accreditation.apr %} Edit APR {% else %} Add APR {% endif %}
+                </a>
+            </td>
+            <td>
+                {% if accreditation.apr %}
+                    <a class="" href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
+                {% endif %}
+            </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No accreditations found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    </div>
+</div>
+{% endblock %}
+

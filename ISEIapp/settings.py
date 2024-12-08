@@ -46,10 +46,13 @@ INSTALLED_APPS = [
     'emailing',
     'reporting',
     'services',
+    'apr',
+    'accreditation',
 
     'crispy_forms',
     'storages',
     'jquery',
+    'nested_admin',
     #'debug_toolbar',
 
 ]

@@ -1,0 +1,130 @@
+{% extends 'accreditation_base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row mb-2">
+            <div class="col"><h6>Manage Action Plan for {{ apr }}</h6></div>
+            <div class="col">
+                <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
+                <a href="{% url 'manage_apr' apr.accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+            </div>
+        </div>
+
+        <div class="card card-body mb-3">
+            {{ form.as_p }}
+        </div>
+
+        <div class="card card-body">
+            <h5>Action Plan Steps</h5>
+            {{ formset.management_form }}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Person(s) Responsible</th>
+                        <th>Action Steps</th>
+                        <th>Date/Timeline</th>
+                        <th>Estimated Resources</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        <tr>
+                            <td>{{ forloop.counter }}{{ form.id }}</td>
+                            <td>{{ form.person_responsible }}</td>
+                            <td>{{ form.action_steps }}</td>
+                            <td>{{ form.timeline }}</td>
+                            <td>{{ form.resources }}</td>
+                            <td>{{ form.DELETE }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
+        <a href="{% url 'manage_apr' apr.accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block footer_javascript %}
+<script>
+    // Enable inline editing
+    document.querySelectorAll('.edit-progress').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const progressId = event.target.dataset.progressId;
+            const descriptionCell = document.getElementById(`description-${progressId}`);
+            const description = descriptionCell.textContent.trim();
+
+            // Change the table cell into an input field with the current description as its value
+            descriptionCell.innerHTML = `<input id="input-${progressId}" type="text" value="${description}">
+                                        <button id="save-${progressId}" class="save-progress">Save</button>`;
+
+            // Add event listener for the Save button
+            document.getElementById(`save-${progressId}`)
+                .addEventListener('click', async () => {
+                    const newDescription = document.getElementById(`input-${progressId}`).value.trim();
+                    try {
+                        const response = await fetch(`/update_progress/${progressId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}',
+                            },
+                            body: JSON.stringify({ description: newDescription }),
+                        });
+
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        const data = await response.json();
+                        descriptionCell.innerHTML = data.description;
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+        });
+    });
+
+    // Function to save the edited description using AJAX
+    function saveEdit(progressId, inputElement, descriptionCell) {
+        const newDescription = inputElement.value.trim();
+
+        // Perform AJAX request to save the data
+        fetch(`/update_progress/${progressId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ description: newDescription }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to save progress.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update the cell with the saved description
+                descriptionCell.textContent = data.description;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to save progress. Please try again.');
+                // Restore the edited value in case of an error
+                descriptionCell.textContent = inputElement.value;
+            });
+    }
+
+    // Function to cancel editing and restore the original description
+    function cancelEdit(descriptionCell, originalDescription) {
+        descriptionCell.textContent = originalDescription;
+    }
+</script>
+{% endblock %}

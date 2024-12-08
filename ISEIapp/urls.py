@@ -28,6 +28,9 @@ urlpatterns = [
     path('', include('emailing.urls')),
     path('', include('reporting.urls')),
     path('', include('services.urls')),
+    path('', include('accreditation.urls')),
+    path('', include('apr.urls')),
+
     # path('paypal/', include('paypal.standard.ipn.urls')),
     # path('captcha/', include('captcha.urls')),
 ]

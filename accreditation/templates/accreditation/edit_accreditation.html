@@ -1,0 +1,68 @@
+{% extends 'accreditation_base.html' %}
+
+{% block title %} Edit Accreditation {% endblock title %}
+
+{% block content %}
+
+      <form method="POST">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+<!-- School and Term Info -->
+          <div class = "card card-body">
+            <div class="row">
+                <div class="col-auto">
+                  {{ form.school.label_tag }}
+                  {{ form.school }}
+                  {{ form.school.errors }}
+                </div>
+
+                <div class="col-auto">
+                  {{ form.visit_start_date.label_tag }}
+                  {{ form.visit_start_date }}
+                  {{ form.visit_start_date.errors }}
+                </div>
+                <div class="col-auto">
+                  {{ form.visit_end_date.label_tag }}
+                  {{ form.visit_end_date }}
+                  {{ form.visit_end_date.errors }}
+                </div>
+            </div>
+          </div>
+
+          <div class="card card-body">
+            <div class="row">
+                <div class="col">
+                    <div class = "row">
+                        <div class="col-auto">
+                          {{ form.term.label_tag }}
+                          {{ form.term }}
+                          {{ form.term.errors }}
+                        </div>
+                    </div>
+                    <div class = "row mt-2">
+                        <div class="col-auto">
+                          {{ form.term_start_date.label_tag }}
+                          {{ form.term_start_date }}
+                          {{ form.term_start_date.errors }}
+                        </div>
+                        <div class="col-auto">
+                          {{ form.term_end_date.label_tag }}
+                          {{ form.term_end_date }}
+                          {{ form.term_end_date.errors }}
+                        </div>
+                    </div>
+                </div>
+                 <div class="">
+                      {{ form.current_accreditation.label_tag }}
+                      {{ form.current_accreditation }}
+                      {{ form.current_accreditation.errors }}
+                 </div>
+            </div>
+          </div>
+
+          <button class="btn btn-sm btn-ISEIblue" type="submit">Update</button>
+      </form>
+
+
+{% endblock %}

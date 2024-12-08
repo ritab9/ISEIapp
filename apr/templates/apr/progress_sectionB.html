@@ -1,0 +1,45 @@
+<!-- Progress Section, to be used with apr_progress report -->
+<div class="">
+    <h6 class="text-center">{{ section_title }}</h6>
+    <div class="card card-body">
+        {% for directive, school_year_progress in directives_progress.items %}
+        <p>{{ directive }}</p>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th style="white-space: nowrap">School year</th>
+                    <th style="width:100%">Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for school_year, progress in school_year_progress.items %}
+                <tr>
+                    <td>{{ school_year }}</td>
+                    {% for p in progress %}
+                    <td x-data="{ isEditing: false, editedDescription: '{{ p.description|default:"" }}', originalDescription: '{{ p.description|default:"" }}' }" class="edit-progress">
+                        <!-- View Mode -->
+                        <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to edit">
+                            <span x-text="editedDescription || '{{ p.description|default:"Click to edit" }}'"></span>
+                            <!-- i class="fa fa-pencil-alt text-muted ml-2" aria-hidden="true"></i -->
+                        </div>
+
+                        <!-- Edit Mode -->
+                        <div x-show="isEditing" class="editing">
+                            <textarea x-model="editedDescription" style="width: 100%; resize: none;"></textarea>
+                            <button @click="saveProgress('{{ p.id }}', editedDescription); isEditing = false" class="btn btn-ISEIblue btn-sm">Save</button>
+                            <button @click="editedDescription = originalDescription; isEditing = false" class="btn btn-ISEIyellow btn-sm">Cancel</button>
+                        </div>
+                    </td>
+
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% empty %}
+        <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
+        {% endfor %}
+    </div>
+</div>
+
+

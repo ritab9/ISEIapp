@@ -1,0 +1,54 @@
+<!-- handle_formset.html -->
+{% extends 'accreditation_base.html' %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+  <div class="card-body card">
+
+
+    <form method="post" action="{{ form_action_url }}">
+        {% csrf_token %}
+
+        <div class="row mb-2">
+            <div class="col">
+                <h6>Manage {{ model_name|title }} for {{ apr }}</h6>
+            </div>
+            <div class="col text-right">
+                <button type="submit" class="btn btn-ISEIblue btn-sm">Save</button>
+                <a href="{% url 'manage_apr' apr.accreditation.id %}" class="btn btn-ISEIyellow btn-sm">Cancel</a>
+            </div>
+        </div>
+
+
+        <table class="table">
+            {{ formset.management_form }}
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{{ model_name }}</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td> {{ form.id }} <!--hidden field -->
+                            {{ form.description }}</td>
+                        <td>{{ form.DELETE }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mb-5">
+            <button type="submit" class="btn btn-ISEIblue btn-sm">Save</button>
+            <a href="{% url 'manage_apr' apr.accreditation.id %}" class="btn btn-ISEIyellow btn-sm">Cancel</a>
+        </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+

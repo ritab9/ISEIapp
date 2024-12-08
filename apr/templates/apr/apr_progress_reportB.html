@@ -1,0 +1,68 @@
+<!-- Base Content -->
+{% extends 'accreditation_base.html' %}
+
+{% block title %} APR Progress {% endblock title %}
+
+
+{% block content %}
+
+<div class="container">
+    <h6>Progress Overview for {{ apr }}</h6>
+
+    {% include 'apr/progress_sectionB.html' with section_title='Priority Directives' directives_progress=priority_directives_progress %}
+
+    {% include 'apr/progress_sectionB.html' with section_title='Directives' directives_progress=directives_progress %}
+
+    {% include 'apr/progress_sectionB.html' with section_title='Recommendations' directives_progress=recommendations_progress %}
+
+    {% include 'apr/progress_sectionB.html' with section_title='Action Plans' directives_progress=action_plans_progress %}
+
+
+</div>
+
+
+{% endblock %}
+
+
+{% block footer_javascript %}
+
+<script>
+
+    function saveProgress(progressId, newDescription) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(`/update_progress/${progressId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ description: newDescription }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to save progress');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.description !== newDescription) {
+                alert('Failed to update progress on the server.');
+                console.error('Mismatch between server response and updated data.');
+            } else {
+                // Successfully saved progress, close editing window and restore DOM
+                //alert('Progress saved successfully!');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving progress:', error);
+            alert('An error occurred while saving progress. Please try again.');
+        });
+    }
+</script>
+
+
+
+{% endblock %}
+
+

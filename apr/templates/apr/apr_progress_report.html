@@ -1,0 +1,77 @@
+<!-- Base Content -->
+{% extends 'accreditation_base.html' %}
+
+{% block title %} APR Progress {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <h6>Progress Overview for {{ apr }}</h6>
+
+    {% include 'apr/progress_section.html' with section_title='Priority Directives' directives_progress=priority_directives_progress %}
+
+    {% include 'apr/progress_section.html' with section_title='Directives' directives_progress=directives_progress %}
+
+    {% include 'apr/progress_section.html' with section_title='Recommendations' directives_progress=recommendations_progress %}
+
+    {% include 'apr/progress_section.html' with section_title='Action Plans' directives_progress=action_plans_progress %}
+
+
+</div>
+
+
+{% endblock %}
+
+
+{% block footer_javascript %}
+    <script>
+
+        document.querySelectorAll('.edit-progress').forEach(descriptionCell => {
+            descriptionCell.addEventListener('click', function() {
+                const progressId = this.id;
+                const description = this.textContent.trim();
+
+                var inputElement = document.createElement('textarea');
+                inputElement.value = description;
+                inputElement.style.width = '100%';
+                inputElement.style.resize = 'none';  // optional, can be removed if manual resizing is allowed
+
+
+                this.textContent = '';
+                this.appendChild(inputElement);
+
+                inputElement.addEventListener('blur', async function() {
+                    const newDescription = inputElement.value.trim();
+                    descriptionCell.textContent = newDescription;
+
+                    // Send updated data to server.
+                    try {
+                        const response = await fetch(`/update_progress/${progressId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}',
+                            },
+                            body: JSON.stringify({ description: newDescription }),
+                        });
+
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        const data = await response.json();
+
+                        if (data.description !== newDescription) {
+                            console.error('Data on server not updated correctly.');
+                            alert('There was an error saving the progress.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('There was an error saving the progress.');
+                    }
+                });
+
+                inputElement.focus();
+            });
+        });
+    </script>
+{% endblock %}
+
+

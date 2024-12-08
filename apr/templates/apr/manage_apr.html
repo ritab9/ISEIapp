@@ -1,0 +1,140 @@
+{% extends 'accreditation_base.html' %}
+
+{% block title %} Manage APR {% endblock title %}
+
+
+{% block content %}
+
+
+        <h6 class="mt-2">{{ apr }}</h6>
+
+<!-- Priority Directives -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col"><h6 class="section-title clickable">Priority Directives</h6></div>
+                <div class="col text-right">
+                    <a href="{% url 'add_priority_directives' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Priority Directives</a>
+                </div>
+            </div>
+
+            <table class="table table-sm table-bordered mt-2 section-content" style="width: auto; table-layout: auto">
+                <tbody>
+                {% for pd in priority_directives %}
+                    <tr>
+                        <td>{{ pd.number }}</td><td>{{ pd.description }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+<!-- Directives -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col"><h6 class="section-title clickable">Directives</h6></div>
+                <div class="col text-right">
+                    <a href="{% url 'add_directives' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Directives</a>
+                </div>
+            </div>
+             <table class="table table-sm table-bordered mt-2 section-content" style="width: auto; table-layout: auto">
+                <tbody>
+                    {% for directive in directives %}
+                        <tr>
+                            <td>{{ directive.number }}</td><td>{{ directive.description }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+             </table>
+        </div>
+
+<!-- Recommendations -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col"><h6 class="section-title clickable">Recommendations</h6></div>
+                <div class="col text-right">
+                    <a href="{% url 'add_recommendations' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Recommendations</a>
+                </div>
+            </div>
+            <table class="table table-sm table-bordered mt-2 section-content" style="width: auto; table-layout: auto">
+                <tbody>
+                    {% for recommendation in recommendations %}
+                        <tr>
+                            <td>{{ recommendation.number }}</td><td>{{ recommendation.description }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+             </table>
+        </div>
+
+<!-- Action Plans -->
+     <div class="card card-body mt-2">
+        <div class="row">
+            <div class="col"><h6 class="">Action Plans</h6></div>
+            <div class="col text-right">
+                 <a href="{% url 'add_action_plan' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add Action Plan</a>
+            </div>
+        </div>
+     </div>
+
+        {% for action_plan, steps in action_plans_with_steps %}
+            <div class="card card-body mb-3">
+                <!-- Action Plan Title -->
+                <div class="row">
+                    <div class="col">
+                        <h6 class="section-title clickable">Action Plan #{{ action_plan.number }}</h6>
+                    </div>
+                    <div class="col text-right">
+                        <a href="{% url 'edit_action_plan' apr.id action_plan.id %}" class="btn btn-sm btn-outline-ISEIblue">Manage Action Plan</a>
+                    </div>
+                </div>
+
+                <!-- Action Plan Details -->
+                <div class="mb-2">
+                    <p><strong>Standard:</strong> {{ action_plan.standard }}</p>
+                    <p><strong>Objective:</strong> {{ action_plan.objective }}</p>
+                </div>
+
+                <table class="table table-bordered section-content">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Person(s) Responsible</th>
+                            <th>Action Steps</th>
+                            <th>Date/Timeline</th>
+                            <th>Estimated Resources</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for step in steps %}
+                            <tr>
+                                <td>{{ step.number }}</td>
+                                <td>{{ step.person_responsible }}</td>
+                                <td>{{ step.action_steps }}</td>
+                                <td>{{ step.timeline }}</td>
+                                <td>{{ step.resources }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+
+
+
+
+
+<script>
+    $(document).ready(function() {
+        // $(".section-content").hide(); // Optionally hide all sections on page load
+        $(".section-title").click(function(e) {
+             $(this).closest(".card").find(".section-content").toggle();
+        });
+    });
+</script>
+
+
+
+{% endblock %}
+
+

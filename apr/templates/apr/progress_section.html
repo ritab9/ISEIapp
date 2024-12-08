@@ -1,0 +1,27 @@
+<!-- progress_section.html used in apr_progress_report.html-->
+<div class="">
+    <h6 class="text-center">{{ section_title }}</h6>
+    <div class="card card-body">
+        {% for directive, school_year_progress in directives_progress.items %}
+        <p>{{ directive }}</p>
+            <table class="table table-sm">
+               <thead>
+                  <tr>
+                     <th style="white-space: nowrap">School year</th>
+                     <th style="width:100%">Progress</th>
+                  </tr>
+               </thead>
+               {% for school_year, progress in school_year_progress.items %}
+                   <tr>
+                      <td>{{ school_year }}</td>
+                      {% for p in progress %}
+                         <td class="edit-progress" id="{{ p.id }}">{{ p.description }}</td>
+                      {% endfor %}
+                   </tr>
+               {% endfor %}
+            </table>
+        {% empty %}
+            <p>No {{ section_title }} found.</p>  <!-- Handling empty case -->
+        {% endfor %}
+    </div>
+</div>
