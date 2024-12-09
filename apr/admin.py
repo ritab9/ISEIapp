@@ -1,7 +1,7 @@
+#admin.py
 
 from django.contrib import admin
 from .models import *
-
 
 import nested_admin
 
@@ -81,5 +81,15 @@ class ActionPlanAdmin(admin.ModelAdmin):
     #    orphaned_steps.delete()
     #    self.message_user(request, f"{count} orphaned steps were deleted.")
     #delete_orphaned_steps.short_description = "Delete orphaned steps (no Action Plan)"
+
+
+class ProgressAdmin(admin.ModelAdmin):
+    list_display = ('school_year', 'description', 'priority_directive', 'directive', 'recommendation', 'action_plan')
+    search_fields = ('description', 'school_year__year')  # You can search by school year or description
+
+    # Optional: You can also filter by fields
+    list_filter = ('priority_directive', 'directive', 'recommendation', 'action_plan')
+
+admin.site.register(Progress, ProgressAdmin)
 
 

@@ -176,55 +176,94 @@ def create_progress_records(apr):
 
 
 #School views for tracking APR progress
+
+def group_progress_by_directive(progress_queryset, directive_attr, include_steps=False):
+    """
+    Groups progress items by directive (using `directive_attr`) and school year.
+    Args:
+        progress_queryset: Queryset of Progress objects.
+        directive_attr: Name of the attribute linking Progress to the directive type.
+    Returns:
+        defaultdict of dict: Nested dictionary grouped by directive and school year.
+    """
+    grouped_progress = defaultdict(lambda: {"progress": defaultdict(list), "steps": []})
+
+    for progress in progress_queryset:
+        directive = getattr(progress, directive_attr)  # Access dynamic directive field
+        directive_number = directive.number
+        directive_description = getattr(directive, 'description', None) or getattr(directive, 'objective', '')
+        directive_key = f"{directive_number}. {directive_description}"
+
+        # Include ActionPlanSteps if requested
+        if include_steps and directive_attr == 'action_plan':
+            if not grouped_progress[directive_key]["steps"]:  # Avoid duplicates
+                steps = list(directive.actionplansteps_set.all().values(
+                    'number', 'person_responsible', 'action_steps', 'timeline', 'resources'
+                ))
+                grouped_progress[directive_key]["steps"] = steps
+
+        # Group progress by school year
+        grouped_progress[directive_key]["progress"][progress.school_year].append(progress)
+
+    # Sort progresses by school_year within each directive
+    grouped_progress = {
+        directive_key: {
+            "steps": data["steps"],
+            "progress": {
+                school_year: sorted(progress_objs, key=lambda x: x.school_year.name)
+                for school_year, progress_objs in sorted(data["progress"].items(), key=lambda x: x[0].name)
+            }
+        }
+        for directive_key, data in grouped_progress.items()
+    }
+    # And then sort directives by their number:
+    sorted_grouped_progress = dict(
+        sorted(
+            grouped_progress.items(),
+            key=lambda item: int(item[0].split('.')[0])  # Extract and sort by the directive number
+        )
+    )
+
+
+    return sorted_grouped_progress
+
+
 def apr_progress_report(request, apr_id):
     apr = get_object_or_404(APR, id=apr_id)
 
-    # Fetch all directives, recommendations, and action plans related to the APR
-    priority_directives = PriorityDirective.objects.filter(apr=apr).order_by('number')
-    directives = Directive.objects.filter(apr=apr).order_by('number')
-    recommendations = Recommendation.objects.filter(apr=apr).order_by('-number')
-    action_plans = ActionPlan.objects.filter(apr=apr).order_by('-number')
+    # Fetch related objects
+    school_years = APRSchoolYear.objects.filter(apr=apr)
+    priority_directives = PriorityDirective.objects.filter(apr=apr)
+    directives = Directive.objects.filter(apr=apr)
+    recommendations = Recommendation.objects.filter(apr=apr)
+    action_plans = ActionPlan.objects.filter(apr=apr)
 
-    school_years = APRSchoolYear.objects.filter(apr=apr).order_by('name')
+    # Fetch all progress and group dynamically
+    all_progress = Progress.objects.filter(
+        school_year__in=school_years
+    ).select_related('priority_directive', 'directive', 'recommendation', 'action_plan', 'school_year'
+                     ).prefetch_related('action_plan__actionplansteps_set')
 
-    # Create empty defaultdictionaries of dicts for grouping progress per directive type
-    priority_directives_progress = defaultdict(dict)
-    directives_progress = defaultdict(dict)
-    recommendations_progress = defaultdict(dict)
-    action_plans_progress = defaultdict(dict)
+    priority_directives_progress = group_progress_by_directive(
+        all_progress.filter(priority_directive__in=priority_directives), 'priority_directive'
+    )
+    directives_progress = group_progress_by_directive(
+        all_progress.filter(directive__in=directives), 'directive'
+    )
+    recommendations_progress = group_progress_by_directive(
+        all_progress.filter(recommendation__in=recommendations), 'recommendation'
+    )
+    action_plans_progress = group_progress_by_directive(
+        all_progress.filter(action_plan__in=action_plans), 'action_plan', include_steps= True
+    )
 
-    # Create individual querysets for each progress object related to Priority Directives, Directives,
-    # Recommendations and Action Plans
-    priority_progress = Progress.objects.filter(priority_directive__in=priority_directives).order_by(
-        'school_year__name')
-    directive_progress = Progress.objects.filter(directive__in=directives).order_by('school_year__name')
-    recommendation_progress = Progress.objects.filter(recommendation__in=recommendations).order_by('school_year__name')
-    action_plan_progress = Progress.objects.filter(action_plan__in=action_plans).order_by('school_year__name')
-
-    for progress in priority_progress:
-        directive_key = f"{progress.priority_directive.number}. {progress.priority_directive.description}"
-        priority_directives_progress[directive_key].setdefault(progress.school_year, []).append(progress)
-
-    for progress in directive_progress:
-        directive_key = f"{progress.directive.number}. {progress.directive.description}"
-        directives_progress[directive_key].setdefault(progress.school_year, []).append(progress)
-
-    for progress in recommendation_progress:
-        directive_key = f"{progress.recommendation.number}. {progress.recommendation.description}"
-        recommendations_progress[directive_key].setdefault(progress.school_year, []).append(progress)
-
-    for progress in action_plan_progress:
-        directive_key = f"{progress.action_plan.number}. {progress.action_plan.objective}"
-        action_plans_progress[directive_key].setdefault(progress.school_year, []).append(progress)
-
-    # convert to dictionary from defaultdict
     priority_directives_progress = dict(priority_directives_progress)
     directives_progress = dict(directives_progress)
     recommendations_progress = dict(recommendations_progress)
     action_plans_progress = dict(action_plans_progress)
 
+
     return render(request, 'apr/apr_progress_reportB.html', {
-    #return render(request, 'apr/apr_progress_report.html', {
         'apr': apr,
         'school_years': school_years,
         'priority_directives_progress': priority_directives_progress,
@@ -232,7 +271,6 @@ def apr_progress_report(request, apr_id):
         'recommendations_progress': recommendations_progress,
         'action_plans_progress': action_plans_progress,
     })
-
 
 
 @csrf_exempt  # Use this temporarily for testing

@@ -1,35 +1,78 @@
 <!-- Progress Section, to be used with apr_progress report -->
-<div class="">
-    <h6 class="text-center">{{ section_title }}</h6>
-    <div class="card card-body">
-        {% for directive, school_year_progress in directives_progress.items %}
-        <p>{{ directive }}</p>
-        <table class="table table-sm">
+<div x-data="{ showContent: true }">
+    <!-- Section Title -->
+    <h6 class="text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
+        {{ section_title }}s
+        <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
+    </h6>
+
+    <div x-show="showContent" class="card card-body">
+        {% for directive, data in directives_progress.items %}
+            <p><b>{{ section_title }}</b> <i>{{ directive }}</i></p>
+<!-- Display steps for Action Plans -->
+            {% if data.steps %}
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Person(s) Responsible</th>
+                            <th>Action Steps</th>
+                            <th>Date/Timeline</th>
+                            <th>Estimated Resources</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for step in data.steps %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ step.person_responsible }}</td>
+                                <td>{{ step.action_steps }}</td>
+                                <td>{{ step.timeline }}</td>
+                                <td>{{ step.resources }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+<!-- Progress Table -->
+            <table class="table table-sm">
             <thead>
-                <tr>
+                <tr class="text-ISEIblue4">
                     <th style="white-space: nowrap">School year</th>
                     <th style="width:100%">Progress</th>
                 </tr>
             </thead>
             <tbody>
-                {% for school_year, progress in school_year_progress.items %}
+                {% for school_year, progress in data.progress.items %}
                 <tr>
                     <td>{{ school_year }}</td>
                     {% for p in progress %}
-                    <td x-data="{ isEditing: false, editedDescription: '{{ p.description|default:"" }}', originalDescription: '{{ p.description|default:"" }}' }" class="edit-progress">
-                        <!-- View Mode -->
-                        <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to edit">
-                            <span x-text="editedDescription || '{{ p.description|default:"Click to edit" }}'"></span>
-                            <!-- i class="fa fa-pencil-alt text-muted ml-2" aria-hidden="true"></i -->
-                        </div>
+                        <td x-data="{
+                                isEditing: false,
+                                editedDescription: `{{ p.description|default:'' }}`.trim(),
+                                originalDescription: `{{ p.description|default:'' }}`.trim()
+                            }" class="edit-progress">
+                            <!-- View Mode -->
+                            <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to add/edit">
+                                <span
+                                    :class="editedDescription === '' ? 'text-ISEIblue4' : ''"
+                                    x-text="editedDescription !== '' ? editedDescription : 'Click to add'"
+                                    style="white-space: pre-line;">
+                                </span>
+                            </div>
 
-                        <!-- Edit Mode -->
-                        <div x-show="isEditing" class="editing">
-                            <textarea x-model="editedDescription" style="width: 100%; resize: none;"></textarea>
-                            <button @click="saveProgress('{{ p.id }}', editedDescription); isEditing = false" class="btn btn-ISEIblue btn-sm">Save</button>
-                            <button @click="editedDescription = originalDescription; isEditing = false" class="btn btn-ISEIyellow btn-sm">Cancel</button>
-                        </div>
-                    </td>
+                            <!-- Edit Mode -->
+                            <div x-show="isEditing" class="editing">
+                                <textarea x-model="editedDescription" style="width: 100%; resize: none;"> </textarea>
+                                <button @click="saveProgress('{{ p.id }}', editedDescription); originalDescription = editedDescription; isEditing = false" class="btn btn-ISEIblue btn-sm">
+                                    Save
+                                </button>
+                                <button @click="editedDescription = originalDescription; isEditing = false" class="btn btn-ISEIyellow btn-sm">
+                                    Cancel
+                                </button>
+                                <small>* Cancel will reset the description to the last saved value.</small>
+                            </div>
+                        </td>
 
                     {% endfor %}
                 </tr>
@@ -37,7 +80,7 @@
             </tbody>
         </table>
         {% empty %}
-        <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
+            <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
         {% endfor %}
     </div>
 </div>

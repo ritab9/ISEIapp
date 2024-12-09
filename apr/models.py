@@ -101,7 +101,7 @@ class ActionPlanSteps(models.Model):
 
 class Progress(models.Model):
     school_year = models.ForeignKey(APRSchoolYear, on_delete=models.CASCADE, related_name="progress")
-    description = models.TextField(default="")
+    description = models.TextField(null=True, blank=True)
 
     # Connect Progress to Specific Entities
     priority_directive = models.ForeignKey(PriorityDirective, on_delete=models.CASCADE, null=True, blank=True,

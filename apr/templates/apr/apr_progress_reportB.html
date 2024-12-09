@@ -1,4 +1,4 @@
-<!-- Base Content -->
+<!-- apr_progress_reportB-->
 {% extends 'accreditation_base.html' %}
 
 {% block title %} APR Progress {% endblock title %}
@@ -6,16 +6,17 @@
 
 {% block content %}
 
-<div class="container">
-    <h6>Progress Overview for {{ apr }}</h6>
+<div class="">
 
-    {% include 'apr/progress_sectionB.html' with section_title='Priority Directives' directives_progress=priority_directives_progress %}
+    <h6 class="text-center">Progress Overview for {{ apr }}</h6>
 
-    {% include 'apr/progress_sectionB.html' with section_title='Directives' directives_progress=directives_progress %}
+    {% include 'apr/progress_sectionB.html' with section_title='Priority Directive' directives_progress=priority_directives_progress %}
 
-    {% include 'apr/progress_sectionB.html' with section_title='Recommendations' directives_progress=recommendations_progress %}
+    {% include 'apr/progress_sectionB.html' with section_title='Directive' directives_progress=directives_progress %}
 
-    {% include 'apr/progress_sectionB.html' with section_title='Action Plans' directives_progress=action_plans_progress %}
+    {% include 'apr/progress_sectionB.html' with section_title='Recommendation' directives_progress=recommendations_progress %}
+
+    {% include 'apr/progress_sectionB.html' with section_title='Action Plan' directives_progress=action_plans_progress %}
 
 
 </div>
@@ -50,8 +51,9 @@
                 alert('Failed to update progress on the server.');
                 console.error('Mismatch between server response and updated data.');
             } else {
-                // Successfully saved progress, close editing window and restore DOM
                 //alert('Progress saved successfully!');
+                this.originalDescription = newDescription; // Update originalDescription with the new description
+                // Successfully saved progress, close editing window and restore DOM
             }
         })
         .catch(error => {
