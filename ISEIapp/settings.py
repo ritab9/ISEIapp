@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'storages',
     'jquery',
-    'nested_admin',
+    #'nested_admin',
     #'debug_toolbar',
 
 ]
