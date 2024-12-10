@@ -8,6 +8,27 @@
 
         <h6 class="mt-2">{{ apr }}</h6>
 
+<!-- Action Plan Directives -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col"><h6 class="section-title clickable">Action Plan Directives</h6></div>
+                <div class="col text-right">
+                    <a href="{% url 'add_action_plan_directives' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Action Plan Directives</a>
+                </div>
+            </div>
+
+            <table class="table table-sm table-bordered mt-2 section-content" style="width: auto; table-layout: auto">
+                <tbody>
+                {% for apd in action_plan_directives %}
+                    <tr>
+                        <td>{{ apd.number }}</td><td>{{ apd.description }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
 <!-- Priority Directives -->
         <div class="card card-body">
             <div class="row">

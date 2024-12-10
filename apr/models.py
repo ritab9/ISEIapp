@@ -25,6 +25,23 @@ class ProgressStatus(models.Model):
     def __str__(self):
         return self.status
 
+class ActionPlanDirective(models.Model):
+    number = models.IntegerField()
+    apr = models.ForeignKey(APR, on_delete=models.CASCADE)
+    description = models.TextField(null=True, blank=True)
+    completed_date = models.DateField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.number:
+            # Get the highest number for the current APR and add 1
+            max_number = ActionPlanDirective.objects.filter(apr=self.apr).aggregate(models.Max('number'))['number__max']
+            self.number = (max_number or 0) + 1
+        super(ActionPlanDirective, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Action Plan Directive {self.number}"
+
+
 class PriorityDirective(models.Model):
     number = models.IntegerField()
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)

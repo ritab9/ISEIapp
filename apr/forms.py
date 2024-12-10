@@ -2,7 +2,7 @@
 
 from django import forms
 from django.forms import modelformset_factory, inlineformset_factory
-from .models import PriorityDirective, Directive, Recommendation, ActionPlan, ActionPlanSteps
+from .models import  ActionPlanDirective, PriorityDirective, Directive, Recommendation, ActionPlan, ActionPlanSteps
 
 
 #base form to be used for PriorityDirective, Directive and Recommendation Forms
@@ -16,6 +16,10 @@ class BaseDirectiveForm(forms.ModelForm):
                 #'style': 'resize: none;',
             }),
         }
+class ActionPlanDirectiveForm(BaseDirectiveForm):
+    class Meta(BaseDirectiveForm.Meta):
+        model = ActionPlanDirective
+
 class PriorityDirectiveForm(BaseDirectiveForm):
     class Meta(BaseDirectiveForm.Meta):
         model = PriorityDirective
@@ -28,6 +32,7 @@ class RecommendationForm(BaseDirectiveForm):
 
 
 # Formsets using the customized forms
+ActionPlanDirectiveFormSet = modelformset_factory( ActionPlanDirective, form=ActionPlanDirectiveForm, extra=10, can_delete=True)
 PriorityDirectiveFormSet = modelformset_factory( PriorityDirective, form=PriorityDirectiveForm, extra=10, can_delete=True)
 DirectiveFormSet = modelformset_factory(Directive, form=DirectiveForm, extra=10, can_delete=True)
 RecommendationFormSet = modelformset_factory( Recommendation, form=RecommendationForm, extra=10, can_delete=True)

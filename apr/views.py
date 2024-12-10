@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from users.decorators import allowed_users
 
 from apr.models import *
-from .forms import PriorityDirectiveFormSet, DirectiveFormSet, RecommendationFormSet,ActionPlanForm, ActionPlanStepsFormSet
+from .forms import *
 from accreditation.models import Accreditation
 
 from django.db.models import Max, Q
@@ -11,6 +11,7 @@ from collections import defaultdict, OrderedDict
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 import json
 
 
@@ -37,10 +38,11 @@ def manage_apr(request, accreditation_id):
     else:
         apr = accreditation.apr
 
-    priority_directives = PriorityDirective.objects.filter(apr=apr)
-    directives = Directive.objects.filter(apr=apr)
-    recommendations = Recommendation.objects.filter(apr=apr)
-    action_plans = ActionPlan.objects.filter(apr=apr)
+    action_plan_directives = ActionPlanDirective.objects.filter(apr=apr).order_by('number')
+    priority_directives = PriorityDirective.objects.filter(apr=apr).order_by('number')
+    directives = Directive.objects.filter(apr=apr).order_by('number')
+    recommendations = Recommendation.objects.filter(apr=apr).order_by('number')
+    action_plans = ActionPlan.objects.filter(apr=apr).order_by('number')
 
     action_plans_with_steps = []
     for action_plan in action_plans:
@@ -49,6 +51,7 @@ def manage_apr(request, accreditation_id):
 
     context = {
         'apr': apr,
+        'action_plan_directives': action_plan_directives,
         'priority_directives': priority_directives,
         'directives': directives,
         'recommendations': recommendations,
@@ -87,6 +90,11 @@ def handle_formset(request, apr_id, model, formset_class, form_action_url):
     return render(request, 'apr/handle_formset.html', context)
 
 #view for adding priority_directives
+def add_action_plan_directives(request, apr_id):
+    return handle_formset(
+        request, apr_id, ActionPlanDirective, ActionPlanDirectiveFormSet, form_action_url=f"/apr/{apr_id}/add_action_plan_directives/"
+    )
+
 def add_priority_directives(request, apr_id):
     return handle_formset(
         request, apr_id, PriorityDirective, PriorityDirectiveFormSet, form_action_url=f"/apr/{apr_id}/add_priority_directives/"
@@ -236,6 +244,7 @@ def apr_progress_report(request, apr_id):
 
     # Fetch related objects
     school_years = APRSchoolYear.objects.filter(apr=apr)
+    action_plan_directives = PriorityDirective.objects.filter(apr=apr)
     priority_directives = PriorityDirective.objects.filter(apr=apr)
     directives = Directive.objects.filter(apr=apr)
     recommendations = Recommendation.objects.filter(apr=apr)
@@ -264,6 +273,7 @@ def apr_progress_report(request, apr_id):
     context = {
         'apr': apr,
         'school_years': school_years,
+        'action_plan_directives': action_plan_directives,
         'priority_directives_progress': priority_directives_progress,
         'directives_progress': directives_progress,
         'recommendations_progress': recommendations_progress,
@@ -328,3 +338,23 @@ def update_progress_status(request):
 
     # If it's not a POST request, return a bad request response
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def update_actionplandirective_completed_date(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            directive_id = data.get('id')
+            completed_date = data.get('completed_date')
+
+            directive = ActionPlanDirective.objects.get(id=directive_id)
+            directive.completed_date = datetime.strptime(completed_date, '%Y-%m-%d').date()
+            directive.save()
+
+            return JsonResponse({'message': 'Completed date updated successfully!'}, status=200)
+        except ActionPlanDirective.DoesNotExist:
+            return JsonResponse({'error': 'Directive not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
