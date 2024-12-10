@@ -12,9 +12,11 @@ class APR(models.Model):
 
 
 class APRSchoolYear(models.Model):
-    name=models.CharField(max_length=10, unique=True)
+    name=models.CharField(max_length=10)
     apr = models.ForeignKey(APR, on_delete=models.CASCADE, related_name='aprschoolyear', null=True, blank=True)
 
+    class Meta:
+        unique_together = (("name", "apr"),)
     def __str__(self):
         return self.name
 
