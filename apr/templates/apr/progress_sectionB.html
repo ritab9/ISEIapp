@@ -6,9 +6,40 @@
         <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
     </h6>
 
-    <div x-show="showContent" class="card card-body">
-        {% for directive, data in directives_progress.items %}
-            <p><b>{{ section_title }}</b> <i>{{ directive }}</i></p>
+
+    {% for directive, data in directives_progress.items %}
+        <div x-show="showContent" class="card card-body">
+            <p><b>{{ section_title }} {{ directive.number }}.</b>
+
+                 {% if directive.description %}
+                    {{ directive.description }}
+                {% elif directive.objective %}
+                    {{ directive.objective }}
+                {% else %}
+                    No description available
+                {% endif %}
+            </p>
+
+<!-- Display progress status -->
+            <div class="row mb-3 justify-content-end">
+                <div class="col-auto">
+                    <label for="progress_status_{{ directive.id }}" class="form-label fw-bold">
+                        <b>Progress Status:</b>
+                    </label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" id="progress_status_{{ directive.id }}" name="progress_status_{{ directive.id }}" onchange="updateProgressStatus({{ directive.id }})">
+                        {% for status in progress_statuses %}
+                            <option value="{{ status.status }}" {% if directive.progress_status == status %}selected{% endif %}>
+                                {{ status.status }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+
 <!-- Display steps for Action Plans -->
             {% if data.steps %}
                 <table class="table table-bordered">
@@ -39,7 +70,7 @@
             <thead>
                 <tr class="text-ISEIblue4">
                     <th style="white-space: nowrap">School year</th>
-                    <th style="width:100%">Progress</th>
+                    <th style="width:100%" class="">Progress</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,10 +110,11 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% empty %}
-            <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
-        {% endfor %}
-    </div>
+        </div>
+
+    {% empty %}
+        <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
+    {% endfor %}
 </div>
 
 

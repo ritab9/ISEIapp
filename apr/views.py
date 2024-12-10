@@ -177,6 +177,7 @@ def create_progress_records(apr):
 
 #School views for tracking APR progress
 
+#Grouping progress object in a dictionary by Priority Directive, Directive, Recommendation or Action Plan
 def group_progress_by_directive(progress_queryset, directive_attr, include_steps=False):
     """
     Groups progress items by directive (using `directive_attr`) and school year.
@@ -192,40 +193,42 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
         directive = getattr(progress, directive_attr)  # Access dynamic directive field
         directive_number = directive.number
         directive_description = getattr(directive, 'description', None) or getattr(directive, 'objective', '')
-        directive_key = f"{directive_number}. {directive_description}"
+        #progress_status = getattr(directive, 'progress_status', None)
+        #directive_key = f"{directive_number}. {directive_description}"
 
         # Include ActionPlanSteps if requested
         if include_steps and directive_attr == 'action_plan':
-            if not grouped_progress[directive_key]["steps"]:  # Avoid duplicates
+            if not grouped_progress[directive]["steps"]:  # Avoid duplicates
                 steps = list(directive.actionplansteps_set.all().values(
                     'number', 'person_responsible', 'action_steps', 'timeline', 'resources'
                 ))
-                grouped_progress[directive_key]["steps"] = steps
+                grouped_progress[directive]["steps"] = steps
 
         # Group progress by school year
-        grouped_progress[directive_key]["progress"][progress.school_year].append(progress)
+        grouped_progress[directive]["progress"][progress.school_year].append(progress)
 
     # Sort progresses by school_year within each directive
     grouped_progress = {
-        directive_key: {
+        directive: {
             "steps": data["steps"],
             "progress": {
                 school_year: sorted(progress_objs, key=lambda x: x.school_year.name)
                 for school_year, progress_objs in sorted(data["progress"].items(), key=lambda x: x[0].name)
-            }
+            },
         }
-        for directive_key, data in grouped_progress.items()
+        for directive, data in grouped_progress.items()
     }
+
     # And then sort directives by their number:
-    sorted_grouped_progress = dict(
-        sorted(
-            grouped_progress.items(),
-            key=lambda item: int(item[0].split('.')[0])  # Extract and sort by the directive number
-        )
-    )
+    #sorted_grouped_progress = dict(
+    #    sorted(
+    #        grouped_progress.items(),
+    #        key=lambda item: int(item[0].split('.')[0])  # Extract and sort by the directive number
+    #    )
+    #)
 
 
-    return sorted_grouped_progress
+    return grouped_progress
 
 
 def apr_progress_report(request, apr_id):
@@ -254,23 +257,21 @@ def apr_progress_report(request, apr_id):
         all_progress.filter(recommendation__in=recommendations), 'recommendation'
     )
     action_plans_progress = group_progress_by_directive(
-        all_progress.filter(action_plan__in=action_plans), 'action_plan', include_steps= True
+        all_progress.filter(action_plan__in=action_plans), 'action_plan', include_steps=True
     )
+    progress_statuses = ProgressStatus.objects.all()
 
-    priority_directives_progress = dict(priority_directives_progress)
-    directives_progress = dict(directives_progress)
-    recommendations_progress = dict(recommendations_progress)
-    action_plans_progress = dict(action_plans_progress)
-
-
-    return render(request, 'apr/apr_progress_reportB.html', {
+    context = {
         'apr': apr,
         'school_years': school_years,
         'priority_directives_progress': priority_directives_progress,
         'directives_progress': directives_progress,
         'recommendations_progress': recommendations_progress,
         'action_plans_progress': action_plans_progress,
-    })
+        'progress_statuses': progress_statuses,
+    }
+
+    return render(request, 'apr/apr_progress_reportB.html', context)
 
 
 @csrf_exempt  # Use this temporarily for testing
@@ -289,3 +290,41 @@ def update_progress(request, progress_id):
             return JsonResponse({'error': str(e)}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt  # This is optional if you're using the CSRF token properly
+def update_progress_status(request):
+    if request.method == 'POST':
+        # Parse the data sent from the AJAX request
+        data = json.loads(request.body)
+        directive_id = data.get('directive_id')
+        progress_status_value = data.get('progress_status')
+
+        # Find the directive by ID
+        directive = None
+        for model in [Directive, PriorityDirective, Recommendation, ActionPlan]:
+            try:
+                directive = model.objects.get(id=directive_id)
+                break
+            except model.DoesNotExist:
+                continue
+
+        if directive:
+            # Get the ProgressStatus instance corresponding to the status value
+            try:
+                progress_status = ProgressStatus.objects.get(status=progress_status_value)
+                print(progress_status)
+            except ProgressStatus.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Invalid progress status'})
+
+            # Update the progress status
+            directive.progress_status = progress_status
+            directive.save()
+
+
+            return JsonResponse({'success': True})
+
+        # If the directive was not found, respond with an error
+        return JsonResponse({'success': False, 'error': 'Directive not found'}, status=400)
+
+    # If it's not a POST request, return a bad request response
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
