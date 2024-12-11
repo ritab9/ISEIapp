@@ -10,7 +10,7 @@ from .forms import *
 @allowed_users(allowed_roles=['staff'])
 def isei_accreditation_dashboard(request):
 
-    accreditations = Accreditation.objects.filter(current_accreditation = True)
+    accreditations = Accreditation.objects.filter(current_accreditation = True).order_by('school__name')
 
     context=dict(accreditations=accreditations)
     # Then render a template with context data (if any)
