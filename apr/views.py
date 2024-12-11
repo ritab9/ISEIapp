@@ -244,7 +244,7 @@ def apr_progress_report(request, apr_id):
 
     # Fetch related objects
     school_years = APRSchoolYear.objects.filter(apr=apr)
-    action_plan_directives = PriorityDirective.objects.filter(apr=apr)
+    action_plan_directives = ActionPlanDirective.objects.filter(apr=apr)
     priority_directives = PriorityDirective.objects.filter(apr=apr)
     directives = Directive.objects.filter(apr=apr)
     recommendations = Recommendation.objects.filter(apr=apr)
