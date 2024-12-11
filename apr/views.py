@@ -281,7 +281,7 @@ def apr_progress_report(request, apr_id):
         'progress_statuses': progress_statuses,
     }
 
-    return render(request, 'apr/apr_progress_reportB.html', context)
+    return render(request, 'apr/apr_progress_report.html', context)
 
 
 @csrf_exempt  # Use this temporarily for testing

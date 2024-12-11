@@ -23,8 +23,13 @@
       {% for accreditation in accreditations %}
         <tr>
           <td>{{ accreditation.school }}</td>
-            <td>{{ accreditation.visit_start_date }} - {{ accreditation.visit_end_date }}</td>
-            <td> {{ accreditation.term }}</td>
+<td>
+  {{ accreditation.visit_start_date|date:"F j" }} -
+  {% if accreditation.visit_start_date|date:"F" != accreditation.visit_end_date|date:"F" %}
+    {{ accreditation.visit_end_date|date:"F " }}
+  {% endif %}
+  {{ accreditation.visit_end_date|date:"j, Y" }}
+</td>            <td> {{ accreditation.term }}</td>
             <td>{{ accreditation.term_start_date }}</td><td>{{ accreditation.term_end_date }}</td>
             <td><a class="" href="{% url 'edit_accreditation' id=accreditation.id %}">Edit Accred.</a></td>
             <td><a class="text-danger" href="{% url 'delete_accreditation' id=accreditation.id %}">Delete</a></td>
