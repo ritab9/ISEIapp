@@ -8,7 +8,7 @@ from users.models import School
 # Create your models here.
 class APR(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
-    last_update = models.DateTimeField()
+    last_update = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"APR: {self.accreditation.school}, {self.accreditation.term_start_date.strftime('%Y')} - {self.accreditation.term_end_date.strftime('%Y')}"
