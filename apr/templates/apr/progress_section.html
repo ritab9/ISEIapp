@@ -20,24 +20,6 @@
                 {% endif %}
             </p>
 
-<!-- Display progress status -->
-            <div class="row mb-3 justify-content-end">
-                <div class="col-auto">
-                    <label for="progress_status_{{ directive.id }}" class="form-label fw-bold">
-                        <b>Progress Status:</b>
-                    </label>
-                </div>
-                <div class="col-auto">
-                    <select class="form-select" id="progress_status_{{ directive.id }}" name="progress_status_{{ directive.id }}" onchange="updateProgressStatus({{ directive.id }})">
-                        {% for status in progress_statuses %}
-                            <option value="{{ status.status }}" {% if directive.progress_status == status %}selected{% endif %}>
-                                {{ status.status }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
 <!-- Display steps for Action Plans -->
             {% if data.steps %}
                 <table class="table table-bordered">
@@ -63,6 +45,29 @@
                     </tbody>
                 </table>
             {% endif %}
+
+
+<!-- Display progress status -->
+            <div class="row mb-3 justify-content-end">
+                <div class="col-auto">
+                    <label for="progress_status_{{ directive.id }}" class="form-label fw-bold">
+                        <b>Progress Status:</b>
+                    </label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" id="progress_status_{{ directive.id }}" name="progress_status_{{ directive.id }}" onchange="updateProgressStatus({{ directive.id }})">
+                        {% if not directive.progress_status %}
+                            <option selected="selected">----------</option>
+                        {% endif %}
+                        {% for status in progress_statuses %}
+                            <option value="{{ status.status }}" {% if directive.progress_status == status %}selected{% endif %}>
+                                {{ status.status }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
 <!-- Progress Table -->
             <table class="table table-sm">
             <thead>

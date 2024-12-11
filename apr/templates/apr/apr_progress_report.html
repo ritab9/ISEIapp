@@ -60,6 +60,8 @@
         {% include 'apr/progress_section.html' with section_title='Action Plan' directives_progress=action_plans_progress %}
     {% endif %}
 
+    <a href="{% url 'isei_accreditation_dashboard' %}" class="btn btn-sm btn-ISEIblue4">Done</a>
+
 </div>
 
 {% endblock %}
@@ -123,7 +125,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    alert('Progress status updated successfully!');
+                    //alert('Progress status updated successfully!');
                 } else {
                     alert('Failed to update progress status.');
                 }

@@ -41,6 +41,7 @@
             <td>
                 {% if accreditation.apr %}
                     <a class="" href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
+                    <div class="small">{{ accreditation.apr.last_update|default_if_none:"" }}</div>
                 {% endif %}
             </td>
         </tr>

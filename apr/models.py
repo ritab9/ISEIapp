@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 from accreditation.models import Accreditation
 from users.models import School
 
@@ -6,6 +8,7 @@ from users.models import School
 # Create your models here.
 class APR(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
+    last_update = models.DateTimeField()
 
     def __str__(self):
         return f"APR: {self.accreditation.school}, {self.accreditation.term_start_date.strftime('%Y')} - {self.accreditation.term_end_date.strftime('%Y')}"
@@ -30,6 +33,7 @@ class ActionPlanDirective(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     completed_date = models.DateField(null=True, blank=True)
+
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -61,7 +65,7 @@ class PriorityDirective(models.Model):
 class Directive(models.Model):
     number = models.IntegerField()
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
-    progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
+    progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -89,7 +93,6 @@ class Recommendation(models.Model):
 
     def __str__(self):
         return f"Recommendation {self.number}"
-
 
 class ActionPlan(models.Model):
     number = models.IntegerField()
@@ -130,6 +133,15 @@ class Progress(models.Model):
                                        related_name="progress")
     action_plan = models.ForeignKey(ActionPlan, on_delete=models.CASCADE, null=True, blank=True,
                                     related_name="progress")
+
+    def save(self, *args, **kwargs):
+        linked_models = [self.action_plan, self.directive, self.recommendation, self.priority_directive]
+        for model in linked_models:
+            if model is not None:
+                model.apr.last_update = timezone.now()
+                model.apr.save(update_fields=["last_update"])
+                break
+        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.priority_directive:

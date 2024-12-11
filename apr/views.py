@@ -78,7 +78,7 @@ def handle_formset(request, apr_id, model, formset_class, form_action_url):
                         instance.save()  # Now save the object
                     else:
                         instance.delete()
-            create_progress_records(apr)
+            create_progress_records(apr, model)
             # Redirect after saving
             return redirect('manage_apr', apr.accreditation.id)
     else:
@@ -141,6 +141,7 @@ def manage_action_plan(request, apr_id, action_plan_id=None):
                 #for i, step in enumerate(existing_steps, start=1):
                 #    step.number = i
                 #    step.save()
+                create_progress_records(apr, ActionPlan)
 
             return redirect('manage_apr', apr.accreditation.id)  # Redirect to APR detail page
 
@@ -157,28 +158,33 @@ def manage_action_plan(request, apr_id, action_plan_id=None):
     return render(request, 'apr/manage_action_plan.html', context)
 
 #create the records to tag progress per school year
-def create_progress_records(apr):
+def create_progress_records(apr, model):
+    model_name = model.__name__
     for apr_school_year in apr.aprschoolyear.all():
-        for priority_directive in apr.prioritydirective_set.all():
-            Progress.objects.get_or_create(
-                school_year=apr_school_year,
-                priority_directive=priority_directive
-            )
-        for directive in apr.directive_set.all():
-            Progress.objects.get_or_create(
-                school_year=apr_school_year,
-                directive=directive
-            )
-        for recommendation in apr.recommendation_set.all():
-            Progress.objects.get_or_create(
-                school_year=apr_school_year,
-                recommendation=recommendation
-            )
-        for action_plan in apr.actionplan_set.all():
-            Progress.objects.get_or_create(
-                school_year=apr_school_year,
-                action_plan=action_plan,
-            )
+        if model_name == 'PriorityDirective':
+            for priority_directive in apr.prioritydirective_set.all():
+                Progress.objects.get_or_create(
+                    school_year=apr_school_year,
+                    priority_directive=priority_directive
+                )
+        elif model_name == 'Directive':
+            for directive in apr.directive_set.all():
+                Progress.objects.get_or_create(
+                    school_year=apr_school_year,
+                    directive=directive
+                )
+        elif model_name == 'Recommendation':
+            for recommendation in apr.recommendation_set.all():
+                Progress.objects.get_or_create(
+                    school_year=apr_school_year,
+                    recommendation=recommendation
+                )
+        elif model_name == 'ActionPlan':
+            for action_plan in apr.actionplan_set.all():
+                Progress.objects.get_or_create(
+                    school_year=apr_school_year,
+                    action_plan=action_plan,
+                )
 
 
 
@@ -228,15 +234,15 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
     }
 
     # And then sort directives by their number:
-    #sorted_grouped_progress = dict(
-    #    sorted(
-    #        grouped_progress.items(),
-    #        key=lambda item: int(item[0].split('.')[0])  # Extract and sort by the directive number
-    #    )
-    #)
+    sorted_grouped_progress = dict(
+        sorted(
+            grouped_progress.items(),
+            key=lambda item: item[0].number  # Extract and sort by the directive number
+        )
+    )
 
 
-    return grouped_progress
+    return sorted_grouped_progress
 
 
 def apr_progress_report(request, apr_id):
