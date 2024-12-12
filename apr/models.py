@@ -99,7 +99,7 @@ class ActionPlan(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     standard = models.TextField()
     objective = models.TextField()
-    progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
+    progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only set the number for new instances
@@ -113,10 +113,10 @@ class ActionPlan(models.Model):
 class ActionPlanSteps(models.Model):
     action_plan = models.ForeignKey(ActionPlan, on_delete=models.CASCADE)
     number = models.IntegerField(null=True, blank=True)
-    person_responsible = models.TextField(verbose_name="Person(s) Responsible")
-    action_steps = models.TextField(verbose_name="Action Steps")
-    timeline = models.TextField(verbose_name="Date/Timeline")
-    resources = models.TextField(verbose_name="Estimated Resources")
+    person_responsible = models.TextField(verbose_name="Person(s) Responsible", null=True, blank=True)
+    action_steps = models.TextField(verbose_name="Action Steps", null=True, blank=True)
+    timeline = models.TextField(verbose_name="Date/Timeline", null=True, blank=True)
+    resources = models.TextField(verbose_name="Estimated Resources", null=True, blank=True)
 
     def __str__(self):
         return f"Action Plan #{self.number}"
