@@ -17,6 +17,7 @@ class APR(models.Model):
 class APRSchoolYear(models.Model):
     name=models.CharField(max_length=10)
     apr = models.ForeignKey(APR, on_delete=models.CASCADE, related_name='aprschoolyear', null=True, blank=True)
+    recommendation=models.BooleanField(default=False)
 
     class Meta:
         unique_together = (("name", "apr"),)

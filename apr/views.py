@@ -28,15 +28,24 @@ def manage_apr(request, accreditation_id):
         # Create APR object
         apr = APR(accreditation=accreditation)
         apr.save()
-        # Create APRSchoolYear objects
-        year_start = accreditation.term_start_date.year
-        year_end = accreditation.term_end_date.year
-
-        for year in range(year_start, year_end):
-            apr_school_year = APRSchoolYear(name=f'{year}-{year + 1}', apr=apr)
-            apr_school_year.save()
     else:
         apr = accreditation.apr
+
+    year_start = accreditation.term_start_date.year
+    year_end = accreditation.term_end_date.year
+
+    # Create APRSchoolYear objects
+    for year in range(year_start, year_end):
+        apr_school_year, created = APRSchoolYear.objects.get_or_create(
+            name=f'{year}-{year + 1}',
+            apr=apr
+        )
+
+    apr_school_year, created = APRSchoolYear.objects.get_or_create(
+        name=f'{year_start}-{year_end}',
+        apr=apr,
+        recommendation=True
+    )
 
     action_plan_directives = ActionPlanDirective.objects.filter(apr=apr).order_by('number')
     priority_directives = PriorityDirective.objects.filter(apr=apr).order_by('number')
@@ -160,33 +169,35 @@ def manage_action_plan(request, apr_id, action_plan_id=None):
 #create the records to tag progress per school year
 def create_progress_records(apr, model):
     model_name = model.__name__
-    for apr_school_year in apr.aprschoolyear.all():
-        if model_name == 'PriorityDirective':
-            for priority_directive in apr.prioritydirective_set.all():
-                Progress.objects.get_or_create(
-                    school_year=apr_school_year,
-                    priority_directive=priority_directive
-                )
-        elif model_name == 'Directive':
-            for directive in apr.directive_set.all():
-                Progress.objects.get_or_create(
-                    school_year=apr_school_year,
-                    directive=directive
-                )
-        elif model_name == 'Recommendation':
-            for recommendation in apr.recommendation_set.all():
-                Progress.objects.get_or_create(
-                    school_year=apr_school_year,
-                    recommendation=recommendation
-                )
-        elif model_name == 'ActionPlan':
-            for action_plan in apr.actionplan_set.all():
-                Progress.objects.get_or_create(
-                    school_year=apr_school_year,
-                    action_plan=action_plan,
-                )
 
-
+    if model_name == 'Recommendation':
+        apr_school_year = APRSchoolYear.objects.get(apr=apr, recommendation=True)
+        for recommendation in apr.recommendation_set.all():
+            Progress.objects.get_or_create(
+                school_year=apr_school_year,
+                recommendation=recommendation
+            )
+    else:
+        apr_school_years = APRSchoolYear.objects.filter(apr=apr, recommendation=False)
+        for apr_school_year in apr_school_years:
+            if model_name == 'PriorityDirective':
+                for priority_directive in apr.prioritydirective_set.all():
+                    Progress.objects.get_or_create(
+                        school_year=apr_school_year,
+                        priority_directive=priority_directive
+                    )
+            elif model_name == 'Directive':
+                for directive in apr.directive_set.all():
+                    Progress.objects.get_or_create(
+                        school_year=apr_school_year,
+                        directive=directive
+                    )
+            elif model_name == 'ActionPlan':
+                for action_plan in apr.actionplan_set.all():
+                    Progress.objects.get_or_create(
+                        school_year=apr_school_year,
+                        action_plan=action_plan,
+                    )
 
 
 #School views for tracking APR progress
