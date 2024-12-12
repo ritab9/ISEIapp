@@ -148,7 +148,7 @@
 
 <script>
     $(document).ready(function() {
-        // $(".section-content").hide(); // Optionally hide all sections on page load
+        $(".section-content").hide(); // Optionally hide all sections on page load
         $(".section-title").click(function(e) {
              $(this).closest(".card").find(".section-content").toggle();
         });
