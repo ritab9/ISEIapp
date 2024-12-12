@@ -89,8 +89,8 @@
                             <!-- View Mode -->
                             <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to add/edit">
                                 <span
-                                    :class="editedDescription === '' ? 'text-ISEIblue4' 'small': ''"
-                                    x-text="editedDescription !== '' ? editedDescription : 'Click to add'"
+                                    :class="editedDescription === '' ? 'text-ISEIblue4 small' : ''"
+                                    x-text="editedDescription !== '' ? editedDescription : 'Click to add' "
                                     style="white-space: pre-line;">
                                 </span>
                             </div>
