@@ -73,6 +73,7 @@
 
 //update yearly  Progress
     function saveProgress(progressId, newDescription) {
+
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
         fetch(`/update_progress/${progressId}/`, {
@@ -106,8 +107,7 @@
     }
 
 //update progress Status
-    function updateProgressStatus(directive_id) {
-
+    function updateProgressStatus(directive_id, section_title) {
             // Get the selected value from the dropdown
             const progressStatus = document.getElementById(`progress_status_${directive_id}`).value;
 
@@ -120,12 +120,13 @@
                 },
                 body: JSON.stringify({
                     directive_id: directive_id,
-                    progress_status: progressStatus
+                    progress_status: progressStatus,
+                    model_type: section_title,
                 })
             })
             .then(response => {
                 if (response.ok) {
-                    //alert('Progress status updated successfully!');
+                    alert('Progress status updated successfully!');
                 } else {
                     alert('Failed to update progress status.');
                 }

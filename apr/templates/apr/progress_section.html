@@ -55,7 +55,7 @@
                     </label>
                 </div>
                 <div class="col-auto">
-                    <select class="form-select" id="progress_status_{{ directive.id }}" name="progress_status_{{ directive.id }}" onchange="updateProgressStatus({{ directive.id }})">
+                    <select class="form-select" id="progress_status_{{ directive.id }}" name="progress_status_{{ directive.id }}" onchange="updateProgressStatus({{ directive.id }}, '{{ section_title }}')">
                         {% if not directive.progress_status %}
                             <option selected="selected">----------</option>
                         {% endif %}
@@ -89,7 +89,7 @@
                             <!-- View Mode -->
                             <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to add/edit">
                                 <span
-                                    :class="editedDescription === '' ? 'text-ISEIblue4' : ''"
+                                    :class="editedDescription === '' ? 'text-ISEIblue4' 'small': ''"
                                     x-text="editedDescription !== '' ? editedDescription : 'Click to add'"
                                     style="white-space: pre-line;">
                                 </span>

@@ -325,28 +325,33 @@ def update_progress_status(request):
         data = json.loads(request.body)
         directive_id = data.get('directive_id')
         progress_status_value = data.get('progress_status')
+        model_type = data.get('model_type')
 
-        # Find the directive by ID
-        directive = None
-        for model in [Directive, PriorityDirective, Recommendation, ActionPlan]:
-            try:
-                directive = model.objects.get(id=directive_id)
-                break
-            except model.DoesNotExist:
-                continue
+        model_map = {
+            'Directive': Directive,
+            'Priority Directive': PriorityDirective,
+            'Recommendation': Recommendation,
+            'Action Plan': ActionPlan
+        }
+
+        model = model_map.get(model_type)
+        if model is None:
+            return JsonResponse({'success': False, 'error': 'Invalid model type'}, status=400)
+        try:
+            directive = model.objects.get(id=directive_id)
+        except model.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Model not found'}, status=400)
 
         if directive:
             # Get the ProgressStatus instance corresponding to the status value
             try:
                 progress_status = ProgressStatus.objects.get(status=progress_status_value)
-                print(progress_status)
             except ProgressStatus.DoesNotExist:
                 return JsonResponse({'success': False, 'error': 'Invalid progress status'})
 
             # Update the progress status
             directive.progress_status = progress_status
             directive.save()
-
 
             return JsonResponse({'success': True})
 
