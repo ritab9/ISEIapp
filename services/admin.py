@@ -1,6 +1,15 @@
+#services/admin
 from django.contrib import admin
 from .models import *
 
+
+@admin.register(ResourceType)
+class ResourceTypeAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Resource)
+class ResourceAdmin(admin.ModelAdmin):
+    list_filter = ['type', ]
 
 class TestMaterialTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'update')  # Display these fields

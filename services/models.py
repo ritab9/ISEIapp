@@ -1,6 +1,25 @@
+#services/models
+
 from django.db import models
 from users.models import School
 
+
+#resources models
+class ResourceType(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    def __str__(self):
+        return self.name
+
+
+class Resource(models.Model):
+    name = models.CharField(max_length=200)
+    link = models.URLField(max_length=1000)
+    type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name
+
+
+#Iowa Test order Models
 class TestMaterialType(models.Model):
     NAME_CHOICES = [
         (1, 'Reusable Test Booklet'),
@@ -14,7 +33,6 @@ class TestMaterialType(models.Model):
 
     def __str__(self):
         return f'{self.get_name_display()} - {self.price}'
-
 
 class TestOrder(models.Model):
     school=models.ForeignKey(School, on_delete=models.CASCADE, related_name='orders')

@@ -2,11 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from users.decorators import allowed_users
 from django.db.models import Sum
+from django.db.models import Q
+
 
 from .forms import *
 from .models import *
 
-
+#IOWA Test orders
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal', 'registrar','staff'])
 def test_order(request, schoolID, orderID=None):
@@ -91,3 +93,17 @@ def finalize_order(request, order_id):
     order.finalized = True
     order.save()
     return redirect('isei_test_order')
+
+
+#resources page
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
+def resources(request):
+
+    teacher_evaluation_resources = Resource.objects.filter(type__name='Teacher Evaluation')
+    admin_evaluation_resources = Resource.objects.filter(type__name='Admin Evaluation')
+
+    context=dict(teacher_evaluation_resources = teacher_evaluation_resources,
+                 admin_evaluation_resources = admin_evaluation_resources)
+
+    return render(request, 'resources.html', context)
