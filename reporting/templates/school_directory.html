@@ -7,10 +7,11 @@
 
 <!-- School Info -->
     <div class = "col col-auto card">
-        <div class="scrollable-table scrollable-table2 mt-5">
+        <div class="mt-5">
                 <table class="table table-striped">
                   <thead class="thead table-ISEIblue4 sticky_head">
                     <tr>
+                      <th>#</th>
                       <th>Name</th>
                       <th>Address</th>
                       <th>Phone</th>
@@ -24,6 +25,7 @@
                   <tbody>
                     {% for school in schools %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                       <td><a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></td>
                       <td>
                         {{ school.address.address_1 }}<br>

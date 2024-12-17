@@ -1422,7 +1422,7 @@ def isei_reporting_dashboard(request):
     #ap_report= AnnualReport.objects.filter(school_year=current_school_year, report_type="APR")
 
     report_types = ReportType.objects.all()
-    schools = School.objects.filter(member=True, active = True).exclude(Q(name="ISEI") | Q(name="Sample School"))
+    schools = School.objects.filter(member=True, active = True).exclude(Q(name="Sample School"))
 
     # Prefetch the AnnualReports for the selected school year for each school
     schools = schools.prefetch_related(
@@ -1430,7 +1430,7 @@ def isei_reporting_dashboard(request):
                  to_attr='annual_reports')
     )
 
-    wss_schools = School.objects.filter(address__country__code='US').exclude(abbreviation__in=["AAA", "LBE", "AIS"])
+    wss_schools = School.objects.filter(worthy_student_report_needed = True)
 
     context = {'schools':schools, 'wss_schools':wss_schools, 'report_types':report_types, 'todays_date': date.today()}
 
@@ -1452,7 +1452,7 @@ def isei_worthy_student_scholarship(request):
 
 @login_required(login_url='login')
 def school_directory(request):
-    schools = School.objects.filter(member=True).order_by('name')
+    schools = School.objects.filter(active=True).order_by('name')
 
     context = dict(schools=schools)
 
@@ -1682,7 +1682,7 @@ class PersonnelListView(ListView):
 def school_personnel_directory(request):
     filter_form=PersonnelFilterForm(request.GET)
 
-    schools = School.objects.filter(active=True).exclude(Q(name="ISEI") | Q(name="Sample School"))
+    schools = School.objects.filter(active=True).exclude(Q(name="Sample School"))
     school_year = SchoolYear.objects.get(current_school_year=True)
     report_type = ReportType.objects.get(code="ER")
 

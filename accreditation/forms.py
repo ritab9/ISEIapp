@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import DateInput
 from .models import Accreditation
+from users.models import School
 
 
 class AccreditationForm(forms.ModelForm):
@@ -13,3 +14,6 @@ class AccreditationForm(forms.ModelForm):
             'term_start_date': DateInput(attrs={'type': 'date'}),
             'term_end_date': DateInput(attrs={'type': 'date'}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['school'].queryset = School.objects.filter(active=True)

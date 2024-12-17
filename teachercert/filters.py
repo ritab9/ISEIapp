@@ -26,7 +26,7 @@ class CEUInstanceFilter(django_filters.FilterSet):
 class CEUReportFilter(django_filters.FilterSet):
     first_name = CharFilter(field_name="teacher__first_name", label='First Name')
     last_name = CharFilter(field_name="teacher__last_name", label='Last Name')
-    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
+    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.filter(active=True))
     school_year = ModelChoiceFilter(field_name='school_year', queryset=SchoolYear.objects.all(), label='School Year')
     start_created = DateFilter(field_name="created_at", lookup_expr='gte', label='Created after:',widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
     end_created = DateFilter(field_name="created_at", lookup_expr='lte', label='Created before:',widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
@@ -56,7 +56,7 @@ class TeacherFilter(django_filters.FilterSet):
 class TCertificateFilter(django_filters.FilterSet):
     first_name = CharFilter(field_name="teacher__first_name", lookup_expr='icontains', label='First Name')
     last_name = CharFilter(field_name="teacher__last_name", lookup_expr='icontains', label='Last Name')
-    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
+    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.filter(active=True) )
     certificate_type = ModelChoiceFilter(field_name="certification_type", label='Type',
                                          queryset=teachercert.models.CertificationType.objects.all())
     issued_after = DateFilter(field_name="issue_date", lookup_expr='gte', label='Issued after:', widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
@@ -73,7 +73,7 @@ class TCertificateFilter(django_filters.FilterSet):
 
 
 class TeacherCertificationApplicationFilter(django_filters.FilterSet):
-    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.all() )
+    school = ModelChoiceFilter(field_name="teacher__school__name", label='School', queryset=users.models.School.objects.filter(active=True) )
     first_name = CharFilter(field_name = 'teacher__first_name',label = "First Name", lookup_expr = 'icontains')
     last_name = CharFilter(field_name = 'teacher__last_name',label = "Last Name", lookup_expr = 'icontains')
     CHOICES_B = (

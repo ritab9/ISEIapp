@@ -30,7 +30,7 @@ import string
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def register_teacher(request):
-    school = School.objects.all().order_by("name")
+    school = School.objects.filter(active=True).order_by("name")
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)

@@ -6,14 +6,14 @@
 {% block content %}
 
     <table class="table table-sm">
-        <tr>
+        <tr><th>#</th>
             <th>School</th>
             {% for report_type in report_types %}
             <th> {{ report_type.name }} </th>
             {% endfor %}
         </tr>
         {% for school in schools %}
-        <tr>
+        <tr><td>{{ forloop.counter }}</td>
             <td>
                 <a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></div>
             </td>

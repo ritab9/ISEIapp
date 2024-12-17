@@ -70,7 +70,7 @@ def isei_teachercert_dashboard(request):
     in_six_months = today + timedelta(183)
     a_year_ago = today - timedelta(365)
 
-    schools = School.objects.filter(~Q(name__in={'ISEI', }))
+    schools = School.objects.filter(active=True)
     cert_dict = {}
     for s in schools:
         s_teachers = teachers.filter(school=s)
@@ -1163,7 +1163,7 @@ def isei_manage_application(request, appID):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def add_ISEI_CEUs(request):
-    school_list = School.objects.all()
+    school_list = School.objects.filter(active=True)
     school_year_list = SchoolYear.objects.filter(active_year=True)
 
     iseiCEUformset = modelformset_factory(CEUInstance, fields=('approved_ceu',), extra=0, can_delete=True)
