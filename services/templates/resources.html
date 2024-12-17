@@ -1,10 +1,16 @@
 {% extends 'reporting_base.html' %}
 
 {% load static %}
-{% block title %} Resources{% endblock title %}
+{% block title %} Resources {% endblock title %}
 
 
 {% block content %}
+
+        <h6 class="text-center mt-2 mb-2">Member Resources</h6>
+
+        <div class="card card-body">
+            <a href="{% url 'school_personnel_directory' %}"> ISEI Directory</a>
+        </div>
 
 <!-- Evaluation Resources -->
     <div class="card card-body">
