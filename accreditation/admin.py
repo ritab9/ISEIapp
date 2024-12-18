@@ -24,7 +24,7 @@ class SchoolTypeAdmin(admin.ModelAdmin):
 
 class LevelInline(admin.TabularInline):
     model = Level
-    extra = 1
+    extra = 4
 
 class IndicatorAdmin(admin.ModelAdmin):
     inlines = [LevelInline]
