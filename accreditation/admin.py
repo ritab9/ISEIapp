@@ -35,6 +35,7 @@ class LevelInline(admin.TabularInline):
 
 class IndicatorAdmin(admin.ModelAdmin):
     inlines = [LevelInline]
+    list_display = ('code', 'key_word')
     list_filter = ('standard', 'school_type',)
 
 class IndicatorInline(admin.StackedInline):
