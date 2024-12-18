@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Accreditation, AccreditationTerm
+from .models import *
 
 
 class AccreditationAdmin(admin.ModelAdmin):
@@ -12,3 +12,40 @@ admin.site.register(Accreditation, AccreditationAdmin)
 @admin.register(AccreditationTerm)
 class AccreditationTermAdmin(admin.ModelAdmin):
     list_display = ['code', 'name', 'description']
+
+
+#Self Study models
+
+# Customize the Admin Interface for SuggestedEvidence Model
+class SuggestedEvidenceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    list_editable = ('name',)
+    #list_display_links = ('id',)
+
+
+class SchoolTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    list_editable = ('name',)
+    #list_display_links = ('id',)
+
+
+class LevelInline(admin.TabularInline):
+    model = Level
+    extra = 1
+
+class IndicatorAdmin(admin.ModelAdmin):
+    inlines = [LevelInline]
+    list_filter = ('standard', 'school_type',)
+
+class IndicatorInline(admin.StackedInline):
+    model = Indicator
+    extra = 1
+
+
+class StandardAdmin(admin.ModelAdmin):
+    inlines = [IndicatorInline]
+
+admin.site.register(Indicator, IndicatorAdmin)
+admin.site.register(SuggestedEvidence, SuggestedEvidenceAdmin)
+admin.site.register(Standard, StandardAdmin)
+admin.site.register(SchoolType, SchoolTypeAdmin)

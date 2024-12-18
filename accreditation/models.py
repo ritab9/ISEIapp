@@ -2,6 +2,54 @@ from django.db import models
 from users.models import School
 from django.db.models import Q
 
+#Self-Study models
+class SuggestedEvidence(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Standard(models.Model):
+    number = models.PositiveSmallIntegerField(unique=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    evidence = models.ManyToManyField(SuggestedEvidence, blank=True)
+
+    def __str__(self):
+        return f"{self.number}. {self.name}"
+
+
+class SchoolType(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
+
+
+
+class Indicator(models.Model):
+    standard = models.ForeignKey(Standard, on_delete=models.CASCADE)
+    code = models.CharField(max_length=5)
+    description = models.TextField()
+    school_type = models.ForeignKey(SchoolType, on_delete=models.CASCADE, default=5)
+
+    def __str__(self):
+        return f"{self.code}"
+
+class Level(models.Model):
+    LEVEL_CHOICES = (
+        (1, 'Not Met'),
+        (2, 'Partially Met'),
+        (3, 'Met'),
+        (4, 'Exceptional'),
+    )
+    level = models.IntegerField(choices=LEVEL_CHOICES)
+    description = models.TextField(blank=True)
+    indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.get_level_display()
+
 
 class AccreditationTerm(models.Model):
     code = models.CharField(max_length=10, unique=True)
