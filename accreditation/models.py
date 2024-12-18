@@ -24,7 +24,7 @@ class SchoolType(models.Model):
 
 class Indicator(models.Model):
     standard = models.ForeignKey(Standard, on_delete=models.CASCADE)
-    code = models.CharField(max_length=5)
+    code = models.CharField(max_length=7)
     key_word=models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField()
     school_type = models.ForeignKey(SchoolType, on_delete=models.CASCADE, default=5)
