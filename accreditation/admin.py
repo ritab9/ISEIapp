@@ -16,13 +16,6 @@ class AccreditationTermAdmin(admin.ModelAdmin):
 
 #Self Study models
 
-# Customize the Admin Interface for SuggestedEvidence Model
-class SuggestedEvidenceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name',)
-    list_editable = ('name',)
-    #list_display_links = ('id',)
-
-
 class SchoolTypeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
     list_editable = ('name',)
@@ -48,6 +41,5 @@ class StandardAdmin(admin.ModelAdmin):
     inlines = [IndicatorInline]
 
 admin.site.register(Indicator, IndicatorAdmin)
-admin.site.register(SuggestedEvidence, SuggestedEvidenceAdmin)
 admin.site.register(Standard, StandardAdmin)
 admin.site.register(SchoolType, SchoolTypeAdmin)

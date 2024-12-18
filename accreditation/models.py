@@ -3,17 +3,12 @@ from users.models import School
 from django.db.models import Q
 
 #Self-Study models
-class SuggestedEvidence(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
 
 class Standard(models.Model):
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    evidence = models.ManyToManyField(SuggestedEvidence, blank=True)
+    evidence = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.number}. {self.name}"
