@@ -116,7 +116,8 @@ class ActionPlanSteps(models.Model):
     number = models.IntegerField(null=True, blank=True)
     person_responsible = models.TextField(verbose_name="Person(s) Responsible", null=True, blank=True)
     action_steps = models.TextField(verbose_name="Action Steps", null=True, blank=True)
-    timeline = models.TextField(verbose_name="Date/Timeline", null=True, blank=True)
+    start_date = models.TextField(verbose_name="Estimated Start Date", null=True, blank=True)
+    completion_date = models.TextField(verbose_name="Estimated Completion Date", null=True, blank=True)
     resources = models.TextField(verbose_name="Estimated Resources", null=True, blank=True)
 
     def __str__(self):

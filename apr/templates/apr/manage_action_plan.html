@@ -1,5 +1,8 @@
 {% extends 'accreditation_base.html' %}
 
+{% block title %} Manage Action Plan {% endblock title %}
+
+
 {% block content %}
 <div class="container mt-4">
 
@@ -28,7 +31,7 @@
                         <th>#</th>
                         <th>Person(s) Responsible</th>
                         <th>Action Steps</th>
-                        <th>Date/Timeline</th>
+                        <th>Estimated Start Date</th><th>Estimated Completion Date</th>
                         <th>Estimated Resources</th>
                         <th>Delete</th>
                     </tr>
@@ -39,7 +42,8 @@
                             <td>{{ forloop.counter }}{{ form.id }}</td>
                             <td>{{ form.person_responsible }}</td>
                             <td>{{ form.action_steps }}</td>
-                            <td>{{ form.timeline }}</td>
+                            <td>{{ form.start_date }}</td>
+                            <td>{{ form.completion_date }}</td>
                             <td>{{ form.resources }}</td>
                             <td>{{ form.DELETE }}</td>
                         </tr>

@@ -85,6 +85,9 @@ width: 5px;
     color:red;
     font-weight: normal;
 }
+.bg-error {
+    background-color: red;
+}
 
 .error input, .error select {
     border: 2px red solid;
@@ -246,3 +249,103 @@ input[type='number'] {
     cursor: pointer;
     text-decoration: underline;
 }
+
+
+/* APR Header */
+.orange-header {
+    background-color: #B56004; /* Muted darker orange for APR header */
+    color: white;
+    text-align: center;
+    border-right: 1px solid #D9B48C; /* Subtle border separating columns */
+    padding: 10px;
+}
+
+.orange-header2 {
+    background-color: #D78F48; /* Muted lighter orange for APR header2 */
+    color: white;
+    text-align: center;
+    border-right: 1px solid #8A4B18; /* Subtle border separating columns */
+    padding: 10px;
+}
+
+/* APR Columns */
+.orange-column {
+    background-color: #F9E4C6; /* Light muted beige-orange for cells */
+    border-right: 1px solid #D9B48C; /* Subtle column border */
+    padding: 10px;
+    text-align: left;
+}
+
+/* Striped Effect for APR Columns */
+.table-striped tbody tr:nth-child(odd) .orange-column {
+    background-color: #FDF2E1; /* Very light muted beige-orange for odd rows */
+}
+
+.table-striped tbody tr:nth-child(even) .orange-column {
+    background-color: #fffaf8; /* White for even rows */
+}
+
+/* Hover Effects for APR Columns */
+.table-striped tbody tr:hover .orange-column {
+    background-color: #ffd0ab; /* Softer, lighter muted orange on hover */
+}
+
+
+
+/* Accreditation Header */
+.blue-header {
+    background-color: #0A4B78; /* Darker blue for Accreditation header */
+    color: white;
+    text-align: center;
+    border-right: 1px solid #B0C4DE; /* Border separating columns */
+    padding: 10px;
+}
+
+.blue-header2 {
+    background-color: #477899; /* Lighter blue for Accreditation header2 */
+    color: white;
+    text-align: center;
+    border-right: 1px solid #2b3c48; /* Border separating columns */
+    padding: 10px;
+}
+
+/* Accreditation Columns */
+.blue-column {
+    background-color: #F5F9FC; /* Light grayish-blue for cells */
+    border-right: 1px solid #B0C4DE; /* Column border */
+    padding: 10px;
+    text-align: left;
+}
+
+/* Striped Effect for Accreditation Columns */
+.table-striped tbody tr:nth-child(odd) .blue-column {
+    background-color: #F5F9FC; /* Light grayish-blue for odd rows */
+}
+
+.table-striped tbody tr:nth-child(even) .blue-column {
+    background-color: #FFFFFF; /* White for even rows */
+}
+
+/* Hover Effects for Accreditation Columns */
+.table-striped tbody tr:hover .blue-column {
+    background-color: #D8E9F4; /* Soft blue on hover */
+}
+
+
+
+/* Regular menu items - make inactive text gold/yellow */
+.navbar-dark .navbar-nav .nav-link {
+    color: #FFCE00; /* Inactive links will be gold/yellow */
+}
+
+/* Hover and focus on menu items */
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus {
+    color: #fdfd96; /* Hover/focus color to a lighter yellow */
+}
+
+/* Disabled menu items */
+.navbar-dark .navbar-nav .nav-link.disabled {
+    color: rgba(255, 255, 255, 0.25); /* Disabled items */
+}
+

@@ -123,7 +123,8 @@
                             <th>#</th>
                             <th>Person(s) Responsible</th>
                             <th>Action Steps</th>
-                            <th>Date/Timeline</th>
+                            <th>Estimated Start Date</th>
+                            <th>Estimated Completion Date</th>
                             <th>Estimated Resources</th>
                         </tr>
                     </thead>
@@ -133,7 +134,8 @@
                                 <td>{{ step.number }}</td>
                                 <td>{{ step.person_responsible }}</td>
                                 <td>{{ step.action_steps }}</td>
-                                <td>{{ step.timeline }}</td>
+                                <td>{{ step.start_date}}</td>
+                                <td>{{ step.completion_date|default_if_none:"" }}</td>
                                 <td>{{ step.resources }}</td>
                             </tr>
                         {% endfor %}

@@ -13,14 +13,11 @@ class Standard(models.Model):
     def __str__(self):
         return f"{self.number}. {self.name}"
 
-
 class SchoolType(models.Model):
     name = models.CharField(max_length=30)
 
     def __str__(self):
         return self.name
-
-
 
 class Indicator(models.Model):
     standard = models.ForeignKey(Standard, on_delete=models.CASCADE)
@@ -61,6 +58,7 @@ class Accreditation(models.Model):
     term = models.ForeignKey(AccreditationTerm, on_delete=models.CASCADE)
     term_start_date = models.DateField(null=True, blank=True)
     term_end_date = models.DateField(null=True, blank=True)
+    coa_approval_date = models.DateField(null=True, blank=True, verbose_name="COA Approval Date")
     current_accreditation = models.BooleanField(default=False)
 
     def __str__(self):

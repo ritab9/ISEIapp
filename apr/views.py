@@ -55,7 +55,7 @@ def manage_apr(request, accreditation_id):
 
     action_plans_with_steps = []
     for action_plan in action_plans:
-        steps = ActionPlanSteps.objects.filter(action_plan=action_plan)
+        steps = ActionPlanSteps.objects.filter(action_plan=action_plan).order_by('number')
         action_plans_with_steps.append((action_plan, steps))
 
     context = {
@@ -142,7 +142,8 @@ def manage_action_plan(request, apr_id, action_plan_id=None):
 
                 steps = formset.save(commit=False)
                 for i, step in enumerate(steps, start=max_number + 1):
-                    step.number = i
+                    if step.number is None:  # Only assign number if it doesn't already have one
+                        step.number = i
                     step.action_plan = action_plan  # Link the step to the ActionPlan
                     step.save()
 
@@ -224,8 +225,8 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
         # Include ActionPlanSteps if requested
         if include_steps and directive_attr == 'action_plan':
             if not grouped_progress[directive]["steps"]:  # Avoid duplicates
-                steps = list(directive.actionplansteps_set.all().values(
-                    'number', 'person_responsible', 'action_steps', 'timeline', 'resources'
+                steps = list(directive.actionplansteps_set.all().order_by('number').values(
+                    'number', 'person_responsible', 'action_steps', 'start_date', 'completion_date', 'resources'
                 ))
                 grouped_progress[directive]["steps"] = steps
 

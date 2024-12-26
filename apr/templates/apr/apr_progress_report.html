@@ -137,6 +137,61 @@
             });
         }
 
+//set color of Progress Status
+    function setColor(selectElement) {
+        // remove all color classes
+        selectElement.classList.remove("error", "success", "info", "warning");
+
+        // Find the parent directive div (assume it's the closest `div` with a class like `card`)
+        const directiveDiv = selectElement.closest('.card');
+
+        // add color class based on selected option
+        switch(selectElement.value) {
+            case 'Suspended':
+                selectElement.classList.add("error");
+                if (directiveDiv) {
+                    directiveDiv.style.backgroundColor = "lightgray"; // Gray out the div
+                    directiveDiv.style.opacity = "0.6"; // Optional: add transparency
+                }
+                break;
+            case 'Completed/Ongoing':
+                selectElement.classList.add("success");
+                if (directiveDiv) {
+                    directiveDiv.style.backgroundColor = ""; // Reset background color
+                    directiveDiv.style.opacity = ""; // Reset opacity
+                }
+                break;
+            case 'In Progress':
+                selectElement.classList.add("info");
+                if (directiveDiv) {
+                    directiveDiv.style.backgroundColor = ""; // Reset background color
+                    directiveDiv.style.opacity = ""; // Reset opacity
+                }
+                break;
+            default:
+                selectElement.classList.add("warning");
+                if (directiveDiv) {
+                    directiveDiv.style.backgroundColor = ""; // Reset background color
+                    directiveDiv.style.opacity = ""; // Reset opacity
+                }
+        }
+    }
+
+    // Use a more generalized selection: select all elements that have id starting with "progress_status_"
+    // Reason: id is unique per element, but you have multiple elements with similar "base id"
+    var selectElements = document.querySelectorAll('[id^="progress_status_"]');
+
+    // Iterate over NodeList
+    selectElements.forEach(function(selectElement) {
+        // setColor is called here for setting color on page load and for each selectElement
+        setColor(selectElement);
+
+        // setColor is also called here whenever select value changes and for each selectElement
+        selectElement.addEventListener('change', function() {
+            setColor(selectElement);
+        });
+    });
+
 //Update Action Plan Directive submission date
     document.addEventListener('DOMContentLoaded', function () {
         const dateInputs = document.querySelectorAll('.completed-date-input');

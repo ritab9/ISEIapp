@@ -25,8 +25,8 @@ def add_accreditation(request):
     else:
         form = AccreditationForm()
 
-    context = {'form': form}
-    return render(request, 'accreditation/add_accreditation.html', context)
+    context = {'form': form, 'add':True}
+    return render(request, 'accreditation/manage_accreditation.html', context)
 
 
 @login_required(login_url='login')
@@ -41,8 +41,8 @@ def edit_accreditation(request, id):
             return redirect('/isei_accreditation_dashboard/')
     else:
         form = AccreditationForm(instance=accreditation)
-    context = {'form': form}
-    return render(request, 'accreditation/edit_accreditation.html', context)
+    context = {'form': form, 'edit':True}
+    return render(request, 'accreditation/manage_accreditation.html', context)
 
 
 @login_required(login_url='login')

@@ -51,12 +51,13 @@ class ActionPlanForm(forms.ModelForm):
 class ActionPlanStepsForm(forms.ModelForm):
     class Meta:
         model = ActionPlanSteps
-        fields = ['person_responsible', 'action_steps', 'timeline', 'resources']
+        fields = ['person_responsible', 'action_steps', 'start_date', 'completion_date', 'resources']
         widgets = {
             #'number': forms.Textarea(attrs={'cols': 1, 'rows': 1}),
             'person_responsible': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
             'action_steps': forms.Textarea(attrs={'cols': 30, 'rows': 1, 'class': 'autosize'}),
-            'timeline': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+            'start_date': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+            'completion_date': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
             'resources': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
         }
 

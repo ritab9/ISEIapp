@@ -53,16 +53,43 @@
                         </div>
                     </div>
                 </div>
-                 <div class="">
+                 <div class="col">
                       {{ form.current_accreditation.label_tag }}
                       {{ form.current_accreditation }}
                       {{ form.current_accreditation.errors }}
                  </div>
+                <div class="col">
+                    {{ form.coa_approval_date.label_tag }}
+                    {{ form.coa_approval_date }}
+                    {{ form.coa_approval_date.errors }}
+                </div>
             </div>
           </div>
 
-          <button class="btn btn-sm btn-ISEIblue" type="submit">Update</button>
+          <button class="btn btn-sm btn-ISEIblue" type="submit">
+            {% if add %} Add {% endif %}
+            {% if edit %} Update {% endif %}
+          </button>
       </form>
 
 
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Get term select and current_accreditation checkbox elements
+        const termField = document.querySelector('#id_term');
+        const accreditationCheckbox = document.querySelector('#id_current_accreditation');
+
+        // Trigger the function when a term is selected or changed
+        termField.onchange = function() {
+            if(termField.value !== "") {  // If some term is selected
+                accreditationCheckbox.checked = true;
+            } else {  // If no term selected, keep checkbox false
+                accreditationCheckbox.checked = false;
+            }
+        }
+    });
+</script>
+
+
 {% endblock %}
+

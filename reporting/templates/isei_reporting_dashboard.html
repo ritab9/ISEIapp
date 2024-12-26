@@ -5,14 +5,17 @@
 
 {% block content %}
 
-    <table class="table table-sm">
-        <tr><th>#</th>
-            <th>School</th>
-            {% for report_type in report_types %}
-            <th> {{ report_type.name }} </th>
-            {% endfor %}
-        </tr>
-        {% for school in schools %}
+    <table class="table table-striped table-sm mt-2">
+        <thead class="sticky_head table-ISEIblue4">
+            <tr><th>#</th>
+                <th>School</th>
+                {% for report_type in report_types %}
+                <th> {{ report_type.name }} </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for school in schools %}
         <tr><td>{{ forloop.counter }}</td>
             <td>
                 <a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></div>
@@ -58,6 +61,7 @@
             {% endfor %}
         </tr>
         {% endfor %}
+        </tbody>
     </table>
 
 {% endblock %}
