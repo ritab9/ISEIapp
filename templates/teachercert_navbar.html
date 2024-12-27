@@ -3,8 +3,10 @@
 {% load static %}
 {% load group_tags %}
 
-{% block navbar_content %}
-     {% if user.is_authenticated and user.is_active%}
+{% block second_line_navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-ISEIblue2 justify-content-center">
+        <ul class="nav navbar-nav">
+            {% if user.is_authenticated and user.is_active%}
                 {% if request.user|in_group:"staff"%}
 <!-- staff links -->
                       <li class="nav-item">
@@ -39,16 +41,16 @@
 <!-- Principal links -->
                 {% if request.user|in_group:"principal,registrar"%}
                        <li class="nav-item ">
-                              <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
-                        </li>
+                           <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
+                       </li>
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
                       </li>
                       <li class="nav-item" >
                         <a class="nav-link" href="{% url 'principal_ceu_approval' %}">CEU Reports Review</a>
                       </li>
-
-                    <!-- </div> -->
+                    
+                    
   <!-- teacher links for principal -->
                     {% if request.user|in_group:"teacher"%}
                     <li class="nav-item dropdown">
@@ -83,34 +85,42 @@
                     </li>
 
                 {% endif %}
-
-                {% if request.user|in_group:"teacher" and not request.user|in_group:"principal,registrar"%}
-
-                    <li class="nav-item" >
-                        <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
-                    </li>
-                    {% if request.user|application_submitted_tag %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
-                      </li>
-
-                    <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
-                    </li>
-                    {% endif %}
-                      <li class="nav-item" style ="border-right:solid 1px #fff;">
-                        <a class="nav-link" href="{% url 'account_settings' request.user.id%}">Teacher Info</a>
-                      </li>
-
-                    <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
-                    </li>
-
-                {% endif %}
-                {% else %}
-               <!--
-                <li><a href="% url 'login' %}">Login</a></li>
-                <li><a href="" class="p-r-none">Sign Up</a></li>
-                -->
+               
             {% endif %}
-{% endblock navbar_content %}
+        </ul>
+    </nav>
+    
+{% endblock second_line_navbar%}
+
+
+{% block first_line_navbar %}
+    {% if request.user|in_group:"teacher" and not request.user|in_group:"principal, registrar, staff"%}
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="nav navbar-nav">
+                    
+                <li class="nav-item" >
+                    <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
+                </li>
+                {% if request.user|application_submitted_tag %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
+                  </li>
+        
+                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
+                </li>
+                {% endif %}
+                
+                  <li class="nav-item" style ="border-right:solid 1px #fff;">
+                    <a class="nav-link" href="{% url 'account_settings' request.user.id%}">Teacher Info</a>
+                  </li>
+        
+                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                </li>
+            </ul>
+        </div>
+    {% else %}
+        {{ block.super }}
+    {% endif %}   
+{% endblock first_line_navbar %}

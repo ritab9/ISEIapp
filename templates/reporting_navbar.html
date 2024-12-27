@@ -3,13 +3,17 @@
 {% load static %}
 {% load group_tags %}
 
-{% block navbar_content %}
-    {% if request.user|in_group:"principal, registrar"%}
-    <!-- Add reporting specific links 
-      <li class="nav-item ">
-        <a class="nav-link" href="{ % url 'school_dashboard' request.user.id %}" > Dashboard </a>
-      </li>
-      -->
-    {% endif %}
+{% block second_line_navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-ISEIblue2 justify-content-center">
+        <ul class="nav navbar-nav">
+            {% if request.user|in_group:"principal, registrar"%}
+            <!-- Add reporting specific links 
+              <li class="nav-item ">
+                <a class="nav-link" href="{ % url 'school_dashboard' request.user.id %}" > Dashboard </a>
+              </li>
+              -->
+            {% endif %}
+        </ul>
+    </nav>
     
-{% endblock navbar_content%}
+{% endblock second_line_navbar %}

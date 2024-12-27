@@ -294,7 +294,7 @@ input[type='number'] {
 
 /* Accreditation Header */
 .blue-header {
-    background-color: #0A4B78; /* Darker blue for Accreditation header */
+    background-color: #053A64; /* Darker blue for Accreditation header */
     color: white;
     text-align: center;
     border-right: 1px solid #B0C4DE; /* Border separating columns */
@@ -302,7 +302,7 @@ input[type='number'] {
 }
 
 .blue-header2 {
-    background-color: #477899; /* Lighter blue for Accreditation header2 */
+    background-color: #2E74AA; /* Lighter blue for Accreditation header2 */
     color: white;
     text-align: center;
     border-right: 1px solid #2b3c48; /* Border separating columns */
