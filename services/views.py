@@ -100,10 +100,17 @@ def finalize_order(request, order_id):
 @allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
 def resources(request):
 
+    accreditation_resources= Resource.objects.filter(type__name='Accreditation')
+    document_resources= Resource.objects.filter(type__name='Document')
     teacher_evaluation_resources = Resource.objects.filter(type__name='Teacher Evaluation')
     admin_evaluation_resources = Resource.objects.filter(type__name='Admin Evaluation')
+    safety_resources = Resource.objects.filter(type__name='Safety & Maintenance')
+
 
     context=dict(teacher_evaluation_resources = teacher_evaluation_resources,
-                 admin_evaluation_resources = admin_evaluation_resources)
+                 admin_evaluation_resources = admin_evaluation_resources,
+                 accreditation_resources = accreditation_resources,
+                 document_resources = document_resources,
+                 safety_resources = safety_resources)
 
     return render(request, 'resources.html', context)

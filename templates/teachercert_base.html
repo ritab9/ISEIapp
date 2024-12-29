@@ -1,8 +1,9 @@
 {# base teacher certification templates #}
 
-
 {% extends 'base.html' %}
 {% load static %}
+{% load resource_tags %}
+
 {% block header %}
         <header>
             {% include 'teachercert_navbar.html' %}
@@ -16,8 +17,16 @@
         {% if user.is_authenticated %}
             <div class="row ml-3 mt-3">
                 <div class="col-sm-auto card">
-                    <a href="https://drive.google.com/file/d/1Xbn44zVxcaGa2YpDtqTwZ1NpO0imBJK4/view?usp=sharing" target="_blank"> Teacher Certification Handbook </a>
+                    {% get_resource_by_name "Teacher Certification Handbook" as teacher_certification_handbook %}
+                        {% if teacher_certification_handbook %}
+                            <a href="{{ teacher_certification_handbook.link }}" target="_blank">
+                                {{ teacher_certification_handbook.name }}
+                            </a>
+                        {% else %}
+                            <p>Resource not available</p>
+                        {% endif %}
                 </div>
+            
                 <div class="col-sm-auto card">
                     <a class href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
                 </div>
