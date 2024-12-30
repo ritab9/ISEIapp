@@ -4,7 +4,16 @@
 
 
 {% block title %} Teacher {% endblock title %}
+
 {% block content %}
+
+    <div class="row align-content-end">
+    {% if request.user|in_group:"staff" %}
+        <div  class = "noprint" style = "text-align: right">
+            <button class="btn btn-sm btn-outline-ISEIblue4 mt-3" id="email-button">Resend Teacher Registration Info</button>
+        </div>
+    {% endif %}
+    </div>
 
 {% if tcertificate %}
 
@@ -17,11 +26,6 @@
             <div  class = "noprint" style = "text-align: right">
                 <button class='btn-ISEIblue2 mt-3 mr-3' onclick="window.print()">Print Page</button>
             </div>
-            {% if request.user|in_group:"staff"%}
-                <div  class = "noprint" style = "text-align: right">
-                    <button class="btn btn-sm btn-outline-ISEIblue4 mt-3" id="email-button">Resend Teacher Registration Info</button>
-                </div>
-            {% endif %}
         </div>
 
         <div class = "card card-body mb-3">
@@ -284,7 +288,7 @@
         <div class="card card-body row">
             Please fill out and submit the <a href="{%  url 'account_settings' teacher.user.id %}">Initial Teacher Certification Application Form</a>
         </div>
-            {% endif %}
+        {% endif %}
     {% endif %}
 
 

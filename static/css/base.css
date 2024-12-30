@@ -333,9 +333,9 @@ input[type='number'] {
 
 
 
-/* Regular menu items - make inactive text gold/yellow */
+/* Regular menu items - white */
 .navbar-dark .navbar-nav .nav-link {
-    color: #FFCE00; /* Inactive links will be gold/yellow */
+    color: #fff; /* Inactive links will be white */
 }
 
 /* Hover and focus on menu items */
