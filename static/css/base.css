@@ -2,9 +2,15 @@
 
 @media print {
     .noprint {
-        visibility: hidden;
+        display: none;
+    }
+    button {
+        display: none; /* Completely hides buttons in print view */
     }
 }
+
+
+
 .scrollable-table {
     overflow-x: auto;
 }

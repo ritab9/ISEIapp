@@ -19,13 +19,15 @@
 
 <!-- Teacher Certificates -->
     <div class="">
-        <div class = "row">
-            <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)
-                <p>{% if highest_degree %}{{ highest_degree }}{% endif %}</p>
-            </div>
-            <div  class = "noprint" style = "text-align: right">
-                <button class='btn-ISEIblue2 mt-3 mr-3' onclick="window.print()">Print Page</button>
-            </div>
+        <div class = "card card-body">
+                <div class="row">
+                    <div class = "col"> {{ teacher.name }}'s Teacher Certificate(s)
+                        <p>{% if highest_degree %}{{ highest_degree }}{% endif %}</p>
+                    </div>
+                    <div  class = "col noprint" style = "text-align: right">
+                        <button class='btn-ISEIblue2  mr-3' onclick="window.print()">Print Page</button>
+                    </div>
+                </div>
         </div>
 
         <div class = "card card-body mb-3">

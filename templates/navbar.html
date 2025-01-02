@@ -15,15 +15,16 @@
 <div class="noprint">
     <nav class="navbar navbar-expand-lg navbar-dark bg-ISEIblue4" style = 'font-size: 1rem'>
         <div class="container-fluid">
-            <img src="{% static 'appfiles/Logo.png' %}" class=mr-3" alt="ISEIapp Logo" style="width: 130px; height: auto;">
+            <img src="{% static 'appfiles/Logo.png' %}" class="mr-3" alt="ISEIapp Logo" style="width: 130px; height: auto;">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+        
+
             {% block first_line_navbar %}
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="nav navbar-nav">
-                    
+
                         {% if request.user|in_group:"principal,registrar"%}
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'school_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
@@ -33,8 +34,11 @@
                              </li>
                             <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'resources' %}"> Resources </a>
-                            </li> 
-                             
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link p-3" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                            </li>
+
                         {% elif request.user|in_group:"staff" %}
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'isei_dashboard' %}"> Dashboard </a>
@@ -47,8 +51,15 @@
                              </li>
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'resources' %}"> Resources </a>
-                             </li> 
-                             
+                             </li>
+                            
+                        {% elif request.user|in_group:"teacher" and not request.user|in_group:"principal, registrar, staff"%}
+                            <li class="nav-item" >
+                                <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </div>
@@ -97,5 +108,6 @@
         dropdown.addEventListener('change', function() {
             document.getElementById('schoolYearForm').submit();
         });
+        
         
 </script>

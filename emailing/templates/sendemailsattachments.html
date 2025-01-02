@@ -1,4 +1,4 @@
-{%  extends 'teachercert_base.html' %}
+{%  extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load group_tags %}
 
@@ -7,7 +7,7 @@
 {% block content %}
 {% load static %}
 
-    <div class="container">
+    <div class="container-fluid">
     <div class="row">
       <div class="col-lg-12">
 
@@ -17,26 +17,25 @@
           </div>
           {% endif %}
 
-{% if request.user|in_group:"staff"%}
-<div class="row">
-    <div>
-        <form method="get">
-                {{ user_filter.form}}
-            <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
-            <a href="{%  url 'sendemailsattachments' %}">Clear all filters</a>
-        </form>
-    </div>
-</div>
-{% endif %}
+        {% if request.user|in_group:"staff"%}
+        <div class="row">
+            <div>
+                <form method="get">
+                        {{ user_filter.form}}
+                    <button class="btn btn-ISEIblue3 btn-sm" type="submit">Search</button> &nbsp;
+                    <a href="{%  url 'sendemailsattachments' %}">Clear all filters</a>
+                </form>
+            </div>
+        </div>
+        {% endif %}
 
 <p></p>
           {% if email_form %}
-
-          <form method="POST" action ="" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{email_form|crispy}}
-          <button type="submit" class="btn btn-sm btn-ISEIblue4">Send Email</button>
-          </form>
+              <form method="POST" action ="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{email_form|crispy}}
+                  <button type="submit" class="btn btn-sm btn-ISEIblue4">Send Email</button>
+              </form>
           {% endif %}
       </div>
     </div>

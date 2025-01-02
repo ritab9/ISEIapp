@@ -2,9 +2,15 @@
 
 @media print {
     .noprint {
-        visibility: hidden;
+        display: none;
+    }
+    button {
+        display: none; /* Completely hides buttons in print view */
     }
 }
+
+
+
 .scrollable-table {
     overflow-x: auto;
 }
@@ -287,14 +293,14 @@ input[type='number'] {
 
 /* Hover Effects for APR Columns */
 .table-striped tbody tr:hover .orange-column {
-    background-color: #ffd0ab; /* Softer, lighter muted orange on hover */
+    background-color: rgba(215, 143, 72, 0.1); /* Softer, lighter muted orange on hover */
 }
 
 
 
 /* Accreditation Header */
 .blue-header {
-    background-color: #0A4B78; /* Darker blue for Accreditation header */
+    background-color: #053A64; /* Darker blue for Accreditation header */
     color: white;
     text-align: center;
     border-right: 1px solid #B0C4DE; /* Border separating columns */
@@ -302,7 +308,7 @@ input[type='number'] {
 }
 
 .blue-header2 {
-    background-color: #477899; /* Lighter blue for Accreditation header2 */
+    background-color: #2E74AA; /* Lighter blue for Accreditation header2 */
     color: white;
     text-align: center;
     border-right: 1px solid #2b3c48; /* Border separating columns */
@@ -328,14 +334,14 @@ input[type='number'] {
 
 /* Hover Effects for Accreditation Columns */
 .table-striped tbody tr:hover .blue-column {
-    background-color: #D8E9F4; /* Soft blue on hover */
+    background-color: rgba(71, 120, 153, 0.1); /* Soft blue on hover */
 }
 
 
 
-/* Regular menu items - make inactive text gold/yellow */
+/* Regular menu items - white */
 .navbar-dark .navbar-nav .nav-link {
-    color: #FFCE00; /* Inactive links will be gold/yellow */
+    color: #fff; /* Inactive links will be white */
 }
 
 /* Hover and focus on menu items */
