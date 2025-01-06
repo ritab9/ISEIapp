@@ -213,15 +213,14 @@
                      $(this).attr('value',"Show List");}
     });
 
-/*
     document.addEventListener("DOMContentLoaded", function() {
-        if ($('#id_school option').filter(':selected').text().includes("---")) {
-            document.getElementById('school_list').style.display = "block";
-        }else{
-            document.getElementById('school_list').style.display = "none";
-        };
+        // Use correct form id or filter input id here
+        const filterElement = document.getElementById('id_school');
 
-    }); */
+        filterElement.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
 
 
 </script>
