@@ -46,9 +46,9 @@
                     <ul>{% for e in tcertificate.tendorsement_set.all %}
                         <li>{{ e }},  {{ e.range }} </li>
                     {% endfor %} </ul>
-                    <div><h6>Valid:</h6>
+                </div>
+                <div class="col-sm-3"><h6>Valid:</h6>
                     {{ tcertificate.issue_date }} - {% if tcertificate.renewal_date < today %}<span style="color:red">{{ tcertificate.renewal_date}}</span> {% else %} {{ tcertificate.renewal_date }}{% endif %}
-                    </div>
                 </div>
 
             {% if not tcertificate.nad %}
