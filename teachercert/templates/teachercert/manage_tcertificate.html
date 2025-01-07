@@ -83,7 +83,7 @@
                     <a class = "btn btn-sm btn-danger mr-3" href = "{% url 'delete_tcertificate' certID %}">Delete Certificate</a>
                     <a class ="btn btn-sm btn-ISEIblue3 mr-xl-5" href="{% url "manage_tcertificate" pk %}">Add New Certificate</a>
                     <a class ="btn btn-sm btn-ISEIblue3 mr-3 disabled" href="{% url "create_certificate" certID %}">Create Certificate</a>
-
+                    <a class ="btn btn-sm btn-ISEIblue3" href="{% url "standard_checklist" pk %}">Add Checklist</a>
                 </div>
 
                 {% if checklist %}
@@ -97,7 +97,8 @@
                             <a class ="btn btn-sm btn-ISEIblue3" href="{% url "standard_checklist" pk %}">Edit Checklist</a>
                         </div>
                     </div>
-                {% else %}
+                {% elif tbasic_requirement_formset %}
+
                     <div class="row">
                      <div class="col">
                         <table>
@@ -125,9 +126,6 @@
                           </tbody>
                         </table>
                     </div>
-                     <div class="col-sm-auto mt-2">
-                            <a class ="btn btn-sm btn-ISEIblue3" href="{% url "standard_checklist" pk %}">Add Checklist</a>
-                     </div>
                     </div>
                 {% endif %}
             </form>

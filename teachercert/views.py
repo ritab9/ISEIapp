@@ -933,16 +933,18 @@ def manage_tcertificate(request, pk, certID=None):
 
     if teacher.teacherbasicrequirement_set.all():
         basic_requirements = TeacherBasicRequirement.objects.filter(teacher=teacher)
+        tbasic_requirement_formset = TeacherBasicRequirementFormSet(queryset=basic_requirements)
     else:
-        basics = Requirement.objects.filter(category='b')
-        for basic in basics:
-            b = TeacherBasicRequirement(basic_requirement=basic, teacher=teacher)
-            b.save()
-        basic_requirements = TeacherBasicRequirement.objects.filter(teacher=teacher)
+    #    basics = Requirement.objects.filter(category='b')
+    #    for basic in basics:
+    #        b = TeacherBasicRequirement(basic_requirement=basic, teacher=teacher)
+    #        b.save()
+        basic_requirements = None
+        tbasic_requirement_formset = None
 
     tcertificate_form = TCertificateForm(instance=tcertificate)  # Certificate form, defined in forms.py
     tendorsement_formset = TEndorsementFormSet(instance=tcertificate)  # Endorsement formset, define in forms.py
-    tbasic_requirement_formset = TeacherBasicRequirementFormSet(queryset=basic_requirements)
+
 
     if request.method == "POST" and (request.POST.get('add_endorsement') or request.POST.get('submit_certificate')):
         # if the certificate is modified
@@ -956,8 +958,11 @@ def manage_tcertificate(request, pk, certID=None):
         if tcertificate_form.is_valid():  # validate the certificate info
             tcertificate = tcertificate_form.save()
             tendorsement_formset = TEndorsementFormSet(request.POST, instance=tcertificate)
-            tbasic_requirement_formset = TeacherBasicRequirementFormSet(request.POST)
-            tbasic_requirement_formset.save()
+
+            if basic_requirements:
+                tbasic_requirement_formset = TeacherBasicRequirementFormSet(request.POST)
+                tbasic_requirement_formset.save()
+
             if tendorsement_formset.is_valid():  # validate the endorsement info
                 tendorsement_formset.save()
 

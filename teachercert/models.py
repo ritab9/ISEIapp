@@ -51,7 +51,7 @@ class CEUCategory(models.Model):
     def __str__(self):
         return self.name
 
-#ceu Report Modelst
+#ceu Report Models
 class CEUType(models.Model):
     description = models.CharField(max_length=100, help_text='Describe the possible activities', null=False, verbose_name = "CEU Type")
     evidence = models.CharField(max_length=100, help_text='What kind of evidence is expected for this type of activity', null=True, blank = True)
