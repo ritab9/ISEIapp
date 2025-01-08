@@ -7,9 +7,9 @@
 
 {% block content %}
 
-    <div class="row align-content-end">
+    <div class="row">
     {% if request.user|in_group:"staff" %}
-        <div  class = "noprint" style = "text-align: right">
+        <div  class = "col noprint" style = "text-align: right">
             <button class="btn btn-sm btn-outline-ISEIblue4 mt-3" id="email-button">Resend Teacher Registration Info</button>
         </div>
     {% endif %}
@@ -41,15 +41,24 @@
             {% if tcertificate.expired %} <span style="color:red">Expired</span> {% endif %}
 
             <div class="row mb-2">
-                <div class="col-sm-3">
+                <div class="col-auto">
                     <h6>Endorsements:</h6>
                     <ul>{% for e in tcertificate.tendorsement_set.all %}
                         <li>{{ e }},  {{ e.range }} </li>
                     {% endfor %} </ul>
                 </div>
-                <div class="col-sm-3"><h6>Valid:</h6>
+                <div class="col-auto"><h6>Valid:</h6>
                     {{ tcertificate.issue_date }} - {% if tcertificate.renewal_date < today %}<span style="color:red">{{ tcertificate.renewal_date}}</span> {% else %} {{ tcertificate.renewal_date }}{% endif %}
                 </div>
+
+            <!-- Renewal requirements and notes -->
+                <div class="col-auto">
+                    <div><h6> Renewal Requirements:</h6> {{ tcertificate.renewal_requirements }}</div>
+                    {% if tcertificate.public_note %}
+                        <p><b>Note:</b> {{ tcertificate.public_note }}</p>
+                    {% endif %}
+                </div>
+
 
             {% if not tcertificate.nad %}
                 {% if not checklist %}
@@ -88,15 +97,6 @@
             {% endif %}
             </div>
 
-<!-- Renewal requirements and notes -->
-            <div class="row mb-3">
-                <div class="col">
-                    <div><h6> Renewal Requirements:</h6> {{ tcertificate.renewal_requirements }}</div>
-                    {% if tcertificate.public_note %}
-                        <p><b>Note:</b> {{ tcertificate.public_note }}</p>
-                    {% endif %}
-                </div>
-            </div>
 
 {% if not tcertificate.nad %}
              <div class="row mb-3">
