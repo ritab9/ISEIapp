@@ -10,8 +10,17 @@ class Standard(models.Model):
     description = models.TextField()
     evidence = models.TextField(blank=True, null=True)
 
+    parent_standard = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE, blank=True, null=True,
+        related_name='substandards'
+    )
+
     def __str__(self):
+        if self.parent_standard:
+            return f"{self.parent_standard.number}.{self.number} {self.name}"
         return f"{self.number}. {self.name}"
+
 
 class SchoolType(models.Model):
     name = models.CharField(max_length=30)
@@ -25,6 +34,11 @@ class Indicator(models.Model):
     key_word=models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField()
     school_type = models.ForeignKey(SchoolType, on_delete=models.CASCADE, default=5)
+    version = models.CharField(max_length=10)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = [['standard', 'code', 'version']]
 
     def __str__(self):
         return f"{self.code}"
