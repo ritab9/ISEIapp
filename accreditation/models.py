@@ -7,7 +7,7 @@ from django.db.models import Q
 class Standard(models.Model):
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     evidence = models.TextField(blank=True, null=True)
 
     parent_standard = models.ForeignKey(
@@ -34,7 +34,7 @@ class Indicator(models.Model):
     key_word=models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField()
     school_type = models.ForeignKey(SchoolType, on_delete=models.CASCADE, default=5)
-    version = models.CharField(max_length=10)
+    version = models.CharField(max_length=10, default = "2.0 (2005)")
     active = models.BooleanField(default=True)
 
     class Meta:
