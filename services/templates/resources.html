@@ -7,82 +7,83 @@
 {% block content %}
 
 
-    <div class="card">
+    <div class="card mt-2">
         <h6 class="ml-2 mt-2 mb-2">Member Resources</h6>
         <p class="text-muted ml-5">Find essential documents, directories, and forms below.</p>
     </div>
 
 
-    <div class="row row-cols-1 row-cols-md-3 g-3">
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header bg-ISEIblue4" style="color: white;">
-                <strong>General Documents/Resources</strong>
+    <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <strong>General Documents/Resources</strong>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for resource in document_resources %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'school_personnel_directory' %}" target="_blank">ISEI Directory</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="card-body">
-                <ul>
-                    {% for resource in document_resources %}
-                        <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
-                    {% endfor %}
-                    <li><a href="{% url 'school_personnel_directory' %}" target="_blank">ISEI Directory</a></li>
-                </ul>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <strong>Accreditation Documents</strong>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for resource in accreditation_resources %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <strong>Evaluation Forms</strong>
+                </div>
+                <div class="card-body">
+                    <strong>Teacher Evaluation Forms</strong>
+                    <ul>
+                        {% for resource in teacher_evaluation_resources %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <strong>Administrator Evaluation Forms</strong>
+                    <ul>
+                        {% for resource in admin_evaluation_resources %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <strong>Safety and Maintenance</strong>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for resource in safety_resources %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header bg-ISEIblue4" style="color: white;">
-                <strong>Accreditation Documents</strong>
-            </div>
-            <div class="card-body">
-                <ul>
-                    {% for resource in accreditation_resources %}
-                        <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header bg-ISEIblue4" style="color: white;">
-                <strong>Evaluation Forms</strong>
-            </div>
-            <div class="card-body">
-                <strong>Teacher Evaluation Forms</strong>
-                <ul>
-                    {% for resource in teacher_evaluation_resources %}
-                        <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
-                    {% endfor %}
-                </ul>
-                <strong>Administrator Evaluation Forms</strong>
-                <ul>
-                    {% for resource in admin_evaluation_resources %}
-                        <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header bg-ISEIblue4" style="color: white;">
-                <strong>Safety and Maintenance</strong>
-            </div>
-            <div class="card-body">
-                <ul>
-                    {% for resource in safety_resources %}
-                        <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
