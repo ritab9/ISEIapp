@@ -56,7 +56,7 @@
   <!-- teacher links for principal -->
                     {% if request.user|in_group:"teacher"%}
                     <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle p-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <a class="nav-link dropdown-toggle p-3" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         My Teacher Certification
                       </a>
                       <ul class="dropdown-menu bg-ISEIblue4" aria-labelledby="navbarDropdown">
@@ -103,6 +103,8 @@
         </div>
     </nav>
 </div>   
+    
+    
 {% endblock second_line_navbar%}
 
 
