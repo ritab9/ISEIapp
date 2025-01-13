@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
+
 from django.contrib.auth.models import User
 
 from django.urls import reverse
@@ -9,21 +11,24 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.db.models import Q
 from datetime import timedelta
+import random
+import string
 
 from .decorators import unauthenticated_user, allowed_users
 from .forms import *
 from .utils import is_in_group
 from .filters import *
 from .myfunctions import *
+
 from emailing.teacher_cert_functions import email_registered_user
 from teachercert.models import Teacher, SchoolYear
 from reporting.models import ReportDueDate, AnnualReport, ReportType
 from users.models import School, Address, Teacher
 from reporting.models import Personnel
-from django.http import HttpResponseRedirect
 from services.models import TestOrder
-import random
-import string
+from accreditation.models import Accreditation
+from apr.models import APR
+
 
 
 # authentication functions
@@ -315,6 +320,12 @@ def school_dashboard(request, schoolID):
         is_old=None
 
 
+    accreditation = Accreditation.objects.filter(school=school, current_accreditation=True).first()
+    if accreditation:
+        apr=APR.objects.get(accreditation=accreditation)
+    else:
+        apr=None
+
 
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
@@ -322,6 +333,7 @@ def school_dashboard(request, schoolID):
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted, cr_submitted=cr_submitted,
                     test_orders = test_orders,
                     is_old = is_old, fire_marshal_date=fire_marshal_date, wss=wss,
+                    apr=apr,
                   )
 
     return render(request, 'users/school_dashboard.html', context)

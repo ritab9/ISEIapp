@@ -166,6 +166,16 @@
                                 </tr>
                                 {% endif %}
                             {% endfor %}
+
+                            {% if apr %}
+                                <tr class="table-bordered">
+                                    <td><strong>Annual Progress Report</strong> <br>
+                                        <a class="error report_edit" href="{% url 'apr_progress_report' apr.id %}">Edit</a>
+                                    </td>
+                                    <td>May 1st</td><td></td>
+                                    <td>{{ apr.last_update|default_if_none:"" }}</td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>

@@ -11,60 +11,67 @@
             <thead class="thead table-bordered sticky_head">
                 <tr>
                     <th colspan="2" style="background-color: whitesmoke"></th>
-                  <th colspan="5" class="blue-header">Accreditation</th>
-                  <th colspan="2" class="orange-header">APR</th>
-              </tr>
-
-              <tr>
-                  <th class="blue-header">#</th>
-                  <th class="blue-header">School</th>
-                  <th class="blue-header2">Edit</th>
-                  <th class="blue-header2">Visit dates</th>
-                  <th class="blue-header2">Term</th>
-                  <th class="blue-header2">Start Date</th>
-                  <th class="blue-header2">End Date</th>
-                  <th class="orange-header2">Edit</th><th class="orange-header2">Progress</th>
-              </tr>
+                    <th colspan="5" class="blue-header">Accreditation</th>
+                    <th colspan="2" class="orange-header">APR</th>
+                </tr>
+                <tr>
+                    <th class="blue-header">#</th>
+                    <th class="blue-header">School</th>
+                    <th class="blue-header2">Edit</th>
+                    <th class="blue-header2">Visit dates</th>
+                    <th class="blue-header2">Term</th>
+                    <th class="blue-header2">Start Date</th>
+                    <th class="blue-header2">End Date</th>
+                    <th class="orange-header2">Edit</th>
+                    <th class="orange-header2">Progress</th>
+                </tr>
             </thead>
             <tbody>
-              {% for accreditation in accreditations %}
+                {% for category, accreditations in accreditation_groups.items %}
                 <tr>
-                    <td  class="blue-column">{{ forloop.counter }}</td>
-                    <td  class="blue-column">{{ accreditation.school }}</td>
+                    <td colspan="9" class="font-weight-bold" style="background-color: #f8f9fa;">
+                        {{ category|title }} Accreditations
+                    </td>
+                </tr>
+                {% for accreditation in accreditations %}
+                <tr>
+                    <td class="blue-column">{{ forloop.counter }}</td>
+                    <td class="blue-column">{{ accreditation.school }}</td>
                     <td class="blue-column">
-                        <a class="" href="{% url 'edit_accreditation' id=accreditation.id %}">Edit </a></td>
-                    <td class="blue-column">
-                      {{ accreditation.visit_start_date|date:"F j" }} -
-                      {% if accreditation.visit_start_date|date:"F" != accreditation.visit_end_date|date:"F" %}
-                        {{ accreditation.visit_end_date|date:"F " }}
-                      {% endif %}
-                      {{ accreditation.visit_end_date|date:"j, Y" }}
+                        <a href="{% url 'edit_accreditation' id=accreditation.id %}">Edit</a>
                     </td>
                     <td class="blue-column">
-                        {{ accreditation.term }}</td>
-                    <td class="blue-column">
-                        {{ accreditation.term_start_date }}</td>
+                        {{ accreditation.visit_start_date|date:"F j" }} -
+                        {% if accreditation.visit_start_date|date:"F" != accreditation.visit_end_date|date:"F" %}
+                            {{ accreditation.visit_end_date|date:"F " }}
+                        {% endif %}
+                        {{ accreditation.visit_end_date|date:"j, Y" }}
+                    </td>
+                    <td class="blue-column">{{ accreditation.term }}</td>
+                    <td class="blue-column">{{ accreditation.term_start_date }}</td>
                     <td class="blue-column">{{ accreditation.term_end_date }}</td>
                     <td class="orange-column">
-                        <a class="" href="{% url 'manage_apr' accreditation.id %}">
+                        <a href="{% url 'manage_apr' accreditation.id %}">
                             {% if accreditation.apr %} Edit {% else %} Add APR {% endif %}
                         </a>
                     </td>
                     <td class="orange-column">
                         {% if accreditation.apr %}
-                            <a class="" href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
+                            <a href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
                             <div class="small">{{ accreditation.apr.last_update|default_if_none:"" }}</div>
                         {% endif %}
                     </td>
                 </tr>
-              {% empty %}
+                {% empty %}
                 <tr>
-                  <td colspan="3">No accreditations found.</td>
+                    <td colspan="9">No {{ category|title }} accreditations found.</td>
                 </tr>
-              {% endfor %}
+                {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
 {% endblock %}
 

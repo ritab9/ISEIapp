@@ -48,13 +48,14 @@ INSTALLED_APPS = [
     'services',
     'apr',
     'accreditation',
+     #'selfstudy',
+    'selfstudy.apps.SelfstudyConfig',
 
     'crispy_forms',
     'storages',
     'jquery',
     #'nested_admin',
     #'debug_toolbar',
-
 ]
 
 MIDDLEWARE = [

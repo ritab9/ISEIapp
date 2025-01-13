@@ -10,10 +10,22 @@ from .forms import *
 @allowed_users(allowed_roles=['staff'])
 def isei_accreditation_dashboard(request):
 
-    accreditations = Accreditation.objects.filter(current_accreditation = True).order_by('school__name')
+    #current_accreditations = Accreditation.objects.filter(status = Accreditation.AccreditationStatus.CURRENT ).order_by('school__name')
+    #in_works_accreditations = Accreditation.objects.filter(status = Accreditation.AccreditationStatus.IN_WORKS ).order_by('school__name')
+    #context=dict(current_accreditations=current_accreditations, in_works_accreditations=in_works_accreditations)
 
-    context=dict(accreditations=accreditations)
-    # Then render a template with context data (if any)
+    accreditation_groups = {
+        "in works": Accreditation.objects.filter(
+            status=Accreditation.AccreditationStatus.IN_WORKS
+        ).order_by('school__name'),
+        "current": Accreditation.objects.filter(
+            status=Accreditation.AccreditationStatus.CURRENT
+        ).order_by('school__name'),
+    }
+
+    context = {
+        'accreditation_groups': accreditation_groups,
+    }
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
 def add_accreditation(request):

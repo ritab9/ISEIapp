@@ -1,9 +1,55 @@
+from datetime import timezone
+
 from django.db import models
 from users.models import School
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
-#Self-Study models
 
+class AccreditationTerm(models.Model):
+    code = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=60)
+    description = models.TextField()
+    def __str__(self):
+        return self.code + " " + self.name
+
+
+class Accreditation(models.Model):
+    class AccreditationStatus(models.TextChoices):
+        IN_WORKS = 'in_works', _('In Works')  # Accreditation process is ongoing
+        CURRENT = 'current', _('Current')    # The accreditation is currently valid
+        RETIRED = 'retired', _('Retired')    # The accreditation is no longer active
+
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    visit_start_date = models.DateField(null=True, blank=True)
+    visit_end_date = models.DateField(null=True, blank=True)
+    term = models.ForeignKey(AccreditationTerm, on_delete=models.CASCADE, null=True, blank=True)
+    term_start_date = models.DateField(null=True, blank=True)
+    term_end_date = models.DateField(null=True, blank=True)
+    coa_approval_date = models.DateField(null=True, blank=True, verbose_name="COA Approval Date")
+    status = models.CharField(
+        max_length=20,
+        choices=AccreditationStatus.choices,
+        default=AccreditationStatus.CURRENT
+    )
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+
+    def __str__(self):
+        return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"
+
+    def save(self, *args, **kwargs):
+        # Ensure only one current accreditation per school
+        if self.status == Accreditation.AccreditationStatus.CURRENT:
+            Accreditation.objects.filter(
+                school=self.school,
+                status=Accreditation.AccreditationStatus.CURRENT
+            ).exclude(pk=self.pk).update(status=Accreditation.AccreditationStatus.RETIRED)
+
+        super().save(*args, **kwargs)
+
+
+#Standards Models
 class Standard(models.Model):
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=255)
@@ -17,10 +63,7 @@ class Standard(models.Model):
     )
 
     def __str__(self):
-        if self.parent_standard:
-            return f"{self.parent_standard.number}.{self.number} {self.name}"
         return f"{self.number}. {self.name}"
-
 
 class SchoolType(models.Model):
     name = models.CharField(max_length=30)
@@ -57,38 +100,3 @@ class Level(models.Model):
     def __str__(self):
         return self.get_level_display()
 
-
-class AccreditationTerm(models.Model):
-    code = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=60)
-    description = models.TextField()
-    def __str__(self):
-        return self.code + " " + self.name
-
-class Accreditation(models.Model):
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
-    visit_start_date = models.DateField(null=True, blank=True)
-    visit_end_date = models.DateField(null=True, blank=True)
-    term = models.ForeignKey(AccreditationTerm, on_delete=models.CASCADE)
-    term_start_date = models.DateField(null=True, blank=True)
-    term_end_date = models.DateField(null=True, blank=True)
-    coa_approval_date = models.DateField(null=True, blank=True, verbose_name="COA Approval Date")
-    current_accreditation = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"
-
-    def save(self, *args, **kwargs):
-        # check if there is a previous currently active accreditation for the school
-        previous_accreditations = Accreditation.objects.filter(Q(school=self.school) & Q(current_accreditation=True))
-
-        if self.pk is None:  # object is being created, not updated
-            # if there are active accreditations mark them as inactive before saving this one as current
-            for accreditation in previous_accreditations:
-                accreditation.current_accreditation = False
-                accreditation.save()
-        elif self.current_accreditation:
-            # updating the object, there should not be any other active accreditation apart from current
-            previous_accreditations.exclude(pk=self.pk).update(current_accreditation=False)
-
-        super().save(*args, **kwargs)  # Call the "real" save() method

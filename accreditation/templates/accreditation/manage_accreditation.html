@@ -54,9 +54,9 @@
                     </div>
                 </div>
                  <div class="col">
-                      {{ form.current_accreditation.label_tag }}
-                      {{ form.current_accreditation }}
-                      {{ form.current_accreditation.errors }}
+                      {{ form.status.label_tag }}
+                      {{ form.status }}
+                      {{ form.status.errors }}
                  </div>
                 <div class="col">
                     {{ form.coa_approval_date.label_tag }}
@@ -75,16 +75,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-        // Get term select and current_accreditation checkbox elements
+        // Get the term select and status dropdown elements
         const termField = document.querySelector('#id_term');
-        const accreditationCheckbox = document.querySelector('#id_current_accreditation');
+        const statusDropdown = document.querySelector('#id_status');
 
         // Trigger the function when a term is selected or changed
         termField.onchange = function() {
-            if(termField.value !== "") {  // If some term is selected
-                accreditationCheckbox.checked = true;
-            } else {  // If no term selected, keep checkbox false
-                accreditationCheckbox.checked = false;
+            if (termField.value !== "") {  // If some term is selected
+                statusDropdown.value = 'current';  // Set status to "Current"
+            } else {  // If no term is selected, reset status to its default (e.g., "in_works")
+                statusDropdown.value = 'in_works';
             }
         }
     });
