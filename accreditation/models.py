@@ -32,8 +32,8 @@ class Accreditation(models.Model):
         choices=AccreditationStatus.choices,
         default=AccreditationStatus.CURRENT
     )
-    created_at = models.DateTimeField(auto_now_add=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True, blank=True)
+    created_at = models.DateField(auto_now_add=True, blank=True)
+    updated_at = models.DateField(auto_now=True, blank=True)
 
     def __str__(self):
         return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"

@@ -320,7 +320,7 @@ def school_dashboard(request, schoolID):
         is_old=None
 
 
-    accreditation = Accreditation.objects.filter(school=school, current_accreditation=True).first()
+    accreditation = Accreditation.objects.filter(school=school, status = Accreditation.AccreditationStatus.CURRENT).first()
     if accreditation:
         apr=APR.objects.get(accreditation=accreditation)
     else:
