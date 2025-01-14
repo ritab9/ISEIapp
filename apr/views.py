@@ -12,8 +12,8 @@ from collections import defaultdict, OrderedDict
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+from django.utils.timezone import now
 import json
-
 
 
 #ISEI views for managing APRs - creating and updating if needed
@@ -259,6 +259,8 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
 
 def apr_progress_report(request, apr_id):
     apr = get_object_or_404(APR, id=apr_id)
+    apr.updated_at = now().date()
+    apr.save(update_fields=["updated_at"])
 
     # Fetch related objects
     school_years = APRSchoolYear.objects.filter(apr=apr)

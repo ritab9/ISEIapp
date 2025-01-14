@@ -60,7 +60,10 @@
         {% include 'apr/progress_section.html' with section_title='Action Plan' directives_progress=action_plans_progress %}
     {% endif %}
 
-    <a href="{% url 'isei_accreditation_dashboard' %}" class="btn btn-sm btn-ISEIblue4">Done</a>
+    <div class="d-flex justify-content-center align-items-center">
+        <a href="javascript:history.back()" class="btn btn-sm btn-ISEIblue4">Return</a>
+    </div>
+    <!-- a href="{ % url 'isei_accreditation_dashboard' %}" class="btn btn-sm btn-ISEIblue4">Done</a -->
 
 </div>
 
