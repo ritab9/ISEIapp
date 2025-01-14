@@ -8,7 +8,8 @@ from users.models import School
 # Create your models here.
 class APR(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
-    last_update = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateField(auto_now_add=True, blank=True)
+    updated_at = models.DateField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return f"APR: {self.accreditation.school}, {self.accreditation.term_start_date.strftime('%Y')} - {self.accreditation.term_end_date.strftime('%Y')}"
@@ -140,7 +141,7 @@ class Progress(models.Model):
         linked_models = [self.action_plan, self.directive, self.recommendation, self.priority_directive]
         for model in linked_models:
             if model is not None:
-                model.apr.last_update = timezone.now()
+                model.apr.updated_at = timezone.now()
                 model.apr.save(update_fields=["last_update"])
                 break
         super().save(*args, **kwargs)
