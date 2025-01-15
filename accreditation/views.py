@@ -53,7 +53,7 @@ def edit_accreditation(request, id):
             return redirect('/isei_accreditation_dashboard/')
     else:
         form = AccreditationForm(instance=accreditation)
-    context = {'form': form, 'edit':True}
+    context = {'form': form, 'edit':True, 'accreditation':accreditation}
     return render(request, 'accreditation/manage_accreditation.html', context)
 
 

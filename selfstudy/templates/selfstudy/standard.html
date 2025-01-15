@@ -1,0 +1,26 @@
+<!--standard.html-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Standard SelfStudy {% endblock title %}
+
+
+{% block content %}
+
+    <h1>Indicators for {{ standard.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table>
+            {% for form in formset %}
+                <tr>
+                    <td>{{ form.indicator.label }}</td>
+                    <td>{{ form.score }}</td>
+                    <td>{{ form.reference_documents }}</td>
+                    <td>{{ form.explanation }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Save</button>
+    </form>
+
+{% endblock %}

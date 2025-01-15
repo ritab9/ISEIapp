@@ -1,0 +1,17 @@
+<!--setup_selfstudy-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Create SelfStudy Document{% endblock title %}
+
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="card card-body">
+        {{ selfstudy.accreditation.school }}
+        {{ selfstudy.accreditation.visit_start_date }} - {{ selfstudy.accreditation.visit_end_date }}
+    </div>
+</div>
+
+{% endblock %}

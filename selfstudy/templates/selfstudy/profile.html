@@ -1,0 +1,17 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Profile SelfStudy {% endblock title %}
+
+
+{% block content %}
+
+<h1>School Profile</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+
+
+{% endblock %}

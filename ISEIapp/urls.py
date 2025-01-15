@@ -30,6 +30,7 @@ urlpatterns = [
     path('', include('services.urls')),
     path('', include('accreditation.urls')),
     path('', include('apr.urls')),
+    path('', include('selfstudy.urls')),
 
     # path('paypal/', include('paypal.standard.ipn.urls')),
     # path('captcha/', include('captcha.urls')),

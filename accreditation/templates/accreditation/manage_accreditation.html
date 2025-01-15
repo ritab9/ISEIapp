@@ -8,7 +8,7 @@
           {% csrf_token %}
           {{ form.non_field_errors }}
 
-<!-- School and Term Info -->
+<!-- School and visit Info -->
           <div class = "card card-body">
             <div class="row">
                 <div class="col-auto">
@@ -30,6 +30,16 @@
             </div>
           </div>
 
+<!-- Self Study -->
+        <div class="card card-body">
+            <div class="row">
+                <div class="col-auto">
+                        <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Setup SelfStudy Document</a>
+                </div>
+            </div>
+        </div>
+
+<!-- Term Info -->
           <div class="card card-body">
             <div class="row">
                 <div class="col">

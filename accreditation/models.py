@@ -13,7 +13,6 @@ class AccreditationTerm(models.Model):
     def __str__(self):
         return self.code + " " + self.name
 
-
 class Accreditation(models.Model):
     class AccreditationStatus(models.TextChoices):
         IN_WORKS = 'in_works', _('In Works')  # Accreditation process is ongoing
@@ -46,8 +45,12 @@ class Accreditation(models.Model):
 
         super().save(*args, **kwargs)
 
+class StandardManager(models.Manager):
+    def top_level(self):
+        # Exclude substandards by filtering out those with a parent_standard
+        return self.filter(parent_standard__isnull=True)
 
-#Standards Models
+#Standards Models (to be used for SelfStudy)
 class Standard(models.Model):
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=255)
@@ -59,6 +62,10 @@ class Standard(models.Model):
         on_delete=models.CASCADE, blank=True, null=True,
         related_name='substandards'
     )
+    objects = StandardManager()
+
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
         return f"{self.number}. {self.name}"

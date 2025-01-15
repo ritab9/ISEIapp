@@ -1,0 +1,27 @@
+<!-- self_study navbar -->
+{% extends "accreditation_navbar.html" %}
+{% load static %}
+{% load group_tags %}
+
+{% block second_line_navbar %}
+    {{ block.super }}
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-ISEIblue2 noprint">
+        <ul class="nav navbar-nav">
+            {% if request.user|in_group:"staff"%}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile' selfstudy.id %}">Profile</a>
+              </li>
+                {% for standard in standards %}  
+                  <li class="nav-item ">  
+                    <a href="{% url 'standard' selfstudy.id standard.id %}">{{ standard.name }}</a>
+                  </li>
+                {% endfor %}
+              
+            {% endif %}
+        </ul>
+    </nav>
+   
+    
+
+{% endblock second_line_navbar%}
