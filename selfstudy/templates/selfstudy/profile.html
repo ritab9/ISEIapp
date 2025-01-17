@@ -6,12 +6,78 @@
 
 {% block content %}
 
-<h1>School Profile</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
-</form>
+    <h6>School Profile</h6>
+    <form method="post">
+        {% csrf_token %}
+        {{ profile_form.as_p }}
+        {% for field in profile_form %}
+            {% if field.errors %}
+                <div class="errors">
+                    {% for error in field.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <h6>Financial Two-Year Data</h6>
+        <table>
+            <thead>
+                <tr>
+                    <th>Key Name</th>
+                    <th>Two Years Ago</th>
+                    <th>One Year Ago</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in two_year_formset %}
+                    <tr>
+                        <td>{{ form.instance.key.name }}</td>
+                        <td>{{ form.two_years_ago }}</td>
+                        <td>{{ form.one_year_ago }}</td>
+                    </tr>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <div class="errors">
+                                {% for error in field.errors %}
+                                    <p class="error">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h6>Additional Financial Data</h6>
+        <table>
+            <thead>
+                <tr>
+                    <th>Key Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in additional_formset %}
+                    <tr>
+                        <td>{{ form.instance.key.name }}</td>
+                        <td>{{ form.value }}</td>
+                    </tr>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <div class="errors">
+                                {% for error in field.errors %}
+                                    <p class="error">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit">Save</button>
+    </form>
 
 
 {% endblock %}

@@ -1,11 +1,14 @@
 from django.db import models
 from accreditation.models import Accreditation,Standard, Indicator
 
+#Models for inforormation needed from the schools (Standards + Inidcators are in Accreditation app)
 
 #Financial Data Keys
 class FinancialAdditionalDataKey(models.Model):
     name = models.CharField(max_length=50)
     order_number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
+    active = models.BooleanField(default=True, verbose_name="Active")
+
     class Meta:
         ordering = ['order_number']
     def __str__(self):
@@ -14,6 +17,8 @@ class FinancialAdditionalDataKey(models.Model):
 class FinancialTwoYearDataKey(models.Model):
     name = models.CharField(max_length=50)
     order_number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
+    active = models.BooleanField(default=True, verbose_name="Active")
+
     class Meta:
         ordering = ['order_number']
     def __str__(self):
@@ -31,6 +36,8 @@ class SelfStudy(models.Model):
     def __str__(self):
         return f"SelfStudy: {self.accreditation.school}"
 
+
+#Coordinating Team Info Models
 class CoordinatingTeam(models.Model):
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE)
     coordinating_team = models.CharField(max_length=50, null=True, blank=True)
@@ -44,15 +51,29 @@ class TeamMember(models.Model):
     def __str__(self):
         return f"TeamMember for {self.standard}: {self.members}"
 
+
+#School profile Models
 class SchoolProfile(models.Model):
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE)
     school_history = models.TextField(null=True, blank=True)
-    #delete JSONFields if will adopt database Entries
-    financial_2year_data = models.JSONField(null=True, blank=True)
-    financial_additional_data = models.JSONField(null=True, blank=True)
+
 #TODO Finalize school Profile
 
+class FinancialTwoYearDataEntries(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE)
+    key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
+    two_years_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="2 Years Ago")
+    one_year_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="1 Year Ago")
+    def __str__(self):
+        return f"{self.key.name}: {self.two_years_ago}, {self.one_year_ago}"
 
+class FinancialAdditionalDataEntries(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="other_financial_data")
+    key = models.ForeignKey(FinancialAdditionalDataKey, on_delete=models.CASCADE)
+    value = models.CharField(max_length=50, null=True, blank=True)
+
+
+#Indicator Scoring Models
 class IndicatorEvaluation(models.Model):
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name='indicator_evaluations')
     standard = models.ForeignKey(Standard, on_delete=models.CASCADE)  # Add this field
@@ -68,19 +89,15 @@ class IndicatorEvaluation(models.Model):
     explanation = models.TextField(null=True, blank=True)
     class Meta:
         unique_together = [['selfstudy', 'indicator']]  # Ensure no duplicate evaluations for the same indicator
+        index_together = [['selfstudy', 'standard'], ['selfstudy', 'indicator']]
+        ordering = ['selfstudy', 'standard', 'indicator']
 
     def __str__(self):
         score_display = self.get_score_display() or 'Not Scored'
-        return f"Evaluation for {self.indicator} (Score: {score_display}, SelfStudy: {self.selfstudy})"
+        return f"Evaluation for {self.indicator} (Score: {score_display})"
 
 
-#Delete Database Entries if choosing JSON fields
-class FinancialTwoYearDataEntries(models.Model):
-    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE)
-    financial_data_category = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
-    two_years_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="2 Years Ago")
-    one_year_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="1 Year Ago")
-class FinancialAdditionalDataEntries(models.Model):
-    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="other_financial_data")
-    other_financial_data = models.ForeignKey(FinancialAdditionalDataKey, on_delete=models.CASCADE)
-    response = models.CharField(max_length=50, null=True, blank=True)
+
+
+
+

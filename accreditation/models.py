@@ -87,6 +87,7 @@ class Indicator(models.Model):
 
     class Meta:
         unique_together = [['standard', 'code', 'version']]
+        ordering = ['standard', 'code']
 
     def __str__(self):
         return f"{self.code}"
@@ -102,6 +103,8 @@ class Level(models.Model):
     description = models.TextField(blank=True)
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['-level']
     def __str__(self):
         return self.get_level_display()
 

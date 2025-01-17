@@ -2,13 +2,13 @@ from django.contrib import admin
 from .models import *
 
 class FinancialTwoYearDataKeyAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'order_number')
-    list_editable = ('name', 'order_number')  # Make both fields editable directly in the list view
+    list_display = ('id','name', 'order_number', 'active')
+    list_editable = ('name', 'order_number', 'active')  # Make both fields editable directly in the list view
     search_fields = ('name',)
 
 class FinancialAdditionalDataKeyAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'order_number')
-    list_editable = ('name', 'order_number')  # Make both fields editable directly in the list view
+    list_display = ('id','name', 'order_number', 'active')
+    list_editable = ('name', 'order_number', 'active')  # Make both fields editable directly in the list view
     search_fields = ('name',)
 
 # Inline for TeamMember

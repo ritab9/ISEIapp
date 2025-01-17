@@ -1,26 +1,116 @@
 <!--standard.html-->
 {% extends 'selfstudy_base.html' %}
 
-{% block title %} Standard SelfStudy {% endblock title %}
+{% block title %} SelfStudy - Standard Evaluation {% endblock title %}
 
 
 {% block content %}
 
-    <h1>Indicators for {{ standard.name }}</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ formset.management_form }}
-        <table>
-            {% for form in formset %}
-                <tr>
-                    <td>{{ form.indicator.label }}</td>
-                    <td>{{ form.score }}</td>
-                    <td>{{ form.reference_documents }}</td>
-                    <td>{{ form.explanation }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        <button type="submit">Save</button>
-    </form>
+   <h6>Indicators for {{ standard.name }}</h6>
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="form-group">
+                {% if formset.non_form_errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in formset.non_form_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if error_message %}
+                    <div class="alert alert-danger">
+                        <p>{{ error_message }}</p>
+                    </div>
+                {% endif %}
+
+                {% for form in formset %}
+                    <fieldset>
+                        <legend>Indicator: {{ form.instance.indicator.code }}</legend>
+                        <p><strong>Description:</strong> {{ form.instance.indicator.description }}</p>
+
+                        <h6>Levels:</h6>
+                        <ul>
+                            {% for indicator_id, levels in levels_dict.items %}
+                                {% if indicator_id == form.instance.indicator.id %}
+                                    {% for level in levels %}
+                                        <button type="button" class="level-button" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
+                                            <strong>{{ level.get_level_display }}</strong>: {{ level.description }}
+                                        </button>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+
+                        <div class="form-field">
+                            <label for="{{ form.score.id_for_label }}">Score:</label>
+                            {{ form.score }}
+                            {% if form.score.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.score.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-field">
+                            <label for="{{ form.reference_documents.id_for_label }}">Reference Documents:</label>
+                            {{ form.reference_documents }}
+                            {% if form.reference_documents.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.reference_documents.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-field">
+                            <label for="{{ form.explanation.id_for_label }}">Explanation:</label>
+                            {{ form.explanation }}
+                            {% if form.explanation.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.explanation.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Add hidden id field to reference the form's primary key -->
+                            <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
+
+                    </fieldset>
+                {% endfor %}
+            </div>
+
+            <button type="submit">Save Evaluations</button>
+        </form>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const levelButtons = document.querySelectorAll('.level-button');  // Get all level buttons
+
+            levelButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const level = this.getAttribute('data-level');  // Get the level value
+                    const index = this.getAttribute('data-index');  // Get the form index
+
+                    // Find the corresponding select element by using the index
+                    const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
+
+                    if (scoreSelect) {
+                        // Update the value of the select field with the clicked level
+                        scoreSelect.value = level;
+                    }
+                });
+            });
+        });
+    </script>
 
 {% endblock %}
