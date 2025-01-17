@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+
+from selfstudy.models import SelfStudy
 from users.decorators import allowed_users
 from django.contrib import messages
 
@@ -53,7 +55,10 @@ def edit_accreditation(request, id):
             return redirect('/isei_accreditation_dashboard/')
     else:
         form = AccreditationForm(instance=accreditation)
-    context = {'form': form, 'edit':True, 'accreditation':accreditation}
+
+    selfstudy=SelfStudy.objects.filter(accreditation=accreditation).first()
+
+    context = {'form': form, 'edit':True, 'accreditation':accreditation, 'selfstudy':selfstudy}
     return render(request, 'accreditation/manage_accreditation.html', context)
 
 

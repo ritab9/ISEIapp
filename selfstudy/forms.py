@@ -34,8 +34,11 @@ class IndicatorEvaluationForm(forms.ModelForm):
         model = IndicatorEvaluation
         fields = ['score', 'reference_documents', 'explanation']
         widgets = {
-            'reference_documents': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+            'score': forms.Select(attrs={'style': 'width: 50px;', 'class': 'custom-select'}),
+            'reference_documents': forms.Textarea(attrs={'rows': 1, 'id': 'reference-documents'}),
+            'explanation': forms.Textarea(attrs={'rows': 1, 'id': 'explanation'}),
         }
+
 
 
 IndicatorEvaluationFormSet = forms.modelformset_factory(

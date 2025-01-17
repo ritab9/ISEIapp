@@ -6,30 +6,45 @@
 {% load group_tags %}
 
 {% block main_content %}
-  <div class="row">
-    <!-- Vertical Navbar -->
-    <div class="col-md-3 col-lg-2">
-      <nav class="nav flex-column nav-pills">
-          {% if request.user|in_group:"staff"%}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'profile' selfstudy.id %}">Profile</a>
-              </li>
-                {% for standard in standards %}
-                  <li class="nav-item ">
-                    <a href="{% url 'standard' selfstudy.id standard.id %}">{{ standard.name }}</a>
-                  </li>
-                {% endfor %}
-
-            {% endif %}
-      </nav>
+    <div class="row">
+            <div class="card card-body">
+                <h6>Self Study for: {{ selfstudy.accreditation.school }}</h6>
+        {{ selfstudy.accreditation.visit_start_date }} - {{ selfstudy.accreditation.visit_end_date }}
+            </div>
     </div>
 
-    <!-- Main Content -->
+  <div class="row">
+   <!-- Vertical Navbar -->
+        <div class="col-md-3 col-lg-2 noprint">
+          <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
+            {% if request.user|in_group:"staff" %}
+              <!-- Profile link -->
+              <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">
+                <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"
+                   href="{% url 'profile' selfstudy.id %}">
+                  Profile
+                </a>
+              </div>
+
+              <!-- Standard links -->
+              {% for standard in standards %}
+                <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">
+                  <a class="nav-link {% if active_link == standard.id %}active{% endif %}"
+                     href="{% url 'standard' selfstudy.id standard.id %}">
+                    {{ standard.name }}
+                  </a>
+                </div>
+              {% endfor %}
+            {% endif %}
+          </nav>
+        </div>
+
+<!-- Main Content -->
     <div class="col-md-9 col-lg-10">
-      {% block content %}
-        <!-- Default selfstudy content placeholder -->
-        {{ block.super }}
-      {% endblock content %}
+          {% block content %}
+            <!-- Default selfstudy content placeholder -->
+            {{ block.super }}
+          {% endblock content %}
     </div>
   </div>
 {% endblock main_content %}

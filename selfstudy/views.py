@@ -107,7 +107,7 @@ def setup_selfstudy(request, accreditation_id):
 
     get_or_create_selfstudy(accreditation)
 
-    #setup_coordinating_team_and_members(selfstudy)
+    setup_coordinating_team_and_members(selfstudy)
     setup_school_profile(selfstudy)
     setup_indicator_evaluations(selfstudy)
 
@@ -115,8 +115,16 @@ def setup_selfstudy(request, accreditation_id):
 
     context = dict(selfstudy=selfstudy, standards=standards)
 
-    return render(request, 'selfstudy/setup_selfstudy.html', context)
+    return render(request, 'selfstudy/selfstudy.html', context)
 
+def selfstudy(request, selfstudy_id):
+
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    standards = Standard.objects.top_level()
+
+    context = dict(selfstudy=selfstudy, standards = standards)
+
+    return render(request, 'selfstudy/selfstudy.html', context)
 
 #School filling out the self study views
 
@@ -153,6 +161,7 @@ def selfstudy_profile(request, selfstudy_id):
     context = dict(selfstudy=selfstudy, standards = standards,
                    profile_form = profile_form,
                     two_year_formset = two_year_formset, additional_formset = additional_formset, #financial data forms
+                   active_link="profile",
                    )
 
     return render(request, 'selfstudy/profile.html', context)
@@ -163,6 +172,11 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
     standard = get_object_or_404(Standard, id=standard_id, parent_standard__isnull=True)
+
+    evidence_list = standard.evidence.split(';') if standard.evidence else []
+    mid_point = len(evidence_list) // 2
+    left_column = evidence_list[:mid_point]
+    right_column = evidence_list[mid_point:]
 
     evaluations = IndicatorEvaluation.objects.filter(selfstudy=selfstudy, standard=standard)
 
@@ -180,18 +194,20 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
         else:
             error_message = "There were some errors with your submission. Please review the form and try again."
             # Add the error message to the context to display in the template
-            return render(request, 'selfstudy/standard.html', {
-                'selfstudy': selfstudy, 'standards': standards,
-                'standard': standard, 'indicators': indicators, 'levels_dict': levels_dict,
-                'formset': formset, 'error_message': error_message,
-            })
+            context = dict(selfstudy=selfstudy, standards = standards,
+                   standard=standard, indicators=indicators, levels_dict=levels_dict,
+                   formset = formset, active_link=standard_id,
+                    left_column=left_column, right_column=right_column)
+
+            return render(request, 'selfstudy/standard.html', context)
     else:
         formset = IndicatorEvaluationFormSet(queryset=evaluations)
 
 
     context = dict(selfstudy=selfstudy, standards = standards,
                    standard=standard, indicators=indicators, levels_dict=levels_dict,
-                   formset = formset)
+                   formset = formset, active_link=standard_id, evidence_list=evidence_list,
+                   left_column=left_column, right_column=right_column)
 
     return render(request, 'selfstudy/standard.html', context)
 

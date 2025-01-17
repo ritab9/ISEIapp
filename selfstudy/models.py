@@ -79,10 +79,10 @@ class IndicatorEvaluation(models.Model):
     standard = models.ForeignKey(Standard, on_delete=models.CASCADE)  # Add this field
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE, related_name='evaluations')
     SCORE_CHOICES = (
-        (1, 'Not Met'),
-        (2, 'Partially Met'),
-        (3, 'Met'),
-        (4, 'Exceptional'),
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
     )
     score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES, null=True, blank=True)
     reference_documents = models.TextField(null=True, blank=True)  # Store references as a comma-separated list or JSON

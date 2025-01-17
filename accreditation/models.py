@@ -94,10 +94,10 @@ class Indicator(models.Model):
 
 class Level(models.Model):
     LEVEL_CHOICES = (
-        (1, 'Not Met'),
-        (2, 'Partially Met'),
-        (3, 'Met'),
-        (4, 'Exceptional'),
+        (1, 'Not Met (1)'),
+        (2, 'Partially Met (2)'),
+        (3, 'Met (3)'),
+        (4, 'Exceptional (4)'),
     )
     level = models.IntegerField(choices=LEVEL_CHOICES)
     description = models.TextField(blank=True)

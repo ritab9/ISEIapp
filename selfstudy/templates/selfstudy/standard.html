@@ -6,11 +6,37 @@
 
 {% block content %}
 
-   <h6>Indicators for {{ standard.name }}</h6>
+    <div class="card card-body">
+        <h5>Standard {{ standard.number }}: {{ standard.name }}</h5>
+
+        <div class="text-ISEIblue4 mt-3 mb-3"><i>{{ standard.description }}</i></div>
+
+        <div><b>Suggested Evidence Documents:</b>
+            <div style="display: flex;">
+                <div style="width: 50%; padding-right: 10px;">
+                    <ul>
+                        {% for doc_name in left_column %}
+                            <li>{{ doc_name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div style="width: 50%; padding-left: 10px;">
+                    <ul>
+                        {% for doc_name in right_column %}
+                            <li>{{ doc_name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
         <form method="post">
             {% csrf_token %}
             {{ formset.management_form }}
             <div class="form-group">
+<!-- Error messages -->
                 {% if formset.non_form_errors %}
                     <div class="alert alert-danger">
                         <ul>
@@ -28,58 +54,73 @@
                 {% endif %}
 
                 {% for form in formset %}
-                    <fieldset>
-                        <legend>Indicator: {{ form.instance.indicator.code }}</legend>
-                        <p><strong>Description:</strong> {{ form.instance.indicator.description }}</p>
-
-                        <h6>Levels:</h6>
-                        <ul>
+                    <fieldset class="">
+                        <table class="table table-bordered card">
+                            <tbody>
+                            <tr class="bg-ISEIblue1">
+                                <td><strong>Indicator: {{ form.instance.indicator.code }}</strong></td>
+                                <td>{{ form.instance.indicator.description }}</td>
+                            </tr>
                             {% for indicator_id, levels in levels_dict.items %}
                                 {% if indicator_id == form.instance.indicator.id %}
                                     {% for level in levels %}
-                                        <button type="button" class="level-button" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
-                                            <strong>{{ level.get_level_display }}</strong>: {{ level.description }}
-                                        </button>
+                                        <tr>
+                                            <td class="span90" style="width: 130px">
+                                                <a class="text-left level-button clickable-no-underline text-ISEIblue4" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
+                                                    {{ level.get_level_display }}
+                                                </a>
+                                            </td>
+                                            <td>{{ level.description }}</td>
+                                        </tr>
                                     {% endfor %}
                                 {% endif %}
                             {% endfor %}
-                        </ul>
-
-                        <div class="form-field">
-                            <label for="{{ form.score.id_for_label }}">Score:</label>
-                            {{ form.score }}
-                            {% if form.score.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.score.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="form-field">
-                            <label for="{{ form.reference_documents.id_for_label }}">Reference Documents:</label>
-                            {{ form.reference_documents }}
-                            {% if form.reference_documents.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.reference_documents.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="form-field">
-                            <label for="{{ form.explanation.id_for_label }}">Explanation:</label>
-                            {{ form.explanation }}
-                            {% if form.explanation.errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.explanation.errors %}
-                                        <p>{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
+                            <tr>
+                                <td class="">
+                                    <div class="form-field">
+                                        <label class="text-ISEIblue4" for="{{ form.score.id_for_label }}"><strong>Score:</strong></label>
+                                            {{ form.score }}
+                                            {% if form.score.errors %}
+                                                <div class="alert alert-danger">
+                                                    {% for error in form.score.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-field">
+                                            List document reference(s): {{ form.reference_documents }}
+                                        {% if form.reference_documents.errors %}
+                                            <div class="alert alert-danger">
+                                                {% for error in form.reference_documents.errors %}
+                                                    <p>{{ error }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="form-field">
+                                        <label for="{{ form.explanation.id_for_label }}">
+                                            In the space below, explain the score given.
+                                        </label>
+                                        {{ form.explanation }}
+                                        {% if form.explanation.errors %}
+                                            <div class="alert alert-danger">
+                                                {% for error in form.explanation.errors %}
+                                                    <p>{{ error }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        </table>
 
                         <!-- Add hidden id field to reference the form's primary key -->
                             <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
@@ -88,29 +129,96 @@
                 {% endfor %}
             </div>
 
-            <button type="submit">Save Evaluations</button>
+            <div class="floating-box noprint">
+                <div id="average-score" class="span80 text-ISEIblue4">Running Average: 0</div>
+            </div>
+            <div class="floating-box-above noprint">
+                <button type="submit" class="btn btn-ISEIblue4 btn-sm">Save Evaluations</button>
+            </div>
+
+            <button type="submit" class="btn btn-ISEIblue4 btn-sm">Save Evaluations</button>
+
         </form>
 
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const levelButtons = document.querySelectorAll('.level-button');  // Get all level buttons
-
+            // Update score and calculate the running average when level button is clicked
+            const levelButtons = document.querySelectorAll('.level-button');
             levelButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    const level = this.getAttribute('data-level');  // Get the level value
-                    const index = this.getAttribute('data-index');  // Get the form index
-
-                    // Find the corresponding select element by using the index
+                    const level = this.getAttribute('data-level');
+                    const index = this.getAttribute('data-index');
                     const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
 
                     if (scoreSelect) {
                         // Update the value of the select field with the clicked level
                         scoreSelect.value = level;
+
+                        // Call updateAverage to recalculate the average
+                        updateAverage();
                     }
                 });
             });
+
+            // Function to calculate and update the running average
+            function updateAverage() {
+                const scoreFields = document.querySelectorAll('[name$="-score"]');
+                const averageDisplay = document.getElementById('average-score');
+                let totalScore = 0;
+                let validCount = 0;
+
+                scoreFields.forEach(function(field) {
+                    const score = parseInt(field.value, 10);
+                    if (!isNaN(score)) {
+                        totalScore += score;
+                        validCount++;
+                    }
+                });
+
+                if (validCount > 0) {
+                    const averageScore = totalScore / validCount;
+                    averageDisplay.textContent = 'Running Average: ' + averageScore.toFixed(2);
+                } else {
+                    averageDisplay.textContent = 'Running Average: 0';
+                }
+            }
+
+            // Initialize the average calculation when the page loads
+            updateAverage();
+
+            // Ensure the average is updated when manually changing the score
+            const scoreFields = document.querySelectorAll('[name$="-score"]');
+            scoreFields.forEach(function(field) {
+                field.addEventListener('input', updateAverage);
+            });
         });
+
+
+    // function for auto-expanding textareas
+        function autoExpandTextarea(textarea) {
+            textarea.style.height = 'auto';  // Reset height
+            textarea.style.height = (textarea.scrollHeight) + 'px';  // Set new height based on content
+        }
+
+        // Event listeners for auto-expanding textareas
+        document.addEventListener('DOMContentLoaded', function() {
+            const referenceDocuments = document.getElementById('reference-documents');
+            const explanation = document.getElementById('explanation');
+
+            // Trigger auto-expand on input event
+            referenceDocuments.addEventListener('input', function() {
+                autoExpandTextarea(referenceDocuments);
+            });
+            explanation.addEventListener('input', function() {
+                autoExpandTextarea(explanation);
+            });
+
+            // Initialize textarea height on page load
+            autoExpandTextarea(referenceDocuments);
+            autoExpandTextarea(explanation);
+        });
+
     </script>
 
 {% endblock %}
