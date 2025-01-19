@@ -2,10 +2,27 @@
 
 @media print {
     .noprint {
-        display: none;
+        display: none; !important;
     }
     button {
         display: none; /* Completely hides buttons in print view */
+    }
+    body {
+        font-size: 10px;  /* Smaller font size for printing */
+    }
+    table {
+        width: 100%;  /* Full width for better use of space */
+        border-collapse: collapse; /* Remove spacing between table borders */
+    }
+    table td, table th {
+        font-size: 10px;  /* Smaller font size for table cells */
+    }
+    .floating-box {
+        display: none !important;
+    }
+    .floating-box-above
+     {
+        display: none !important;
     }
 }
 
@@ -56,6 +73,10 @@
 
 .span80{
     font-size: 80%;
+}
+
+.span90{
+    font-size: 90%;
 }
 
 .span80red {
@@ -256,6 +277,10 @@ input[type='number'] {
     text-decoration: underline;
 }
 
+.clickable-no-underline {
+    cursor: pointer;
+}
+
 
 /* APR Header */
 .orange-header {
@@ -338,20 +363,102 @@ input[type='number'] {
 }
 
 
-
-/* Regular menu items - white */
-.navbar-dark .navbar-nav .nav-link {
-    color: #fff; /* Inactive links will be white */
-}
-
-/* Hover and focus on menu items */
-.navbar-dark .navbar-nav .nav-link:hover,
-.navbar-dark .navbar-nav .nav-link:focus {
-    color: #fdfd96; /* Hover/focus color to a lighter yellow */
-}
-
+/* Some navbar styling that probably should go in custom css */
 /* Disabled menu items */
 .navbar-dark .navbar-nav .nav-link.disabled {
     color: rgba(255, 255, 255, 0.25); /* Disabled items */
 }
 
+/* General link styles */
+.navbar-dark .nav-link {
+  color: #fff; /* White for inactive links */
+  text-decoration: none; /* Remove underline */
+}
+
+/* Hover and focus styles */
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link:focus {
+  color: #fdfd96; /* Light yellow for hover */
+  text-decoration: none; /* No underline */
+}
+
+/* Active link styles */
+.navbar-dark .nav-link.active {
+  color: #FFCE00; /* Dark yellow for active link */
+  font-weight: bold; /* Make the active link stand out */
+}
+
+.sticky-vertical-navbar {
+  /* position: -webkit-sticky;  For Safari */
+  position: sticky;
+  top: 0; /* Makes the navbar stick to the top of the page */
+  z-index: 1000; /* Ensures the navbar stays above the content */
+  height: calc(100vh - 50px); /* Full viewport height minus some space for the navbar */
+  padding-top: 10px; /* Adds space at the bottom to prevent navbar head from being hidden */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+.floating-box {
+    position: fixed;
+    bottom: 20px;  /* Distance from the bottom of the screen */
+    right: 20px;   /* Distance from the right side of the screen */
+    background-color: #fdfd96; /* Background color */
+    border: 1px solid #ccc;    /* Border color */
+    padding: 5px 10px;         /* Padding around the content */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    z-index: 9999;             /* Ensures the box is on top */
+    border-radius: 8px;        /* Rounded corners */
+    font-size: 16px;           /* Font size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+.floating-box-above {
+    position: fixed;
+    bottom: 60px;  /* Slightly higher than the first box */
+    right: 20px;   /* Same distance from the right side */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Customize the specific select field (score) */
+.custom-select {
+    background-color: rgba(71, 120, 153, 0.12);
+    border: 1px solid #2b3c48;
+    padding: 3px;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+}
+
+.custom-select:focus {
+    border-color: rgba(10, 75, 120, 0.75);
+    outline: none;
+    box-shadow: 0 0 5px rgba(71, 120, 153, 0.5);
+}
+
+.evidence-list {
+  column-count: 2; /* Number of columns */
+  column-gap: 16px; /* Space between columns */
+  list-style: none; /* Optional: Remove default bullets */
+  margin: 0;
+  padding: 0;
+}
+
+.evidence-list li {
+  margin-bottom: 4px; /* Space between list items */
+  break-inside: avoid; /* Prevent items from breaking across columns */
+  word-wrap: break-word; /* Ensure long text wraps properly */
+}
