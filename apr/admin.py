@@ -71,7 +71,7 @@ class ActionPlanStepsInline(admin.StackedInline):
 
 @admin.register(ActionPlan)
 class ActionPlanAdmin(admin.ModelAdmin):
-    list_display = ['number', 'apr', 'standard', 'objective', 'progress_status']
+    list_display = ['number', 'accreditation', 'standard', 'objective', 'progress_status']
     list_filter = ['apr']
     inlines = [ActionPlanStepsInline, ProgressInline]
 
