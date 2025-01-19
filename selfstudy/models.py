@@ -24,10 +24,15 @@ class FinancialTwoYearDataKey(models.Model):
     def __str__(self):
         return self.name
 
+#Narrative Text (to be used after each Standard)
+class StandardNarrative(models.Model):
+    text1 = models.TextField(null=True, blank=True)
+    text2 = models.TextField(null=True, blank=True)
+
 
 #Building a SelfStudy for a School
 class SelfStudy(models.Model):
-    accreditation = models.ForeignKey(Accreditation, on_delete=models.CASCADE)
+    accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
     last_updated = models.DateTimeField(blank=True, null=True)
     submission_date = models.DateField(blank=True, null=True)
     # status = models.CharField(max_length=20,
@@ -72,6 +77,15 @@ class FinancialAdditionalDataEntries(models.Model):
     key = models.ForeignKey(FinancialAdditionalDataKey, on_delete=models.CASCADE)
     value = models.CharField(max_length=50, null=True, blank=True)
 
+#Standard Scoring Model
+class StandardEvaluation(models.Model):
+    selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name='standard_evaluations')
+    standard = models.ForeignKey(Standard, on_delete=models.CASCADE)
+    narrative =models.TextField(null=True, blank=True)
+    average_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    def __str__(self):
+        return f"Evaluation for {self.standard} (Score: {self.average_score})"
+
 
 #Indicator Scoring Models
 class IndicatorEvaluation(models.Model):
@@ -95,9 +109,3 @@ class IndicatorEvaluation(models.Model):
     def __str__(self):
         score_display = self.get_score_display() or 'Not Scored'
         return f"Evaluation for {self.indicator} (Score: {score_display})"
-
-
-
-
-
-

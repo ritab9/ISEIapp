@@ -24,10 +24,15 @@ class FinancialAdditionalDataEntriesForm(forms.ModelForm):
 FinancialTwoYearDataFormSet = modelformset_factory(FinancialTwoYearDataEntries,form=FinancialTwoYearDataEntriesForm, extra=0)
 FinancialAdditionalDataFormSet = modelformset_factory(FinancialAdditionalDataEntries,form=FinancialAdditionalDataEntriesForm, extra=0)
 
-from django import forms
-import json
-from .models import IndicatorEvaluation
+class StandardEvaluationForm(forms.ModelForm):
+    class Meta:
+        model = StandardEvaluation
+        fields = ['narrative', 'average_score']  # Include only narrative and average_score fields
 
+        widgets = {
+            'narrative': forms.Textarea(attrs={'rows': 2}),
+            'average_score': forms.HiddenInput(),
+        }
 
 class IndicatorEvaluationForm(forms.ModelForm):
     class Meta:
@@ -38,7 +43,6 @@ class IndicatorEvaluationForm(forms.ModelForm):
             'reference_documents': forms.Textarea(attrs={'rows': 1, 'id': 'reference-documents'}),
             'explanation': forms.Textarea(attrs={'rows': 1, 'id': 'explanation'}),
         }
-
 
 
 IndicatorEvaluationFormSet = forms.modelformset_factory(

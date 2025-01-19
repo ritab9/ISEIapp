@@ -11,6 +11,8 @@ class FinancialAdditionalDataKeyAdmin(admin.ModelAdmin):
     list_editable = ('name', 'order_number', 'active')  # Make both fields editable directly in the list view
     search_fields = ('name',)
 
+admin.site.register(StandardNarrative)
+
 # Inline for TeamMember
 class TeamMemberInline(admin.TabularInline):
     model = TeamMember
