@@ -1,8 +1,10 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from accreditation.models import Accreditation
 from users.models import School
+from selfstudy.models import SelfStudy
 
 
 # Create your models here.
@@ -98,14 +100,23 @@ class Recommendation(models.Model):
 
 class ActionPlan(models.Model):
     number = models.IntegerField()
-    apr = models.ForeignKey(APR, on_delete=models.CASCADE)
+    #TODO ensure that if APRs are created in the selfstudy they will still connect to the appropriate APR
+    apr = models.ForeignKey(APR, on_delete=models.CASCADE, null=True, blank=True)
+    self_study = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, null=True, blank=True)
+    accreditation = models.ForeignKey(Accreditation, on_delete=models.CASCADE, null=True, blank=True)
     standard = models.TextField()
     objective = models.TextField()
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
 
+    def clean(self):
+        if self.apr and self.self_study:
+            if self.apr.accreditation != self.self_study.accreditation:
+                raise ValidationError("SelfStudy and APR must be related to the same Accreditation.")
+
+
     def save(self, *args, **kwargs):
         if not self.pk:  # Only set the number for new instances
-            existing_count = ActionPlan.objects.filter(apr=self.apr).count()
+            existing_count = ActionPlan.objects.filter(accreditation=self.accreditation).count()
             self.number = existing_count + 1
         super().save(*args, **kwargs)
 

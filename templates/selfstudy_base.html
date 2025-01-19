@@ -8,8 +8,8 @@
 {% block main_content %}
     <div class="card card-body">
         <div class="row">
-            <div class="col"> 
-                <h6>{{ selfstudy.accreditation.school }} SelfStudy</h6> 
+            <div class="col">
+                <h6>{{ selfstudy.accreditation.school }} SelfStudy</h6>
             </div>
             <div class="col-auto ml-0">  <!-- Remove any margin and keep the dates to the left -->
                 {{ selfstudy.accreditation.visit_start_date }} - {{ selfstudy.accreditation.visit_end_date }}
@@ -29,7 +29,17 @@
                   Profile
                 </a>
               </div>
-            <!-- h6 class="text-center">Standards</h6 -->
+            <h6 class="text-center">Standards</h6>
+              <!-- Standard links -->
+              {% for standard in standards %}
+                <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">
+                  <a class="nav-link {% if active_link == standard.id %}active{% endif %}"
+                     href="{% url 'standard' selfstudy.id standard.id %}">
+                    {{ standard.number }}. {{ standard.name }}
+                  </a>
+                </div>
+              {% endfor %}
+            <h6 class="text-center">Standards</h6>
               <!-- Standard links -->
               {% for standard in standards %}
                 <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">

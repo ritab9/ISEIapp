@@ -2,9 +2,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from datetime import datetime
 
+import accreditation
+from apr.models import ActionPlan
 from .models import *
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
+from apr.models import APR
 
 #Creating the self-study views
 def get_or_create_selfstudy(accreditation):
@@ -81,6 +84,24 @@ def setup_standard_evaluation(selfstudy, standards):
         StandardEvaluation.objects.get_or_create(selfstudy=selfstudy,standard=standard,)
 
 
+#TODO this is only necessary now, because of existing APR.
+#TODO Will need to create a similar function to add action plans from the selfstudy to the APR
+def setup_action_plans(selfstudy):
+    # Assuming selfstudy has a related accreditation field or you can access it from the selfstudy
+    accreditation = selfstudy.accreditation
+
+    # Find the first APR with the matching accreditation
+    apr = APR.objects.filter(accreditation=accreditation).first()
+    if apr:
+        # Get all ActionPlans related to the found APR
+        action_plans = ActionPlan.objects.filter(apr=apr)
+        for action_plan in action_plans:
+            # Set the self_study of each ActionPlan
+            action_plan.self_study = selfstudy
+        # Save all action plans at once
+        ActionPlan.objects.bulk_update(action_plans, ['self_study'])
+
+
 def setup_selfstudy(request, accreditation_id):
     # Retrieve the Accreditation object by ID
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
@@ -92,6 +113,7 @@ def setup_selfstudy(request, accreditation_id):
     setup_school_profile(selfstudy)
     setup_standard_evaluation(selfstudy, standards)
     setup_indicator_evaluations(selfstudy)
+    setup_action_plans(accreditation)
 
     context = dict(selfstudy=selfstudy, standards=standards)
 

@@ -24,6 +24,8 @@ def manage_apr(request, accreditation_id):
     # Find the related Accreditation and School object
     accreditation = Accreditation.objects.get(pk=accreditation_id)
 
+    #TODO ensure that you add action plans created in the selfStudy to the APR
+
     if not hasattr(accreditation, 'apr'):
         # Create APR object
         apr = APR(accreditation=accreditation)
@@ -51,7 +53,7 @@ def manage_apr(request, accreditation_id):
     priority_directives = PriorityDirective.objects.filter(apr=apr).order_by('number')
     directives = Directive.objects.filter(apr=apr).order_by('number')
     recommendations = Recommendation.objects.filter(apr=apr).order_by('number')
-    action_plans = ActionPlan.objects.filter(apr=apr).order_by('number')
+    action_plans = ActionPlan.objects.filter(accreditation=accreditation).order_by('number')
 
     action_plans_with_steps = []
     for action_plan in action_plans:
@@ -121,14 +123,15 @@ def add_recommendations(request, apr_id):
         request, apr_id, Recommendation, RecommendationFormSet, form_action_url=f"/apr/{apr_id}/add_recommendations/"
     )
 
-def manage_action_plan(request, apr_id, action_plan_id=None):
-    apr = get_object_or_404(APR, id=apr_id)
+def manage_action_plan(request, accreditation_id, action_plan_id=None):
+    accreditation = get_object_or_404(Accreditation, id=accreditation_id)
+    apr= APR.objects.get(accreditation=accreditation)
 
     # Get the ActionPlan if updating, otherwise create a new one
     if action_plan_id:
-        action_plan = get_object_or_404(ActionPlan, id=action_plan_id, apr=apr)
+        action_plan = get_object_or_404(ActionPlan, id=action_plan_id, accreditation=accreditation)
     else:
-        action_plan = ActionPlan(apr=apr)
+        action_plan = ActionPlan(accreditation=accreditation)
 
     if request.method == 'POST':
         form = ActionPlanForm(request.POST, instance=action_plan)
@@ -153,7 +156,7 @@ def manage_action_plan(request, apr_id, action_plan_id=None):
                 #    step.save()
                 create_progress_records(apr, ActionPlan)
 
-            return redirect('manage_apr', apr.accreditation.id)  # Redirect to APR detail page
+            return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
 
     else:
         form = ActionPlanForm(instance=action_plan)
@@ -162,7 +165,7 @@ def manage_action_plan(request, apr_id, action_plan_id=None):
     context = {
         'form': form,
         'formset': formset,
-        'apr': apr,
+        'accreditation': accreditation,
         'action_plan': action_plan,
     }
     return render(request, 'apr/manage_action_plan.html', context)
@@ -194,7 +197,7 @@ def create_progress_records(apr, model):
                         directive=directive
                     )
             elif model_name == 'ActionPlan':
-                for action_plan in apr.actionplan_set.all():
+                for action_plan in apr.accreditation.actionplan_set.all():
                     Progress.objects.get_or_create(
                         school_year=apr_school_year,
                         action_plan=action_plan,
@@ -268,7 +271,7 @@ def apr_progress_report(request, apr_id):
     priority_directives = PriorityDirective.objects.filter(apr=apr)
     directives = Directive.objects.filter(apr=apr)
     recommendations = Recommendation.objects.filter(apr=apr)
-    action_plans = ActionPlan.objects.filter(apr=apr)
+    action_plans = ActionPlan.objects.filter(accreditation=apr.accreditation)
 
     # Fetch all progress and group dynamically
     all_progress = Progress.objects.filter(

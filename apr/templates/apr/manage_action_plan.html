@@ -11,10 +11,10 @@
         {% csrf_token %}
 
         <div class="row mb-2">
-            <div class="col"><h6>Manage Action Plan for {{ apr }}</h6></div>
+            <div class="col"><h6>Manage Action Plan for {{ accreditation }}</h6></div>
             <div class="col">
                 <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
-                <a href="{% url 'manage_apr' apr.accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+                <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
             </div>
         </div>
 
@@ -53,7 +53,7 @@
         </div>
 
         <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
-        <a href="{% url 'manage_apr' apr.accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+        <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
     </form>
 </div>
 {% endblock %}

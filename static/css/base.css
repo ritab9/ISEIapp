@@ -443,6 +443,15 @@ html {
     color: #333;
 }
 
+select {
+    background-color: ghostwhite;
+    border: 1px solid #2b3c48;
+    padding: 3px;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+}
+
 .custom-select:focus {
     border-color: rgba(10, 75, 120, 0.75);
     outline: none;
