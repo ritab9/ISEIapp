@@ -1,0 +1,78 @@
+/* Navbar Styling                */
+/* Main Navbar */
+
+/* The user name on the main navbar */
+.name-msg{
+    margin-right: 20px;
+  }
+
+.navbar-dark .nav-link {
+    color: #fff; /* White for inactive links */
+    text-decoration: none; /* Remove underline */
+}
+
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link:focus {
+    color: #fdfd96; /* Light yellow for hover */
+}
+
+.navbar-dark .nav-link.active {
+    color: #FFCE00; /* Dark yellow for active link */
+     /* font-weight: bold; */
+}
+
+/* Sticky Vertical Navbar */
+.sticky-vertical-navbar {
+  /* position: -webkit-sticky;  For Safari */
+  position: sticky;
+  top: 0; /* Makes the navbar stick to the top of the page */
+  z-index: 1000; /* Ensures the navbar stays above the content */
+  height: calc(100vh - 50px); /* Full viewport height minus some space for the navbar */
+  padding-top: 10px; /* Adds space at the bottom to prevent navbar head from being hidden */
+}
+
+
+
+/* Submenu container */
+.submenu {
+  /* margin-top: 3px;  Add slight spacing from the main link */
+  border-left: 3px solid #FFCE00; /* Match the active link's yellow for consistency */
+  padding: 0.5rem 0; /* Add vertical spacing */
+  margin-left: 1rem;
+}
+
+.submenu {
+  border-left: 3px solid #FFCE00; /* Match the active link's yellow */
+  padding: 0.5rem 0; /* Add vertical spacing */
+  margin-left: 1rem; /* Indent the submenu */
+  padding-top: 0.25rem; /* Trim excess height on the top and bottom */
+  padding-bottom: 0.25rem;
+}
+
+/* Submenu items */
+.submenu-item {
+  margin-bottom: 0.25rem;
+}
+
+.submenu-item .nav-link {
+  color: #fff; /* White text to match the inactive navbar links */
+  background-color: #1e4b6e;
+  border-radius: 5px; /* Slightly rounded corners for a cohesive look */
+  text-decoration: none; /* Remove underline */
+  padding: 0.3rem 1rem; /* Add consistent spacing around links */
+  display: block; /* Ensure links are full-width clickable */
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Hover and focus styles for submenu links */
+.submenu-item .nav-link:hover,
+.submenu-item .nav-link:focus {
+  color: #fdfd96; /* Light yellow to match the navbar hover effect */
+}
+
+/* Active submenu link styles */
+.submenu-item .nav-link.active {
+  color: #FFCE00; /* Dark yellow for active submenu link */
+  /* font-weight: bold; Bold text for emphasis */
+  background-color: rgba(30, 75, 110, 0.8);
+}

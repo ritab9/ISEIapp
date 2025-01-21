@@ -3,6 +3,29 @@
 
 {% block title %} Profile SelfStudy {% endblock title %}
 
+{% block profile_submenu %}
+    <!-- Submenu for Profile -->
+    <div class="submenu">
+        <div class="submenu-item mb-1">
+            <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"
+               href="{% url 'profile' selfstudy.id %}">
+                Basic Information
+            </a>
+        </div>
+        <div class="submenu-item mb-1">
+            <a class="nav-link {% if active_sublink == 'contacts' %}active{% endif %}"
+               href="{% url 'profile' selfstudy.id %}">
+                Contacts
+            </a>
+        </div>
+        <div class="submenu-item mb-1">
+            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
+               href="{% url 'profile' selfstudy.id %}">
+                Documents
+            </a>
+        </div>
+    </div>
+{% endblock profile_submenu %}
 
 {% block content %}
 

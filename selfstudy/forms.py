@@ -1,7 +1,8 @@
 from django import forms
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, inlineformset_factory
 
 from .models import *
+from apr.models import ActionPlan, ActionPlanSteps
 
 
 class SchoolProfileForm(forms.ModelForm):
@@ -50,3 +51,30 @@ IndicatorEvaluationFormSet = forms.modelformset_factory(
     form=IndicatorEvaluationForm,
     extra=0,  # No additional empty forms
 )
+
+
+class ActionPlanForm(forms.ModelForm):
+    class Meta:
+        model = ActionPlan
+        fields = ['standard', 'objective']
+        widgets = {
+            'standard': forms.Textarea(attrs={'rows': 1, 'class': 'autosize'}),
+            'objective': forms.Textarea(attrs={'rows': 1, 'class': 'autosize'}),
+        }
+
+# Form for ActionPlanSteps
+class ActionPlanStepsForm(forms.ModelForm):
+    class Meta:
+        model = ActionPlanSteps
+        fields = ['person_responsible', 'action_steps', 'start_date', 'completion_date', 'resources']
+        widgets = {
+            #'number': forms.Textarea(attrs={'cols': 1, 'rows': 1}),
+            'person_responsible': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+            'action_steps': forms.Textarea(attrs={'cols': 30, 'rows': 1, 'class': 'autosize'}),
+            'start_date': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+            'completion_date': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+            'resources': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+        }
+
+# Inline formset to manage ActionPlanSteps with ActionPlan
+ActionPlanStepsFormSet = inlineformset_factory( ActionPlan, ActionPlanSteps, form=ActionPlanStepsForm, extra=10, can_delete=True)

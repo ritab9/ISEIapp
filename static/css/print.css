@@ -1,0 +1,18 @@
+
+/* General Print Styling         */
+
+@media print {
+    .noprint, .floating-box, .floating-box-above, button {
+        display: none !important;
+    }
+    body {
+        font-size: 10px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table td, table th {
+        font-size: 10px;
+    }
+}

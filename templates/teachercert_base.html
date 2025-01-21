@@ -2,54 +2,38 @@
 
 {% extends 'base.html' %}
 {% load static %}
-{% load resource_tags %}
+{% load resource_tags %} {# to get the Teacher Cert Handbook #}
 
-{% block header %}
-        <header>
-            {% include 'teachercert_navbar.html' %}
-        </header>
-{% endblock header %}   
+{% block secondary_navbar %}
+    {% include 'teachercert_navbar_secondary.html' %}
+{% endblock secondary_navbar %}   
  
     {# The Footer #}
 {% block footer %}
-    <footer class="footer noprint" >
-        
-        {% if user.is_authenticated %}
-            <div class="row ml-3 mt-3">
-                <div class="col-sm-auto card">
-                    {% get_resource_by_name "Teacher Certification Handbook" as teacher_certification_handbook %}
-                        {% if teacher_certification_handbook %}
-                            <a href="{{ teacher_certification_handbook.link }}" target="_blank">
-                                {{ teacher_certification_handbook.name }}
-                            </a>
-                        {% else %}
-                            <p>Resource not available</p>
-                        {% endif %}
-                </div>
-            
-                <div class="col-sm-auto card">
-                    <a class href="{% url 'ceu_info' %}" target="_blank">CEU Info</a>
-                </div>
+    {% if user.is_authenticated %}
+        <div class="row ml-3 mt-3">
+            <div class="col-sm-auto card">
+                {% get_resource_by_name "Teacher Certification Handbook" as teacher_certification_handbook %}
+                    {% if teacher_certification_handbook %}
+                        <a href="{{ teacher_certification_handbook.link }}" target="_blank">
+                            {{ teacher_certification_handbook.name }}
+                        </a>
+                    {% else %}
+                        <p>Resource not available</p>
+                    {% endif %}
             </div>
-        {% endif %}
-    
         
-        <div class="row card mt-3">
-               <div class="mr-3 ml-3" style="text-align: center">
-                   <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || teacher_certification@iseiea.org
-                   <p class="span80"> Copyright @2021 <i>ISEI</i> Education Association</p>
-               </div>
+            <div class="col-sm-auto card">
+                <a class href="{% url "ceu_info" %}" target="_blank">CEU Info</a>
+            </div>
         </div>
+    {% endif %}
     
-    </footer>
+    <div class="row card mt-3">
+           <div class="mr-3 ml-3" style="text-align: center">
+               <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || teacher_certification@iseiea.org
+               <p><small>&copy; 2021 <i>ISEI</i> Education Association</small></p>
+           </div>
+    </div>
 
 {% endblock footer %}
-
-</body>
-
-    {% block footer_javascript %}
-
-    {% endblock footer_javascript %}
-
-</html>
-

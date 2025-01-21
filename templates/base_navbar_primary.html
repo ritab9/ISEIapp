@@ -1,31 +1,31 @@
-<!-- html from bootstrap for navigation bar -->
+<!-- navbar.html -->
 {% load static %}
 {% load group_tags %}
 
-
-<style>
-  .name-msg{
-    font-size: 1rem;
-    color: #FFFFFF;
-    margin-right: 20px;
-  }
-</style>
-
-
 <div class="noprint">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-ISEIblue4" style = 'font-size: 1rem'>
+    <nav class="primary-navbar navbar navbar-expand-lg navbar-dark bg-ISEIblue4" style = 'font-size: 1rem'>
         <div class="container-fluid">
             <img src="{% static 'appfiles/Logo.png' %}" class="mr-3" alt="ISEIapp Logo" style="width: 130px; height: auto;">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-        
 
             {% block first_line_navbar %}
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="nav navbar-nav">
+                    
+                        {% if request.user|in_group:"teacher" and not request.user|in_group:"principal, registrar, staff"%}
+                            {% block teacher_nav %}
+                                <li class="nav-item" >
+                                    <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                                </li>
+                            {% endblock %}
 
-                        {% if request.user|in_group:"principal,registrar"%}
+                        {% elif request.user|in_group:"principal,registrar"%}
+                            {% block principal_nav %}
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'school_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
                              </li>
@@ -38,8 +38,10 @@
                             <li class="nav-item">
                                 <a class="nav-link p-3" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
                             </li>
-
+                            {% endblock %}
+                            
                         {% elif request.user|in_group:"staff" %}
+                            {% block isei_staff_nav %}
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'isei_dashboard' %}"> Dashboard </a>
                              </li>
@@ -52,62 +54,33 @@
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'resources' %}"> Resources </a>
                              </li>
-                            
-                        {% elif request.user|in_group:"teacher" and not request.user|in_group:"principal, registrar, staff"%}
-                            <li class="nav-item" >
-                                <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
-                            </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                                <a class="nav-link" href="{% url 'sendemailsattachments' %}">Send Emails </a>
                             </li>
+                            {% endblock %}
                         {% endif %}
                     </ul>
                 </div>
-                {% endblock first_line_navbar %}
-
-        {% if user.is_authenticated and user.is_active%}
-            <span class ="name-msg">
-              {{ request.user.teacher.school }}<br>
-                {% if request.user|in_group:"principal,registrar,staff" %}
-                    <form method="post" id="schoolYearForm" action="{% url 'change_school_year' %}">
-                        {% csrf_token %}
-                        <span class="span80">{{ navbar_schoolyear_form }}</span>
-                    </form>
-                {% else %}
-                    {{ current_school_year.name }}
-                {% endif %}
-          </span>
-          <span class ="name-msg"> {{request.user.first_name}} {{request.user.last_name}}<br>
-              <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a>
-          </span>
-        {% endif %}
+            {% endblock first_line_navbar %}
+        
+<!-- Username, school_year and Logout -->
+            {% if user.is_authenticated and user.is_active%}
+                <span class ="name-msg">
+                  {{ request.user.teacher.school }}<br>
+                    {% if request.user|in_group:"principal,registrar,staff" %}
+                        <form method="post" id="schoolYearForm" action="{% url 'change_school_year' %}">
+                            {% csrf_token %}
+                            <span class="span80">{{ navbar_schoolyear_form }}</span>
+                        </form>
+                    {% else %}
+                        {{ current_school_year.name }}
+                    {% endif %}
+              </span>
+              <span class ="name-msg"> {{request.user.first_name}} {{request.user.last_name}}<br>
+                  <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a>
+              </span>
+            {% endif %}
         </div>
     </nav>
 </div>
 
-{% block second_line_navbar %}
-    <!-- Placeholder for second-line navbar -->
-{% endblock %}
-
-<script>
-        $(function () {
-          // this will get the full URL at the address bar
-          var url = window.location.href;
-          // passes on every "a" tag
-          $(".navbar-nav .nav-link").each(function () {
-            // checks if its the same on the address bar
-            if (url == (this.href)) {
-              $(this).closest("li").addClass("active");
-              //for making parent of submenu active
-              $(this).closest("li").parent().parent().addClass("active");
-            }
-          });
-        });
-        
-        const dropdown = document.getElementById('schoolYearDropdown');
-        dropdown.addEventListener('change', function() {
-            document.getElementById('schoolYearForm').submit();
-        });
-        
-        
-</script>

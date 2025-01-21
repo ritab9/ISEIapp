@@ -156,7 +156,7 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
                 #    step.save()
                 create_progress_records(apr, ActionPlan)
 
-            return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
+            #return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
 
     else:
         form = ActionPlanForm(instance=action_plan)

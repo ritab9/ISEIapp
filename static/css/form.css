@@ -1,0 +1,43 @@
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-number {
+width: 5px;
+}
+
+.number_input {
+    width: 50px;
+    box-sizing: border-box;
+    padding: 5px;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+}
+
+/* Customize the specific select field (score) */
+.custom-select {
+    background-color: rgba(71, 120, 153, 0.12);
+    border: 1px solid #2b3c48;
+    padding: 3px;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+}
+
+select {
+    background-color: ghostwhite;
+    border: 1px solid #2b3c48;
+    padding: 3px;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+}
+
+.custom-select:focus {
+    border-color: rgba(10, 75, 120, 0.75);
+    outline: none;
+    box-shadow: 0 0 5px rgba(71, 120, 153, 0.5);
+}

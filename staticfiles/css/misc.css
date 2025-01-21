@@ -1,0 +1,28 @@
+.popover {
+    background: #ffffff;  /* Change color accordingly */
+    z-index: 1060; /* Adjust if necessary */
+}
+
+.popover .popover-body {
+    color: #0B61A4; /* Adjust text color if necessary */
+    background: #f7f7f7;
+    width: 300px; /* Adjust width as needed */
+    padding: 20px;
+    border: 2px solid #0B61A4;
+    max-width: 100%; /* This ensures that the popover does not overflow the viewport */
+}
+
+
+.evidence-list {
+  column-count: 2; /* Number of columns */
+  column-gap: 16px; /* Space between columns */
+  list-style: none; /* Optional: Remove default bullets */
+  margin: 0;
+  padding: 0;
+}
+
+.evidence-list li {
+  margin-bottom: 4px; /* Space between list items */
+  break-inside: avoid; /* Prevent items from breaking across columns */
+  word-wrap: break-word; /* Ensure long text wraps properly */
+}

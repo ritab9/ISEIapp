@@ -1,91 +1,117 @@
 {# base for all other templates #}
+<!--base.html -->
+
 
 <!DOCTYPE html>
 <html lang="en" style="font-size: 1rem">
-{% load group_tags %}
+{% load static %}
 
-
-<head>   {# make modifiable head elements #}
-        <meta charset="UTF-8">
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<head>
+    <meta charset="UTF-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 
     <title>
         {% block title %}
-            Home 
+            Home
         {% endblock title %} | ISEIapp
     </title>
 
-        <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-        {# Required meta tags #}
-        <!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> -->
-        <meta name="viewport" content="width=device-width, initial-scale=1" >
+    {% block custom_css %}
+        <link rel="stylesheet" href="{% static 'scss/custom.css' %}">
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% endblock custom_css %}
     
-        {% load static %}
-        <Link rel="stylesheet" href="{% static "scss/custom.css" %}">
-    
-        {# stying of this specific file #}
-        <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
-        {# icon that appears in the tab along with the title #}
-         <link rel="shortcut icon" type="image/png" href="{% static 'appfiles/favicon.ico' %}">
-        
-        {# font awesome for icons #}
+    {% block icon %}
+        <link rel="shortcut icon" type="image/png" href="{% static 'appfiles/favicon.ico' %}">
+    {% endblock icon %}
+
+    {% block external_scripts %}
+        <!-- FontAwesome -->
         <script src="https://kit.fontawesome.com/6c3c27b459.js" crossorigin="anonymous"></script>
-    
-        <!-- jQuery (required by Bootstrap 4) -->
+        
+        <!-- jQuery, Popper.js, Bootstrap -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        
-        <!-- Popper.js 1.x (required by Bootstrap 4) -->
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-        
-        <!-- Bootstrap 4 JavaScript -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-        <!-- for inline editing, and maybe more -->
+    {% endblock external_scripts %}
+
+    {% block inline_scripts %}
+        <!-- Optional inline scripts -->
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    {% endblock inline_scripts %}
 </head>
 
 
-<body class="Site">
- <div class="content">
-    {# Navigation Menu #}
-     {% block header %}   
-        <header>
-           {% include 'navbar.html' %}
-        </header>
-    {% endblock header %}
-    
-     <div class="container-fluid">
-    {# The Document Body #}
-        <div class="site_content">
-            {% block main_content %}
-                {% block content %}
-                  <!-- Default content placeholder -->
-                  If you see this, something is wrong!
-                {% endblock %}
-            {% endblock main_content %}
-        </div>
-    </div>
-</div>
- 
-    {# The Footer #}
- {% block footer %}
-    <footer class="footer noprint" >
-            <div class="row card mt-3">
-                   <div class="mr-3 ml-3" style="text-align: center">
-                       <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || info@iseiea.org
-                       <p class="span80"> Copyright @2021 <i>ISEI</i> Education Association</p>
-                   </div>
+<body>
+     <div class="content">
+     
+         <header>
+            {# Navigation Menu - Primary Navbar#}
+             {% block header %}
+                   {% include "base_navbar_primary.html" %}
+             {% endblock header %}
+         
+             <!-- Secondary Navbar (populated by child templates) -->
+            <div class="noprint">    
+                <nav class="secondary-navbar navbar navbar-expand-lg navbar-dark bg-ISEIblue2 noprint">
+                    <div class="container-fluid">
+                    <ul class="nav navbar-nav ">
+                        {% block secondary_navbar %}
+                            <!-- This will be populated by child templates -->
+                        {% endblock %}
+                    </ul>
+                    </div>
+                </nav>
             </div>
-    </footer>
-{% endblock footer %}
+         
+         </header>
+        
+        <main>
+             <div class="container-fluid">
+<!-- The Document Body - it has both main_content and content for the base cases where there is a main_content applicable for all templates from that app 
+                                         (for example selfstudy has a sidebar, and then content is in a separate column there-->
+                {% block main_content %}
+                    {% block content %}
+                      <!-- Default content placeholder -->
+                      If you see this, something is wrong!
+                    {% endblock %}
+                {% endblock main_content %}
+            </div>
+        </main>
+    </div>
+     
+     {# The Footer #}
+     <footer class="footer noprint">
+         {% block footer %}
+            <div class="row card mt-3">
+                <div class="mr-3 ml-3 text-center">
+                    <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || info@iseiea.org
+                    <p><small>&copy; 2021 <i>ISEI</i> Education Association</small></p>
+                </div>
+            </div>
+          {% endblock footer %}
+     </footer>
 
+{# Script to mark active link #} 
+     {% block active_link %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                    if (link.href === window.location.href) {
+                        link.closest('li').classList.add('active');
+                    }
+                });
+            });
+        </script>
+     {% endblock %}
+
+    {% block script %}
+    {% endblock %}
 
 </body>
-
-    {% block footer_javascript %}
-
-    {% endblock footer_javascript %}
 
 </html>
 

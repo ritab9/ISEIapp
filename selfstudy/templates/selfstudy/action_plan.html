@@ -1,0 +1,115 @@
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} SelfStudy Action Plan {% endblock title %}
+
+{% block actionplan_submenu %}
+        <!-- Submenu for Action Plans -->
+        <div class="submenu ml-3">
+            {% for actionplan in action_plans %}
+                <div class="submenu-item mb-1">
+                    <a class="nav-link {% if active_link == actionplan.id %}active{% endif %}"
+                       href="{% url 'selfstudy_actionplan' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
+                        Action Plan {{ actionplan.number }}
+                    </a>
+                </div>
+            {% endfor %}
+                <div class="submenu-item mb-1">
+                   <a class="nav-link {% if active_link == actionplan.id %}active{% endif %}"
+                       href="{% url 'selfstudy_actionplan_create' accreditation_id=accreditation_id %}">
+                        Create Action Plan
+                   </a>
+                </div>
+        </div>
+{% endblock actionplan_submenu %}
+
+
+{% block content %}
+
+        <form method="post">
+        {% csrf_token %}
+
+            <div class="row mb-2">
+                <div class="col-auto ml-auto d-flex justify-content-end">
+                    <button type="submit" class="floating-box-above btn btn-sm btn-ISEIblue mr-3">Save</button>
+                    <!--a href="{ % url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a -->
+                </div>
+            </div>
+
+            <div class="card card-body">
+                {% if action_plan.number %}
+                    <h5>Action Plan {{ action_plan.number }}</h5>
+                {% else %}
+                    <h5>Add New Action Plan </h5>
+                {% endif %}
+                <table class="table table-sm">
+                      <tbody>
+                        <tr>
+                          <td class="col-auto">Standard:</td>
+                          <td class="col">{{ap_form.standard }}</td>
+                        </tr>
+                        <tr>
+                          <td class="col-auto">Objective:</td>
+                          <td class="col">{{ ap_form.objective }}</td>
+                        </tr>
+                      </tbody>
+                </table>
+            </div>
+
+            <div class="card card-body">
+                <h6>Action Plan Steps</h6>
+                {{ formset.management_form }}
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Person(s) Responsible</th>
+                            <th>Action Steps</th>
+                            <th>Estimated Start Date</th><th>Estimated Completion Date</th>
+                            <th>Estimated Resources</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                            <tr>
+                                <td>{{ forloop.counter }}{{ form.id }}</td>
+                                <td>{{ form.person_responsible }}</td>
+                                <td>{{ form.action_steps }}</td>
+                                <td>{{ form.start_date }}</td>
+                                <td>{{ form.completion_date }}</td>
+                                <td>{{ form.resources }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card card-body ">
+                <div style="width: auto; text-align: center;">
+                    <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
+                    <button type="button" class="btn btn-sm btn-danger" id="delete-btn">Delete</button>
+                </div>
+            </div>
+        <!--a href="{ % url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a -->
+        </form>
+
+
+{% endblock %}
+
+{% block footer_javascript %}
+    <script>
+        document.getElementById('delete-btn').addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                // Show confirmation dialog
+                if (confirm('Are you sure you want to delete this Action Plan?')) {
+                    // If confirmed, submit the form with a "delete" action
+                    var form = e.target.closest('form');
+                    var deleteInput = document.createElement('input');
+                    deleteInput.type = 'hidden';
+                    deleteInput.name = 'delete';
+                    deleteInput.value = 'true';
+                    form.appendChild(deleteInput);
+                    form.submit(); // Submit the form after adding the delete flag
+                }
+            });
+    </script>
+{% endblock %}

@@ -1,0 +1,84 @@
+<!-- html from bootstrap for navigation bar -->
+{% load static %}
+{% load group_tags %}
+
+
+{% if user.is_authenticated and user.is_active %}
+<!-- staff links -->    
+    {% if request.user|in_group:"staff"%}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'isei_teachercert_dashboard' %}">Teachercert </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'isei_teacher_applications' %}">Teacher Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'isei_teachercert' %}">Teacher Certificates</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url "isei_ceu_approval" %}">CEU Approval</a>
+        </li>
+    {% endif %}
+
+<!-- Principal links -->
+    {% if request.user|in_group:"principal,registrar"%}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>
+        </li>
+        <li class="nav-item" >
+            <a class="nav-link" href="{% url "principal_ceu_approval" %}">CEU Reports Review</a>
+        </li>
+                    
+          <!-- teacher links for principal -->
+        {% if request.user|in_group:"teacher"%}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle p-3" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                My Teacher Certification </a>
+                <ul class="dropdown-menu bg-ISEIblue2" aria-labelledby="navbarDropdown">
+                    <li>
+                        <a class="dropdown-item text-light" href="{% url 'teacher_dashboard' request.user.id %}">Teacher Certification </a>
+                    </li>
+                    {% if request.user|application_submitted_tag %}
+                        <li>
+                            <a class="dropdown-item text-light" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-light" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
+                        </li>
+                    {% endif %}
+                    <li>
+                          <a class="dropdown-item text-light" href="{% url 'account_settings' request.user.id %}">Personal Info</a>
+                    </li>
+              </ul>
+            </li>
+        {% endif %}
+    {% endif %}
+    
+<!-- Teacher Links -->    
+    {% if request.user|in_group:"teacher" and not request.user|in_group:"principal, registrar, staff"%}
+        {% if request.user|application_submitted_tag %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'my_academic_classes' request.user.id %}">Academic Courses</a>
+            </li>
+        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'account_settings' request.user.id%}">Teacher Info</a>
+        </li>
+    {% endif %}         
+    
+{% endif %}
+
+
+    
+    
+
+

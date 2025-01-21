@@ -100,19 +100,12 @@ class Recommendation(models.Model):
 
 class ActionPlan(models.Model):
     number = models.IntegerField()
-    #TODO ensure that if APRs are created in the selfstudy they will still connect to the appropriate APR
+    #TODO delete APR once you are sure that it's not needed (Action Plan is connected to accreditation only)
     apr = models.ForeignKey(APR, on_delete=models.CASCADE, null=True, blank=True)
-    self_study = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, null=True, blank=True)
     accreditation = models.ForeignKey(Accreditation, on_delete=models.CASCADE, null=True, blank=True)
     standard = models.TextField()
     objective = models.TextField()
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
-
-    def clean(self):
-        if self.apr and self.self_study:
-            if self.apr.accreditation != self.self_study.accreditation:
-                raise ValidationError("SelfStudy and APR must be related to the same Accreditation.")
-
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only set the number for new instances
@@ -131,6 +124,10 @@ class ActionPlanSteps(models.Model):
     start_date = models.TextField(verbose_name="Estimated Start Date", null=True, blank=True)
     completion_date = models.TextField(verbose_name="Estimated Completion Date", null=True, blank=True)
     resources = models.TextField(verbose_name="Estimated Resources", null=True, blank=True)
+
+    class Meta:
+        unique_together = ['action_plan', 'number']  # enforces number to be unique for each ActionPlan
+        ordering = ['action_plan', 'number']  # sorts steps by number within each ActionPlan
 
     def __str__(self):
         return f"Action Plan #{self.number}"

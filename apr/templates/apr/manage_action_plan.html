@@ -6,14 +6,13 @@
 {% block content %}
 <div class="container mt-4">
 
-
     <form method="post">
         {% csrf_token %}
 
         <div class="row mb-2">
-            <div class="col"><h6>Manage Action Plan for {{ accreditation }}</h6></div>
-            <div class="col">
-                <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
+            <div class="col-auto"><h6>Manage Action Plan for {{ accreditation }}</h6></div>
+            <div class="col-auto ml-auto d-flex justify-content-end">
+                <button type="submit" class="btn btn-sm btn-ISEIblue mr-3">Save</button>
                 <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
             </div>
         </div>

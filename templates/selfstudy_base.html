@@ -1,9 +1,14 @@
-{# base teacher selfstudy templates #}
+{# base selfstudy templates #}
 
-
-{% extends 'accreditation_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% load group_tags %}
+
+
+{% block secondary_navbar %}
+    {% include 'accreditation_navbar_secondary.html' %}
+{% endblock secondary_navbar %}  
+
 
 {% block main_content %}
     <div class="card card-body">
@@ -17,38 +22,48 @@
         </div>
     </div>
 
+    
   <div class="row">
+  
    <!-- Vertical Navbar -->
         <div class="col-md-3 col-lg-2 noprint">
           <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
           <!--h5 class="text-center">SelfStudy</h5 -->
-              <!-- Profile link -->
-              <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">
+  <!-- Profile links -->
+              <div class="nav-item mt-1 p-2 bg-ISEIblue4 text-white rounded">
                 <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"
                    href="{% url 'profile' selfstudy.id %}">
-                  Profile
+                  School Profile
                 </a>
               </div>
-            <h6 class="text-center">Standards</h6>
-              <!-- Standard links -->
+            
+            {% block profile_submenu %}
+            {% endblock profile_submenu %}
+          
+              <h6 class="text-center mt-2"><strong>Standards</strong></h6>
+  <!-- Standard links -->
               {% for standard in standards %}
-                <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">
+                <div class="nav-item mb-1 p-2 bg-ISEIblue4 text-white rounded">
                   <a class="nav-link {% if active_link == standard.id %}active{% endif %}"
                      href="{% url 'standard' selfstudy.id standard.id %}">
                     {{ standard.number }}. {{ standard.name }}
                   </a>
                 </div>
               {% endfor %}
-            <h6 class="text-center">Standards</h6>
-              <!-- Standard links -->
-              {% for standard in standards %}
-                <div class="mb-1 p-2 bg-ISEIblue4 text-white rounded">
-                  <a class="nav-link {% if active_link == standard.id %}active{% endif %}"
-                     href="{% url 'standard' selfstudy.id standard.id %}">
-                    {{ standard.number }}.{{ standard.name }}
-                  </a>
-                </div>
-              {% endfor %}
+          
+  <!--Action Plan Links -->
+          
+            <h6 class="text-center mt-2"><strong>Action Plans</strong></h6>
+
+            <div class="nav-item mb-1 p-2 bg-ISEIblue4 text-white rounded">
+                <a class="nav-link {% if active_link == 'actionplans' %}active{% endif %}"
+                   href="{% url 'selfstudy_actionplans' selfstudy.id %}">
+                  Action Plans
+                </a>
+            </div>
+            {% block actionplan_submenu %}
+            {% endblock actionplan_submenu %}
+          
           </nav>
         </div>
 

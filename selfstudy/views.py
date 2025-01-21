@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
-from datetime import datetime
+from django.db.models import Max
 
-import accreditation
-from apr.models import ActionPlan
-from .models import *
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
-from apr.models import APR
+from apr.models import APR, ActionPlan
+from .models import *
 
 #Creating the self-study views
 def get_or_create_selfstudy(accreditation):
@@ -84,24 +84,6 @@ def setup_standard_evaluation(selfstudy, standards):
         StandardEvaluation.objects.get_or_create(selfstudy=selfstudy,standard=standard,)
 
 
-#TODO this is only necessary now, because of existing APR.
-#TODO Will need to create a similar function to add action plans from the selfstudy to the APR
-def setup_action_plans(selfstudy):
-    # Assuming selfstudy has a related accreditation field or you can access it from the selfstudy
-    accreditation = selfstudy.accreditation
-
-    # Find the first APR with the matching accreditation
-    apr = APR.objects.filter(accreditation=accreditation).first()
-    if apr:
-        # Get all ActionPlans related to the found APR
-        action_plans = ActionPlan.objects.filter(apr=apr)
-        for action_plan in action_plans:
-            # Set the self_study of each ActionPlan
-            action_plan.self_study = selfstudy
-        # Save all action plans at once
-        ActionPlan.objects.bulk_update(action_plans, ['self_study'])
-
-
 def setup_selfstudy(request, accreditation_id):
     # Retrieve the Accreditation object by ID
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
@@ -113,7 +95,6 @@ def setup_selfstudy(request, accreditation_id):
     setup_school_profile(selfstudy)
     setup_standard_evaluation(selfstudy, standards)
     setup_indicator_evaluations(selfstudy)
-    setup_action_plans(accreditation)
 
     context = dict(selfstudy=selfstudy, standards=standards)
 
@@ -133,8 +114,8 @@ def selfstudy(request, selfstudy_id):
         accreditation = get_object_or_404(Accreditation, id=selfstudy_id)  # Assuming the selfstudy_id matches accreditation_id
         return setup_selfstudy(request, accreditation_id=accreditation.id)
 
-#School filling out the self study views
 
+#School filling out the self study views
 def selfstudy_profile(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -172,8 +153,6 @@ def selfstudy_profile(request, selfstudy_id):
                    )
 
     return render(request, 'selfstudy/profile.html', context)
-
-
 
 def selfstudy_standard(request, selfstudy_id, standard_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -249,3 +228,73 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
 
     return render(request, 'selfstudy/standard.html', context)
 
+def selfstudy_actionplans(request, selfstudy_id):
+
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    standards= Standard.objects.top_level()
+    accreditation = Accreditation.objects.get(selfstudy=selfstudy)
+
+    if accreditation:
+        actionplans = ActionPlan.objects.filter(accreditation=accreditation).order_by('number')
+    else:
+        actionplans = None
+
+    active_link = "actionplans"
+
+    context=dict(actionplans=actionplans, active_link=active_link, accreditation_id=accreditation.id,
+                 selfstudy=selfstudy, standards=standards)
+
+    return render(request, 'selfstudy/action_plans.html',context)
+
+def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
+    accreditation = get_object_or_404(Accreditation, id=accreditation_id)
+
+    selfstudy = get_object_or_404(SelfStudy, accreditation=accreditation)
+    standards= Standard.objects.top_level()
+    action_plans = ActionPlan.objects.filter(accreditation=accreditation).order_by('number')
+
+    # Get the ActionPlan if updating, otherwise create a new one
+    if action_plan_id:
+        action_plan = get_object_or_404(ActionPlan, id=action_plan_id, accreditation=accreditation)
+    else:
+        action_plan = ActionPlan(accreditation=accreditation)
+
+    if request.method == 'POST':
+        if 'delete' in request.POST and action_plan.id:
+            action_plan.delete()
+            return HttpResponseRedirect(reverse('selfstudy_actionplans', kwargs={'selfstudy_id': selfstudy.id}))
+        else:
+            ap_form = ActionPlanForm(request.POST, instance=action_plan)
+            formset = ActionPlanStepsFormSet(request.POST, instance=action_plan)
+
+            if ap_form.is_valid():
+                action_plan = ap_form.save()
+                if formset.is_valid():
+                    existing_steps = ActionPlanSteps.objects.filter(action_plan=action_plan)
+                    max_number = existing_steps.aggregate(Max('number'))['number__max'] or 0
+
+                    steps = formset.save(commit=False)
+                    for i, step in enumerate(steps, start=max_number + 1):
+                        if step.number is None:  # Only assign number if it doesn't already have one
+                            step.number = i
+                        step.action_plan = action_plan  # Link the step to the ActionPlan
+                        step.save()
+
+                    #This might be needed if existing steps need renumbering
+                    #for i, step in enumerate(existing_steps, start=1):
+                    #    step.number = i
+                    #    step.save()
+
+                    #TODO  deal with progress_record creation when action plans is moved from self study to apr
+                    #create_progress_records(apr, ActionPlan)
+
+                #return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
+    else:
+        ap_form = ActionPlanForm(instance=action_plan)
+        formset = ActionPlanStepsFormSet(instance=action_plan)
+
+    context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
+                   selfstudy=selfstudy,standards=standards,
+                   active_link=action_plan.id, action_plans=action_plans)
+
+    return render(request, 'selfstudy/action_plan.html', context)

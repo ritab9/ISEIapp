@@ -39,7 +39,7 @@ def add_accreditation(request):
     else:
         form = AccreditationForm()
 
-    context = {'form': form, 'add':True}
+    context = {'form': form, 'add':True, }
     return render(request, 'accreditation/manage_accreditation.html', context)
 
 

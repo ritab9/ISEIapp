@@ -1,0 +1,63 @@
+/* General Elements              */
+/* ============================= */
+body, html {
+    height: 100%;
+    background-color: #EFEFEF;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+
+.h7 {
+    display: block;
+    color: #0B61A4;
+    font-weight: bold;
+}
+
+/* if any changes made here please check login and register templates */
+a,h1,h2,h5,h6,h7 {
+    color: #084574;
+ }
+
+.bg-ISEIblue4 {
+  background-color: #053A64;
+  color: #FFFFFF;
+}
+
+.footer {
+    flex-shrink: 0;
+}
+
+
+.clickable {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.clickable-no-underline {
+    cursor: pointer;
+}
+
+.vertical-divider {
+    border-left: 1px solid #ddd;
+    height: auto;
+}
+
+/* to remove increment bars from number boxes*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* For Firefox */
+}
+
+
