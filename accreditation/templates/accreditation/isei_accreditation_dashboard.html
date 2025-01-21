@@ -9,69 +9,139 @@
     <div class="card card-body">
         <table class="table table-striped table-bordered table-hover">
             <thead class="thead table-bordered sticky_head">
+<!-- Row one of Table Head -->
                 <tr>
                     <th colspan="2" style="background-color: whitesmoke"></th>
-                    <th colspan="5" class="blue-header">Accreditation</th>
+                    <th colspan="1" class="orange-header">SelfStudy</th>
+                    <th colspan="3" class="blue-header">Accreditation</th>
                     <th colspan="2" class="orange-header">APR</th>
                 </tr>
+<!-- Row two of Table Head-->
                 <tr>
                     <th class="blue-header">#</th>
-                    <th class="blue-header">School</th>
-                    <th class="blue-header2">Edit</th>
+                    <th class="blue-header"> School Name
+                        <a style="color:white" href="?sort=school__name&order={% if current_sort == 'school__name' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                            {% if current_sort == 'school__name' %}
+                                {% if current_order == 'asc' %}
+                                    &#9650; <!-- Up arrow -->
+                                {% else %}
+                                    &#9660; <!-- Down arrow -->
+                                {% endif %}
+                            {% else %}
+                                &#9650;&#9660;
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="orange-header2">Add/Edit</th>
+                    <th class="blue-header2">Manage</th>
                     <th class="blue-header2">Visit dates</th>
-                    <th class="blue-header2">Term</th>
-                    <th class="blue-header2">Start Date</th>
-                    <th class="blue-header2">End Date</th>
-                    <th class="orange-header2">Edit</th>
+                    <!--th class="blue-header2">Term</th-->
+                    <!-- th class="blue-header2">Start Date</th -->
+                    <th class="blue-header2">
+                        Term <br>
+                        <a style="color: white" href="?sort=term_end_date&order={% if current_sort == 'term_end_date' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                            <small>Sort by end date</small>
+                        {% if current_sort == 'term_end_date' %}
+                                {% if current_order == 'asc' %}
+                                    &#9650; <!-- Up arrow -->
+                                {% else %}
+                                    &#9660; <!-- Down arrow -->
+                                {% endif %}
+                            {% else %}
+                                &#9650;&#9660;
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="orange-header2">Add/Edit</th>
                     <th class="orange-header2">Progress</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for category, accreditations in accreditation_groups.items %}
-                <tr>
+                <tr class="category-header" style="cursor: pointer;" data-toggle-target="category-{{ forloop.counter }}">
                     <td colspan="9" class="font-weight-bold" style="background-color: #f8f9fa;">
-                        {{ category|title }} Accreditations
+                         {{ category|title }} Accreditations
                     </td>
                 </tr>
-                {% for accreditation in accreditations %}
-                <tr>
-                    <td class="blue-column">{{ forloop.counter }}</td>
-                    <td class="blue-column">{{ accreditation.school }}</td>
-                    <td class="blue-column">
-                        <a href="{% url 'edit_accreditation' id=accreditation.id %}">Edit</a>
-                    </td>
-                    <td class="blue-column">
-                        {{ accreditation.visit_start_date|date:"F j" }} -
-                        {% if accreditation.visit_start_date|date:"F" != accreditation.visit_end_date|date:"F" %}
-                            {{ accreditation.visit_end_date|date:"F " }}
-                        {% endif %}
-                        {{ accreditation.visit_end_date|date:"j, Y" }}
-                    </td>
-                    <td class="blue-column">{{ accreditation.term }}</td>
-                    <td class="blue-column">{{ accreditation.term_start_date }}</td>
-                    <td class="blue-column">{{ accreditation.term_end_date }}</td>
-                    <td class="orange-column">
-                        <a href="{% url 'manage_apr' accreditation.id %}">
-                            {% if accreditation.apr %} Edit {% else %} Add APR {% endif %}
-                        </a>
-                    </td>
-                    <td class="orange-column">
-                        {% if accreditation.apr %}
-                            <a href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
-                            <div class="small">{{ accreditation.apr.last_update|default_if_none:"" }}</div>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="9">No {{ category|title }} accreditations found.</td>
-                </tr>
-                {% endfor %}
+                <tbody id="category-{{ forloop.counter }}" class="accreditation-rows">
+                    {% for accreditation in accreditations %}
+                    <tr>
+                        <td class="blue-column">{{ forloop.counter }}</td>
+                        <td class="blue-column">{{ accreditation.school }}</td>
+                        <td class="orange-column">
+                            {% if accreditation.selfstudy %}
+                                <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SS</a>
+                            {% else %}
+                                <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SS</a>
+                            {% endif %}
+                        </td>
+                        <td class="blue-column">
+                            <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a>
+                        </td>
+                        <td class="blue-column">
+                            {{ accreditation.visit_start_date|date:"F j" }} -
+                            {% if accreditation.visit_start_date|date:"F" != accreditation.visit_end_date|date:"F" %}
+                                {{ accreditation.visit_end_date|date:"F " }}
+                            {% endif %}
+                            {{ accreditation.visit_end_date|date:"j, Y" }}
+                        </td>
+                        <td class="blue-column"> {{ accreditation.term }} <br>
+                            <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small></td>
+                        <td class="orange-column">
+                            <a href="{% url 'manage_apr' accreditation.id %}">
+                                {% if accreditation.apr %} Edit APR {% else %} Add APR {% endif %}
+                            </a>
+                        </td>
+                        <td class="orange-column">
+                            {% if accreditation.apr %}
+                                <a href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
+                                <div class="small">{{ accreditation.apr.last_update|default_if_none:"" }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10">No {{ category|title }} accreditations found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
                 {% endfor %}
             </tbody>
+
         </table>
     </div>
 </div>
 
 {% endblock %}
 
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const headers = document.querySelectorAll('.category-header');
+
+            headers.forEach(header => {
+                // Add an arrow span to each header dynamically (optional if not added in HTML)
+                let arrow = document.createElement('span');
+                arrow.classList.add('arrow');
+                arrow.textContent = '➖'; // Default arrow pointing down
+                arrow.style.marginLeft = '10px'; // Add spacing for better visuals
+                header.querySelector('td').appendChild(arrow);
+
+                // Attach click event
+                header.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-toggle-target');
+                    const targetRows = document.getElementById(targetId);
+                    const arrow = this.querySelector('.arrow');
+
+                    if (targetRows) {
+                        const isHidden = targetRows.style.display === 'none';
+                        targetRows.style.display = isHidden ? '' : 'none'; // Toggle display
+                        arrow.textContent = isHidden ? '➖' : '➕'; // Toggle arrow direction
+                    }
+                });
+            });
+        });
+
+    </script>
+{% endblock %}

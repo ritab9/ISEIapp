@@ -38,9 +38,9 @@
                         <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Setup SelfStudy Document</a>
                 </div>
                 {% endif %}
-                {% if selfstudy %}
+                {% if accreditation.selfstudy %}
                     <div class="col-auto">
-                            <a href="{% url 'selfstudy' selfstudy_id=selfstudy.id %}"> Edit SelfStudy Document</a>
+                            <a href="{% url 'selfstudy' selfstudy_id=accreditation.selfstudy.id %}"> Edit SelfStudy Document</a>
                     </div>
                 {% endif %}
             </div>

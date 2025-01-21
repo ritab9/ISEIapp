@@ -11,22 +11,25 @@ from .forms import *
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_accreditation_dashboard(request):
+    # Get sorting parameters from the request
+    sort_by = request.GET.get('sort', 'school__name')  # Default sort field
+    order = request.GET.get('order', 'asc')  # Default order is ascending
 
-    #current_accreditations = Accreditation.objects.filter(status = Accreditation.AccreditationStatus.CURRENT ).order_by('school__name')
-    #in_works_accreditations = Accreditation.objects.filter(status = Accreditation.AccreditationStatus.IN_WORKS ).order_by('school__name')
-    #context=dict(current_accreditations=current_accreditations, in_works_accreditations=in_works_accreditations)
+    ordering = sort_by if order == 'asc' else f'-{sort_by}' # Determine the ordering
 
     accreditation_groups = {
         "in works": Accreditation.objects.filter(
             status=Accreditation.AccreditationStatus.IN_WORKS
-        ).order_by('school__name'),
+        ).order_by(ordering),
         "current": Accreditation.objects.filter(
             status=Accreditation.AccreditationStatus.CURRENT
-        ).order_by('school__name'),
+        ).order_by(ordering),
     }
 
     context = {
         'accreditation_groups': accreditation_groups,
+        'current_sort': sort_by,
+        'current_order': order,
     }
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
