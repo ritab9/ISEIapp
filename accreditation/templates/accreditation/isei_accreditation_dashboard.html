@@ -17,47 +17,40 @@
                     <th colspan="2" class="orange-header">APR</th>
                 </tr>
 <!-- Row two of Table Head-->
-                <tr>
+                <tr >
                     <th class="blue-header">#</th>
-                    <th class="blue-header"> School Name
+                    <th class="blue-header"> School Name <br>
                         <a style="color:white" href="?sort=school__name&order={% if current_sort == 'school__name' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                            <small>Sort by name</small>
                             {% if current_sort == 'school__name' %}
-                                {% if current_order == 'asc' %}
-                                    &#9650; <!-- Up arrow -->
-                                {% else %}
-                                    &#9660; <!-- Down arrow -->
+                                {% if current_order == 'asc' %}&#9650; <!-- Up arrow -->
+                                {% else %}&#9660; <!-- Down arrow -->
                                 {% endif %}
-                            {% else %}
-                                &#9650;&#9660;
+                            {% else %}&#9650;&#9660;
                             {% endif %}
                         </a>
                     </th>
-                    <th class="orange-header2">Add/Edit</th>
-                    <th class="blue-header2">Manage</th>
-                    <th class="blue-header2">Visit dates</th>
-                    <!--th class="blue-header2">Term</th-->
-                    <!-- th class="blue-header2">Start Date</th -->
+                    <th class="orange-header2 align-top">Add/Edit </th>
+                    <th class="blue-header2 align-top">Manage </th>
+                    <th class="blue-header2 align-top">Visit dates </th>
                     <th class="blue-header2">
                         Term <br>
                         <a style="color: white" href="?sort=term_end_date&order={% if current_sort == 'term_end_date' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
                             <small>Sort by end date</small>
-                        {% if current_sort == 'term_end_date' %}
-                                {% if current_order == 'asc' %}
-                                    &#9650; <!-- Up arrow -->
-                                {% else %}
-                                    &#9660; <!-- Down arrow -->
+                            {% if current_sort == 'term_end_date' %}
+                                {% if current_order == 'asc' %} &#9650; <!-- Up arrow -->
+                                {% else %} &#9660; <!-- Down arrow -->
                                 {% endif %}
-                            {% else %}
-                                &#9650;&#9660;
+                            {% else %} &#9650;&#9660;
                             {% endif %}
                         </a>
                     </th>
-                    <th class="orange-header2">Add/Edit</th>
-                    <th class="orange-header2">Progress</th>
+                    <th class="orange-header2 align-top">Add/Edit</th>
+                    <th class="orange-header2">Progress <br><small>Last Update</small></th>
                 </tr>
+
             </thead>
 
-            <tbody>
                 {% for category, accreditations in accreditation_groups.items %}
                 <tr class="category-header" style="cursor: pointer;" data-toggle-target="category-{{ forloop.counter }}">
                     <td colspan="9" class="font-weight-bold" style="background-color: #f8f9fa;">
@@ -70,21 +63,24 @@
                         <td class="blue-column">{{ forloop.counter }}</td>
                         <td class="blue-column">{{ accreditation.school }}</td>
                         <td class="orange-column">
-                            {% if accreditation.selfstudy %}
-                                <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SS</a>
+                            {% if category == "in works" %}
+                                {% if accreditation.selfstudy %}
+                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SS</a>
+                                {% else %}
+                                    <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SS</a>
+                                {% endif %}
                             {% else %}
-                                <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SS</a>
+                                {% if accreditation.selfstudy %}
+                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SS</a>
+                                {% else %} N/A
+                                {% endif %}
                             {% endif %}
                         </td>
                         <td class="blue-column">
                             <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a>
                         </td>
                         <td class="blue-column">
-                            {{ accreditation.visit_start_date|date:"F j" }} -
-                            {% if accreditation.visit_start_date|date:"F" != accreditation.visit_end_date|date:"F" %}
-                                {{ accreditation.visit_end_date|date:"F " }}
-                            {% endif %}
-                            {{ accreditation.visit_end_date|date:"j, Y" }}
+                            {{ accreditation.visit_date_range }}
                         </td>
                         <td class="blue-column"> {{ accreditation.term }} <br>
                             <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small></td>
@@ -96,7 +92,7 @@
                         <td class="orange-column">
                             {% if accreditation.apr %}
                                 <a href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
-                                <div class="small">{{ accreditation.apr.last_update|default_if_none:"" }}</div>
+                                <div class="small">{{ accreditation.apr.updated_at|default_if_none:"" }}</div>
                             {% endif %}
                         </td>
                     </tr>
@@ -107,8 +103,50 @@
                     {% endfor %}
                 </tbody>
                 {% endfor %}
-            </tbody>
 
+                {% if not include_retired %}
+                <tr><td colspan="9"><a href="?category=retired" class="font-weight-bold text-black-50">Include Retired Accreditations</a></td></tr>
+
+            <!-- Retired Accreditations Section (Initially Empty) -->
+                {% else %}
+                    <tr class="category-header" style="cursor: pointer;" data-toggle-target="category-retired">
+                        <td colspan="9" class="font-weight-bold" style="background-color: #f8f9fa;">
+                            Retired Accreditations
+                        </td>
+                    </tr>
+                    <tbody id="category-retired" class="accreditation-rows">
+                        {% for accreditation in retired_accreditations %}
+                        <tr>
+                            <td class="blue-column">{{ forloop.counter }}</td>
+                            <td class="blue-column">{{ accreditation.school }}</td>
+                            <td class="orange-column">
+                                {% if accreditation.selfstudy %}
+                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SS</a>
+                                {% else %} N/A
+                                {% endif %}
+                            </td>
+                            <td class="blue-column">
+                                <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a>
+                            </td>
+                            <td class="blue-column">
+                                {{ accreditation.visit_date_range }}
+                            </td>
+                            <td class="blue-column"> {{ accreditation.term }} <br>
+                                <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small></td>
+                            <td class="orange-column" colspan="2">
+                                {% if accreditation.apr %}
+                                    <a href="{% url 'apr_progress_report' accreditation.apr.id %}"> View APR</a>
+                                    <div class="small">{{ accreditation.apr.updated_at|default_if_none:"" }}</div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10">No Retired accreditations found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endif %}
         </table>
     </div>
 </div>

@@ -4,7 +4,7 @@ from datetime import date
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models import Q
-
+from django.apps import apps
 
 
 class TNCounty(models.Model):
@@ -122,6 +122,10 @@ class School(models.Model):
                                    verbose_name="Type of School")
 
     current_school_year=models.ForeignKey('teachercert.SchoolYear', on_delete=models.CASCADE, null=True, blank=True)
+
+    def current_accreditation(self):
+        Accreditation = apps.get_model('accreditation', 'Accreditation')  # Lazy load the Accreditation model
+        return Accreditation.objects.filter(school=self, status='current').first()
 
     class Meta:
         ordering = ('name',)

@@ -1,3 +1,5 @@
+from dis import Instruction
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -228,11 +230,12 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
 
     return render(request, 'selfstudy/standard.html', context)
 
-def selfstudy_actionplans(request, selfstudy_id):
+def selfstudy_actionplan_instructions(request, selfstudy_id):
 
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards= Standard.objects.top_level()
     accreditation = Accreditation.objects.get(selfstudy=selfstudy)
+    instructions = ActionPlanInstructions.objects.first()
 
     if accreditation:
         actionplans = ActionPlan.objects.filter(accreditation=accreditation).order_by('number')
@@ -242,9 +245,9 @@ def selfstudy_actionplans(request, selfstudy_id):
     active_link = "actionplans"
 
     context=dict(actionplans=actionplans, active_link=active_link, accreditation_id=accreditation.id,
-                 selfstudy=selfstudy, standards=standards)
+                 selfstudy=selfstudy, standards=standards, instructions=instructions)
 
-    return render(request, 'selfstudy/action_plans.html',context)
+    return render(request, 'selfstudy/action_plan_instructions.html', context)
 
 def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
@@ -262,7 +265,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
     if request.method == 'POST':
         if 'delete' in request.POST and action_plan.id:
             action_plan.delete()
-            return HttpResponseRedirect(reverse('selfstudy_actionplans', kwargs={'selfstudy_id': selfstudy.id}))
+            return HttpResponseRedirect(reverse('selfstudy_actionplan_instructions', kwargs={'selfstudy_id': selfstudy.id}))
         else:
             ap_form = ActionPlanForm(request.POST, instance=action_plan)
             formset = ActionPlanStepsFormSet(request.POST, instance=action_plan)

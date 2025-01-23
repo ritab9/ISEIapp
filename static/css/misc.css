@@ -26,3 +26,8 @@
   break-inside: avoid; /* Prevent items from breaking across columns */
   word-wrap: break-word; /* Ensure long text wraps properly */
 }
+/* vertical separator (for example between columns) */
+.separator {
+            border-left: 2px solid #ccc; /* Vertical line */
+            margin: 0 10px; /* Space around the line */
+        }

@@ -17,8 +17,6 @@ class ReportType(models.Model):
     code = models.CharField(max_length=3, default="ST")
     order_number = models.PositiveSmallIntegerField(default=0)
     for_all_schools = models.BooleanField(default=False)
-    #isei_created is false for APR (and possibly other reports in the future that need to be created specifically for each school by ISEI)
-    isei_created = models.BooleanField(default=False)
     view_name = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):

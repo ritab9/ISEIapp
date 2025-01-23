@@ -61,3 +61,17 @@ class IndicatorEvaluationAdmin(admin.ModelAdmin):
     get_score_display.short_description = 'Score'  # Change column name to 'Score'
 
 admin.site.register(IndicatorEvaluation, IndicatorEvaluationAdmin)
+
+
+
+class ActionPlanInstructionSectionAdmin(admin.ModelAdmin):
+    list_display = ['number', 'content']  # Show order number and truncated content
+    ordering = ['number']  # Order by the 'number' field
+    search_fields = ['content']  # Allow search by content
+
+class ActionPlanInstructionsAdmin(admin.ModelAdmin):
+    list_display = ['link_text', 'procedure_title', 'procedure_title_1', 'procedure_title_2']
+    filter_horizontal = ['paragraphs', 'procedure_group_1', 'procedure_group_2']  # Simplified selection of related sections
+
+admin.site.register(ActionPlanInstructionSection, ActionPlanInstructionSectionAdmin)
+admin.site.register(ActionPlanInstructions, ActionPlanInstructionsAdmin)

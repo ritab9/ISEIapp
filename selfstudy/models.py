@@ -30,6 +30,30 @@ class StandardNarrative(models.Model):
     text2 = models.TextField(null=True, blank=True)
 
 
+
+class ActionPlanInstructionSection(models.Model):
+    content = models.TextField()
+    number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
+
+    def __str__(self):
+        truncated_content = (self.content[:50] + '...') if len(self.content) > 50 else self.content
+        return f"Section #{self.number} - {truncated_content}"
+
+class ActionPlanInstructions(models.Model):
+    link_text = models.TextField(null=True, blank=True)
+
+    # Relationships
+    paragraphs = models.ManyToManyField(ActionPlanInstructionSection, related_name="paragraphs", blank=True)
+    procedure_title = models.TextField(null=True, blank=True)
+    procedure_title_1 = models.TextField(null=True, blank=True)
+    procedure_title_2 = models.TextField(null=True, blank=True)
+    procedure_group_1 = models.ManyToManyField(ActionPlanInstructionSection, related_name="procedure_group_1", blank=True)
+    procedure_group_2 = models.ManyToManyField(ActionPlanInstructionSection, related_name="procedure_group_2", blank=True)
+
+    def __str__(self):
+        return "Action Plan Instructions for SelfStudy"
+
+
 #Building a SelfStudy for a School
 class SelfStudy(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)

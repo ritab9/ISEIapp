@@ -1419,10 +1419,9 @@ def isei_reporting_dashboard(request):
     #employee_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="ER")
     #inservice_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="IR")
     #opening_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="OR")
-    #ap_report= AnnualReport.objects.filter(school_year=current_school_year, report_type="APR")
 
     report_types = ReportType.objects.all()
-    schools = School.objects.filter(member=True, active = True).exclude(Q(name="Sample School"))
+    schools = School.objects.filter(member=True, active = True)
 
     # Prefetch the AnnualReports for the selected school year for each school
     schools = schools.prefetch_related(
@@ -1431,8 +1430,11 @@ def isei_reporting_dashboard(request):
     )
 
     wss_schools = School.objects.filter(worthy_student_report_needed = True)
+    opening_report_codes = ['SR', 'ER', '190', 'OR']
+    closing_report_codes = ['IR', 'CR', 'WS']
 
-    context = {'schools':schools, 'wss_schools':wss_schools, 'report_types':report_types, 'todays_date': date.today()}
+    context = {'schools':schools, 'wss_schools':wss_schools, 'report_types':report_types, 'todays_date': date.today(),
+               'opening_report_codes': opening_report_codes, 'closing_report_codes': closing_report_codes}
 
     return render(request, 'isei_reporting_dashboard.html', context)
 

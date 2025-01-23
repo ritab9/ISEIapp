@@ -1,15 +1,26 @@
 <!--setup_selfstudy-->
 {% extends 'selfstudy_base.html' %}
+{% load static %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/selfstudy_cover.css' %}">
+{% endblock custom_css %}
 
 {% block title %} Create SelfStudy Document{% endblock title %}
 
-
-
 {% block content %}
 
-<div class="container-fluid">
-    <div class="card card-body">
-       Some Content Here - Self Study cover
+<div class="container-fluid cover-page">
+    <div class="card card-body text-center">
+        <h1 class="school-name">
+            {{ selfstudy.accreditation.school.name }}
+        </h1>
+        <h2 class="report-title">
+            Self-Study Report for Accreditation
+        </h2>
+        <p class="visit-dates">
+            {{ selfstudy.accreditation.visit_date_range }}
+        </p>
     </div>
 </div>
 

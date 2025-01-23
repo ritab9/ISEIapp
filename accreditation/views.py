@@ -18,19 +18,20 @@ def isei_accreditation_dashboard(request):
     ordering = sort_by if order == 'asc' else f'-{sort_by}' # Determine the ordering
 
     accreditation_groups = {
-        "in works": Accreditation.objects.filter(
-            status=Accreditation.AccreditationStatus.IN_WORKS
-        ).order_by(ordering),
-        "current": Accreditation.objects.filter(
-            status=Accreditation.AccreditationStatus.CURRENT
-        ).order_by(ordering),
+        "in works": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.IN_WORKS).order_by(ordering),
+        "current": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.CURRENT).order_by(ordering),
+         #"retired": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.RETIRED).order_by(ordering),
     }
 
-    context = {
-        'accreditation_groups': accreditation_groups,
-        'current_sort': sort_by,
-        'current_order': order,
-    }
+    context = { 'accreditation_groups': accreditation_groups,
+        'current_sort': sort_by, 'current_order': order, 'include_retired':False }
+
+    # Check if the "retired" category was clicked
+    if request.GET.get('category') == 'retired':
+        retired_accreditations = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.RETIRED).order_by(ordering)
+        context = {'accreditation_groups': accreditation_groups, 'retired_accreditations': retired_accreditations,
+                   'current_sort': sort_by, 'current_order': order, 'include_retired': True}
+
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
 def add_accreditation(request):

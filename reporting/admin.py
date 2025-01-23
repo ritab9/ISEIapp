@@ -19,8 +19,8 @@ class ReportDueDateAdmin(admin.ModelAdmin):
 admin.site.register(ReportDueDate, ReportDueDateAdmin)
 
 class ReportTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'code', 'order_number','for_all_schools', 'isei_created', 'view_name']
-    list_editable = ['order_number', 'for_all_schools', 'isei_created', 'view_name', 'code']
+    list_display = ['name', 'code', 'order_number','for_all_schools', 'view_name']
+    list_editable = ['order_number', 'for_all_schools', 'view_name', 'code']
 admin.site.register(ReportType, ReportTypeAdmin)
 
 

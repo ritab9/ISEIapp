@@ -4,64 +4,76 @@
 
 
 {% block content %}
-
-    <table class="table table-striped table-sm mt-2">
-        <thead class="sticky_head table-ISEIblue4">
-            <tr><th>#</th>
-                <th>School</th>
+<div class="card card-body">
+    <table class="table table-striped table-sm table-bordered table-hover">
+        <thead class="sticky_head table-bordered thead">
+            <tr><th class="blue-header2">#</th>
+                <th class="blue-header2">School</th>
                 {% for report_type in report_types %}
-                <th> {{ report_type.name }} </th>
+                    <th class="{% if report_type.code in opening_report_codes %} orange-header2 {% else %} blue-header2 {% endif %}"> {{ report_type.name }} </th>
                 {% endfor %}
+                <th class="orange-header2">Annual Progress Report</th>
             </tr>
         </thead>
         <tbody>
             {% for school in schools %}
-        <tr><td>{{ forloop.counter }}</td>
-            <td>
-                <a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></div>
-            </td>
-            {% for report_type in report_types %}
-            <td>
-                {% for report in school.annual_reports %}
-                    {% if report.report_type.name == report_type.name %}
-                        {% if report.submit_date %}
-                            <i class="fas fa-check"></i>
-                            {% if report.submit_date > report.due_date_plus %}
-                                <a class="error span80" href="{% url report.report_type.view_name|add:'_display' report.id %}">{{ report.submit_date }}:</a>
-                            {% elif report.submit_date > report.due_date %}
-                                <a class="warning span80" href="{% url report.report_type.view_name|add:'_display' report.id %}">{{ report.submit_date }}:</a>
+                <tr><td class="blue-column">{{ forloop.counter }}</td>
+                <td class="blue-column">
+                    <a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a>
+                </td>
+                {% for report_type in report_types %}
+                <td class="{% if report_type.code in opening_report_codes %} orange-column {% else %} blue-column {% endif %}">
+                    {% for report in school.annual_reports %}
+                        {% if report.report_type.name == report_type.name %}
+                            {% if report.submit_date %}
+                                    {% if report.submit_date > report.due_date_plus %} 🔴
+                                    {% elif report.submit_date > report.due_date %} 🟡
+                                    {% else %} 🟢 {% endif %}
+                                <a class="" href="{% url report.report_type.view_name|add:'_display' report.id %}">
+                                    {{ report.submit_date }}: </a>
                             {% else %}
-                                <a class="success span80" href="{% url report.report_type.view_name|add:'_display' report.id %}">{{ report.submit_date }}:</a>
+                                {% if report.due_date_plus < todays_date %}‼️
+                                {% elif report.due_date < todays_date %}❗{% endif %}
+                                <small>Due date: {{ report.due_date }}</small>
                             {% endif %}
-                            <br><span class="span80"> Update:  {{ report.last_update_date }}</span>
-                        {% elif report.last_update_date %}
-                            <i class="fas fa-sync"></i>
-                                {% if report.due_date >= todays_date %}
-                                    <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: {{ report.last_update_date}}</a>
-                                {% else %}
-                                    <a class="span80" href="{% url report.report_type.view_name|add:'_display' report.id %}"> Update: <span class="error">{{ report.last_update_date}}</span></a>
-                                {% endif %}
-                        {% else %}
-                            {% if report.due_date > todays_date %}
-                                <span class="span80"> Due date: {{ report.due_date }}</span>
-                            {% elif report.due_date_plus > todays_date %}
-                                <span class="span80"> Due date: <span class="warning">{{ report.due_date }}</span></span>
-                            {% else %}
-                                <span class="span80"> Due date: <span class="error">{{ report.due_date }}</span></span>
+
+                            {% if report.last_update_date %}
+                                <br><small> Update:  {{ report.last_update_date }}</small>
                             {% endif %}
-                        {% endif %}
 
                             {% if report.day190.first.file or report.day190.first.calendar_link %}
-                               <br><span class="span80 success">calendar</span>
+                               📅
                             {% endif %}
-
-                    {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </td>
                 {% endfor %}
-            </td>
+                <td class="orange-column">{% if school.current_accreditation.apr %}
+                        <a href="{% url 'apr_progress_report' school.current_accreditation.apr.id %}">APR Progress</a>
+                        <div class="small">{{ school.current_accreditation.apr.updated_at|default_if_none:"" }}</div>
+                    {% else %}
+                        No APR
+                {% endif %}</td>
+                </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
         </tbody>
     </table>
+</div>
+
+    <div class="card card-body">
+        <h6>Legend</h6>
+        <div class="row">
+            <div class="col">
+                 🟢 On Time - Report submitted before or on the due date. <br>
+                 🟡 Late - Report submitted within two weeks of due date.<br>
+                 🔴 Overdue - Report submitted more than two weeks after due date.
+            </div>
+            <div class="col">
+                 ❗ Late - Report not submitted, due date passed. <br>
+                 ‼️ Overdue - Report not submitted, due date was more than 2 weeks ago.<br>
+                 📅 Calendar - School calendar uploaded.
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

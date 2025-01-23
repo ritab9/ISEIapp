@@ -20,8 +20,10 @@
 }
 
 
-/* APR Table Styling             */
+/* APR Table Styling */
 /* APR Header */
+
+
 .orange-header {
     background-color: #B56004; /* Muted darker orange for APR header */
     color: white;
@@ -77,6 +79,7 @@
     text-align: center;
     border-right: 1px solid #2b3c48; /* Border separating columns */
     padding: 10px;
+    vertical-align: top; !important;
 }
 
 /* Accreditation Columns */

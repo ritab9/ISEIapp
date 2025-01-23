@@ -32,6 +32,17 @@ class Accreditation(models.Model):
         default=AccreditationStatus.CURRENT
     )
 
+    def visit_date_range(self):
+        """ Returns a formatted string for the visit date range, ensuring the month is not repeated if both dates are in the same month."""
+        if not self.visit_start_date or not self.visit_end_date:
+            return ""
+        start_date = self.visit_start_date
+        end_date = self.visit_end_date
+        if start_date.strftime("%B") == end_date.strftime("%B"):
+            return f"{start_date.strftime('%B %d')} - {end_date.strftime('%d, %Y')}"
+        else:
+            return f"{start_date.strftime('%B %d')} - {end_date.strftime('%B %d, %Y')}"
+
     def __str__(self):
         return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"
 
