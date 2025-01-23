@@ -11,16 +11,18 @@
 
 
 {% block main_content %}
-    <div class="card card-body">
-        <div class="row">
-            <div class="col">
-                <h6>{{ selfstudy.accreditation.school }} SelfStudy</h6>
+    {% block selfstudy_topox %}
+        <!--div class="card card-body">
+            <div class="row">
+                <div class="col">
+                    <h6>{ { selfstudy.accreditation.school }} SelfStudy</h6>
+                </div>
+                <div class="col-auto ml-0"> 
+                    { { selfstudy.accreditation.visit_date_range }}
+                </div>
             </div>
-            <div class="col-auto ml-0">  <!-- Remove any margin and keep the dates to the left -->
-                {{ selfstudy.accreditation.visit_start_date }} - {{ selfstudy.accreditation.visit_end_date }}
-            </div>
-        </div>
-    </div>
+        </div-->
+    {% endblock %}
 
 
   <div class="row">
@@ -29,6 +31,12 @@
         <div class="col-md-3 col-lg-2 noprint">
           <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
           <!--h5 class="text-center">SelfStudy</h5 -->
+                <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
+                    <a class="nav-link {% if active_link == 'selfstudy' %}active{% endif %}"
+                       href="{% url 'selfstudy' selfstudy.id %}">
+                      SelfStudy {{ selfstudy.accreditation.school }}
+                    </a>
+              </div>
   <!-- Profile links -->
               <div class="nav-item mt-1 p-2 bg-ISEIblue4 text-white rounded">
                 <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"

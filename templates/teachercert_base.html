@@ -10,30 +10,32 @@
  
     {# The Footer #}
 {% block footer %}
-    {% if user.is_authenticated %}
-        <div class="row ml-3 mt-3">
-            <div class="col-sm-auto card">
-                {% get_resource_by_name "Teacher Certification Handbook" as teacher_certification_handbook %}
-                    {% if teacher_certification_handbook %}
-                        <a href="{{ teacher_certification_handbook.link }}" target="_blank">
-                            {{ teacher_certification_handbook.name }}
-                        </a>
-                    {% else %}
-                        <p>Resource not available</p>
-                    {% endif %}
+    <footer class="footer noprint">
+        {% if user.is_authenticated %}
+            <div class="row ml-3 mt-3">
+                <div class="col-sm-auto card">
+                    {% get_resource_by_name "Teacher Certification Handbook" as teacher_certification_handbook %}
+                        {% if teacher_certification_handbook %}
+                            <a href="{{ teacher_certification_handbook.link }}" target="_blank">
+                                {{ teacher_certification_handbook.name }}
+                            </a>
+                        {% else %}
+                            <p>Resource not available</p>
+                        {% endif %}
+                </div>
+            
+                <div class="col-sm-auto card">
+                    <a class href="{% url "ceu_info" %}" target="_blank">CEU Info</a>
+                </div>
             </div>
+        {% endif %}
         
-            <div class="col-sm-auto card">
-                <a class href="{% url "ceu_info" %}" target="_blank">CEU Info</a>
-            </div>
+        <div class="row card mt-3">
+               <div class="mr-3 ml-3" style="text-align: center">
+                   <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || teacher_certification@iseiea.org
+                   <p><small>&copy; 2021 <i>ISEI</i> Education Association</small></p>
+               </div>
         </div>
-    {% endif %}
+    </footer>
     
-    <div class="row card mt-3">
-           <div class="mr-3 ml-3" style="text-align: center">
-               <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || teacher_certification@iseiea.org
-               <p><small>&copy; 2021 <i>ISEI</i> Education Association</small></p>
-           </div>
-    </div>
-
 {% endblock footer %}

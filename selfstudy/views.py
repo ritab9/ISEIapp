@@ -108,7 +108,7 @@ def selfstudy(request, selfstudy_id):
         selfstudy = SelfStudy.objects.get(id=selfstudy_id)
         standards = Standard.objects.top_level()
 
-        context = dict(selfstudy=selfstudy, standards=standards)
+        context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy")
         return render(request, 'selfstudy/selfstudy.html', context)
 
     except SelfStudy.DoesNotExist:
