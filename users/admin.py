@@ -30,7 +30,7 @@ class SchoolAddressInLine(admin.StackedInline):
     exclude = ['teacher']
 
 class AccreditationInfoInline(admin.StackedInline):
-    model = AccreditationInfo
+    model = OtherAgencyAccreditationInfo
     extra = 0  # Number of extra forms to display
 
 @admin.register(School)
@@ -43,6 +43,13 @@ class School(admin.ModelAdmin):
 class AccreditationAgencyAdmin(admin.ModelAdmin):
     list_display = ['name', 'abbreviation']
 
+@admin.register(OtherAgencyAccreditationInfo)
+class OtherAgencyAccreditationInfoAdmin(admin.ModelAdmin):
+    list_display = ('school', 'agency', 'start_date', 'end_date', 'current_accreditation')
+    list_filter = ('agency', 'current_accreditation', 'start_date', 'end_date')
+    list_editable= ('current_accreditation', 'start_date', 'end_date')
+    search_fields = ('school__name', 'agency__name', 'agency__abbreviation')
+    ordering = ('school', 'agency', 'start_date')
 
 #class TeacherInline(admin.StackedInline):
 #    model = Teacher

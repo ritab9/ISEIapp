@@ -80,10 +80,10 @@
                             <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a>
                         </td>
                         <td class="blue-column">
-                            {{ accreditation.visit_date_range }}
+                            {{ accreditation.visit_date_range|default_if_none:"" }}
                         </td>
-                        <td class="blue-column"> {{ accreditation.term }} <br>
-                            <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small></td>
+                        <td class="blue-column"> {{ accreditation.term|default_if_none:"" }} <br>
+                            <small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}</small></td>
                         <td class="orange-column">
                             <a href="{% url 'manage_apr' accreditation.id %}">
                                 {% if accreditation.apr %} Edit APR {% else %} Add APR {% endif %}

@@ -30,6 +30,9 @@
                                 <a class="nav-link" href="{% url 'school_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
                              </li>
                              <li class="nav-item ">
+                                <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.teacher.school.id %}"> Accreditation </a>
+                             </li>   
+                             <li class="nav-item ">
                                  <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
                              </li>
                             <li class="nav-item ">

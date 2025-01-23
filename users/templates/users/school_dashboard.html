@@ -36,29 +36,35 @@
                     {{ school.address.country }}
                 </p>
                 {% if school.phone_number %}
-                <p><strong>Phone:</strong> {{ school.phone_number }}</p>
+                    <p><strong>Phone:</strong> {{ school.phone_number }}</p>
                 {% endif %}
                 {% if school.email %}
-                <p><strong>Email:</strong> <a href="mailto:{{ school.email }}">{{ school.email }}</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:{{ school.email }}">{{ school.email }}</a></p>
                 {% endif %}
                 {% if school.website %}
-                <p><strong>Website:</strong> <a href="{{ school.website }}">{{ school.website }}</a></p>
+                    <p><strong>Website:</strong> <a href="{{ school.website }}">{{ school.website }}</a></p>
                 {% endif %}
                 {% if school.textapp %}
-                <p><strong>Text App:</strong> {{ school.textapp}}</p>
+                    <p><strong>Text App:</strong> {{ school.textapp}}</p>
                 {% endif %}
                 {% if school.principal %}
-                <p><strong>Principal:</strong> {{ school.principal }}</p>
+                    <p><strong>Principal:</strong> {{ school.principal }}</p>
                 {% endif %}
                 {% if school.president %}
-                <p><strong>President:</strong> {{ school.president }}</p>
+                    <p><strong>President:</strong> {{ school.president }}</p>
                 {% endif %}
-                {% if accreditation_info %}
+                {% if accreditation or other_agency_accreditation_info %}
                     <strong>Accreditation</strong>
-                    {% for ai in accreditation_info %}
+                    {% if accreditation %}
+                        <p class="card-text">
+                            <h7>ISEI-EA</h7>
+                            <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small>
+                        </p>
+                    {% endif %}
+                    {% for ai in other_agency_accreditation_info %}
                     <p class="card-text">
                         <span class="">{{ ai.agency.abbreviation }}:</span>
-                        <span>{{ ai.start_date|date:"SHORT_DATE_FORMAT" }}-{{ ai.end_date|date:"SHORT_DATE_FORMAT" }}</span>
+                        <span>{{ ai.start_date }}-{{ ai.end_date }}</span>
                     </p>
                     {% endfor %}
                 {% endif %}

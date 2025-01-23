@@ -302,6 +302,7 @@ def apr_progress_report(request, apr_id):
         'recommendations_progress': recommendations_progress,
         'action_plans_progress': action_plans_progress,
         'progress_statuses': progress_statuses,
+        'active_link':"apr",
     }
 
     return render(request, 'apr/apr_progress_report.html', context)

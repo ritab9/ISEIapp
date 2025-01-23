@@ -8,6 +8,8 @@ from django.contrib import messages
 from .models import Accreditation
 from .forms import *
 
+#ISEI Views
+
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_accreditation_dashboard(request):
@@ -78,3 +80,24 @@ def delete_accreditation(request, id):
     return render(request, 'accreditation/delete_accreditation.html', context)
 
 
+#School Accreditation Views
+
+@login_required(login_url='login')
+def school_accreditation_dashboard(request, school_id):
+    school=get_object_or_404(School, id=school_id)
+
+    accreditation_in_works = Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.IN_WORKS).first()
+    accreditation_current = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.CURRENT).first()
+    accreditation_retired = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.RETIRED)
+
+    context = dict(accreditation_in_works=accreditation_in_works,accreditation_current=accreditation_current,accreditation_retired=accreditation_retired,)
+
+    accreditation_groups = {
+        "in works": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.IN_WORKS),
+        "current": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.CURRENT),
+        "retired": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.RETIRED),
+    }
+
+    context = dict(accreditation_groups =accreditation_groups, school=school)
+
+    return render(request, 'accreditation/school_accreditation_dashboard.html', context)

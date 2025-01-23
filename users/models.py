@@ -146,7 +146,7 @@ class AccreditationAgency(models.Model):
 
 
 
-class AccreditationInfo(models.Model):
+class OtherAgencyAccreditationInfo(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     agency = models.ForeignKey(AccreditationAgency, on_delete=models.CASCADE)
     start_date = models.DateField()

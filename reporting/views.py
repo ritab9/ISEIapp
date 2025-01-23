@@ -24,7 +24,7 @@ from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
 from .filters import *
 
-from users.models import AccreditationInfo
+from users.models import OtherAgencyAccreditationInfo
 from .functions import update_student_country_occurences
 from teachercert.myfunctions import newest_certificate
 from django.db import IntegrityError
@@ -503,7 +503,7 @@ def tn_student_export(request, arID):
     school_email = school.email
     school_principal = school.principal
 
-    accreditations = AccreditationInfo.objects.filter(school=school)
+    accreditations = OtherAgencyAccreditationInfo.objects.filter(school=school)
 
     # extract agency from each accreditation
     agencies = [accreditation.agency.abbreviation for accreditation in accreditations]
@@ -1572,7 +1572,7 @@ def download_NCPSA_directory(request, schoolyearID):
         except Opening.DoesNotExist:
             enrollment = None
 
-        current_accreditation_info = AccreditationInfo.objects.filter(school=school, current_accreditation=True).first()
+        current_accreditation_info = OtherAgencyAccreditationInfo.objects.filter(school=school, current_accreditation=True).first()
 
         if current_accreditation_info:
             accreditation_status = "Accredited"

@@ -70,7 +70,7 @@ def setup_indicator_evaluations(selfstudy):
     indicator_evaluations = [ # Prepare a list to hold new IndicatorEvaluation objects
         IndicatorEvaluation(
             selfstudy=selfstudy, indicator=indicator, standard=indicator.standard,
-            score=None,  reference_documents=[], explanation='',
+            score=None,  reference_documents=None, explanation=None,
         )
         for indicator in new_indicators
     ]

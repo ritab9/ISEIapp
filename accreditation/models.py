@@ -44,7 +44,10 @@ class Accreditation(models.Model):
             return f"{start_date.strftime('%B %d')}-{end_date.strftime('%B %d, %Y')}"
 
     def __str__(self):
-        return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"
+        if self.term_end_date and self.term_start_date:
+            return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"
+        else:
+            return f"Accreditation: School {self.school} in Works"
 
     def save(self, *args, **kwargs):
         # Ensure only one current accreditation per school

@@ -249,6 +249,7 @@ def accountsettings(request, userID):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal', 'registrar','staff'])
 def school_dashboard(request, schoolID):
+    #TODO Review this for efficiency. See what cases could benefit from prefertch related.
 
     school=School.objects.get(id=schoolID)
     school_year=school.current_school_year
@@ -270,7 +271,7 @@ def school_dashboard(request, schoolID):
         sr_er_submitted = False
 
     #school info section
-    accreditation_info = AccreditationInfo.objects.filter(school=school, current_accreditation=True)
+    other_agency_accreditation_info = OtherAgencyAccreditationInfo.objects.filter(school=school, current_accreditation=True)
 
     # Teacher Certificates Section
     teachers = Teacher.objects.filter(school=school, user__is_active=True, user__groups__name__in=['teacher'])
@@ -310,21 +311,20 @@ def school_dashboard(request, schoolID):
     else:
         is_old=None
 
-
     accreditation = Accreditation.objects.filter(school=school, status = Accreditation.AccreditationStatus.CURRENT).first()
     if accreditation:
         apr=APR.objects.get(accreditation=accreditation)
     else:
         apr=None
 
-
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
-                    accreditation_info=accreditation_info,
+                    other_agency_accreditation_info=other_agency_accreditation_info, accreditation=accreditation,
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted, cr_submitted=cr_submitted,
                     test_orders = test_orders,
                     is_old = is_old, fire_marshal_date=fire_marshal_date, wss=wss,
                     apr=apr,
+
                   )
 
     return render(request, 'users/school_dashboard.html', context)
