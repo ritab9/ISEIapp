@@ -45,7 +45,7 @@ class Accreditation(models.Model):
 
     def __str__(self):
         if self.term_end_date and self.term_start_date:
-            return f"Accreditation: School {self.school}, {self.term_start_date.strftime('%Y')} - {self.term_end_date.strftime('%Y')}"
+            return f"Accreditation: School {self.school}, {self.visit_date_range()}"
         else:
             return f"Accreditation: School {self.school} in Works"
 

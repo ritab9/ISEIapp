@@ -38,9 +38,15 @@
                     </a>
               </div>
   <!-- Profile links -->
+                <div class="nav-item mt-1 p-2 bg-ISEIblue4 text-white rounded">
+                    <a class="nav-link {% if active_link == 'coordinating_team' %}active{% endif %}"
+                       href="{% url 'selfstudy_coordinating_team' selfstudy.id %}">
+                       Coordinating Team
+                    </a>
+                </div>
               <div class="nav-item mt-1 p-2 bg-ISEIblue4 text-white rounded">
                 <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"
-                   href="{% url 'profile' selfstudy.id %}">
+                   href="{% url 'selfstudy_profile' selfstudy.id %}">
                   School Profile
                 </a>
               </div>
@@ -53,7 +59,7 @@
               {% for standard in standards %}
                 <div class="nav-item mb-1 p-2 bg-ISEIblue4 text-white rounded">
                   <a class="nav-link {% if active_link == standard.id %}active{% endif %}"
-                     href="{% url 'standard' selfstudy.id standard.id %}">
+                     href="{% url 'selfstudy_standard' selfstudy.id standard.id %}">
                     {{ standard.number }}. {{ standard.name }}
                   </a>
                 </div>

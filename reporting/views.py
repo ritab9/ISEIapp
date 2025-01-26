@@ -1688,25 +1688,27 @@ def school_personnel_directory(request):
     school_year = SchoolYear.objects.get(current_school_year=True)
     report_type = ReportType.objects.get(code="ER")
 
-    if filter_form.is_valid():
-        if filter_form.cleaned_data['school']:
+    if filter_form.is_valid() and filter_form.cleaned_data['school']:
             schools = schools.filter(name=filter_form.cleaned_data['school'])
 
     personnel_list = []
 
     for school in schools:
-        personnel_data = {}
-
-        annual_employee_report = AnnualReport.objects.get(
-            school_year=school_year, report_type=report_type, school=school
-        )
+        try:
+            annual_employee_report = AnnualReport.objects.get(school_year=school_year, report_type=report_type, school=school)
+        except AnnualReport.DoesNotExist:
+            continue
 
         staff = Personnel.objects.filter(annual_report=annual_employee_report).exclude(status="NE").order_by('last_name')
         if filter_form.cleaned_data.get('position'):
             staff = staff.filter(positions__name=filter_form.cleaned_data['position'])
         if filter_form.cleaned_data.get('subject'):
             staff = staff.filter(subjects_teaching__name=filter_form.cleaned_data['subject'])
+        if filter_form.cleaned_data['name']:
+            staff = staff.filter(
+                Q(first_name__icontains=filter_form.cleaned_data['name']) | Q(last_name__icontains=filter_form.cleaned_data['name']))
 
+        personnel_data = {}
         personnel_data["school"] = school
         personnel_data["staff"] = [{
             "last_name": person.last_name,

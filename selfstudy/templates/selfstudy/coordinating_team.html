@@ -1,0 +1,40 @@
+<!--coordinating_team.html-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Coordinating Team SelfStudy {% endblock title %}
+
+
+{% block content %}
+
+    <div class="card card-body">
+
+        <h5> Coordinating Team and Standards Assessment Teams Members </h5>
+
+        <table class="table table-bordered w-auto ">
+            <thead class="blue-header">
+                <th>Team</th>
+                <th>Members</th>
+                <th class = noprint>Add/Edit Member List</th>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                    <tr>
+                        <td>{{ team.name }}</td>
+                        <td>
+                            {% for member in team.teammember_set.all %}
+                                {{ member.user.get_full_name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </td>
+                        <td class="noprint">
+                        <a href="{% url 'add_coordinating_team_members' selfstudy_id=selfstudy.id team_id=team.id %}">
+                            {% if team.teammember_set.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
+                        </a>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

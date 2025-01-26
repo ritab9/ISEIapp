@@ -78,7 +78,6 @@ class AnnualReport(models.Model):
         days = days or 14
         return self.due_date() + timezone.timedelta(days=days)
 
-
 # Employee Data
 class Degree(models.Model):  # Changed to a model
     name = models.CharField(max_length=30, unique=True)

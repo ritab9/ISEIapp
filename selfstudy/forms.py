@@ -1,8 +1,44 @@
 from django import forms
-from django.forms import modelformset_factory, inlineformset_factory
+from django.forms import modelformset_factory, inlineformset_factory, formset_factory
+from django.db.models import Q
 
 from .models import *
 from apr.models import ActionPlan, ActionPlanSteps
+from reporting.models import Personnel, StaffStatus
+
+class TeamMemberForm(forms.Form):
+    """Form to add or remove team members for a given team."""
+    users = forms.ModelMultipleChoiceField( queryset=User.objects.none(), widget=forms.CheckboxSelectMultiple, required=False)
+    def __init__(self, *args, **kwargs):
+        selfstudy = kwargs.pop('selfstudy')
+        team = kwargs.pop('team')
+        super().__init__(*args, **kwargs)
+
+        # Show users already in the self-study as options
+        self.fields['users'].queryset = User.objects.filter(
+            Q(teammember__team__selfstudy=selfstudy) |
+            Q(teacher__school=team.selfstudy.accreditation.school, is_active=True)
+        ).distinct()
+
+        # Pre-check users who are already part of the given team
+        initial_users = team.teammember_set.values_list('user', flat=True)
+        self.initial['users'] = User.objects.filter(id__in=initial_users)
+
+    def save(self, team):
+        """Save the selected users to the team."""
+        selected_users = self.cleaned_data['users']
+        current_members = team.teammember_set.all()
+
+        # Add new users
+        for user in selected_users:
+            if not TeamMember.objects.filter(team=team, user=user).exists():
+                TeamMember.objects.create(user=user, team=team)
+
+        # Remove unchecked users
+        for member in current_members:
+            if member.user not in selected_users:
+                member.delete()
+
 
 
 class SchoolProfileForm(forms.ModelForm):
@@ -46,11 +82,7 @@ class IndicatorEvaluationForm(forms.ModelForm):
         }
 
 
-IndicatorEvaluationFormSet = forms.modelformset_factory(
-    IndicatorEvaluation,
-    form=IndicatorEvaluationForm,
-    extra=0,  # No additional empty forms
-)
+IndicatorEvaluationFormSet = forms.modelformset_factory(IndicatorEvaluation, form=IndicatorEvaluationForm, extra=0)
 
 
 class ActionPlanForm(forms.ModelForm):

@@ -5,10 +5,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from django.db.models import Max
+from django.contrib.auth.models import Group
 
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
 from apr.models import APR, ActionPlan
+from reporting.models import AnnualReport, Personnel, StaffStatus
 from .models import *
 
 #Creating the self-study views
@@ -18,19 +20,11 @@ def get_or_create_selfstudy(accreditation):
     )
     return selfstudy
 
-def setup_coordinating_team_and_members(selfstudy, standards):
-    #Ensures a CoordinatingTeam exists for the given SelfStudy, and creates TeamMember objects for all Standards if they don't already exist.
-    # Check if a CoordinatingTeam object exists for this SelfStudy
-    coordinating_team, created = CoordinatingTeam.objects.get_or_create(selfstudy=selfstudy)
-    # Create TeamMember objects for each Standard
+def setup_coordinating_team(selfstudy, standards):
+    """ Creates a general coordinating team for the given self-study and a team for each standard in the standards list. """
+    general_team, created = Team.objects.get_or_create(selfstudy=selfstudy, standard=None)
     for standard in standards:
-        # Check if the TeamMember already exists
-        if not TeamMember.objects.filter(coordinating_team=coordinating_team, standard=standard).exists():
-            # Create a TeamMember object only if it doesn't already exist
-            TeamMember.objects.create(
-                coordinating_team=coordinating_team,
-                standard=standard,
-            )
+        team, created = Team.objects.get_or_create(selfstudy=selfstudy, standard=standard)
 
 def setup_school_profile(selfstudy):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -93,7 +87,7 @@ def setup_selfstudy(request, accreditation_id):
 
     standards = Standard.objects.top_level()
 
-    setup_coordinating_team_and_members(selfstudy, standards)
+    setup_coordinating_team(selfstudy, standards)
     setup_school_profile(selfstudy)
     setup_standard_evaluation(selfstudy, standards)
     setup_indicator_evaluations(selfstudy)
@@ -301,3 +295,91 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
                    active_link=action_plan.id, action_plans=action_plans)
 
     return render(request, 'selfstudy/action_plan.html', context)
+
+def selfstudy_coordinating_team(request, selfstudy_id):
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    standards= Standard.objects.top_level()
+
+    teams = Team.objects.filter(selfstudy=selfstudy)
+
+    context=dict(selfstudy=selfstudy, standards=standards, active_link="coordinating_team",
+                 teams=teams)
+    return render(request, 'selfstudy/coordinating_team.html', context)
+
+def add_coordinating_team_members(request, selfstudy_id, team_id):
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    standards = Standard.objects.top_level()
+    team = get_object_or_404(Team, id=team_id, selfstudy=selfstudy)
+
+    #to get current staff as possible team members
+    last_annual_report = AnnualReport.objects.filter(school=selfstudy.accreditation.school, report_type__code="ER").order_by('-submit_date').first()
+
+    # in the TeamMemberForm we query this for the users that have active account (teachers, already team members):
+    # User.objects.filter(Q(teammember__team__selfstudy=selfstudy) |Q(teacher__school=team.selfstudy.accreditation.school, is_active=True)).distinct()
+
+    # Query for personnel with no teacher accounts
+    personnel_no_teacher_account = Personnel.objects.filter(annual_report=last_annual_report, teacher__isnull=True
+            ).exclude(status=StaffStatus.NO_LONGER_EMPLOYED
+            ).values('id','first_name', 'last_name', 'email_address')
+
+    # Exclude personnel who already have an associated User account as a team member (or some other possible way in the future)
+    personnel_without_users = []
+    for personnel in personnel_no_teacher_account:
+        user_exists = User.objects.filter(first_name=personnel['first_name'], last_name=personnel['last_name']).exists()
+        if not user_exists:
+            personnel_without_users.append({
+                'id': personnel['id'],
+                'first_name': personnel['first_name'],
+                'last_name': personnel['last_name'],
+                'email_address': personnel['email_address']
+            })
+
+    # Query for personnel with a teacher assigned, status not "NO_LONGER_EMPLOYED",  and the teacher's user is inactive (user.active=False)
+    personnel_inactive_teacher_account = Personnel.objects.filter(
+        annual_report=last_annual_report, teacher__isnull=False, teacher__user__is_active=False
+            ).exclude(status=StaffStatus.NO_LONGER_EMPLOYED
+            ).select_related('teacher__user').values('id', 'first_name', 'last_name', 'email_address', 'teacher__user__id')
+
+
+
+    form = TeamMemberForm(request.POST or None, selfstudy=selfstudy, team=team)
+
+    # Handle form submission
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(team)  # Save members to the team
+
+            selected_personnel_without_users_ids = request.POST.getlist('personnel_without_users')
+            selected_personnel_inactive_teacher_account_ids = request.POST.getlist('personnel_inactive_teacher_account')
+
+            # Create users for the first group if selected
+            for personnel_id in selected_personnel_without_users_ids:
+                personnel = next((p for p in personnel_without_users if p['id'] == int(personnel_id)), None)
+                if personnel:
+                    # Create a new user
+                    user = User.objects.create_user(
+                        username=f"{personnel['first_name']}.{personnel['last_name']}",
+                        email=personnel['email_address'],
+                        first_name=personnel['first_name'],
+                        last_name=personnel['last_name']
+                    )
+                    # Add the new user as a team member
+                    TeamMember.objects.create(user=user, team=team)
+
+            # Reactivate users and add second group to the team
+            for personnel_id in selected_personnel_inactive_teacher_account_ids:
+                personnel = Personnel.objects.get(id=personnel_id)
+                user = personnel.teacher.user
+                user.is_active = True
+                user.save()  # Reactivate the user
+                # Create TeamMember for this personnel
+                TeamMember.objects.create(user=user, team=team, active=True)
+
+            return redirect('selfstudy_coordinating_team', selfstudy_id=selfstudy.id)
+
+
+    context = dict(form=form, selfstudy=selfstudy, team=team, standards=standards,
+                   personnel_without_users=personnel_without_users,
+                   personnel_inactive_teacher_account=personnel_inactive_teacher_account,)
+
+    return render(request, 'selfstudy/add_coordinating_team_members.html', context)

@@ -1,5 +1,7 @@
 from django.db import models
 from accreditation.models import Accreditation,Standard, Indicator
+from django.contrib.auth.models import User
+
 
 #Models for inforormation needed from the schools (Standards + Inidcators are in Accreditation app)
 
@@ -63,23 +65,37 @@ class SelfStudy(models.Model):
     #                          choices=[('draft', 'Draft'), ('submitted', 'Submitted'), ('reviewed', 'Reviewed')])
 
     def __str__(self):
-        return f"SelfStudy: {self.accreditation.school}"
+        return f"SelfStudy: {self.accreditation.school},{self.accreditation.visit_date_range()}"
 
 
-#Coordinating Team Info Models
-class CoordinatingTeam(models.Model):
-    selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE)
-    coordinating_team = models.CharField(max_length=50, null=True, blank=True)
+class Team(models.Model):
+    """A team either for coordinating or evaluating a standard."""
+    selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name="teams")
+    standard = models.ForeignKey(Standard, null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, blank=True, null=True)
+
+    """Override save to set team name dynamically."""
+    def save(self, *args, **kwargs):
+        if not self.name:
+            if self.standard:
+                self.name = f"Standard {self.standard.number} ({self.standard.name}) Team"
+            else:
+                self.name = "General Coordinating Team"
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"CoordinatingTeam: {self.coordinating_team}"
+        return f"{self.standard or 'Coordinating'} Team for {self.selfstudy}"
+    class Meta:
+        unique_together = ('selfstudy', 'name')
 
 class TeamMember(models.Model):
-    coordinating_team = models.ForeignKey(CoordinatingTeam, on_delete=models.CASCADE, related_name='team_members')
-    standard = models.ForeignKey(Standard, on_delete=models.CASCADE)
-    members = models.CharField(max_length=255, null=True, blank=True)
-    def __str__(self):
-        return f"TeamMember for {self.standard}: {self.members}"
+    """A member of any team."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True, verbose_name="Active")
 
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.team.name}"
 
 #School profile Models
 class SchoolProfile(models.Model):

@@ -8,19 +8,19 @@
     <div class="submenu">
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"
-               href="{% url 'profile' selfstudy.id %}">
+               href="{% url 'selfstudy_profile' selfstudy.id %}">
                 Basic Information
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'contacts' %}active{% endif %}"
-               href="{% url 'profile' selfstudy.id %}">
+               href="{% url 'selfstudy_profile' selfstudy.id %}">
                 Contacts
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'profile' selfstudy.id %}">
+               href="{% url 'selfstudy_profile' selfstudy.id %}">
                 Documents
             </a>
         </div>

@@ -11,24 +11,11 @@ class FinancialAdditionalDataKeyAdmin(admin.ModelAdmin):
     list_editable = ('name', 'order_number', 'active')  # Make both fields editable directly in the list view
     search_fields = ('name',)
 
+admin.site.register(FinancialTwoYearDataKey, FinancialTwoYearDataKeyAdmin)
+admin.site.register(FinancialAdditionalDataKey, FinancialAdditionalDataKeyAdmin)
+
 admin.site.register(StandardNarrative)
 
-# Inline for TeamMember
-class TeamMemberInline(admin.TabularInline):
-    model = TeamMember
-    extra = 1  # Number of empty forms displayed by default
-
-
-# Inline for CoordinatingTeam
-class CoordinatingTeamInline(admin.TabularInline):
-    model = CoordinatingTeam
-    extra = 1  # Number of empty forms displayed by default
-
-# Admin for CoordinatingTeam with filter by SelfStudy
-class CoordinatingTeamAdmin(admin.ModelAdmin):
-    list_display = ('coordinating_team', 'selfstudy')
-    list_filter = ('selfstudy',)  # Filter by SelfStudy
-    inlines = [TeamMemberInline]
 
 # Inline for SchoolProfile
 class SchoolProfileInline(admin.TabularInline):
@@ -40,14 +27,11 @@ class SelfStudyAdmin(admin.ModelAdmin):
     list_display = ('accreditation', 'last_updated', 'submission_date')
     list_filter = ('accreditation', 'last_updated')  # Add filters
     search_fields = ('accreditation__school__name',)  # Enable searching by school name (assuming you have this field)
-    inlines = [CoordinatingTeamInline, SchoolProfileInline]
+    inlines = [SchoolProfileInline]
     ordering = ('-last_updated',)  # Order by last_updated descending by default
 
-
 # Register your models with the admin site
-admin.site.register(FinancialTwoYearDataKey, FinancialTwoYearDataKeyAdmin)
-admin.site.register(FinancialAdditionalDataKey, FinancialAdditionalDataKeyAdmin)
-admin.site.register(CoordinatingTeam, CoordinatingTeamAdmin)
+
 admin.site.register(SelfStudy, SelfStudyAdmin)
 
 
@@ -63,7 +47,6 @@ class IndicatorEvaluationAdmin(admin.ModelAdmin):
 admin.site.register(IndicatorEvaluation, IndicatorEvaluationAdmin)
 
 
-
 class ActionPlanInstructionSectionAdmin(admin.ModelAdmin):
     list_display = ['number', 'content']  # Show order number and truncated content
     ordering = ['number']  # Order by the 'number' field
@@ -75,3 +58,26 @@ class ActionPlanInstructionsAdmin(admin.ModelAdmin):
 
 admin.site.register(ActionPlanInstructionSection, ActionPlanInstructionSectionAdmin)
 admin.site.register(ActionPlanInstructions, ActionPlanInstructionsAdmin)
+
+
+#Coordinating Team Models
+class TeamMemberInline(admin.TabularInline):
+    model = TeamMember
+    extra = 1
+    fields = ('user', 'active')
+
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'selfstudy', 'list_team_members')  # Adding list of members
+    inlines = [TeamMemberInline]  # Include the inline form for team members
+    list_filter = ('selfstudy', )  # Filter teams by selfstudy
+
+    def list_team_members(self, obj):
+        """Custom method to list all members of the team."""
+        members = TeamMember.objects.filter(team=obj)  # Get team members for the team
+        return ", ".join(member.user.get_full_name() for member in members)
+
+    list_team_members.short_description = "Team Members"  # Change column header to 'Team Members'
+
+
+admin.site.register(Team, TeamAdmin)
+admin.site.register(TeamMember)

@@ -85,7 +85,10 @@ class PersonnelDegreeInline(admin.TabularInline):
 @admin.register(Personnel)
 class PersonnelAdmin(admin.ModelAdmin):
     inlines = [PersonnelDegreeInline,]
+    list_display = ['first_name','last_name','email_address', ]
     list_filter = ('annual_report',)
+    search_fields = ['first_name', 'last_name',]
+
 
 
 admin.site.register(Opening)

@@ -61,12 +61,14 @@
                             <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small>
                         </p>
                     {% endif %}
-                    {% for ai in other_agency_accreditation_info %}
-                    <p class="card-text">
-                        <span class="">{{ ai.agency.abbreviation }}:</span>
-                        <span>{{ ai.start_date }}-{{ ai.end_date }}</span>
-                    </p>
-                    {% endfor %}
+                    {% if other_agency_accreditation_info %}
+                        {% for ai in other_agency_accreditation_info %}
+                        <p class="card-text">
+                            <span class="">{{ ai.agency.abbreviation }}:</span>
+                            <span>{{ ai.start_date }}-{{ ai.end_date }}</span>
+                        </p>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
                 {% if school.type %}
                 <p><strong>Type:</strong> {{ school.get_type_display }}</p>
