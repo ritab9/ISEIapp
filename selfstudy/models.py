@@ -68,7 +68,7 @@ class SelfStudy(models.Model):
         return f"SelfStudy: {self.accreditation.school},{self.accreditation.visit_date_range()}"
 
 
-class Team(models.Model):
+class SelfStudy_Team(models.Model):
     """A team either for coordinating or evaluating a standard."""
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name="teams")
     standard = models.ForeignKey(Standard, null=True, blank=True, on_delete=models.CASCADE)
@@ -88,10 +88,10 @@ class Team(models.Model):
     class Meta:
         unique_together = ('selfstudy', 'name')
 
-class TeamMember(models.Model):
+class SelfStudy_TeamMember(models.Model):
     """A member of any team."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team = models.ForeignKey(SelfStudy_Team, on_delete=models.CASCADE)
     active = models.BooleanField(default=True, verbose_name="Active")
 
     def __str__(self):

@@ -65,7 +65,12 @@ class UserAdmin(AuthUserAdmin):
     #    return obj.teacher
 
     def School(self, obj):
-        return obj.teacher.school
+        if obj.teacher:
+            return obj.teacher.school
+
+        selfstudy_teammember = obj.selfstudy_teammember_set.last()
+        if selfstudy_teammember:
+            return selfstudy_teammember.team.selfstudy.accreditation.school
 
     def group(self,obj):
         groups = []

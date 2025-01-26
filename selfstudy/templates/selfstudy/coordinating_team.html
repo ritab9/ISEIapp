@@ -21,7 +21,7 @@
                     <tr>
                         <td>{{ team.name }}</td>
                         <td>
-                            {% for member in team.teammember_set.all %}
+                            {% for member in team.selfstudy_teammember_set.all %}
                                 {{ member.user.get_full_name }}{% if not forloop.last %}, {% endif %}
                             {% empty %}
                                 -
@@ -29,7 +29,7 @@
                         </td>
                         <td class="noprint">
                         <a href="{% url 'add_coordinating_team_members' selfstudy_id=selfstudy.id team_id=team.id %}">
-                            {% if team.teammember_set.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
+                            {% if team.selfstudy_teammember_set.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
                         </a>
                     </tr>
                 {% endfor %}

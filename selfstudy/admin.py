@@ -61,23 +61,23 @@ admin.site.register(ActionPlanInstructions, ActionPlanInstructionsAdmin)
 
 
 #Coordinating Team Models
-class TeamMemberInline(admin.TabularInline):
-    model = TeamMember
+class SelfStudy_TeamMemberInline(admin.TabularInline):
+    model = SelfStudy_TeamMember
     extra = 1
     fields = ('user', 'active')
 
-class TeamAdmin(admin.ModelAdmin):
+class SelfStudy_TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'selfstudy', 'list_team_members')  # Adding list of members
-    inlines = [TeamMemberInline]  # Include the inline form for team members
+    inlines = [SelfStudy_TeamMemberInline]  # Include the inline form for team members
     list_filter = ('selfstudy', )  # Filter teams by selfstudy
 
     def list_team_members(self, obj):
         """Custom method to list all members of the team."""
-        members = TeamMember.objects.filter(team=obj)  # Get team members for the team
+        members = SelfStudy_TeamMember.objects.filter(team=obj)  # Get team members for the team
         return ", ".join(member.user.get_full_name() for member in members)
 
     list_team_members.short_description = "Team Members"  # Change column header to 'Team Members'
 
 
-admin.site.register(Team, TeamAdmin)
-admin.site.register(TeamMember)
+admin.site.register(SelfStudy_Team, SelfStudy_TeamAdmin)
+admin.site.register(SelfStudy_TeamMember)

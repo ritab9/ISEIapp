@@ -22,9 +22,9 @@ def get_or_create_selfstudy(accreditation):
 
 def setup_coordinating_team(selfstudy, standards):
     """ Creates a general coordinating team for the given self-study and a team for each standard in the standards list. """
-    general_team, created = Team.objects.get_or_create(selfstudy=selfstudy, standard=None)
+    general_team, created = SelfStudy_Team.objects.get_or_create(selfstudy=selfstudy, standard=None)
     for standard in standards:
-        team, created = Team.objects.get_or_create(selfstudy=selfstudy, standard=standard)
+        team, created = SelfStudy_Team.objects.get_or_create(selfstudy=selfstudy, standard=standard)
 
 def setup_school_profile(selfstudy):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -300,7 +300,7 @@ def selfstudy_coordinating_team(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards= Standard.objects.top_level()
 
-    teams = Team.objects.filter(selfstudy=selfstudy)
+    teams = SelfStudy_Team.objects.filter(selfstudy=selfstudy)
 
     context=dict(selfstudy=selfstudy, standards=standards, active_link="coordinating_team",
                  teams=teams)
@@ -309,13 +309,13 @@ def selfstudy_coordinating_team(request, selfstudy_id):
 def add_coordinating_team_members(request, selfstudy_id, team_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
-    team = get_object_or_404(Team, id=team_id, selfstudy=selfstudy)
+    team = get_object_or_404(SelfStudy_Team, id=team_id, selfstudy=selfstudy)
 
     #to get current staff as possible team members
     last_annual_report = AnnualReport.objects.filter(school=selfstudy.accreditation.school, report_type__code="ER").order_by('-submit_date').first()
 
-    # in the TeamMemberForm we query this for the users that have active account (teachers, already team members):
-    # User.objects.filter(Q(teammember__team__selfstudy=selfstudy) |Q(teacher__school=team.selfstudy.accreditation.school, is_active=True)).distinct()
+    # in the SelfStudy_TeamMemberForm we query this for the users that have active account (teachers, already team members):
+    # User.objects.filter(Q(selfstudy_teammember__team__selfstudy=selfstudy) |Q(teacher__school=team.selfstudy.accreditation.school, is_active=True)).distinct()
 
     # Query for personnel with no teacher accounts
     personnel_no_teacher_account = Personnel.objects.filter(annual_report=last_annual_report, teacher__isnull=True
@@ -340,9 +340,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
             ).exclude(status=StaffStatus.NO_LONGER_EMPLOYED
             ).select_related('teacher__user').values('id', 'first_name', 'last_name', 'email_address', 'teacher__user__id')
 
-
-
-    form = TeamMemberForm(request.POST or None, selfstudy=selfstudy, team=team)
+    form = SelfStudy_TeamMemberForm(request.POST or None, selfstudy=selfstudy, team=team)
 
     # Handle form submission
     if request.method == 'POST':
@@ -364,7 +362,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                         last_name=personnel['last_name']
                     )
                     # Add the new user as a team member
-                    TeamMember.objects.create(user=user, team=team)
+                    SelfStudy_TeamMember.objects.create(user=user, team=team)
 
             # Reactivate users and add second group to the team
             for personnel_id in selected_personnel_inactive_teacher_account_ids:
@@ -373,7 +371,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                 user.is_active = True
                 user.save()  # Reactivate the user
                 # Create TeamMember for this personnel
-                TeamMember.objects.create(user=user, team=team, active=True)
+                SelfStudy_TeamMember.objects.create(user=user, team=team, active=True)
 
             return redirect('selfstudy_coordinating_team', selfstudy_id=selfstudy.id)
 

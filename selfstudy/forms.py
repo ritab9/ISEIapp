@@ -6,7 +6,7 @@ from .models import *
 from apr.models import ActionPlan, ActionPlanSteps
 from reporting.models import Personnel, StaffStatus
 
-class TeamMemberForm(forms.Form):
+class SelfStudy_TeamMemberForm(forms.Form):
     """Form to add or remove team members for a given team."""
     users = forms.ModelMultipleChoiceField( queryset=User.objects.none(), widget=forms.CheckboxSelectMultiple, required=False)
     def __init__(self, *args, **kwargs):
@@ -14,25 +14,23 @@ class TeamMemberForm(forms.Form):
         team = kwargs.pop('team')
         super().__init__(*args, **kwargs)
 
-        # Show users already in the self-study as options
-        self.fields['users'].queryset = User.objects.filter(
-            Q(teammember__team__selfstudy=selfstudy) |
-            Q(teacher__school=team.selfstudy.accreditation.school, is_active=True)
-        ).distinct()
+        # Show all active users from the school (personnel that has accounts on ISEIapp)
+        school = selfstudy.accreditation.school
+        self.fields['users'].queryset = school.get_active_users()
 
         # Pre-check users who are already part of the given team
-        initial_users = team.teammember_set.values_list('user', flat=True)
+        initial_users = team.selfstudy_teammember_set.values_list('user', flat=True)
         self.initial['users'] = User.objects.filter(id__in=initial_users)
 
     def save(self, team):
         """Save the selected users to the team."""
         selected_users = self.cleaned_data['users']
-        current_members = team.teammember_set.all()
+        current_members = team.selfstudy_teammember_set.all()
 
         # Add new users
         for user in selected_users:
-            if not TeamMember.objects.filter(team=team, user=user).exists():
-                TeamMember.objects.create(user=user, team=team)
+            if not SelfStudy_TeamMember.objects.filter(team=team, user=user).exists():
+                SelfStudy_TeamMember.objects.create(user=user, team=team)
 
         # Remove unchecked users
         for member in current_members:
