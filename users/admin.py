@@ -51,26 +51,31 @@ class OtherAgencyAccreditationInfoAdmin(admin.ModelAdmin):
     search_fields = ('school__name', 'agency__name', 'agency__abbreviation')
     ordering = ('school', 'agency', 'start_date')
 
-#class TeacherInline(admin.StackedInline):
-#    model = Teacher
-#    can_delete = True
+
+
+
+
+class UserProfileInline(admin.StackedInline):  # Or use TabularInline
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = "Profile"
 
 class UserAdmin(AuthUserAdmin):
-    #inlines = [TeacherInline, AddressInLine]
-    list_display = ('username', 'School', 'id','group', 'is_active', "last_login", 'email')
+    inlines = [UserProfileInline]
+    list_display = ('username', 'School', 'School2', 'id','group', 'is_active', "last_login", 'email')
     list_editable = ('is_active',)
     ordering = ('-is_active','last_login','username',)
 
-    #def Name(self,obj):
-    #    return obj.teacher
-
     def School(self, obj):
+        return obj.profile.school
+
+    def School2(self, obj):
         if obj.teacher:
             return obj.teacher.school
 
-        selfstudy_teammember = obj.selfstudy_teammember_set.last()
-        if selfstudy_teammember:
-            return selfstudy_teammember.team.selfstudy.accreditation.school
+    #    selfstudy_teammember = obj.selfstudy_teammember_set.last()
+    #    if selfstudy_teammember:
+    #        return selfstudy_teammember.team.selfstudy.accreditation.school
 
     def group(self,obj):
         groups = []

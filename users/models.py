@@ -150,8 +150,6 @@ class AccreditationAgency(models.Model):
     def __str__(self):
         return self.abbreviation
 
-
-
 class OtherAgencyAccreditationInfo(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     agency = models.ForeignKey(AccreditationAgency, on_delete=models.CASCADE)
@@ -164,7 +162,12 @@ class OtherAgencyAccreditationInfo(models.Model):
         return self.school.name+','+self.agency.abbreviation
 
 
-# User Model is automatically created by Django and we will extend it to create Teacher Model
+# User Model is automatically created by Django and we will extend it to create other models
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True)
+
 #Teacher Models
 class Teacher(models.Model):
 
