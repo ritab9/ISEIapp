@@ -31,7 +31,7 @@
         </thead>
         <tbody>
             {% if form.fields.users.queryset %}
-                <tr><td colspan="4" class="small gray">Existing users (teachers or team members)</td></tr>
+                <tr><td colspan="4" class="small" style="background-color: lightgray">Existing users (teachers or team members)</td></tr>
                 {% for user in form.fields.users.queryset %}
                     <tr>
                         <td>{{ user.first_name }}</td>
@@ -43,25 +43,25 @@
             {% endif %}
 
             {% if personnel_without_users %}
-                <tr><td colspan="4" class="small">Personnel without user account (account will be created upon selection)</td></tr>
+                <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel without user account (account will be created upon selection)</td></tr>
                 {% for person in personnel_without_users %}
                 <tr>
                     <td>{{ person.first_name }}</td>
                     <td>{{ person.last_name }}</td>
-                    <td>{{ person.email_address }}</td>
+                    <td>{{ person.email }}</td>
                     <td><input type="checkbox" name="personnel_without_users" value="{{ person.id }}"></td>
                 </tr>
                 {% endfor %}
             {% endif %}
 
-            {% if personnel_inactive_teacher_account %}
-                <tr><td colspan="4" class="small">Personnel with inactive user account (account will be activated upon selection)</td></tr>
-                {% for person in personnel_inactive_teacher_account %}
+            {% if inactive_users %}
+                <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel with inactive user account (account will be activated upon selection)</td></tr>
+                {% for person in inactive_users %}
                 <tr>
                     <td>{{ person.first_name }}</td>
                     <td>{{ person.last_name }}</td>
-                    <td>{{ person.email_address }}</td>
-                    <td><input type="checkbox" name="personnel_inactive_teacher_account" value="{{ person.id }}"></td>
+                    <td>{{ person.email }}</td>
+                    <td><input type="checkbox" name="inactive_users" value="{{ person.id }}"></td>
                 </tr>
                 {% endfor %}
             {% endif %}

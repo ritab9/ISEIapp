@@ -135,6 +135,7 @@ class Teacher(admin.ModelAdmin):
     ordering = ('last_name','joined_at',)
     search_fields = ['first_name','last_name' ]  # Added this line
 
+#TODO this only shows active user teachers, not teachers from the past
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(user__is_active = True)

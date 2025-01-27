@@ -92,7 +92,6 @@ class SelfStudy_TeamMember(models.Model):
     """A member of any team."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     team = models.ForeignKey(SelfStudy_Team, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True, verbose_name="Active")
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.team.name}"
