@@ -26,7 +26,7 @@
 <!-- Principal links -->
     {% if request.user|in_group:"principal,registrar"%}
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
+            <a class="nav-link" href="{% url 'principal_teachercert' request.user.profile.school.id %}" > Teacher Certification </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'CEUreports' %}">CEU Reports</a>

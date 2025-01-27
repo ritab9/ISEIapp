@@ -151,7 +151,7 @@ class TeacherCertificationApplication(admin.ModelAdmin):
 
 
     def School(self, obj):
-        return obj.teacher.school
+        return obj.teacher.user.profile.school
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

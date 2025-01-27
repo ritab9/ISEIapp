@@ -48,7 +48,7 @@
                     <tbody>
                         {% for c in valid_tcertificates %}
                           <tr>
-                              <td>{{ c.teacher.school }}</td>
+                              <td>{{ c.teacher.user.profile.school }}</td>
                               <td><a class="nav-link" href = "{% url 'account_settings' c.teacher.user.id %}"><div class="spanyellow">Info</div></a>
                                   <a class="nav-link" href = "{% url 'teacher_dashboard' c.teacher.user.id %}">{{ c.teacher.name }}</a></td>
 
@@ -86,7 +86,7 @@
                     <tbody>
                         {% for c in expired_tcertificates %}
                           <tr>
-                                <td>{{ c.teacher.school }}</td>
+                                <td>{{ c.teacher.user.profile.school }}</td>
                               <td><a class="nav-link" href = "{% url 'account_settings' c.teacher.user.id %}"><div class="spanyellow">Info</div></a>
                                   <a href="{% url 'teacher_dashboard' c.teacher.user.id %}">{{c.teacher}}</a>
                               </td>
@@ -110,7 +110,7 @@
                 Non Certified Teachers: {{ number_of_non_certified_teachers }}
             </p>
 
-                <table class = "table" id="details_not_certified" style="display:none">
+                <table class ="table" id="details_not_certified" style="display:none">
                     <thead>
                         <tr>
                             <th>School</th><th>Teacher</th><th>Application Status</th><th</th>

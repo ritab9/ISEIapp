@@ -10,7 +10,7 @@
         {% csrf_token %}
         {{ checklist_form.non_field_errors }}
 
-        <h6>Checklist for: {{ teacher }} ({{ teacher.school }}) </h6>
+        <h6>Checklist for: {{ teacher }} ({{ teacher.user.profile.school }}) </h6>
         <div class="row mt-4">
         <div class="col-sm-auto">
             <div class="fieldWrapper">{{ checklist_form.sda }} {{ checklist_form.sda.label_tag }}{{ checklist_form.sda.errors }}</div>

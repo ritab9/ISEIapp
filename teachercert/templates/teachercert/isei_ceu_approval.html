@@ -42,7 +42,7 @@
                       <tbody>
                       {% for p in ceu_report_notreviewed %}
                             <tr>
-                                <td>{{p.teacher}}</td><td>{{ p.teacher.school }} </td>
+                                <td>{{p.teacher}}</td><td>{{ p.teacher.user.profile.school }} </td>
                                 <td>{{p.school_year}}</td>
                                 <td>Date Submitted: {{ p.date_submitted }}</td>
                                 <td><a href="{% url 'isei_ceu_report_approval' p.id None %}">Review</a></td>
@@ -128,7 +128,7 @@
               <tbody>
                 {% for p in ceu_report_approved%}
                 <tr>
-                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
+                    <td>{{ p.teacher.user.profile.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year}}</td>
                     <td>
                         <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}
@@ -154,7 +154,7 @@
               <tbody>
                 {% for p in ceu_report_denied%}
                 <tr>
-                    <td>{{ p.teacher.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
+                    <td>{{ p.teacher.user.profile.school.abbreviation }}</td><td>{{p.teacher}} </td><td>{{ p.school_year }}</td>
                     <td>
                         <form action="{% url 'isei_ceu_approval' p.id %}" method="POST">
                             {% csrf_token %}

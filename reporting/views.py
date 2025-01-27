@@ -265,7 +265,7 @@ def student_report_display(request, arID):
 class StudentExcelDownload(View):
     def get(self, request, *args, **kwargs):
         #TODO take out age; it's only for importing old data (or maybe keep it as an alternative to birth_date?)
-        address = request.user.teacher.school.address
+        address = request.user.profile.school.address
         if address.state_us == "TN":
             column_headers = ['name', 'gender', 'grade_level', 'age',  'birth_date', 'address', 'us_state', 'TN_county', 'country',
                           'registration_date',  'withdraw_date', 'status', 'location','baptized', 'parent_sda',

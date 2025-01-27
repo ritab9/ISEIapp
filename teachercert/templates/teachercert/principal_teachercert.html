@@ -28,7 +28,7 @@
         Certified Teachers: {{ number_of_certified_teachers }}</p>
 
         <table class = "table" id="details_certified" style="display:none" >
-            <thead>
+            <thead class="text">
                 <tr>
                     <th>Teacher</th><th>Certification</th><th>Endorsement</th><th>Renewal Date</th>
                 </tr>
@@ -97,11 +97,13 @@
             <tbody>
                 {% for t in non_certified_teachers %}
                   <tr>
+                      <td><a class="nav-link" href = "{% url 'account_settings' t.user.id %}"><div class="spanyellow">Info</div></a>
+                          <a class="nav-link" href = "{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
+                      </td>
+
                       {% if t.teachercertificationapplication %}
-                          <td><a href="{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
                           <td>Submitted</td>
                         {%  else %}
-                          <td>{{t.name}}</td>
                           <td class="spanred">Not Submitted</td>
                         {% endif %}
                       <!-- td>{ % if t.academic %} Yes { % else %} No { % endif %}</td -->

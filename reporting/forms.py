@@ -215,7 +215,7 @@ class PersonnelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if schoolID is not None:
-            queryset = Teacher.objects.filter(school_id=schoolID, user__is_active=True).select_related('user')
+            queryset = Teacher.objects.filter(user__profile__school_id=schoolID, user__is_active=True).select_related('user')
             self.fields['teacher'].queryset = queryset
 
 

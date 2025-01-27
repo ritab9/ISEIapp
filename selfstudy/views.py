@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.db.models import Max
 from django.contrib.auth.models import Group
 
+from users.models import UserProfile
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
 from apr.models import APR, ActionPlan
@@ -308,6 +309,8 @@ def selfstudy_coordinating_team(request, selfstudy_id):
 
 def add_coordinating_team_members(request, selfstudy_id, team_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school = selfstudy.accreditation.school
+
     standards = Standard.objects.top_level()
     team = get_object_or_404(SelfStudy_Team, id=team_id, selfstudy=selfstudy)
 
@@ -350,7 +353,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
             selected_personnel_without_users_ids = request.POST.getlist('personnel_without_users')
             selected_personnel_inactive_teacher_account_ids = request.POST.getlist('personnel_inactive_teacher_account')
 
-            # Create users for the first group if selected
+            # Create users for the selected personnel without user
             for personnel_id in selected_personnel_without_users_ids:
                 personnel = next((p for p in personnel_without_users if p['id'] == int(personnel_id)), None)
                 if personnel:
@@ -361,6 +364,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                         first_name=personnel['first_name'],
                         last_name=personnel['last_name']
                     )
+                    profile = UserProfile.objects.create(user=user, school=school)
                     # Add the new user as a team member
                     SelfStudy_TeamMember.objects.create(user=user, team=team)
 
@@ -370,6 +374,13 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                 user = personnel.teacher.user
                 user.is_active = True
                 user.save()  # Reactivate the user
+                try:
+                    profile = user.userprofile
+                except UserProfile.DoesNotExist:
+                    profile = UserProfile(user=user)  # Create a new profile for the user
+                profile.school = school
+                profile.save()
+
                 # Create TeamMember for this personnel
                 SelfStudy_TeamMember.objects.create(user=user, team=team, active=True)
 

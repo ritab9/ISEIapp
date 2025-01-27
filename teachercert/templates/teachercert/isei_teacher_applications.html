@@ -47,7 +47,7 @@
         <tbody>
             {% for app in applications %}
                 <tr>
-                    <td> {{ app.teacher.school }}</td>
+                    <td> {{ app.teacher.user.profile.school }}</td>
                     <td><a href="{% url 'isei_manage_application' app.id %}"> {{app.teacher}}</a></td>
                     <td>{{ app.get_cert_level_display }}</td>
                     <td>{{ app.date }}</td>

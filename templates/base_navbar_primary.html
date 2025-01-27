@@ -27,13 +27,13 @@
                         {% elif request.user|in_group:"principal,registrar"%}
                             {% block principal_nav %}
                              <li class="nav-item ">
-                                <a class="nav-link" href="{% url 'school_dashboard' request.user.teacher.school.id %}"> Dashboard </a>
+                                <a class="nav-link" href="{% url 'school_dashboard' request.user.profile.school.id %}"> Dashboard </a>
                              </li>
                              <li class="nav-item ">
-                                <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.teacher.school.id %}"> Accreditation </a>
+                                <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Accreditation </a>
                              </li>   
                              <li class="nav-item ">
-                                 <a class="nav-link" href="{% url 'principal_teachercert' request.user.teacher.school.id %}" > Teacher Certification </a>
+                                 <a class="nav-link" href="{% url 'principal_teachercert' request.user.profile.school.id %}" > Teacher Certification </a>
                              </li>
                             <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'resources' %}"> Resources </a>
@@ -69,7 +69,7 @@
 <!-- Username, school_year and Logout -->
             {% if user.is_authenticated and user.is_active%}
                 <span class ="name-msg">
-                  {{ request.user.teacher.school }}<br>
+                  {{ request.user.profile.school }}<br>
                     {% if request.user|in_group:"principal,registrar,staff" %}
                         <form method="post" id="schoolYearForm" action="{% url 'change_school_year' %}">
                             {% csrf_token %}

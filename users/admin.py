@@ -34,7 +34,7 @@ class AccreditationInfoInline(admin.StackedInline):
     extra = 0  # Number of extra forms to display
 
 @admin.register(School)
-class School(admin.ModelAdmin):
+class SchoolAdmin(admin.ModelAdmin):
     inlines = [AccreditationInfoInline, SchoolAddressInLine,]
     list_display = ('name', 'abbreviation', 'type', 'current_school_year','initial_accreditation_date','worthy_student_report_needed')
     list_editable = ('current_school_year','initial_accreditation_date', 'worthy_student_report_needed')
@@ -54,38 +54,53 @@ class OtherAgencyAccreditationInfoAdmin(admin.ModelAdmin):
 
 
 
-
-class UserProfileInline(admin.StackedInline):  # Or use TabularInline
+# Inline for UserProfile
+class UserProfileInline(admin.StackedInline):  # You can also use TabularInline for a table-like layout
     model = UserProfile
     can_delete = False
     verbose_name_plural = "Profile"
 
+# Custom UserProfile school filter
+class SchoolFilter(admin.SimpleListFilter):
+    title = 'School'  # Title of the filter in the admin
+    parameter_name = 'school'  # URL query parameter
+
+    def lookups(self, request, model_admin):
+        # Return the available school choices for filtering
+        schools = School.objects.all()
+        return [(school.id, school.name) for school in schools]
+
+    def queryset(self, request, queryset):
+        # Filter queryset based on the selected school
+        if self.value():
+            return queryset.filter(profile__school_id=self.value())
+        return queryset
+
+# Custom UserAdmin
 class UserAdmin(AuthUserAdmin):
-    inlines = [UserProfileInline]
-    list_display = ('username', 'School', 'School2', 'id','group', 'is_active', "last_login", 'email')
-    list_editable = ('is_active',)
-    ordering = ('-is_active','last_login','username',)
+    inlines = [UserProfileInline]  # Add the UserProfile inline
+    list_display = ('username', 'School', 'id', 'group', 'is_active', "last_login", 'email')  # Add custom fields
+    list_editable = ('is_active',)  # Allow toggling 'is_active' directly in the list view
+    ordering = ('-is_active', 'last_login', 'username',)  # Custom ordering
+    list_filter = (SchoolFilter, 'groups', 'is_active')  # Add custom filter for 'school'
 
+    # Custom method to display the user's school
     def School(self, obj):
-        return obj.profile.school
+        # Check if the user has a profile and if the profile has a school
+        if hasattr(obj, 'profile') and obj.profile and obj.profile.school:
+            return obj.profile.school.name
+        return "No School"
+    School.short_description = "School"  # Set a custom column header
 
-    def School2(self, obj):
-        if obj.teacher:
-            return obj.teacher.school
+    # Custom method to display the user's groups
+    def group(self, obj):
+        return ", ".join(group.name for group in obj.groups.all())
+    group.short_description = "Groups"  # Set a custom column header
 
-    #    selfstudy_teammember = obj.selfstudy_teammember_set.last()
-    #    if selfstudy_teammember:
-    #        return selfstudy_teammember.team.selfstudy.accreditation.school
-
-    def group(self,obj):
-        groups = []
-        for group in obj.groups.all():
-            groups.append(group.name)
-            groups.append(" ")
-        return ''.join(groups)
-
+# Unregister the default User admin and register the customized one
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
 
 
 #class TeacherCertificationApplicationInLine(admin.StackedInline):

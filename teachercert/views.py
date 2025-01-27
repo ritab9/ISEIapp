@@ -86,8 +86,8 @@ def isei_teachercert_dashboard(request):
         else:
             percent = "-"
 
-        #bc_complete = Teacher.objects.filter(user__is_active=True, school__id=s.id, background_check=True)
-        bc_missing = Teacher.objects.filter(user__is_active=True, school__id=s.id, background_check=False).count()
+        #bc_complete = Teacher.objects.filter(user__is_active=True, user__profile__school__id=s.id, background_check=True)
+        bc_missing = Teacher.objects.filter(user__is_active=True, user__profile__school__id=s.id, background_check=False).count()
 
         cert_dict[s] = {
             'teachers': s_number_of_teachers,
@@ -117,7 +117,7 @@ def isei_teachercert_dashboard(request):
 def principalteachercert(request, schoolID):
     #principal = User.objects.get(id=userID).teacher
 
-    teachers = Teacher.objects.filter(school_id=schoolID, user__is_active=True, user__groups__name__in=['teacher'])
+    teachers = Teacher.objects.filter(user__profile__school_id=schoolID, user__is_active=True, user__groups__name__in=['teacher'])
 
     # Teacher Certificates Section
     number_of_teachers = teachers.count()
@@ -555,8 +555,8 @@ def CEUreports(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal', 'registrar','staff'])
 def principal_ceu_approval(request, recID=None, instID=None):
-    principal = request.user.teacher
-    teachers = Teacher.objects.filter(school=principal.school, user__is_active=True)
+    principal = request.user
+    teachers = Teacher.objects.filter(user__profile__school=principal.profile.school, user__is_active=True)
 
     ceu_report = CEUReport.objects.filter(teacher__in=teachers)  # all the reports from this teacher's school
     ceu_report_notreviewed = ceu_report.filter(date_submitted__isnull=False, principal_reviewed='n').order_by(
@@ -1128,7 +1128,7 @@ def add_ISEI_CEUs(request):
         date_completed = request.POST['date_completed']
         description = request.POST['description']
         CEUs = request.POST['CEUs']
-        teachers = Teacher.objects.filter(school=school, user__is_active=True)
+        teachers = Teacher.objects.filter(user__profile__school=school, user__is_active=True)
         ceu_category = CEUCategory.objects.get(name="Group")
         ceu_type = CEUType.objects.get(description__contains="ISEI")
         for t in teachers:
@@ -1186,7 +1186,7 @@ def add_ISEI_CEUs(request):
 @allowed_users(allowed_roles=['staff', 'principal','registrar'])
 def mark_background_check(request, schoolid):
 
-    teachers= Teacher.objects.filter(school__id=schoolid, user__is_active=True).order_by('background_check')
+    teachers= Teacher.objects.filter(user__profile__school__id=schoolid, user__is_active=True).order_by('background_check')
 
     #formset for all teachers to mark background check
     bcformset = modelformset_factory(Teacher, fields=('background_check',),extra=0, can_delete=False)

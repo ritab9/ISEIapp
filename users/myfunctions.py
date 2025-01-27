@@ -41,7 +41,7 @@ def get_today():
 def current_school_year_function(request):
     if request.user.is_authenticated:
         try:
-            school =request.user.teacher.school
+            school =request.user.profile.school
             current_school_year=school.current_school_year
         except AttributeError:
             current_school_year = SchoolYear.objects.filter(current_school_year=True).first()

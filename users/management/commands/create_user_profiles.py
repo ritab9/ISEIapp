@@ -7,10 +7,11 @@ from selfstudy.models import SelfStudy_TeamMember
 class Command(BaseCommand):
     help = "Create UserProfile for existing users"
 
-
     def handle(self, *args, **options):
         users_with_profiles = 0
         teachers_updated = 0
+
+        print("running")
 
         for user in User.objects.all():
             # Skip users who already have profiles
@@ -35,6 +36,8 @@ class Command(BaseCommand):
             # Save the profile
             profile.save()
             users_with_profiles += 1
+
+            print(profile)
 
         self.stdout.write(f"Created profiles for {users_with_profiles} users.")
         self.stdout.write(f"Updated school information for {teachers_updated} teachers.")

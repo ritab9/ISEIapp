@@ -29,8 +29,6 @@ from services.models import TestOrder
 from accreditation.models import Accreditation
 from apr.models import APR
 
-
-
 # authentication functions
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
@@ -46,8 +44,9 @@ def register_teacher(request):
             group = Group.objects.get(name='teacher')
             new_user.groups.add(group)
             school=School.objects.get(id=school_id)
-            teacher = Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, school = school, joined_at=joined_at )
+            teacher = Teacher.objects.create(user=new_user, first_name=new_user.first_name, last_name = new_user.last_name, joined_at=joined_at)
             username = form.cleaned_data.get('username')
+            profile = UserProfile.objects.create(user=new_user, school=school)
             #phone_digits = request.POST['phone_dig']
             # flash message (only appears once)
             messages.success(request, 'Account was created for ' + username)
@@ -79,11 +78,13 @@ def register_teacher_from_employee_report(request, personnelID):
     group = Group.objects.get(name='teacher')
     new_user.groups.add(group)
 
+    profile=UserProfile.objects.create(user=new_user, school=school)
+
     teacher = Teacher.objects.create(
         user=new_user,
         first_name=personnel.first_name,
         last_name=personnel.last_name,
-        school=school,
+        #school=school,
         phone_number=personnel.phone_number,
         joined_at=timezone.now()  # make sure `joined_at` attribute is available in the `Personnel` model
     )
@@ -111,7 +112,7 @@ def loginpage(request):
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
                         #return redirect('principal_teachercert', user.teacher.school.id)
-                        return redirect('school_dashboard', user.teacher.school.id)
+                        return redirect('school_dashboard', user.profile.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
                     elif is_in_group(request.user, 'staff'):
@@ -274,7 +275,7 @@ def school_dashboard(request, schoolID):
     other_agency_accreditation_info = OtherAgencyAccreditationInfo.objects.filter(school=school, current_accreditation=True)
 
     # Teacher Certificates Section
-    teachers = Teacher.objects.filter(school=school, user__is_active=True, user__groups__name__in=['teacher'])
+    teachers = Teacher.objects.filter(user__profile__school=school, user__is_active=True, user__groups__name__in=['teacher'])
     number_of_teachers = teachers.count()
     tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False, renewal_date__gte=date.today())
     certified_teachers = teachers.filter(tcertificate__in=tcertificates).distinct()
@@ -399,7 +400,7 @@ def change_school_year(request):
 
             if request.user.is_authenticated:
                 try:
-                    school = request.user.teacher.school
+                    school = request.user.profile.school
                     school.current_school_year = assigned_school_year
                     school.save()
                 except AttributeError:

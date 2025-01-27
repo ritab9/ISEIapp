@@ -127,11 +127,8 @@ class School(models.Model):
         Accreditation = apps.get_model('accreditation', 'Accreditation')  # Lazy load the Accreditation model
         return Accreditation.objects.filter(school=self, status='current').first()
 
-    def get_active_users(self):
-        return User.objects.filter(
-            Q(teacher__school=self) | Q(selfstudy_teammember__team__selfstudy__accreditation__school=self),
-            is_active=True
-        ).distinct()
+    def get_active_users(school):
+        return User.objects.filter(profile__school=school, is_active=True).distinct()
 
     class Meta:
         ordering = ('name',)
