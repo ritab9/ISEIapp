@@ -1,0 +1,7 @@
+/* colors.css */
+
+@import url('variables.css');  /* Importing the variables file */
+
+.bg-light-blue {
+    background-color: var(--light-blue-color);
+}
