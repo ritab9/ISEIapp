@@ -81,13 +81,13 @@
                                     {% if indicator_id == form.instance.indicator.id %}
         <!-- Levels -->
                                         {% for level in levels %}
-                                            <tr>
+                                            <tr data-index="{{ forloop.parentloop.counter0 }}">
                                                 <td style="width: 130px">
                                                     <a class="level-button clickable-no-underline span90 text-ISEIblue4" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
                                                         {{ level.get_level_display }}
                                                     </a>
                                                 </td>
-                                                <td>{{ level.description }}</td>
+                                                <td class="level-description" data-level="{{ level.level }}">{{ level.description }}</td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -169,87 +169,132 @@
 
         </form>
 
+{% endblock %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    // Update score and calculate the running average when level button is clicked
-            const levelButtons = document.querySelectorAll('.level-button');
-            levelButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const level = this.getAttribute('data-level');
-                    const index = this.getAttribute('data-index');
-                    const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
 
-                    if (scoreSelect) {
-                        // Update the value of the select field with the clicked level
-                        scoreSelect.value = level;
+{% block script %}
 
-                        // Call updateAverage to recalculate the average
-                        updateAverage();
-                    }
-                });
-            });
+<script>
 
-    // Function to calculate and update the running average
-            function updateAverage() {
-                const scoreFields = document.querySelectorAll('[name$="-score"]');
-                const averageDisplay = document.getElementById('average-score');
-                const averageInput = document.getElementById('id_average_score');
+    document.addEventListener('DOMContentLoaded', function () {
 
-                let totalScore = 0;
-                let validCount = 0;
+        // Update score and calculate the running average when level button is clicked
+        const levelButtons = document.querySelectorAll('.level-button');
+        levelButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const level = this.getAttribute('data-level');
+                const index = this.getAttribute('data-index');
+                const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
 
-                scoreFields.forEach(function(field) {
-                    const score = parseInt(field.value, 10);
-                    if (!isNaN(score)) {
-                        totalScore += score;
-                        validCount++;
-                    }
-                });
-
-                if (validCount > 0) {
-                    const averageScore = totalScore / validCount;
-                    averageDisplay.textContent = 'Running Average: ' + averageScore.toFixed(2);
-                            averageInput.value = averageScore.toFixed(2);  // Update hidden input with calculated average
-                } else {
-                    averageDisplay.textContent = 'Running Average: 0';
-                    averageInput.value = 0;  // If no valid scores, set hidden input to 0
+                if (scoreSelect) {
+                    // Update the value of the select field with the clicked level
+                    scoreSelect.value = level;
+                    // Call updateAverage to recalculate the average
+                    updateAverage();
+                    // Change background color for the matching level description
+                    updateLevelDescriptionBackground(level, index);
                 }
-            }
-
-            // Initialize the average calculation when the page loads
-            updateAverage();
-
-            // Ensure the average is updated when manually changing the score
-            const scoreFields = document.querySelectorAll('[name$="-score"]');
-            scoreFields.forEach(function(field) {
-                field.addEventListener('input', updateAverage);
             });
         });
 
 
-    // function for auto-expanding textareas
-        document.addEventListener('DOMContentLoaded', function() {
-        // Select all textarea elements on the page
-        const textareas = document.querySelectorAll('textarea');
+        // Function to update the background color of the level description
+        function updateLevelDescriptionBackground(level, index) {
+            const levelRows = document.querySelectorAll(`tr[data-index="${index}"]`);
 
-        // Function to expand the textarea based on its content
-        function autoExpandTextarea(textarea) {
-            textarea.style.height = 'auto';  // Reset height
-            textarea.style.height = (textarea.scrollHeight) + 'px';  // Set new height based on content
+            levelRows.forEach(row => {
+                const levelCell = row.querySelector('.level-description');
+                if (levelCell) {
+                    // Remove the previous background color
+                    levelCell.style.backgroundColor = '';
+
+                    // Determine the background color based on the score value
+                    let backgroundColor = '';
+                    if (level === '1') {
+                        backgroundColor = 'mistyrose';
+                    } else if (level === '2') {
+                        backgroundColor = 'lightyellow';
+                    } else if (level === '3') {
+                        backgroundColor = 'honeydew';
+                    } else if (level === '4') {
+                        backgroundColor = '#E5E8FB'; //'rgba(0, 128, 128, 0.2)';
+                        // levelCell.classList.add('sparkle'); A bit too much
+                    } else {
+                        backgroundColor = ''; // No color if score is empty or unknown
+                    }
+
+                    // Apply the background color to the level description cell
+                    if (levelCell.getAttribute('data-level') === level) {
+                        levelCell.style.backgroundColor = backgroundColor; // Apply dynamic color
+                    }
+                }
+            });
         }
 
-        // Add event listeners to all textareas
+        // Function to calculate and update the running average
+        function updateAverage() {
+            const scoreFields = document.querySelectorAll('[name$="-score"]');
+            const averageDisplay = document.getElementById('average-score');
+            const averageInput = document.getElementById('id_average_score');
+
+            let totalScore = 0;
+            let validCount = 0;
+
+            scoreFields.forEach(function(field) {
+                const score = parseInt(field.value, 10);
+                if (!isNaN(score)) {
+                    totalScore += score;
+                    validCount++;
+                }
+            });
+
+            if (validCount > 0) {
+                const averageScore = totalScore / validCount;
+                averageDisplay.textContent = 'Running Average: ' + averageScore.toFixed(2);
+                averageInput.value = averageScore.toFixed(2);  // Update hidden input with calculated average
+            } else {
+                averageDisplay.textContent = 'Running Average: 0';
+                averageInput.value = 0;  // If no valid scores, set hidden input to 0
+            }
+        }
+
+        // Apply background to all level descriptions based on the score on page load
+        const scoreFields = document.querySelectorAll('[name$="-score"]');
+        scoreFields.forEach(function(scoreField, index) {
+            const score = scoreField.value;
+            updateLevelDescriptionBackground(score, index); // Update background for each score field
+        });
+
+        // Listen for score field changes and update background color
+        scoreFields.forEach(function(scoreField, index) {
+            scoreField.addEventListener('change', function () {
+                const score = this.value;
+                updateLevelDescriptionBackground(score, index); // Update background color when score changes
+            });
+        });
+
+        // Initialize the average calculation when the page loads
+        updateAverage();
+
+        // Ensure the average is updated when manually changing the score
+        scoreFields.forEach(function(field) {
+            field.addEventListener('input', updateAverage);
+        });
+
+        // Initialize the auto-expanding textareas
+        const textareas = document.querySelectorAll('textarea');
         textareas.forEach(function(textarea) {
             // Trigger auto-expansion on input event for each textarea
             textarea.addEventListener('input', function() {
-                autoExpandTextarea(textarea);
+                textarea.style.height = 'auto';  // Reset height
+                textarea.style.height = (textarea.scrollHeight) + 'px';  // Set new height based on content
             });
             // Initialize textarea height on page load
-            autoExpandTextarea(textarea);
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
         });
     });
-
-    </script>
+</script>
 
 {% endblock %}
+

@@ -114,7 +114,7 @@ if DEVELOPMENT_MODE is True:
             'PASSWORD': os.getenv('DATABASE_PASS'),
             'HOST': os.getenv('DATABASE_HOST',''),
             'PORT': os.getenv('DATABASE_PORT',''),
-            #'OPTIONS': {'sslmode': 'require'}, #uncomment for digitalocean database
+            'OPTIONS': {'sslmode': 'require'}, #uncomment for digitalocean database
         }
     }
 elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
@@ -203,12 +203,12 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBacke
 
 if DEVELOPMENT_MODE is True:
 #print emails to a file
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = '/Users/ritab/Dropbox/B2 IT Development/Web Development/Email testing'
-    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+#    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+#    EMAIL_FILE_PATH = '/Users/ritab/Dropbox/B2 IT Development/Web Development/Email testing'
+#    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 
 #the gmail setup has to use a two step verifcation the password is an app password (found in Account / Security)
-else:
+#else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.gmail.com'

@@ -1,6 +1,5 @@
-
-
 @charset "UTF-8";
+
 .btn {
   display: inline-block;
   font-weight: 400;
@@ -1206,7 +1205,7 @@ input[type=button].btn-block {
     margin-left: -15px;
   }
   .card-deck .card {
-    flex: 1 0 0%;
+    flex: 1 0 0;
     margin-right: 15px;
     margin-bottom: 0;
     margin-left: 15px;
@@ -1222,7 +1221,7 @@ input[type=button].btn-block {
     flex-flow: row wrap;
   }
   .card-group > .card {
-    flex: 1 0 0%;
+    flex: 1 0 0;
     margin-bottom: 0;
   }
   .card-group > .card + .card {
@@ -3457,7 +3456,6 @@ textarea.form-control {
   }
 }
 @media (max-width: 991.98px) {
-  .navbar-expand-lg > .container,
 .navbar-expand-lg > .container-fluid,
 .navbar-expand-lg > .container-sm,
 .navbar-expand-lg > .container-md,
@@ -3702,7 +3700,7 @@ hr {
   overflow: visible;
 }
 
-h1, h2, h3, h4, h5, h6, h7 {
+h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
 }
@@ -3714,7 +3712,6 @@ p {
 
 abbr[title],
 abbr[data-original-title] {
-  text-decoration: underline;
   text-decoration: underline dotted;
   cursor: help;
   border-bottom: 0;
@@ -4518,7 +4515,7 @@ template {
   }
 }
 
-h1, h2, h3, h4, h5, h6, h7,
+h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 .h7 {
   margin-bottom: 0.5rem;
   font-weight: 500;
@@ -8649,7 +8646,6 @@ a.text-ISEIyellow4:hover, a.text-ISEIyellow4:focus {
 }
 
 .text-hide {
-  font: 0/0 a;
   color: transparent;
   text-shadow: none;
   background-color: transparent;

@@ -31,3 +31,22 @@
             border-left: 2px solid #ccc; /* Vertical line */
             margin: 0 10px; /* Space around the line */
         }
+
+
+/* not used but cool stuff */
+@keyframes sparkle {
+    0% {
+        box-shadow: 0 0 3px 2px rgba(255, 255, 255, 0.8), 0 0 5px 5px rgba(255, 255, 255, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 6px 4px rgba(255, 255, 255, 0.8), 0 0 8px 8px rgba(255, 255, 255, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 3px 2px rgba(255, 255, 255, 0.8), 0 0 5px 5px rgba(255, 255, 255, 0.6);
+    }
+}
+
+.sparkle {
+    animation: sparkle 1.5s infinite;
+    transition: background-color 0.3s ease;
+}

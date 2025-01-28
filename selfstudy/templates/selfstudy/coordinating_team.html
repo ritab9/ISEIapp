@@ -35,6 +35,14 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- Button to open the email review page -->
+        <div class="noprint">
+            <a href="{% url 'send_email_selfstudy_coordinating_team' selfstudy_id=selfstudy.id %}">
+                <button class="btn btn-sm btn-ISEIblue4">Send Invitation Emails</button>
+            </a>
+        </div>
+
     </div>
 
 {% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'selfstudy_base.html' %}
+
+{% block content %}
+<div class="card card-body">
+
+    <h5>Sample Email Content for SelfStudy Team Member Invitation</h5>
+        <form method="post">
+            {% csrf_token %}
+                <div class="card card-body bg-light-blue">
+                    <!-- Display the first email with full details -->
+                    <div class="email-preview">
+                        <p class=""><strong>Subject:</strong> {{ example_email.subject }}</p>
+                        <p class=""><strong>To:</strong> {{ example_email.full_name }} ({{ example_email.recipient }})</p>
+                        <div class="email-body">
+                            <strong>Email Content:</strong>
+                                {{ example_email.body|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-body">
+
+                    <!--Hidden override body field -->
+                    <div class="email-edit" id="email-edit-container" style="display: none;">
+                        <label for="edited_body"><strong>Edit Email Body:</strong></label>
+                        <textarea name="edited_body" id="edited_body" rows="10" class="form-control bg-light-blue">
+                            {{ template_body }}
+                        </textarea>
+                        <small class="text-muted">You can edit the email content above before sending. All emails will use the updated content.</small>
+                    </div>
+                    <input type="hidden" name="override" id="override" value="false">
+                    <!-- Button to toggle the override edit -->
+                    <div class="d-flex flex-column align-items-end">
+                        <button type="button" class="btn btn-sm btn-outline-ISEIblue4 mb-1" id="toggle-edit-body">Edit Email Body</button>
+                        <small class="text-muted">You can edit the email content above before sending.</small>
+                    </div>
+                </div>
+
+                    <!-- Display the rest of the recipients -->
+                    <div class="other-recipients">
+                        <p><strong>Other Recipients:</strong></p>
+                        <ul>
+                            {% for recipient in other_recipients %}
+                                <li>{{ recipient.full_name }} ({{ recipient.email }})</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-sm btn-ISEIblue4">Send Emails</button>
+
+        </form>
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    // Toggle visibility of the edit textarea
+    document.getElementById('toggle-edit-body').addEventListener('click', function () {
+        const editContainer = document.getElementById('email-edit-container');
+        const overrideField = document.getElementById('override');
+
+        if (editContainer.style.display === 'none') {
+            editContainer.style.display = 'block';
+            overrideField.value = 'true';  // Signal the override
+            this.innerText = 'Cancel Edit';  // Change button text
+        } else {
+            editContainer.style.display = 'none';
+            overrideField.value = 'false';  // Revert the override signal
+            this.innerText = 'Edit Email Body';  // Reset button text
+        }
+    });
+</script>
+
+
+{% endblock %}

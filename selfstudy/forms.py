@@ -38,7 +38,6 @@ class SelfStudy_TeamMemberForm(forms.Form):
                 member.delete()
 
 
-
 class SchoolProfileForm(forms.ModelForm):
     class Meta:
         model = SchoolProfile

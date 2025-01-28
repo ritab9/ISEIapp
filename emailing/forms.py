@@ -1,5 +1,7 @@
 from django import forms
 
+
+#Used with teacher Cert Emailing that should be totally redone
 class EmailForm(forms.Form):
     email = forms.EmailField()
     subject = forms.CharField(max_length=100)
