@@ -4,6 +4,7 @@ from django.db.models import Q
 
 from .models import *
 from apr.models import ActionPlan, ActionPlanSteps
+from django.contrib.auth.models import Group
 from reporting.models import Personnel, StaffStatus
 
 class SelfStudy_TeamMemberForm(forms.Form):
@@ -31,6 +32,7 @@ class SelfStudy_TeamMemberForm(forms.Form):
         for user in selected_users:
             if not SelfStudy_TeamMember.objects.filter(team=team, user=user).exists():
                 SelfStudy_TeamMember.objects.create(user=user, team=team)
+                user.groups.add(Group.objects.get(name="coordinating_team"))
 
         # Remove unchecked users
         for member in current_members:

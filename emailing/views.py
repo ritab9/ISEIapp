@@ -1,59 +1,58 @@
 
-from teachercert.models import *
-
-from django.contrib.auth.decorators import login_required
-from django.template.defaultfilters import linebreaksbr
-from users.decorators import unauthenticated_user, allowed_users
-
-from django.http import HttpResponseRedirect, JsonResponse
-from django.views import View
-from django.core import mail
+# Standard Library Imports
 from django.conf import settings
-from django.utils.html import format_html, escape
 
+# Django Utilities
+#from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core import mail
+from django.core.mail import send_mail, EmailMessage
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template.defaultfilters import linebreaksbr
+#from django.utils.html import format_html, escape
+from django.views.decorators.csrf import csrf_exempt
+
+# Project-specific Decorators
+from users.decorators import allowed_users
+
+# Forms and Filters
 from .forms import *
 from emailing.filters import UserFilter
 
-from django.views.decorators.csrf import csrf_exempt
-from .teacher_cert_functions import email_registered_user
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-
-from django.core.mail import send_mail, EmailMessage
-from django.contrib import messages
-from .functions import format_text_html
+# Models
 from .models import MessageTemplate
+from teachercert.models import *
 from selfstudy.models import SelfStudy, SelfStudy_TeamMember
 from accreditation.models import Standard
 
+# Functions
+#from .functions import format_text_html
+from .teacher_cert_functions import email_registered_user
+
 
 #not used
-def send_custom_email(request, template_id):
-    template = get_object_or_404(MessageTemplate, id=template_id)
-
-    if request.method == "POST":
-        form = EmailForm(request.POST)
-        if form.is_valid():
-            subject = form.cleaned_data['subject']
-            body = form.cleaned_data['body']
-            recipient = request.POST.get('recipient')  # Assume recipient is passed in the POST request
-
-            # Send the email
-            send_mail(
-                subject=subject,
-                message=body,
-                from_email='your_email@example.com',
-                recipient_list=[recipient],
-            )
-
-            return HttpResponse("Email sent successfully!")
-    else:
-        # Pre-fill the form with the template's content
-        subject, body = template.render({})
-        form = EmailForm(initial={"subject": subject, "body": body})
-
-    return render(request, "send_email.html", {"form": form, "template": template})
+#def send_custom_email(request, template_id):
+#    template = get_object_or_404(MessageTemplate, id=template_id)
+#    if request.method == "POST":
+#        form = EmailForm(request.POST)
+#        if form.is_valid():
+#            subject = form.cleaned_data['subject']
+#            body = form.cleaned_data['body']
+#            recipient = request.POST.get('recipient')  # Assume recipient is passed in the POST request
+# Send the email
+#            send_mail(
+#                subject=subject,
+#                message=body,
+#                from_email='your_email@example.com',
+#                recipient_list=[recipient],
+#            )
+#           return HttpResponse("Email sent successfully!")
+#    else:
+# Pre-fill the form with the template's content
+#        subject, body = template.render({})
+#        form = EmailForm(initial={"subject": subject, "body": body})
+#    return render(request, "send_email.html", {"form": form, "template": template})
 
 
 def send_email_selfstudy_coordinating_team(request, selfstudy_id):
@@ -103,11 +102,11 @@ def send_email_selfstudy_coordinating_team(request, selfstudy_id):
             except Exception as e:
                 failed_recipients.append(member.user.email)  # Track failures
 
-        if failed_recipients:
-            messages.error(request,
-                f"Failed to send emails to the following recipients: {', '.join(failed_recipients)}.")
-        else:
-            messages.success(request, "All emails were sent successfully!")
+        #if failed_recipients:
+        #    messages.error(request,
+        #        f"Failed to send emails to the following recipients: {', '.join(failed_recipients)}.")
+        #else:
+        #    messages.success(request, "All emails were sent successfully!")
 
         return redirect('selfstudy_coordinating_team', selfstudy_id=selfstudy.id)
 

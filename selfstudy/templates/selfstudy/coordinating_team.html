@@ -1,5 +1,7 @@
 <!--coordinating_team.html-->
 {% extends 'selfstudy_base.html' %}
+{% load group_tags %}
+
 
 {% block title %} Coordinating Team SelfStudy {% endblock title %}
 
@@ -14,7 +16,9 @@
             <thead class="blue-header">
                 <th>Team</th>
                 <th>Members</th>
-                <th class = noprint>Add/Edit Member List</th>
+                {% if privileges %}
+                    <th class = noprint>Add/Edit Member List</th>
+                {% endif %}
             </thead>
             <tbody>
                 {% for team in teams %}
@@ -27,21 +31,25 @@
                                 -
                             {% endfor %}
                         </td>
-                        <td class="noprint">
-                        <a href="{% url 'add_coordinating_team_members' selfstudy_id=selfstudy.id team_id=team.id %}">
-                            {% if team.selfstudy_teammember_set.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
-                        </a>
+                        {% if privileges %}
+                            <td class="noprint">
+                            <a href="{% url 'add_coordinating_team_members' selfstudy_id=selfstudy.id team_id=team.id %}">
+                                {% if team.selfstudy_teammember_set.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
+                            </a>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
         <!-- Button to open the email review page -->
-        <div class="noprint">
-            <a href="{% url 'send_email_selfstudy_coordinating_team' selfstudy_id=selfstudy.id %}">
-                <button class="btn btn-sm btn-ISEIblue4">Send Invitation Emails</button>
-            </a>
-        </div>
+        {% if privileges %}
+            <div class="noprint">
+                <a href="{% url 'send_email_selfstudy_coordinating_team' selfstudy_id=selfstudy.id %}">
+                    <button class="btn btn-sm btn-ISEIblue4">Send Invitation Emails</button>
+                </a>
+            </div>
+        {% endif %}
 
     </div>
 

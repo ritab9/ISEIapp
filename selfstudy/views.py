@@ -3,10 +3,12 @@ from dis import Instruction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from users.utils import is_in_any_group
 
 from django.db.models import Max
 from django.contrib.auth.models import Group
 
+from users.utils import is_in_any_group
 from users.models import UserProfile
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
@@ -301,10 +303,15 @@ def selfstudy_coordinating_team(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards= Standard.objects.top_level()
 
+    if is_in_any_group(request.user, ['staff','principal','registrar']):
+        privileges=True
+    else:
+        privileges=False
+
     teams = SelfStudy_Team.objects.filter(selfstudy=selfstudy)
 
     context=dict(selfstudy=selfstudy, standards=standards, active_link="coordinating_team",
-                 teams=teams)
+                 teams=teams, privileges=privileges)
     return render(request, 'selfstudy/coordinating_team.html', context)
 
 def add_coordinating_team_members(request, selfstudy_id, team_id):

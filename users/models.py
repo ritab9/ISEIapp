@@ -165,6 +165,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True)
 
+    def __str__(self):
+        return self.user + ", " + self.school
+
 #Teacher Models
 class Teacher(models.Model):
 
