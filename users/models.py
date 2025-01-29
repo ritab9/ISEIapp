@@ -166,7 +166,7 @@ class UserProfile(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
-        return self.user + ", " + self.school
+        return str(self.user) + ", " + self.school.name
 
 #Teacher Models
 class Teacher(models.Model):

@@ -7,6 +7,7 @@ from users.utils import is_in_any_group
 
 from django.db.models import Max
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 from users.utils import is_in_any_group
 from users.models import UserProfile
@@ -105,7 +106,17 @@ def selfstudy(request, selfstudy_id):
         selfstudy = SelfStudy.objects.get(id=selfstudy_id)
         standards = Standard.objects.top_level()
 
-        context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy")
+        if is_in_any_group(request.user, ['staff', 'principal', 'registrar']):
+            privileges = True
+        else:
+            privileges = False
+
+        if request.method == "POST" and "submit_selfstudy" in request.POST:
+            selfstudy.submission_date = timezone.now().date()
+            selfstudy.save()
+            return redirect('selfstudy', selfstudy_id=selfstudy.id)  # Reload the page after submission
+
+        context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy", privileges=privileges)
         return render(request, 'selfstudy/selfstudy.html', context)
 
     except SelfStudy.DoesNotExist:
