@@ -202,26 +202,28 @@
 
 
 // 3. Update score, calculate the running average, and update background when level button is clicked,
-// Calculate running average and update backgroung when score field changes
+    // Update score and calculate the running average when level button is clicked
         const levelButtons = document.querySelectorAll('.level-button');
         const scoreFields = document.querySelectorAll('[name$="-score"]');
         const averageDisplay = document.getElementById('average-score');
         const averageInput = document.getElementById('id_average_score');
 
-        // Handle level button clicks - calls updateAverage and updateLevelDescriptionBackground
-        levelButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const level = this.dataset.level;
-                const index = this.dataset.index;
-                const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
+         // Function to calculate and update running average
+        function updateAverage() {
+            let totalScore = 0, validCount = 0;
 
-                if (scoreSelect) {
-                    scoreSelect.value = level;
-                    updateAverage();
-                    updateLevelDescriptionBackground(level, index);
+            scoreFields.forEach(field => {
+                const score = parseInt(field.value, 10);
+                if (!isNaN(score)) {
+                    totalScore += score;
+                    validCount++;
                 }
             });
-        });
+
+            const averageScore = validCount > 0 ? (totalScore / validCount).toFixed(2) : 0;
+            averageDisplay.textContent = `Running Average: ${averageScore}`;
+            averageInput.value = averageScore;
+        }
 
         // Function to update background color - calls getBackgroundColor
         function updateLevelDescriptionBackground(level, index) {
@@ -247,42 +249,37 @@
             return colors[level] || '';
         }
 
-        // Function to calculate and update running average
-        function updateAverage() {
-            let totalScore = 0, validCount = 0;
+         // Handle level button clicks - set score value, updateAverage and updateLevelDescriptionBackground
+        levelButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const level = this.dataset.level;
+                const index = this.dataset.index;
+                const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
 
-            scoreFields.forEach(field => {
-                const score = parseInt(field.value, 10);
-                if (!isNaN(score)) {
-                    totalScore += score;
-                    validCount++;
-                }
-            });
-
-            const averageScore = validCount > 0 ? (totalScore / validCount).toFixed(2) : 0;
-            averageDisplay.textContent = `Running Average: ${averageScore}`;
-            averageInput.value = averageScore;
-        }
-
-        // Apply background updates on page load
-        scoreFields.forEach(field => {
-            field.addEventListener('change', function () {
-                const row = this.closest('tr');
-                if (row) {
-                    const index = row.dataset.index;
-                    updateLevelDescriptionBackground(this.value, index);
+                if (scoreSelect) {
+                    scoreSelect.value = level;
                     updateAverage();
+                    updateLevelDescriptionBackground(level, index);
                 }
             });
-
-            field.addEventListener('input', updateAverage);
         });
 
-        // Initialize the average calculation
+        // Apply background + updateAverage to all level descriptions based on the score (on load & change)
+        scoreFields.forEach((scoreField, index) => {
+            updateLevelDescriptionBackground(scoreField.value, index); // Set background on load
+
+            // Listen for score field changes and update background + average
+            scoreField.addEventListener('change', function () {
+                updateLevelDescriptionBackground(this.value, index);
+                updateAverage();
+            });
+        });
+
+        // Initialize the average calculation when the page loads
         updateAverage();
 
-
     });
+
 </script>
 
 {% endblock %}
