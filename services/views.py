@@ -9,8 +9,22 @@ from .forms import *
 from .models import *
 
 #IOWA Test orders
+
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal', 'registrar','staff'])
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff', 'test_ordering'])
+def test_order_dashboard(request, schoolID):
+    school = School.objects.get(id=schoolID)
+    school_year = school.current_school_year
+
+    test_orders = TestOrder.objects.filter(school=school)
+
+    context = dict(school=school, test_orders=test_orders)
+
+    return render(request, 'test_order_dashboard.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar','staff', 'test_ordering'])
 def test_order(request, schoolID, orderID=None):
     school = get_object_or_404(School, id=schoolID)
     order = get_object_or_404(TestOrder, id=orderID) if orderID else None
@@ -42,7 +56,7 @@ def test_order(request, schoolID, orderID=None):
                     order.submitted=True
                     order.save()
 
-                return redirect('school_dashboard',school.id)
+                return redirect('test_order_dashboard',school.id)
     else:
         order_form = TestOrderForm(instance=order)
         booklet_formset = ReusableTestBookletFormSet(instance=order or TestOrder())
@@ -97,7 +111,7 @@ def finalize_order(request, order_id):
 
 #resources page
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar', 'test_ordering'])
 def resources(request):
 
     accreditation_resources= Resource.objects.filter(type__name='Accreditation')

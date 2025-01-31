@@ -208,47 +208,6 @@
             </div>
     </div>
 
-    <div class="col col-auto card card-body">
-        <h6 class="mb-3">
-            IOWA Test Ordering
-        </h6>
-
-        <table class="table">
-            <thead><th></th><th>Order Deadline</th><th>Testing Window</th></thead>
-            <tbody>
-            <tr><td>Fall</td><td>August 1</td><td>September 2-19</td></tr>
-            <tr><td>Spring</td><td>March 15</td><td>March 24-April 10</td></tr>
-            </tbody>
-        </table>
-            <table class="table table-bordered">
-                <thead>
-                    <th>Date</th><th>Status</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td>
-                            <a href="{% url 'test_order' school.id %}">New Order </a>
-                        </td>
-                    </tr>
-                    {% for order in test_orders %}
-                        <tr>
-                            <td>{{ order.order_date}}</td>
-                            <td>
-                                {% if not order.submitted %}
-                                    <a href="{% url 'test_order' school.id order.id %}"> Edit </a>
-                                {% else %}
-                                    <a href="{% url 'test_order' school.id order.id %}"> Submitted </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-
-    </div>
-
 </div>
 
 <script>

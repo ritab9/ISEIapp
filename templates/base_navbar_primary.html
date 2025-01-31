@@ -45,6 +45,9 @@
                                  <a class="nav-link" href="{% url 'principal_teachercert' request.user.profile.school.id %}" > Teacher Certification </a>
                              </li>
                             <li class="nav-item ">
+                                 <a class="nav-link" href="{% url 'test_order_dashboard' request.user.profile.school.id %}" > Test Ordering </a>
+                             </li>
+                            <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'resources' %}"> Resources </a>
                             </li>
                             <li class="nav-item">
@@ -71,7 +74,15 @@
                                         <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Accreditation </a>
                                     </li>
                                 {% endblock %}
-                            {% endif %}    
+                            {% endif %}   
+                            
+                            {% if request.user|in_group:"test_ordering" %}
+                                {% block test_ordering_nav %}
+                                <li class="nav-item ">
+                                     <a class="nav-link" href="{% url 'test_order_dashboard' request.user.profile.school.id %}" > Test Ordering </a>
+                                 </li>
+                                {% endblock %}
+                            {% endif %}
                             
                         {% endif %}
                     </ul>

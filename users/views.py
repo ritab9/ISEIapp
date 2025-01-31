@@ -111,23 +111,29 @@ def loginpage(request):
             else:
                 if request.user.is_active:
                     if is_in_group(request.user, 'principal') or is_in_group(request.user, 'registrar'):
-                        #return redirect('principal_teachercert', user.teacher.school.id)
                         return redirect('school_dashboard', user.profile.school.id)
                     elif is_in_group(request.user, 'teacher'):
                         return redirect('teacher_dashboard', user.id)
+                    elif is_in_group(request.user, 'coordinating_team'):
+                        return redirect('school_accreditation_dashboard', user.profile.school.id)
+                    elif is_in_group(request.user, 'test_ordering'):
+                        return redirect('test_order_dashboard', user.profile.school.id)
                     elif is_in_group(request.user, 'staff'):
-                        #return redirect('isei_teachercert_dashboard')
                         return redirect('isei_dashboard')
-
                     else:
-                        messages.info(request, 'User not assigned to a group. Please contact the site administrator.')
+                        messages.error(request, 'User not assigned to a group. Please contact ISEI.')
+                        logout(request)
+                        return redirect('login')  # Add this return statement
                 else:
-                    messages.info(request, 'This account is not currently active. Please contact ISEI.')
+                    messages.error(request, 'This account is not currently active. Please contact ISEI.')
                     logout(request)
+                    return redirect('login')  # Add this return statement
         else:
-            messages.info(request, 'Username OR password is incorrect')
+            messages.error(request, 'Username OR Password is incorrect. If you forgot your password click Reset Password above.'  )
+
     context = {}
     return render(request, 'users/login.html', context)
+
 
 
 def logoutuser(request):
@@ -300,8 +306,6 @@ def school_dashboard(request, schoolID):
                                               report_type=report_dd.report_type)
             annual_reports.append((annual_report, report_dd.get_actual_due_date(school_year=school_year)))
 
-    test_orders = TestOrder.objects.filter(school=school)
-
     fire_marshal_date=school.fire_marshal_date
     if fire_marshal_date:
         one_year_ago = (timezone.now() - timezone.timedelta(days=365)).date()
@@ -322,10 +326,8 @@ def school_dashboard(request, schoolID):
                     school = school, annual_reports = annual_reports,
                     other_agency_accreditation_info=other_agency_accreditation_info, accreditation=accreditation,
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted, cr_submitted=cr_submitted,
-                    test_orders = test_orders,
                     is_old = is_old, fire_marshal_date=fire_marshal_date, wss=wss,
                     apr=apr,
-
                   )
 
     return render(request, 'users/school_dashboard.html', context)
