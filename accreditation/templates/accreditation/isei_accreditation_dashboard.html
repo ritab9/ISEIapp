@@ -2,7 +2,6 @@
 
 {% block title %} ISEI Accreditation Dashboard {% endblock title %}
 
-
 {% block content %}
 
 <div class="">
@@ -21,13 +20,13 @@
                     <th class="blue-header">#</th>
                     <th class="blue-header"> School Name <br>
                         <a style="color:white" href="?sort=school__name&order={% if current_sort == 'school__name' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
-                            <small>Sort by name</small>
-                            {% if current_sort == 'school__name' %}
-                                {% if current_order == 'asc' %}&#9650; <!-- Up arrow -->
-                                {% else %}&#9660; <!-- Down arrow -->
-                                {% endif %}
-                            {% else %}&#9650;&#9660;
-                            {% endif %}
+                            <small>Sort by name &#9660;</small>
+                            <!-- { % if current_sort == 'school__name' %}
+                                { % if current_order == 'asc' %}&#9650; < !-- Up arrow -- >
+                                { % else %}&#9660; < !-- Down arrow -- >
+                                 { % endif %}
+                            { % else %}&#9650;&#9660;
+                            { % endif %} -->
                         </a>
                     </th>
                     <th class="orange-header2 align-top">Add/Edit </th>
@@ -36,13 +35,13 @@
                     <th class="blue-header2">
                         Term <br>
                         <a style="color: white" href="?sort=term_end_date&order={% if current_sort == 'term_end_date' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
-                            <small>Sort by end date</small>
-                            {% if current_sort == 'term_end_date' %}
-                                {% if current_order == 'asc' %} &#9650; <!-- Up arrow -->
-                                {% else %} &#9660; <!-- Down arrow -->
-                                {% endif %}
-                            {% else %} &#9650;&#9660;
-                            {% endif %}
+                            <small>Sort by end date &#9660;</small>
+                            <!-- { % if current_sort == 'term_end_date' %}
+                                { % if current_order == 'asc' %} &#9650; < !-- Up arrow -- >
+                                { % else %} &#9660; < !-- Down arrow -- >
+                                { % endif %}
+                            { % else %} &#9650;&#9660;
+                            { % endif %} -->
                         </a>
                     </th>
                     <th class="orange-header2 align-top">Add/Edit</th>
@@ -82,8 +81,25 @@
                         <td class="blue-column">
                             {{ accreditation.visit_date_range|default_if_none:"" }}
                         </td>
-                        <td class="blue-column"> {{ accreditation.term|default_if_none:"" }} <br>
-                            <small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}</small></td>
+                        <!-- td class="blue-column"> {{ accreditation.term|default_if_none:"" }} <br>
+                            <small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}</small></td-->
+
+                        <td class="blue-column">
+                            {{ accreditation.term|default_if_none:"" }} <br>
+                            <small>
+                                {{ accreditation.term_start_date|default_if_none:"" }}-
+                                {% if accreditation.term_end_date %}
+                                    {% if accreditation.term_end_date < months_ahead_6 %}
+                                        <span style="color: red;">{{ accreditation.term_end_date }}</span>
+                                    {% elif accreditation.term_end_date < months_ahead_18 %}
+                                        <span class="muted-orange">{{ accreditation.term_end_date }}</span>
+                                    {% else %}
+                                        <span>{{ accreditation.term_end_date }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </small>
+                        </td>
+
                         <td class="orange-column">
                             <a href="{% url 'manage_apr' accreditation.id %}">
                                 {% if accreditation.apr %} Edit APR {% else %} Add APR {% endif %}

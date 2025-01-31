@@ -25,6 +25,7 @@ class Accreditation(models.Model):
     term = models.ForeignKey(AccreditationTerm, on_delete=models.CASCADE, null=True, blank=True)
     term_start_date = models.DateField(null=True, blank=True)
     term_end_date = models.DateField(null=True, blank=True)
+    term_comment = models.TextField(null=True, blank=True, verbose_name=_('Comment'))
     coa_approval_date = models.DateField(null=True, blank=True, verbose_name="COA Approval Date")
     status = models.CharField(
         max_length=20,

@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 from selfstudy.models import SelfStudy
 from users.decorators import allowed_users
@@ -25,14 +27,20 @@ def isei_accreditation_dashboard(request):
          #"retired": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST).order_by(ordering),
     }
 
-    context = { 'accreditation_groups': accreditation_groups,
-        'current_sort': sort_by, 'current_order': order, 'include_past':False }
+    now = timezone.now().date()
+    months_ahead_6 = now + relativedelta(months=6)
+    months_ahead_18 = now + relativedelta(months=19)
+
+    context = dict(accreditation_groups=accreditation_groups,
+                   current_sort_by=sort_by, current_order=order,
+                   months_ahead_6=months_ahead_6, months_ahead_18=months_ahead_18)
 
     # Check if the "past" category was clicked
     if request.GET.get('category') == 'past':
         past_accreditations = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST).order_by(ordering)
-        context = {'accreditation_groups': accreditation_groups, 'past_accreditations': past_accreditations,
-                   'current_sort': sort_by, 'current_order': order, 'include_past': True}
+        context['past_accreditations'] = past_accreditations
+        context['include_past'] = True
+
 
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
