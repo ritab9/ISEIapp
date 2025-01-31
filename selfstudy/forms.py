@@ -49,10 +49,7 @@ class FinancialTwoYearDataEntryForm(forms.ModelForm):
     class Meta:
         model = FinancialTwoYearDataEntry
         fields = ['id','two_years_ago', 'one_year_ago']
-        labels = {
-            'two_years_ago': 'Two Years Ago',
-            'one_year_ago': 'One Year Ago',
-        }
+        labels = {'two_years_ago': 'Two Years Ago','one_year_ago': 'One Year Ago',}
 
     two_years_ago = forms.DecimalField(
         required=False, max_digits=10, decimal_places=2,

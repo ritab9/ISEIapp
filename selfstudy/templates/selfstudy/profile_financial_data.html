@@ -44,7 +44,9 @@
         <div class="row">
             <div class="col-auto">
                 <h6>Financial Two-Year Data</h6> <hr>
-                <p> Provide the following financial information from previous fiscal years:</p>
+                <p> Provide the following financial information from previous fiscal years.
+                    <span class="text-danger">Enter numbers without commas (e.g., 100000.50)</span>
+                </p>
                 <table class="table table-sm table-striped table-bordered">
                     <thead>
                         <tr>
@@ -67,7 +69,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="orange-column">
-                                    {{ form.one_year_ago }}
+                                    ${{ form.one_year_ago }}
                                     {% if form.one_year_ago.errors %}
                                         <div class="errors">
                                             {% for error in form.one_year_ago.errors %}
@@ -121,7 +123,7 @@
         </div>
 
 
-        <button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save</button>
+        <button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</button>
         <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
 
     </form>
