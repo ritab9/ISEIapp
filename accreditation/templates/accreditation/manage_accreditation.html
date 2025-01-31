@@ -99,9 +99,9 @@
         // Trigger the function when a term is selected or changed
         termField.onchange = function() {
             if (termField.value !== "") {  // If some term is selected
-                statusDropdown.value = 'current';  // Set status to "Current"
-            } else {  // If no term is selected, reset status to its default (e.g., "in_works")
-                statusDropdown.value = 'in_works';
+                statusDropdown.value = 'active';  // Set status to "active"
+            } else {
+                statusDropdown.value = 'scheduled';
             }
         }
     });

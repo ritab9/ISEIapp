@@ -24,7 +24,7 @@
                 {% for category, accreditations in accreditation_groups.items %}
                 <tr class="category-header">
                     <td colspan="9" class="font-weight-bold" style="background-color: #fff;">
-                         {{ category|title }} {% if category == "retired" %} Accreditation(s) {% else %} Accreditation {% endif %}
+                         {{ category|title }} {% if category == "past" %} Accreditation(s) {% else %} Accreditation {% endif %}
                     </td>
                 </tr>
                 <tbody class="accreditation-rows">

@@ -20,19 +20,19 @@ def isei_accreditation_dashboard(request):
     ordering = sort_by if order == 'asc' else f'-{sort_by}' # Determine the ordering
 
     accreditation_groups = {
-        "in works": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.IN_WORKS).order_by(ordering),
-        "current": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.CURRENT).order_by(ordering),
-         #"retired": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.RETIRED).order_by(ordering),
+        "in works": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.SCHEDULED).order_by(ordering),
+        "current": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.ACTIVE).order_by(ordering),
+         #"retired": Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST).order_by(ordering),
     }
 
     context = { 'accreditation_groups': accreditation_groups,
-        'current_sort': sort_by, 'current_order': order, 'include_retired':False }
+        'current_sort': sort_by, 'current_order': order, 'include_past':False }
 
-    # Check if the "retired" category was clicked
-    if request.GET.get('category') == 'retired':
-        retired_accreditations = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.RETIRED).order_by(ordering)
-        context = {'accreditation_groups': accreditation_groups, 'retired_accreditations': retired_accreditations,
-                   'current_sort': sort_by, 'current_order': order, 'include_retired': True}
+    # Check if the "past" category was clicked
+    if request.GET.get('category') == 'past':
+        past_accreditations = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST).order_by(ordering)
+        context = {'accreditation_groups': accreditation_groups, 'past_accreditations': past_accreditations,
+                   'current_sort': sort_by, 'current_order': order, 'include_past': True}
 
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
@@ -86,16 +86,16 @@ def delete_accreditation(request, id):
 def school_accreditation_dashboard(request, school_id):
     school=get_object_or_404(School, id=school_id)
 
-    accreditation_in_works = Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.IN_WORKS).first()
-    accreditation_current = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.CURRENT).first()
-    accreditation_retired = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.RETIRED)
+    #accreditation_scheduled = Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED).first()
+    #accreditation_active = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.ACTIVE).first()
+    #accreditation_past = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST)
 
-    context = dict(accreditation_in_works=accreditation_in_works,accreditation_current=accreditation_current,accreditation_retired=accreditation_retired,)
+    #context = dict(accreditation_scheduled=accreditation_scheduled,accreditation_active=accreditation_active,accreditation_past=accreditation_past,)
 
     accreditation_groups = {
-        "in works": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.IN_WORKS),
-        "current": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.CURRENT),
-        "retired": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.RETIRED),
+        "scheduled": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED),
+        "active": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.ACTIVE),
+        "past": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.PAST),
     }
 
     context = dict(accreditation_groups =accreditation_groups, school=school)

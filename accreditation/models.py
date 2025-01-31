@@ -15,9 +15,9 @@ class AccreditationTerm(models.Model):
 
 class Accreditation(models.Model):
     class AccreditationStatus(models.TextChoices):
-        IN_WORKS = 'in_works', _('In Works')  # Accreditation process is ongoing
-        CURRENT = 'current', _('Current')    # The accreditation is currently valid
-        RETIRED = 'retired', _('Retired')    # The accreditation is no longer active
+        SCHEDULED = 'scheduled', _('Scheduled')  # Accreditation process is scheduled
+        ACTIVE = 'active', _('Active')  # The accreditation is currently active
+        PAST = 'past', _('Past')  # The accreditation is no longer active
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     visit_start_date = models.DateField(null=True, blank=True)
@@ -29,7 +29,7 @@ class Accreditation(models.Model):
     status = models.CharField(
         max_length=20,
         choices=AccreditationStatus.choices,
-        default=AccreditationStatus.CURRENT
+        default=AccreditationStatus.SCHEDULED
     )
 
     def visit_date_range(self):
@@ -50,12 +50,12 @@ class Accreditation(models.Model):
             return f"Accreditation: School {self.school} in Works"
 
     def save(self, *args, **kwargs):
-        # Ensure only one current accreditation per school
-        if self.status == Accreditation.AccreditationStatus.CURRENT:
+        # Ensure only one active accreditation per school
+        if self.status == Accreditation.AccreditationStatus.ACTIVE:
             Accreditation.objects.filter(
                 school=self.school,
-                status=Accreditation.AccreditationStatus.CURRENT
-            ).exclude(pk=self.pk).update(status=Accreditation.AccreditationStatus.RETIRED)
+                status=Accreditation.AccreditationStatus.ACTIVE
+            ).exclude(pk=self.pk).update(status=Accreditation.AccreditationStatus.PAST)
 
         super().save(*args, **kwargs)
 

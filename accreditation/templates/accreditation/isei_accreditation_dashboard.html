@@ -104,18 +104,18 @@
                 </tbody>
                 {% endfor %}
 
-                {% if not include_retired %}
-                <tr><td colspan="9"><a href="?category=retired" class="font-weight-bold text-black-50">Include Retired Accreditations</a></td></tr>
+                {% if not include_past %}
+                <tr><td colspan="9"><a href="?category=past" class="font-weight-bold text-black-50">Include Past Accreditations</a></td></tr>
 
-            <!-- Retired Accreditations Section (Initially Empty) -->
+            <!-- Past Accreditations Section (Initially Empty) -->
                 {% else %}
-                    <tr class="category-header" style="cursor: pointer;" data-toggle-target="category-retired">
+                    <tr class="category-header" style="cursor: pointer;" data-toggle-target="category-past">
                         <td colspan="9" class="font-weight-bold" style="background-color: #f8f9fa;">
-                            Retired Accreditations
+                            Past Accreditations
                         </td>
                     </tr>
-                    <tbody id="category-retired" class="accreditation-rows">
-                        {% for accreditation in retired_accreditations %}
+                    <tbody id="category-past" class="accreditation-rows">
+                        {% for accreditation in past_accreditations %}
                         <tr>
                             <td class="blue-column">{{ forloop.counter }}</td>
                             <td class="blue-column">{{ accreditation.school }}</td>
@@ -142,7 +142,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="10">No Retired accreditations found.</td>
+                            <td colspan="10">No Past Accreditations found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
