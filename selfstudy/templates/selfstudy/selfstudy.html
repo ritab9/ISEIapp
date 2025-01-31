@@ -16,19 +16,24 @@
     <div class="card card-body">
 
         <div class="noprint">
-            {% if not selfstudy.submission_date %}
-                {% if privileges %}
-                    <form method="post">
-                        {% csrf_token %}
-                        <h6>Self Study is not yet submitted</h6>
-                        <button class="btn btn-ISEIyellow2" type="submit" name="submit_selfstudy">Submit SelfStudy</button>
-                    </form>
-                {% else %}
-                    <h6><span class="bg-ISEIyellow px-2 py-1 rounded">Self Study Not Submitted</span></h6>
-                {% endif %}
-            {% else %}
-                 <h6 class="success"> Self Study was submitted on {{ selfstudy.submission_date }}.</h6>
-            {% endif %}
+            <div style="width: auto; text-align: right;">
+                 <form method="post">
+                     {% csrf_token %}
+                        {% if not selfstudy.submission_date %}
+                            <h6>Self Study is not yet submitted</h6>
+                            {% if school_privileges %}
+                                    <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="submit_selfstudy">Submit SelfStudy</button>
+                            {% endif %}
+                        {% else %}
+                             <h6 class="success"> Self Study was submitted on {{ selfstudy.submission_date }}.</h6>
+                            {% if isei_privileges %}
+                                <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="reopen_selfstudy">Reopen SelfStudy to allow for changes</button>
+                            {% else %}
+                                <h6> Please contact ISEI if you would like to make changes. </h6>
+                            {% endif %}
+                        {% endif %}
+                 </form>
+            </div>
         </div>
 
 

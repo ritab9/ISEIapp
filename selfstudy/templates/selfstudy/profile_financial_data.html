@@ -1,0 +1,144 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Profile SelfStudy {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+   <div class="card card-body">
+    <h5>B. Significant Financial Data</h5>
+    <hr>
+
+
+        {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div> <hr>
+            {% endif %}
+
+    <form id="content-form" method="post">
+        {% csrf_token %}
+
+        <!-- Add the ManagementForm for each formset -->
+        {{ two_year_formset.management_form }}
+        {{ additional_formset.management_form }}
+
+
+        <!-- Display form errors at the formset level -->
+        {% if two_year_formset.non_form_errors %}
+            <div class="errors">
+                {% for error in two_year_formset.non_form_errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-auto">
+                <h6>Financial Two-Year Data</h6> <hr>
+                <p> Provide the following financial information from previous fiscal years:</p>
+                <table class="table table-sm table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="blue-header text-left">2 Years Ago</th>
+                            <th class="orange-header text-left">1 Year Ago</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in two_year_formset %}
+                            <tr>
+                                <td class="blue-column"> {{ form.id }}
+                                    ${{ form.two_years_ago }}
+                                    {% if form.two_years_ago.errors %}
+                                        <div class="errors">
+                                            {% for error in form.two_years_ago.errors %}
+                                                <p class="error">{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="orange-column">
+                                    {{ form.one_year_ago }}
+                                    {% if form.one_year_ago.errors %}
+                                        <div class="errors">
+                                            {% for error in form.one_year_ago.errors %}
+                                                <p class="error">{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="blue-column">{{ form.instance.data_key.name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-auto">
+            </div>
+        </div>
+        <hr>
+
+        {% if additional_formset.non_form_errors %}
+            <div class="errors">
+                {% for error in additional_formset.non_form_errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-auto">
+                <h6>Additional Financial Data</h6>
+                    <table class="table table-sm table-bordered table-striped">
+                        <tbody>
+                            {% for form in additional_formset %}
+                                <tr>
+                                    <td class="blue-column">{{ form.id }}
+                                        {{ form.value }}
+                                        {% if form.value.errors %}
+                                            <div class="errors">
+                                                {% for error in form.value.errors %}
+                                                    <p class="error">{{ error }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="blue-column">{{ form.instance.data_key.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+
+
+        <button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save</button>
+        <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
+
+    </form>
+</div>
+
+
+{% endblock content%}
+
+{% block script %}
+
+<script>
+// 1. Auto-expanding textareas
+    {% include "includes/script_auto_expand_textarea.html" %}
+
+//2.When content changes show Save button. Also remove the Content Saved Message
+    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+
+</script>
+
+{% endblock script %}

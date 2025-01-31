@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 #Financial Data Keys
 class FinancialAdditionalDataKey(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     order_number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
     active = models.BooleanField(default=True, verbose_name="Active")
 
@@ -17,7 +17,7 @@ class FinancialAdditionalDataKey(models.Model):
         return self.name
 
 class FinancialTwoYearDataKey(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     order_number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
     active = models.BooleanField(default=True, verbose_name="Active")
 
@@ -30,7 +30,6 @@ class FinancialTwoYearDataKey(models.Model):
 class StandardNarrative(models.Model):
     text1 = models.TextField(null=True, blank=True)
     text2 = models.TextField(null=True, blank=True)
-
 
 
 class ActionPlanInstructionSection(models.Model):
@@ -103,18 +102,21 @@ class SchoolProfile(models.Model):
 
 #TODO Finalize school Profile
 
-class FinancialTwoYearDataEntries(models.Model):
-    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE)
-    key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
+class FinancialTwoYearDataEntry(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="two_year_financial_data")
+    data_key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
     two_years_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="2 Years Ago")
     one_year_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="1 Year Ago")
     def __str__(self):
-        return f"{self.key.name}: {self.two_years_ago}, {self.one_year_ago}"
+        return f"{self.data_key.name}: {self.two_years_ago}, {self.one_year_ago}"
 
-class FinancialAdditionalDataEntries(models.Model):
-    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="other_financial_data")
-    key = models.ForeignKey(FinancialAdditionalDataKey, on_delete=models.CASCADE)
+
+class FinancialAdditionalDataEntry(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="additional_financial_data")
+    data_key = models.ForeignKey(FinancialAdditionalDataKey, on_delete=models.CASCADE)
     value = models.CharField(max_length=50, null=True, blank=True)
+    def __str__(self):
+        return f"{self.data_key.name}: {self.value}"
 
 #Standard Scoring Model
 class StandardEvaluation(models.Model):

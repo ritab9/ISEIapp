@@ -1,0 +1,36 @@
+<!-- use it as { % include "includes/script_show_save_button_on_content-form_change.html" %} in the script area-->
+
+//2.When content changes show Save button. Also remove the Content Saved Message
+        let form = document.querySelector("#content-form");
+        let saveButton1 = document.querySelector("#save-button1");
+        let saveButton2 = document.querySelector("#save-button2");
+        let formChanged = false;
+
+        toggleButtons(false); // Initially hide buttons
+
+    // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
+        if (form && (document.querySelector(".messages") || (saveButton1 && saveButton1.style.display === "none"))) {
+            form.addEventListener("click", handleChange);
+        }
+
+        function handleChange() {
+            // Only remove messages if they exist
+            if (document.querySelector(".messages")) {
+                removeMessages();
+            }
+
+            // Only toggle buttons if they are hidden
+            if (!formChanged && saveButton1 && saveButton1.style.display === "none") {
+                formChanged = true;
+                toggleButtons(true);
+            }
+        }
+
+        function removeMessages() {
+            document.querySelectorAll(".messages").forEach(message => message.remove());
+        }
+
+        function toggleButtons(show) {
+            if (saveButton1) saveButton1.style.display = show ? "inline-block" : "none";
+            if (saveButton2) saveButton2.style.display = show ? "inline-block" : "none";
+        }

@@ -1,0 +1,56 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Profile SelfStudy {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+    <div class="card card-body">
+        <h5>B. School History</h5>
+
+       <hr>
+        {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            <hr>
+        {% endif %}
+
+        <span>Give a brief history of the school and include:</span>
+            <ul>
+                <li>School philosophy and mission</li>
+                <li>Demographic data such as staff and student profile</li>
+                <li>Description of the school’s spiritual, academic, physical, and social programs.</li>
+            </ul>
+        <hr>
+        <form id="content-form" method="post">
+            {% csrf_token %}
+            {{ history_form.as_p }}
+            <button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save</button>
+            <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
+
+        </form>
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+
+// 1. Auto-expanding textareas
+        {% include "includes/script_auto_expand_textarea.html" %}
+
+//2.When content changes show Save button. Also remove the Content Saved Message
+        {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+
+    </script>
+{% endblock %}

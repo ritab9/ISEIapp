@@ -5,23 +5,7 @@
 {% block title %} Action Plan Instructions {% endblock title %}
 
 {% block actionplan_submenu %}
-        <!-- Submenu for Action Plans -->
-        <div class="submenu ml-3">
-            {% for actionplan in actionplans %}
-                <div class="submenu-item mb-1">
-                    <a class="nav-link {% if active_link == '' %}active{% endif %}"
-                       href="{% url 'selfstudy_actionplan' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
-                        Action Plan {{ actionplan.number }}
-                    </a>
-                </div>
-            {% endfor %}
-                <div class="submenu-item mb-1">
-                   <a class="nav-link btn-outline-ISEIblue4 {% if active_link == actionplan.id %}active{% endif %}"
-                       href="{% url 'selfstudy_actionplan_create' accreditation_id=accreditation_id %}">
-                        Create Action Plan
-                   </a>
-                </div>
-        </div>
+    {% include 'selfstudy_actionplan_submenu.html' %}
 {% endblock actionplan_submenu %}
 
 {% block content %}

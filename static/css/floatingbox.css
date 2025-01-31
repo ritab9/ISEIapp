@@ -1,5 +1,5 @@
 
-.floating-box, .floating-box-above {
+.floating-box-background, .floating-box {
     position: fixed;
     right: 20px;
     border: 1px solid #ccc;
@@ -12,12 +12,14 @@
     z-index: 999;
 }
 
-.floating-box {
-    bottom: 20px;
+.floating-box-background {
+    /* bottom: 20px; */
+    top:200px;
     background-color: #fdfd96;
     padding: 5px 10px;
 }
 
-.floating-box-above {
-    bottom: 60px;
+.floating-box {
+    /* bottom: 60px; */
+    top: 140px;
 }

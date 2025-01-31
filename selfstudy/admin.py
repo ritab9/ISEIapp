@@ -17,6 +17,27 @@ admin.site.register(FinancialAdditionalDataKey, FinancialAdditionalDataKeyAdmin)
 admin.site.register(StandardNarrative)
 
 
+# Inline for FinancialTwoYearDataEntry
+class FinancialTwoYearDataEntryInline(admin.TabularInline):
+    model = FinancialTwoYearDataEntry
+    extra = 1  # Number of empty forms displayed by default
+
+# Inline for FinancialAdditionalDataEntry
+class FinancialAdditionalDataEntryInline(admin.TabularInline):
+    model = FinancialAdditionalDataEntry
+    extra = 1  # Number of empty forms displayed by default
+
+# Admin for SchoolProfile with inlines for FinancialTwoYearDataEntry and FinancialAdditionalDataEntry
+class SchoolProfileAdmin(admin.ModelAdmin):
+    list_display = ('selfstudy', )  # Modify to show relevant fields
+    search_fields = ('school__name',)  # Enable search by school name (assuming you have this field)
+    inlines = [FinancialTwoYearDataEntryInline, FinancialAdditionalDataEntryInline]
+    ordering = ('selfstudy',)  # You can adjust ordering as needed
+
+# Register SchoolProfile admin
+admin.site.register(SchoolProfile, SchoolProfileAdmin)
+
+
 # Inline for SchoolProfile
 class SchoolProfileInline(admin.TabularInline):
     model = SchoolProfile

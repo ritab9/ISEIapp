@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from users.utils import is_in_any_group
+from django.contrib import messages
 
 from django.db.models import Max
 from django.contrib.auth.models import Group
@@ -34,16 +35,16 @@ def setup_school_profile(selfstudy):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
 
     # Create entries for FinancialTwoYearDataEntries for all keys
-    for key in FinancialTwoYearDataKey.objects.all():
-        FinancialTwoYearDataEntries.objects.get_or_create(
+    for data_key in FinancialTwoYearDataKey.objects.filter(active=True):
+        FinancialTwoYearDataEntry.objects.get_or_create(
             school_profile=school_profile,
-            key=key,
+            data_key=data_key,
         )
     # Create entries for FinancialAdditionalDataEntries for all keys
-    for key in FinancialAdditionalDataKey.objects.all():
-        FinancialAdditionalDataEntries.objects.get_or_create(
+    for data_key in FinancialAdditionalDataKey.objects.filter(active=True):
+        FinancialAdditionalDataEntry.objects.get_or_create(
             school_profile=school_profile,
-            key=key,
+            data_key=data_key,
         )
 
 def setup_indicator_evaluations(selfstudy):
@@ -81,8 +82,9 @@ def setup_indicator_evaluations(selfstudy):
 def setup_standard_evaluation(selfstudy, standards):
     # Create StandardEvaluation objects for the selfstudy
     for standard in standards:
-        StandardEvaluation.objects.get_or_create(selfstudy=selfstudy,standard=standard,)
-
+        standard, created= StandardEvaluation.objects.get_or_create(selfstudy=selfstudy,standard=standard,)
+        if created:
+            print(standard)
 
 def setup_selfstudy(request, accreditation_id):
     # Retrieve the Accreditation object by ID
@@ -107,16 +109,29 @@ def selfstudy(request, selfstudy_id):
         standards = Standard.objects.top_level()
 
         if is_in_any_group(request.user, ['staff', 'principal', 'registrar']):
-            privileges = True
+            school_privileges = True
         else:
-            privileges = False
+            school_privileges = False
 
-        if request.method == "POST" and "submit_selfstudy" in request.POST:
-            selfstudy.submission_date = timezone.now().date()
+        if is_in_any_group(request.user, ['staff']):
+            isei_privilages=True
+        else:
+            isei_privilages=False
+
+
+        if request.method == "POST":
+            print("POST")
+            if "submit_selfstudy" in request.POST:
+                selfstudy.submission_date = timezone.now().date()
+                print("submit")
+            elif "reopen_selfstudy" in request.POST:
+                selfstudy.submission_date = None
+                print("reopen")
             selfstudy.save()
             return redirect('selfstudy', selfstudy_id=selfstudy.id)  # Reload the page after submission
 
-        context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy", privileges=privileges)
+        context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy",
+                       school_privileges=school_privileges, isei_privileges=isei_privilages )
         return render(request, 'selfstudy/selfstudy.html', context)
 
     except SelfStudy.DoesNotExist:
@@ -125,44 +140,8 @@ def selfstudy(request, selfstudy_id):
         return setup_selfstudy(request, accreditation_id=accreditation.id)
 
 
+
 #School filling out the self study views
-def selfstudy_profile(request, selfstudy_id):
-    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
-    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
-    standards = Standard.objects.top_level()
-
-    # Query related financial data entries
-    two_year_data_queryset = FinancialTwoYearDataEntries.objects.filter(school_profile=school_profile)
-    additional_data_queryset = FinancialAdditionalDataEntries.objects.filter(school_profile=school_profile)
-
-    # Initialize formsets
-    two_year_formset = FinancialTwoYearDataFormSet(queryset=two_year_data_queryset)
-    additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset)
-
-    profile_form = SchoolProfileForm(instance=school_profile)
-
-    if request.method == 'POST':
-        profile_form = SchoolProfileForm(request.POST, instance=school_profile)
-        two_year_formset = FinancialTwoYearDataFormSet(request.POST, queryset=two_year_data_queryset)
-        additional_formset = FinancialAdditionalDataFormSet(request.POST, queryset=additional_data_queryset)
-
-        if profile_form.is_valid():
-            profile_form.save()
-
-        if two_year_formset.is_valid() and additional_formset.is_valid():
-            two_year_formset.save()
-            additional_formset.save()
-        else:
-            print(two_year_formset.errors)
-            print(additional_formset.errors)
-
-    context = dict(selfstudy=selfstudy, standards = standards,
-                   profile_form = profile_form,
-                    two_year_formset = two_year_formset, additional_formset = additional_formset, #financial data forms
-                   active_link="profile",
-                   )
-
-    return render(request, 'selfstudy/profile.html', context)
 
 def selfstudy_standard(request, selfstudy_id, standard_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -216,14 +195,15 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
             standard_form.save()
             # Redirect to the next standard or a completion page
             #return redirect('selfstudy:completion')  # Or another standard
+            messages.success(request, "Your changes have been successfully saved!")
         else:
-            error_message = "There were some errors with your submission. Please review the form and try again."
-            # Add the error message to the context to display in the template
+            messages.error(request, "Some of your changes were not saved!")
+
             context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
                            active_link=standard_id, evidence_list=evidence_list, narrative=narrative,
                            formset = formset, standard_form=standard_form,
                            grouped_data = grouped_data, substandards_exist=substandards_exist,
-                           error_message=error_message)
+                           )
 
             return render(request, 'selfstudy/standard.html', context)
     else:
@@ -262,7 +242,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
 
     selfstudy = get_object_or_404(SelfStudy, accreditation=accreditation)
     standards= Standard.objects.top_level()
-    action_plans = ActionPlan.objects.filter(accreditation=accreditation).order_by('number')
+    actionplans = ActionPlan.objects.filter(accreditation=accreditation).order_by('number')
 
     # Get the ActionPlan if updating, otherwise create a new one
     if action_plan_id:
@@ -272,6 +252,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
 
     if request.method == 'POST':
         if 'delete' in request.POST and action_plan.id:
+            print("delete",action_plan)
             action_plan.delete()
             return HttpResponseRedirect(reverse('selfstudy_actionplan_instructions', kwargs={'selfstudy_id': selfstudy.id}))
         else:
@@ -290,6 +271,9 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
                             step.number = i
                         step.action_plan = action_plan  # Link the step to the ActionPlan
                         step.save()
+                    messages.success(request, "Action Plan has been successfully saved!")
+                else:
+                    messages.error(request, "Action Plan was not saved!")
 
                     #This might be needed if existing steps need renumbering
                     #for i, step in enumerate(existing_steps, start=1):
@@ -306,7 +290,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
 
     context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
                    selfstudy=selfstudy,standards=standards,
-                   active_link=action_plan.id, action_plans=action_plans)
+                   active_link=action_plan.id, actionplans=actionplans)
 
     return render(request, 'selfstudy/action_plan.html', context)
 
@@ -410,3 +394,71 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                    inactive_users =inactive_users,)
 
     return render(request, 'selfstudy/add_coordinating_team_members.html', context)
+
+def selfstudy_profile(request, selfstudy_id):
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    standards = Standard.objects.top_level()
+
+    #TODO Add General Information Here
+
+    context = dict(selfstudy=selfstudy, standards = standards,
+                   active_link="profile",
+                   )
+    return render(request, 'selfstudy/profile.html', context)
+
+def profile_history(request, selfstudy_id):
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    standards = Standard.objects.top_level()
+
+    history_form = SchoolHistoryForm(instance=school_profile)
+
+    if request.method == 'POST':
+        history_form = SchoolHistoryForm(request.POST, instance=school_profile)
+        if history_form.is_valid():
+            history_form.save()
+            messages.success(request, "School history has been successfully saved!")
+        else:
+            messages.error(request,"School history was not saved!")
+
+    context = dict(selfstudy=selfstudy, standards = standards,
+                   history_form = history_form,
+                   active_sublink="history",
+                   )
+
+    return render(request, 'selfstudy/profile_history.html', context)
+
+def profile_financial_data(request, selfstudy_id):
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    standards = Standard.objects.top_level()
+
+    # Query related financial data entries
+    two_year_data_queryset = FinancialTwoYearDataEntry.objects.filter(school_profile=school_profile)
+    additional_data_queryset = FinancialAdditionalDataEntry.objects.filter(school_profile=school_profile)
+
+
+    if request.method == 'POST':
+        two_year_formset = FinancialTwoYearDataFormSet(request.POST or None, queryset=two_year_data_queryset, prefix="two_years")
+        additional_formset = FinancialAdditionalDataFormSet(request.POST or None, queryset=additional_data_queryset, prefix="additional")
+
+        if two_year_formset.is_valid():
+            two_year_formset.save()
+            messages.success(request, "2-Year Financial Data has been successfully saved!")
+        else:
+            messages.error(request, "Some 2-year Financial Data was not saved!")
+
+        if additional_formset.is_valid():
+            additional_formset.save()
+            messages.success(request, "Additional Financial Data has been successfully saved!")
+        else:
+            messages.error(request, "Some Additional Financial Data was not saved!")
+
+    # Initialize formsets
+    two_year_formset = FinancialTwoYearDataFormSet(queryset=two_year_data_queryset, prefix="two_years")
+    additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset, prefix="additional")
+
+    context = dict(selfstudy=selfstudy, standards = standards,active_link="profile",
+                    two_year_formset = two_year_formset, additional_formset = additional_formset )
+
+    return render(request, 'selfstudy/profile_financial_data.html', context)

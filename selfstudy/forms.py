@@ -40,25 +40,39 @@ class SelfStudy_TeamMemberForm(forms.Form):
                 member.delete()
 
 
-class SchoolProfileForm(forms.ModelForm):
+class SchoolHistoryForm(forms.ModelForm):
     class Meta:
         model = SchoolProfile
         fields = ['school_history']  # Add fields you want to display in the form
 
-class FinancialTwoYearDataEntriesForm(forms.ModelForm):
+class FinancialTwoYearDataEntryForm(forms.ModelForm):
     class Meta:
-        model = FinancialTwoYearDataEntries
-        fields = ['two_years_ago', 'one_year_ago']
-        labels = { 'two_years_ago': 'Two Years Ago', 'one_year_ago': 'One Year Ago',}
+        model = FinancialTwoYearDataEntry
+        fields = ['id','two_years_ago', 'one_year_ago']
+        labels = {
+            'two_years_ago': 'Two Years Ago',
+            'one_year_ago': 'One Year Ago',
+        }
 
-class FinancialAdditionalDataEntriesForm(forms.ModelForm):
+    two_years_ago = forms.DecimalField(
+        required=False, max_digits=10, decimal_places=2,
+        widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
+    )
+    one_year_ago = forms.DecimalField(
+        required=False, max_digits=10, decimal_places=2,
+        widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
+    )
+
+class FinancialAdditionalDataEntryForm(forms.ModelForm):
     class Meta:
-        model = FinancialAdditionalDataEntries
-        fields = ['value']
+        model = FinancialAdditionalDataEntry
+        fields = ['id','value']
         labels = { 'value': 'Value'}
 
-FinancialTwoYearDataFormSet = modelformset_factory(FinancialTwoYearDataEntries,form=FinancialTwoYearDataEntriesForm, extra=0)
-FinancialAdditionalDataFormSet = modelformset_factory(FinancialAdditionalDataEntries,form=FinancialAdditionalDataEntriesForm, extra=0)
+    value = forms.CharField(required=False)
+
+FinancialTwoYearDataFormSet = modelformset_factory(FinancialTwoYearDataEntry, form=FinancialTwoYearDataEntryForm, extra=0, can_delete=False)
+FinancialAdditionalDataFormSet = modelformset_factory(FinancialAdditionalDataEntry,form=FinancialAdditionalDataEntryForm, extra=0, can_delete=False)
 
 class StandardEvaluationForm(forms.ModelForm):
     class Meta:
@@ -100,11 +114,11 @@ class ActionPlanStepsForm(forms.ModelForm):
         fields = ['person_responsible', 'action_steps', 'start_date', 'completion_date', 'resources']
         widgets = {
             #'number': forms.Textarea(attrs={'cols': 1, 'rows': 1}),
-            'person_responsible': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
-            'action_steps': forms.Textarea(attrs={'cols': 30, 'rows': 1, 'class': 'autosize'}),
-            'start_date': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
-            'completion_date': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
-            'resources': forms.Textarea(attrs={'cols': 5, 'rows': 1, 'class': 'autosize'}),
+            'person_responsible': forms.Textarea(attrs={'cols': 10, 'rows': 3 }),
+            'action_steps': forms.Textarea(attrs={'cols': 50, 'rows': 3 }),
+            'start_date': forms.Textarea(attrs={'cols': 10, 'rows': 3 }),
+            'completion_date': forms.Textarea(attrs={'cols': 10, 'rows': 3 }),
+            'resources': forms.Textarea(attrs={'cols': 10, 'rows': 3 }),
         }
 
 # Inline formset to manage ActionPlanSteps with ActionPlan

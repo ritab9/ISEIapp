@@ -1,0 +1,12 @@
+<!-- use it as { % include "includes/auto_expand_textarea.html" %} in the script area -->
+
+
+document.querySelectorAll('textarea').forEach(textarea => {
+    const adjustHeight = () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    };
+
+    textarea.addEventListener('input', adjustHeight);
+    adjustHeight(); // Initialize height
+});

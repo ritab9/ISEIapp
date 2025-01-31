@@ -5,7 +5,10 @@ urlpatterns = [
     path('setup_selfstudy/<int:accreditation_id>/', views.setup_selfstudy, name='setup_selfstudy'),
     path('selfstudy/<int:selfstudy_id>/', views.selfstudy, name='selfstudy'),
 
-    path('<int:selfstudy_id>/profile/', views.selfstudy_profile, name='selfstudy_profile'),
+    path('<int:selfstudy_id>/selfstudy_profile/', views.selfstudy_profile, name='selfstudy_profile'),
+    path('<int:selfstudy_id>/profile_history/', views.profile_history, name='profile_history'),
+    path('<int:selfstudy_id>/profile_financial_data/', views.profile_financial_data, name='profile_financial_data'),
+
     path('<int:selfstudy_id>/standard/<int:standard_id>/', views.selfstudy_standard, name='selfstudy_standard'),
     path('<int:selfstudy_id>/selfstudy_actionplan_instructions/', views.selfstudy_actionplan_instructions, name='selfstudy_actionplan_instructions'),
     path('<int:accreditation_id>/action_plan/', views.selfstudy_actionplan, name='selfstudy_actionplan_create'),

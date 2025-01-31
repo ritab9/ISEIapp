@@ -6,15 +6,25 @@
 
 {% block content %}
 
-
     <div class="card card-body">
 <!-- Standard Name and Description -->
         <h5>Standard {{ standard.number }}: {{ standard.name }}</h5>
+
+        {% if messages %}
+            <div class="card card-body messages">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="text-ISEIblue4 mt-3 mb-3">
             <i>{{ standard.description }}</i>
         </div>
 <!-- Suggested Evidence -->
-        <div>
+        <div class="noprint">
             <b>Suggested Evidence Documents:</b>
             <div style="display: flex;">
                 <div class="evidence-list">
@@ -26,10 +36,11 @@
                 </div>
             </div>
         </div>
+
     </div>
 
 <!-- Indicators Evaluation Form -->
-    <form method="post">
+    <form method="post" id="content-form">
         {% csrf_token %}
         {{ formset.management_form }}
         <div class="form-group">
@@ -158,14 +169,18 @@
         </div>
 
 <!-- Floating boxes -->
-            <div class="floating-box noprint">
+            <div class="floating-box-background noprint">
                 <div id="average-score" class="span80 text-ISEIblue4">Running Average: 0</div>
             </div>
-            <div class="floating-box-above noprint">
-                <button type="submit" class="btn btn-ISEIblue4 btn-sm">Save Evaluations</button>
+            <div class="floating-box noprint">
+                <button id="save-button1" type="submit" class="btn btn-danger btn-sm">Save Changes</button>
             </div>
 
-            <button type="submit" class="btn btn-ISEIblue4 btn-sm">Save Evaluations</button>
+            <div class="card card-body">
+                <div style="width: auto; text-align: center;">
+                    <button id="save-button2" type="submit" class="btn btn-danger btn-sm">Save Changes</button>
+                </div>
+            </div>
 
         </form>
 
@@ -176,71 +191,67 @@
 
 <script>
 
+
     document.addEventListener('DOMContentLoaded', function () {
 
-        // Update score and calculate the running average when level button is clicked
+// 1. Auto-expanding textareas
+        {% include "includes/script_auto_expand_textarea.html" %}
+
+//2.When content changes show Save button. Also remove the Content Saved Message
+        {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+
+
+// 3. Update score, calculate the running average, and update background when level button is clicked,
+// Calculate running average and update backgroung when score field changes
         const levelButtons = document.querySelectorAll('.level-button');
+        const scoreFields = document.querySelectorAll('[name$="-score"]');
+        const averageDisplay = document.getElementById('average-score');
+        const averageInput = document.getElementById('id_average_score');
+
+        // Handle level button clicks - calls updateAverage and updateLevelDescriptionBackground
         levelButtons.forEach(button => {
             button.addEventListener('click', function () {
-                const level = this.getAttribute('data-level');
-                const index = this.getAttribute('data-index');
+                const level = this.dataset.level;
+                const index = this.dataset.index;
                 const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
 
                 if (scoreSelect) {
-                    // Update the value of the select field with the clicked level
                     scoreSelect.value = level;
-                    // Call updateAverage to recalculate the average
                     updateAverage();
-                    // Change background color for the matching level description
                     updateLevelDescriptionBackground(level, index);
                 }
             });
         });
 
-
-        // Function to update the background color of the level description
+        // Function to update background color - calls getBackgroundColor
         function updateLevelDescriptionBackground(level, index) {
-            const levelRows = document.querySelectorAll(`tr[data-index="${index}"]`);
-
-            levelRows.forEach(row => {
-                const levelCell = row.querySelector('.level-description');
-                if (levelCell) {
-                    // Remove the previous background color
-                    levelCell.style.backgroundColor = '';
-
-                    // Determine the background color based on the score value
-                    let backgroundColor = '';
-                    if (level === '1') {
-                        backgroundColor = 'mistyrose';
-                    } else if (level === '2') {
-                        backgroundColor = 'lightyellow';
-                    } else if (level === '3') {
-                        backgroundColor = 'honeydew';
-                    } else if (level === '4') {
-                        backgroundColor = '#E5E8FB'; //'rgba(0, 128, 128, 0.2)';
-                        // levelCell.classList.add('sparkle'); A bit too much
-                    } else {
-                        backgroundColor = ''; // No color if score is empty or unknown
-                    }
-
-                    // Apply the background color to the level description cell
-                    if (levelCell.getAttribute('data-level') === level) {
-                        levelCell.style.backgroundColor = backgroundColor; // Apply dynamic color
-                    }
-                }
+            const targetCell = document.querySelector(`tr[data-index="${index}"] .level-description[data-level="${level}"]`);
+            // Reset all background colors first
+            document.querySelectorAll(`tr[data-index="${index}"] .level-description`).forEach(cell => {
+                cell.style.backgroundColor = '';
             });
+
+            if (targetCell) {
+                targetCell.style.backgroundColor = getBackgroundColor(level);
+            }
         }
 
-        // Function to calculate and update the running average
+        // Helper function to get background color based on level
+        function getBackgroundColor(level) {
+            const colors = {
+                '1': 'mistyrose',
+                '2': 'lightyellow',
+                '3': 'honeydew',
+                '4': '#E5E8FB'
+            };
+            return colors[level] || '';
+        }
+
+        // Function to calculate and update running average
         function updateAverage() {
-            const scoreFields = document.querySelectorAll('[name$="-score"]');
-            const averageDisplay = document.getElementById('average-score');
-            const averageInput = document.getElementById('id_average_score');
+            let totalScore = 0, validCount = 0;
 
-            let totalScore = 0;
-            let validCount = 0;
-
-            scoreFields.forEach(function(field) {
+            scoreFields.forEach(field => {
                 const score = parseInt(field.value, 10);
                 if (!isNaN(score)) {
                     totalScore += score;
@@ -248,51 +259,29 @@
                 }
             });
 
-            if (validCount > 0) {
-                const averageScore = totalScore / validCount;
-                averageDisplay.textContent = 'Running Average: ' + averageScore.toFixed(2);
-                averageInput.value = averageScore.toFixed(2);  // Update hidden input with calculated average
-            } else {
-                averageDisplay.textContent = 'Running Average: 0';
-                averageInput.value = 0;  // If no valid scores, set hidden input to 0
-            }
+            const averageScore = validCount > 0 ? (totalScore / validCount).toFixed(2) : 0;
+            averageDisplay.textContent = `Running Average: ${averageScore}`;
+            averageInput.value = averageScore;
         }
 
-        // Apply background to all level descriptions based on the score on page load
-        const scoreFields = document.querySelectorAll('[name$="-score"]');
-        scoreFields.forEach(function(scoreField, index) {
-            const score = scoreField.value;
-            updateLevelDescriptionBackground(score, index); // Update background for each score field
-        });
-
-        // Listen for score field changes and update background color
-        scoreFields.forEach(function(scoreField, index) {
-            scoreField.addEventListener('change', function () {
-                const score = this.value;
-                updateLevelDescriptionBackground(score, index); // Update background color when score changes
+        // Apply background updates on page load
+        scoreFields.forEach(field => {
+            field.addEventListener('change', function () {
+                const row = this.closest('tr');
+                if (row) {
+                    const index = row.dataset.index;
+                    updateLevelDescriptionBackground(this.value, index);
+                    updateAverage();
+                }
             });
-        });
 
-        // Initialize the average calculation when the page loads
-        updateAverage();
-
-        // Ensure the average is updated when manually changing the score
-        scoreFields.forEach(function(field) {
             field.addEventListener('input', updateAverage);
         });
 
-        // Initialize the auto-expanding textareas
-        const textareas = document.querySelectorAll('textarea');
-        textareas.forEach(function(textarea) {
-            // Trigger auto-expansion on input event for each textarea
-            textarea.addEventListener('input', function() {
-                textarea.style.height = 'auto';  // Reset height
-                textarea.style.height = (textarea.scrollHeight) + 'px';  // Set new height based on content
-            });
-            // Initialize textarea height on page load
-            textarea.style.height = 'auto';
-            textarea.style.height = (textarea.scrollHeight) + 'px';
-        });
+        // Initialize the average calculation
+        updateAverage();
+
+
     });
 </script>
 
