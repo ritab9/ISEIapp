@@ -5,3 +5,7 @@
 .bg-light-blue {
     background-color: var(--light-blue-color);
 }
+
+.muted-orange {
+    color : #D78F48
+}
