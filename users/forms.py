@@ -16,7 +16,8 @@ class SchoolYearForm(forms.Form):
     school_year = forms.ModelChoiceField(
         queryset=SchoolYear.objects.filter(active_year=True),
         empty_label=None,
-        widget=forms.Select(attrs={'id': 'schoolYearDropdown','width': '150px' }),
+        widget=forms.Select(attrs={'id': 'schoolYearDropdown','width': '150px',
+                                   'onchange': 'this.form.submit();'}),
     )
 
 class CreateUserForm(UserCreationForm):

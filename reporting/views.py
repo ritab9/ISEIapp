@@ -1434,7 +1434,8 @@ def isei_reporting_dashboard(request):
     closing_report_codes = ['IR', 'CR', 'WS']
 
     context = {'schools':schools, 'wss_schools':wss_schools, 'report_types':report_types, 'todays_date': date.today(),
-               'opening_report_codes': opening_report_codes, 'closing_report_codes': closing_report_codes}
+               'opening_report_codes': opening_report_codes, 'closing_report_codes': closing_report_codes,
+               'dashboard':True}
 
     return render(request, 'isei_reporting_dashboard.html', context)
 

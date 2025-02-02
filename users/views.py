@@ -327,7 +327,7 @@ def school_dashboard(request, schoolID):
                     other_agency_accreditation_info=other_agency_accreditation_info, accreditation=accreditation,
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted, cr_submitted=cr_submitted,
                     is_old = is_old, fire_marshal_date=fire_marshal_date, wss=wss,
-                    apr=apr,
+                    apr=apr, dashboard=True,
                   )
 
     return render(request, 'users/school_dashboard.html', context)
@@ -348,7 +348,7 @@ def isei_dashboard(request):
 
     current_school_year = SchoolYear.objects.filter(current_school_year=True).first()
 
-    context = dict(schoolyearID=current_school_year.id)
+    context = dict(schoolyearID=current_school_year.id, dashboard=True)
     return render(request, 'users/isei_dashboard.html', context)
 
 
@@ -401,14 +401,14 @@ def change_school_year(request):
             assigned_school_year = form.cleaned_data['school_year']
 
             if request.user.is_authenticated:
-                try:
-                    school = request.user.profile.school
-                    school.current_school_year = assigned_school_year
-                    school.save()
-                except AttributeError:
+                if is_in_group(request.user, 'staff'):
                     school_year_to_set_current = SchoolYear.objects.get(name=assigned_school_year)
                     school_year_to_set_current.current_school_year = True
                     school_year_to_set_current.save()
+
+                school = request.user.profile.school
+                school.current_school_year = assigned_school_year
+                school.save()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     else:

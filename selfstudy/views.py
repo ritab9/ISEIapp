@@ -52,8 +52,11 @@ def setup_indicator_evaluations(selfstudy):
     Creates IndicatorEvaluation objects for all active Indicators associated with
     the SelfStudy's accreditation standards, in bulk. Ensures no duplicates are created.
     """
-    # Fetch all active indicators with their associated standards
-    indicators = Indicator.objects.filter(active=True).select_related('standard')
+    # Get the school object first
+    school = selfstudy.accreditation.school
+
+    # Filter the indicators where the school_type of the indicator is in the school's school_types
+    indicators = Indicator.objects.filter(active=True, school_type__in=school.school_type.all()).select_related('standard')
 
     if not indicators.exists():
         raise ValueError("No active indicators found. Ensure that indicators are properly configured.")

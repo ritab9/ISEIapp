@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/ritab9/ISEIapp#readme",
   "dependencies": {
-    "bootstrap": "^4.6.0"
+    "bootstrap": "^4.6.2"
   }
 }
