@@ -105,7 +105,7 @@ class School(models.Model):
     name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
                             null=False)
     abbreviation = models.CharField(max_length=6, default=" ", help_text=' Enter the abbreviation for this school')
-    #school_type=models.ForeignKey(SchoolType, on_delete=models.CASCADE, null=True)
+    school_type=models.ForeignKey(SchoolType, on_delete=models.CASCADE, null=True, verbose_name='School Type')
     ordering = ['name']
     foundation = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
@@ -126,8 +126,8 @@ class School(models.Model):
         ('K-12', 'K-12'),
         ('9-12', '9-12'),
     ]
-    type = models.CharField(max_length=5, choices=TYPE_CHOICES, default='9-12',
-                                   verbose_name="Type of School")
+    grade_levels = models.CharField(max_length=5, choices=TYPE_CHOICES, default='9-12',
+                                   verbose_name="Grade Levels")
 
     current_school_year=models.ForeignKey('teachercert.SchoolYear', on_delete=models.CASCADE, null=True, blank=True)
 
