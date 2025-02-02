@@ -29,7 +29,7 @@ class LevelInline(admin.TabularInline):
 
 class IndicatorAdmin(admin.ModelAdmin):
     inlines = [LevelInline]
-    list_display = ( 'key_word','code', 'version', 'active')
+    list_display = ( 'key_word','code', 'school_type', 'version', 'active')
     list_editable = ('code','version', 'active')
     list_filter = ('standard', 'school_type',)
 
