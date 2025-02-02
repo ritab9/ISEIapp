@@ -1,7 +1,7 @@
 from datetime import timezone
 
 from django.db import models
-from users.models import School
+from users.models import School, SchoolType
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -84,12 +84,6 @@ class Standard(models.Model):
 
     def __str__(self):
         return f"{self.number}. {self.name}"
-
-class SchoolType(models.Model):
-    name = models.CharField(max_length=30)
-
-    def __str__(self):
-        return self.name
 
 class Indicator(models.Model):
     standard = models.ForeignKey(Standard, on_delete=models.CASCADE)

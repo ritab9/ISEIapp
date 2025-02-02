@@ -93,11 +93,19 @@ class Country(models.Model):
     class Meta:
         ordering = ['-student_occurrence_log', 'name']
 
+class SchoolType(models.Model):
+    name = models.CharField(max_length=30)
+
+    class Meta:
+        db_table = "accreditation_schooltype"
+    def __str__(self):
+        return self.name
 
 class School(models.Model):
     name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
                             null=False)
     abbreviation = models.CharField(max_length=6, default=" ", help_text=' Enter the abbreviation for this school')
+    #school_type=models.ForeignKey(SchoolType, on_delete=models.CASCADE, null=True)
     ordering = ['name']
     foundation = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
