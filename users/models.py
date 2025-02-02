@@ -97,7 +97,7 @@ class SchoolType(models.Model):
     name = models.CharField(max_length=30)
 
     class Meta:
-        db_table = "accreditation_schooltype"
+        db_table = "users_schooltype"
     def __str__(self):
         return self.name
 
