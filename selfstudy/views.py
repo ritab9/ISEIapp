@@ -402,12 +402,77 @@ def selfstudy_profile(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
 
-    #TODO Add General Information Here
+    # Retrieve or create the SchoolProfile
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
 
-    context = dict(selfstudy=selfstudy, standards = standards,
-                   active_link="profile",
+    school = selfstudy.accreditation.school
+    address = school.address
+
+    # Populate missing fields from other sources
+    if not school_profile.school_name:
+        school_profile.school_name = school.name
+    if not school_profile.address:
+        school_profile.address =address.address_1
+        school_profile.city = address.city
+        school_profile.state_us = address.state_us
+        school_profile.zip_code = address.zip_code
+        school_profile.country = address.country
+    if not school_profile.principal:
+        school_profile.principal = school.principal
+    if not school_profile.board_chair:
+        school_profile.board_chair = school.board_chair
+    if not school_profile.last_evaluation:
+        school_profile.last_evaluation = school.current_accreditation().visit_date_range()
+    if not school_profile.last_interim:
+        school_profile.last_interim = ""  # Set a default value
+
+    # Save only if new data was added
+    school_profile.save()
+
+    # Handle form submission
+    if request.method == "POST":
+        form = SchoolProfileForm(request.POST, instance=school_profile)
+        if form.is_valid():
+            updated_profile = form.save(commit=False)  # Get updated profile but don't save it to DB just yet
+
+            # Check if any fields were updated, and if so, update the other models
+            if updated_profile.school_name != school.name:
+                school.name = updated_profile.school_name
+                school.save()
+
+            if updated_profile.address != address.address_1:
+                address.address_1 = updated_profile.address
+                address.city = form.cleaned_data.get('city')
+                address.state_us = form.cleaned_data.get('state_us')
+                address.zip_code = form.cleaned_data.get('zip_code')
+                address.country = form.cleaned_data.get('country')
+                address.save()
+
+            if updated_profile.principal != school.principal:
+                school.principal = updated_profile.principal
+                school.save()
+
+            if updated_profile.board_chair != school.board_chair:
+                school.board_chair = updated_profile.board_chair
+                school.save()
+
+            # Save the updated school_profile now that we've made changes
+            school_profile.save()
+
+            messages.success(request, "Changes have been successfully saved!")
+        else:
+            messages.error(request, "Some changes were not saved!")
+
+    else:
+        form = SchoolProfileForm(instance=school_profile)
+
+    context= dict(selfstudy=selfstudy, standards = standards,
+                   active_link="profile", form=form,
                    )
-    return render(request, 'selfstudy/profile.html', context)
+
+    return render(request, "selfstudy/profile.html", context )
+
+
 
 def profile_history(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)

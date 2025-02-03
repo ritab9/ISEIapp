@@ -40,6 +40,19 @@ class SelfStudy_TeamMemberForm(forms.Form):
                 member.delete()
 
 
+class SchoolProfileForm(forms.ModelForm):
+    class Meta:
+        model = SchoolProfile
+        fields = [
+            "school_name", "address", "city", "state_us", "zip_code",
+            "country", "principal", "board_chair", "last_evaluation", "last_interim"
+        ]
+        widgets = {
+            'address': forms.TextInput(attrs={'style': 'width: 250px;'}),
+            'last_evaluation': forms.TextInput(attrs={'style': 'width: 250px;'}),
+        }
+
+
 class SchoolHistoryForm(forms.ModelForm):
     class Meta:
         model = SchoolProfile

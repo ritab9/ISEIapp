@@ -2,6 +2,8 @@ from django.db import models
 from accreditation.models import Accreditation,Standard, Indicator
 from django.contrib.auth.models import User
 
+from users.models import StateField, Country
+
 
 #Models for inforormation needed from the schools (Standards + Inidcators are in Accreditation app)
 
@@ -96,12 +98,28 @@ class SelfStudy_TeamMember(models.Model):
         return f"{self.user.get_full_name()} - {self.team.name}"
 
 #School profile Models
+
 class SchoolProfile(models.Model):
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE)
+#A. General Information
+    school_name = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(verbose_name="address", max_length=128, null=True, blank=True)
+    city = models.CharField(verbose_name="city", max_length=64, null=True, blank=True)
+    state_us = StateField(verbose_name="US State", blank=True, null=True)
+    zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT, null=True, blank=True)
+    principal = models.CharField(max_length=255, null=True, blank=True)
+    board_chair = models.CharField(max_length=255, null=True, blank=True)
+    last_evaluation = models.CharField(max_length=255, null=True, blank=True)
+    last_interim = models.CharField(max_length=255, null=True, blank=True)
+
+#B. School History
     school_history = models.TextField(null=True, blank=True)
+
 
 #TODO Finalize school Profile
 
+# C.Financial Data
 class FinancialTwoYearDataEntry(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="two_year_financial_data")
     data_key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
@@ -110,13 +128,14 @@ class FinancialTwoYearDataEntry(models.Model):
     def __str__(self):
         return f"{self.data_key.name}: {self.two_years_ago}, {self.one_year_ago}"
 
-
 class FinancialAdditionalDataEntry(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="additional_financial_data")
     data_key = models.ForeignKey(FinancialAdditionalDataKey, on_delete=models.CASCADE)
     value = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
         return f"{self.data_key.name}: {self.value}"
+
+
 
 #Standard Scoring Model
 class StandardEvaluation(models.Model):

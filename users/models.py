@@ -113,6 +113,7 @@ class School(models.Model):
     website = models.URLField(max_length=200, blank=True, null=True)
     principal = models.CharField(max_length=100, blank=True, null=True)
     president = models.CharField(max_length=100, blank=True, null=True)
+    board_chair = models.CharField(max_length=100, blank=True, null=True)
     member = models.BooleanField(default=True)
     textapp= models.CharField(max_length=20, blank=True, null=True)
     fire_marshal_date = models.DateField(blank=True, null=True, verbose_name='Date of Last Fire Marshal Inspection')
@@ -133,7 +134,7 @@ class School(models.Model):
 
     def current_accreditation(self):
         Accreditation = apps.get_model('accreditation', 'Accreditation')  # Lazy load the Accreditation model
-        return Accreditation.objects.filter(school=self, status='current').first()
+        return Accreditation.objects.filter(school=self, status='active').first()
 
     def get_active_users(school):
         return User.objects.filter(profile__school=school, is_active=True).distinct()

@@ -10,11 +10,155 @@
 {% block content %}
 
     <div class="card card-body">
-        <h5>School Profile</h5>
+        <h5>School Profile</h5> <hr>
+
         <p>The principal, with assistance from the Coordinating Committee, is responsible for completing sections A-F. The principal may delegate responsibility for completion of applicable sections to others, such as the media center to the librarian, etc.</p>
 
-        <h4> General Information Here</h4>
+        <hr>
+        <h5> A. General Information</h5> <hr>
+
+<!-- Saved Data Messages -->
+        {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            <hr>
+        {% endif %}
+
+        <form id="content-form" method="post">
+            {% csrf_token %}
+<!-- form errors -->
+            {% if form.non_field_errors %}
+              <div class="error">
+                {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <fieldset>
+<!-- School Name -->
+              <div>
+                  <div class="font-weight-bold">School Name: {{ form.school_name }} </div>
+                    {% if form.school_name.errors %}
+                      <div class="error">{{ form.school_name.errors.0 }}</div>
+                    {% endif %}
+              </div>
+            <hr>
+
+<!-- Address-->
+                <div class="row">
+                    <div class="col-auto mb-3 font-weight-bold">
+                        Street Address:<br> {{ form.address }}
+                        {% if form.address.errors %}
+                          <div class="error">{{ form.address.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-auto mb-3 font-weight-bold">
+                        City: <br> {{ form.city }}
+                        {% if form.city.errors %}
+                          <div class="error">{{ form.city.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-auto mb-3 font-weight-bold" id="state-field" style="display: none;">
+                      State (US):<br> {{ form.state_us }}
+                        {% if form.state_us.errors %}
+                          <div class="error">{{ form.state_us.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-auto mb-3 font-weight-bold">
+                      Zip/Postal Code: <br> {{ form.zip_code }}
+                        {% if form.zip_code.errors %}
+                          <div class="error">{{ form.zip_code.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-auto mb-3 font-weight-bold">
+                        Country:<br> {{ form.country }}
+                        {% if form.country.errors %}
+                          <div class="error">{{ form.country.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            <hr>
+ <!-- Other Info -->
+                <div class="row">
+                  <div class="col mb-3 font-weight-bold">
+                    Principal: {{ form.principal }}
+                    {% if form.principal.errors %}
+                      <div class="error">{{ form.principal.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+
+                  <div class="col mb-3 font-weight-bold">
+                    Board Chair: {{ form.board_chair }}
+                    {% if form.board_chair.errors %}
+                      <div class="error">{{ form.board_chair.errors.0 }}</div>
+                    {% endif %}
+                  </div>
+              </div>
+
+            <hr>
+                <div class="row">
+                    <div class="col mb-3 font-weight-bold">
+                      Last Evaluation: {{ form.last_evaluation }}
+                      {% if form.last_evaluation.errors %}
+                          <div class="error">{{ form.last_evaluation.errors.0 }}</div>
+                      {% endif %}
+                  </div>
+                    <div class="col mb-3 font-weight-bold">
+                        Last Interim: {{ form.last_interim }}
+                        {% if form.last_interim.errors %}
+                          <div class="error">{{ form.last_interim.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </fieldset>
+
+            <hr>
+            <div class="">
+                <button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</button>
+                <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
+            </div>
+        </form>
     </div>
 
+{% endblock %}
 
+
+{% block script %}
+    <script>
+
+// 1. Auto-expanding textareas
+        {% include "includes/script_auto_expand_textarea.html" %}
+
+//2.When content changes show Save button. Also remove the Content Saved Message
+        {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+
+//3. Show US State only if the chosen country is US
+
+    function toggleStateField() {
+        var countrySelect = document.getElementById("id_country");
+        var stateField = document.getElementById("state-field");
+
+        if (countrySelect.options[countrySelect.selectedIndex].text === "United States") {
+          stateField.style.display = "block";
+        } else {
+          stateField.style.display = "none";
+        }
+      }
+
+      document.getElementById("id_country").addEventListener("change", toggleStateField);
+
+    // Run on page load in case the United States is preselected
+      toggleStateField();
+
+    </script>
 {% endblock %}
