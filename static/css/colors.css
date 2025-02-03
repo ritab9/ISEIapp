@@ -7,5 +7,13 @@
 }
 
 .muted-orange {
-    color : #D78F48
+    color : #D78F48;
+}
+
+.medium-blue{
+     color: #2E74AA; /* ISEIblue3  */
+}
+
+.dark-blue {
+    color:#053A64; /* ISEIblue4  */
 }

@@ -1,3 +1,31 @@
+/* Style for all text input fields and select dropdown */
+input[type="text"], input[type="number"], input[type="email"], textarea, select {
+    border: 1px solid #ccc;     /* Adds a light border */
+    border-radius: 4px;         /* Gives rounded corners */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;  /* Smooth transition for focus effect */
+}
+
+/* Style for fields when focused */
+input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, textarea:focus, select:focus {
+    border-color: #5b9bd5;       /* Changes border color when focused */
+    box-shadow: 0 0 5px rgba(91, 155, 213, 0.5);  /* Adds a subtle blue glow */
+    outline: none;               /* Removes the default focus outline */
+}
+
+select {
+    background-color: ghostwhite;
+    padding: 3px;
+}
+
+/* Error message styling */
+.error {
+    color: #d9534f;              /* Red color for error messages */
+    font-size: 14px;              /* Slightly smaller font size */
+    margin-top: 5px;              /* Adds space between the input and the error message */
+}
+
+
+
 
 textarea {
     width: 100%;
@@ -20,15 +48,6 @@ width: 5px;
 /* Customize the specific select field (score) */
 .custom-select {
     background-color: rgba(71, 120, 153, 0.12);
-    border: 1px solid #2b3c48;
-    padding: 3px;
-    border-radius: 4px;
-    font-size: 16px;
-    color: #333;
-}
-
-select {
-    background-color: ghostwhite;
     border: 1px solid #2b3c48;
     padding: 3px;
     border-radius: 4px;
