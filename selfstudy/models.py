@@ -172,6 +172,9 @@ class SelfStudyPersonnelData(models.Model):
     years_experience=models.PositiveSmallIntegerField(null=True, blank=True)
     years_at_this_school=models.PositiveSmallIntegerField(null=True, blank=True)
 
+class StudentEnrollmentData(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="enrollment_data")
+
 class FullTimeEquivalency(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="fte_assignments")
     assignment = models.ForeignKey(FTEAssignmentKey, on_delete=models.CASCADE)

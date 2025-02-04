@@ -48,6 +48,7 @@ urlpatterns = [
     path('isei_reporting_dashboard/', views.isei_reporting_dashboard, name='isei_reporting_dashboard'),
     path('isei_worthy_student_scholarship/', views.isei_worthy_student_scholarship, name='isei_worthy_student_scholarship'),
 
+    path('longitudinal_enrollment/', views.longitudinal_enrollment, name='longitudinal_enrollment'),
     #ajax
     path('ajax/get-teacher-email/', views.get_teacher_email, name="get_teacher_email"),
 

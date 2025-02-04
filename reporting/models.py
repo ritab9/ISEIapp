@@ -205,6 +205,8 @@ GRADE_LEVEL_DICT = {
         '12': 12,
     }
 class Student(models.Model):
+    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='students', null=False, blank=False, db_index=True)
+
     name = models.CharField(max_length=200, db_index=True)
     address = models.CharField(max_length=500)
     us_state= StateField(verbose_name="US State", blank=True, null=True)
@@ -271,7 +273,6 @@ class Student(models.Model):
     ]
     location = models.CharField(max_length=20, choices=LOCATION_CHOICES, default='on-site')
 
-    annual_report = models.ForeignKey(AnnualReport, on_delete=models.CASCADE, related_name='students', null=False, blank=False, db_index=True)
 
     class Meta:
         unique_together = (('name', 'annual_report'),)
@@ -541,3 +542,15 @@ class WorthyStudentScholarship(models.Model):
 
     def get_verbose_field_name(self, field_name):
         return str(self._meta.get_field(field_name).verbose_name)
+
+
+class LongitudinalEnrollment(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="enrollment_records")
+    year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, related_name="enrollment_records")
+    grade = models.PositiveSmallIntegerField(choices=[(i, f"Grade {i}") for i in range(1, 13)])
+    enrollment_count = models.PositiveIntegerField(default=0)  # Total students in this grade/year
+
+    class Meta:
+        unique_together = ("school", "year", "grade")  # Ensure unique records for each grade-year
+    def __str__(self):
+        return f"{self.school.name} - Grade {self.grade} ({self.year}) - Enrollment {self.enrollment_count}"

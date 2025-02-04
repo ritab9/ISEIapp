@@ -104,3 +104,6 @@
     background-color: rgba(71, 120, 153, 0.1); /* Soft blue on hover */
 }
 
+.table-striped tbody tr:nth-child(odd) .white-column {
+    background-color: white;
+}

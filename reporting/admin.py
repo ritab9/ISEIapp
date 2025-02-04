@@ -122,3 +122,4 @@ class AnnualReportAdmin(admin.ModelAdmin):
             yield inline.get_formset(request, obj), inline
 
 
+admin.site.register(LongitudinalEnrollment)

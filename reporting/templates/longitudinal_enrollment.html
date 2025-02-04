@@ -1,0 +1,58 @@
+{% extends 'reporting_base.html' %}
+{% load template_extras %}
+
+{% block title %} School Reports {% endblock title %}
+
+
+{% block content %}
+
+<div class="card card-body">
+
+    <h5>Enrollment History</h5>
+
+    <!-- Button to trigger POST request -->
+    <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-ISEIblue3" type="submit">Generate Enrollment Data</button>
+    </form>
+
+    <br>
+
+    <!-- Display Enrollment Data -->
+    <table class="table mt-4 table-sm table-bordered">
+    <thead class="sticky_head blue-header2">
+        <tr>
+            <th>School</th> <th>Year</th><th>Total</th>
+            {% for grade in grade_range %}
+                <th>Grade {{ grade }}</th>
+            {% endfor %}
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for school in enrollment_data %}
+                {% for year, grade_counts in school.year_data.items %}
+                    {% if forloop.first %}
+                        <tr>
+                            <td colspan="15" class="separator">
+                                <hr class="school-separator">
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        {% if forloop.counter == 1 %} <td class="orange-column">{{ school.school_name }}</td>{% else %}<td class="white-column"></td>{% endif %}
+                        <td class="blue-column">{{ year }}</td>
+                        <td class="blue-column"><b>{{ grade_counts.total_enrollment }}</b></td>
+                        {% for grade in grade_range %}
+                            <td class="blue-column">{{ grade_counts|get_from_dict:grade|default:0 }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
+
+</div>
+
+{% endblock %}

@@ -674,3 +674,5 @@ def profile_personnel(request, selfstudy_id):
 
     return render(request, 'selfstudy/profile_personnel.html', context)
 
+
+

@@ -12,7 +12,6 @@ class CountryInline(admin.TabularInline):
 class Region(admin.ModelAdmin):
     inlines = [CountryInline]
     list_display = ('name',)
-
 @admin.register(Country)
 class Country(admin.ModelAdmin):
     list_display = ('name', 'code', 'region', 'student_occurrence', 'student_occurrence_log')

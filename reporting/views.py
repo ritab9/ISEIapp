@@ -1334,13 +1334,17 @@ def closing_report_display(request, arID):
         grade_count = closing.grade_count
         grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                               GradeCount._meta.fields if field.name != 'id']
-        part_time_grade_count = closing.part_time_grade_count
-        part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
-                              PartTimeGradeCount._meta.fields if field.name != 'id']
 
+        part_time_grade_count = closing.part_time_grade_count
+        if part_time_grade_count:
+            part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field
+                                            in PartTimeGradeCount._meta.fields if field.name != 'id']
+        else:
+            part_time_grade_count_fields = None
     else:
         closing = None
         grade_count_fields = None
+        part_time_grade_count_fields = None
 
     context = dict(closing=closing, grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields)
     return render(request, 'closing_report_display.html', context)
@@ -1725,3 +1729,66 @@ def school_personnel_directory(request):
     }
 
     return render(request, 'school_personnel_directory.html', context)
+
+@login_required(login_url='login')
+def longitudinal_enrollment(request):
+
+    if request.method == "POST":
+        schools=School.objects.filter(active=True)
+        school_years = SchoolYear.objects.all()
+
+        for school_year in school_years:
+            for school in schools:
+                annual_report = AnnualReport.objects.filter(school_year=school_year, school=school,
+                                             report_type=ReportType.objects.get(code="SR")).first()
+                if annual_report:
+                    student_counts = (annual_report.students.filter(grade_level__gte=1, grade_level__lte=12)
+                                      .values("grade_level").annotate(count=Count("id")))
+                    # Create or update EnrollmentRecord for each grade level
+                    for entry in student_counts:
+                        grade = entry["grade_level"]
+                        count = entry["count"]
+
+                        LongitudinalEnrollment.objects.update_or_create(school=school,year=school_year,grade=grade,
+                            defaults={"enrollment_count": count},)
+
+    # Fetch enrollment data for display
+    records = LongitudinalEnrollment.objects.select_related("school", "year")
+
+    enrollment_data_dict = {}
+
+    for record in records:
+        school_name = record.school.name
+        year_name = record.year.name
+        grade = record.grade
+        enrollment_count = record.enrollment_count
+
+        # Ensure the key (school_name) exists in the dictionary
+        if school_name not in enrollment_data_dict:
+            enrollment_data_dict[school_name] = {}
+
+        # Ensure each year within the school has a dictionary of grade counts (1-12)
+        if year_name not in enrollment_data_dict[school_name]:
+            # Initialize counts for all grades (1-12) as 0
+            enrollment_data_dict[school_name][year_name] = {grade: 0 for grade in range(1, 13)}
+
+        # Update the count for the specific grade for that school-year combination
+        enrollment_data_dict[school_name][year_name][grade] = enrollment_count
+
+        # Convert the dictionary to a list of dicts for template rendering
+    enrollment_data = [
+        {"school_name": school_name, "year_data": year_data}
+        for school_name, year_data in enrollment_data_dict.items()
+    ]
+
+    for school in enrollment_data:
+        for year_name, grade_counts in school["year_data"].items():
+            total_enrollment = sum(grade_counts.values())
+            school["year_data"][year_name]["total_enrollment"] = total_enrollment
+
+    grade_range=list(range(1,13))
+
+    context=dict(enrollment_data=enrollment_data, grade_range=grade_range)
+    return render(request, 'longitudinal_enrollment.html', context)
+
+

@@ -5,7 +5,13 @@
 .bg-light-blue {
     background-color: var(--light-blue-color);
 }
+.bg-light-yellow {
+   background-color: #fcfcb7;
+}
 
+.light-yellow {
+    color:#fdfd96;
+}
 .muted-orange {
     color : #D78F48;
 }
