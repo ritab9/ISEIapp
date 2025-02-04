@@ -14,24 +14,41 @@ class FinancialAdditionalDataKeyAdmin(admin.ModelAdmin):
 admin.site.register(FinancialTwoYearDataKey, FinancialTwoYearDataKeyAdmin)
 admin.site.register(FinancialAdditionalDataKey, FinancialAdditionalDataKeyAdmin)
 
+class FTEAssignmentKeyAdmin(admin.ModelAdmin):
+    list_display = ('id','name', 'order_number', 'active')
+    list_editable = ('name', 'order_number', 'active')
+    search_fields = ('name',)
+
+admin.site.register(FTEAssignmentKey, FTEAssignmentKeyAdmin)
+
 admin.site.register(StandardNarrative)
 
 
 # Inline for FinancialTwoYearDataEntry
 class FinancialTwoYearDataEntryInline(admin.TabularInline):
     model = FinancialTwoYearDataEntry
-    extra = 1  # Number of empty forms displayed by default
+    extra=0
 
 # Inline for FinancialAdditionalDataEntry
 class FinancialAdditionalDataEntryInline(admin.TabularInline):
     model = FinancialAdditionalDataEntry
-    extra = 1  # Number of empty forms displayed by default
+    extra = 0  # Number of empty forms displayed by default
 
-# Admin for SchoolProfile with inlines for FinancialTwoYearDataEntry and FinancialAdditionalDataEntry
+# Inline for SelfStudyPersonnelData
+class SelfStudyPersonnelDataInline(admin.TabularInline):  # or admin.StackedInline for a vertical layout
+    model = SelfStudyPersonnelData
+    extra = 0
+
+class FullTimeEquivalencyInline(admin.TabularInline):  # or admin.StackedInline
+    model = FullTimeEquivalency
+    extra = 0
+
+    # Admin for SchoolProfile with inlines for FinancialTwoYearDataEntry and FinancialAdditionalDataEntry
 class SchoolProfileAdmin(admin.ModelAdmin):
     list_display = ('selfstudy', )  # Modify to show relevant fields
     search_fields = ('school__name',)  # Enable search by school name (assuming you have this field)
-    inlines = [FinancialTwoYearDataEntryInline, FinancialAdditionalDataEntryInline]
+    inlines = [FinancialTwoYearDataEntryInline, FinancialAdditionalDataEntryInline,
+               SelfStudyPersonnelDataInline, FullTimeEquivalencyInline]
     ordering = ('selfstudy',)  # You can adjust ordering as needed
 
 # Register SchoolProfile admin

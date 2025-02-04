@@ -13,14 +13,14 @@
             </a>
         </div>
         <div class="submenu-item mb-1">
-            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'profile_financial_data' selfstudy.id %}">
+            <a class="nav-link {% if active_sublink == 'financial' %}active{% endif %}"
+               href="{% url 'profile_financial' selfstudy.id %}">
                 C. Financial Data
             </a>
         </div>
         <div class="submenu-item mb-1">
-            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'selfstudy_profile' selfstudy.id %}">
+            <a class="nav-link {% if active_sublink == 'personnel' %}active{% endif %}"
+               href="{% url 'profile_personnel' selfstudy.id %}">
                 D. Personnel Data
             </a>
         </div>

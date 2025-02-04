@@ -745,8 +745,6 @@ def employee_report(request, arID, show_all=False):
             status=StaffStatus.NO_LONGER_EMPLOYED).select_related('teacher', 'annual_report').prefetch_related(
             'positions', 'degrees', 'subjects_teaching', 'subjects_taught').order_by('last_name')
 
-
-
     annual_report = get_object_or_404(AnnualReport, id=arID)
     school=annual_report.school.abbreviation
 

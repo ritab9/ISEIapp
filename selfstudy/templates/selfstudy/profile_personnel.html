@@ -1,0 +1,431 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+
+{% block title %} Profile SelfStudy {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+<!-- Title and Success and Error Messages -->
+    <div class="card card-body">
+        <h5>D. Personnel Data</h5>
+
+<!-- Success and Error Messages -->
+        {% if messages %}
+                <div class="messages noprint"><hr>
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+
+        <hr>
+<!-- Import/Update button -->
+            <div class="noprint">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% if personnel_imported %}
+                        A lot of the information on this page is filled out based on the {{ ar_school_year }} Employee Report.
+                        If changes need to be made:
+                        <ul>
+                            <li>Make the changes in <a class="font-weight-bold" href="{% url 'employee_report' arID %}">{{ ar_school_year }} Employee Annual Report </a></li>
+                            <li>
+                                After making changes please update this page's information by clicking:
+                                    <button type="submit" name="import_personnel" value="1" class="btn btn-xs btn-outline-ISEIblue4 ">
+                                        Update Personnel Information from {{ ar_school_year }} Employee Report
+                                    </button>
+                            </li>
+                        </ul>
+
+                        Contact ISEI if you notice any discrepancies.
+
+                    {% else %}
+                        <span class="error font-weight-bold">Important:</span>
+                            To get started with this report import the available information from
+                                <a class="font-weight-bold" href="{% url 'employee_report' arID %}"> {{ ar_school_year }} Employee Report </a> but clicking the yellow button below.
+                            If this is not your current school year's report, please go to the Dashboard and complete the Employee Report for this school year before proceeding.
+                         <div class="" style="text-align: right;">
+                            <button type="submit" name="import_personnel" value="1" class="btn btn-sm btn-ISEIyellow ">
+                                 Import Personnel Information from {{ ar_school_year }} Employee Report
+                            </button>
+                         </div>
+                    {% endif %}
+
+                </form>
+            </div>
+        <hr>
+    </div>
+
+<!-- Employee lists imported from opening Employee Report -->
+<!-- Toggle Button -->
+    <div class="card card-body mt-3 noprint">
+        <div class="row">
+            <div class="col"><h6>Employee lists 1., 2. and 3.</h6></div>
+            <div class="col" style="text-align: right;">
+                <button class="btn btn-xs btn-ISEIblue4 mb-2" type="button" data-toggle="collapse" data-target="#employeeLists" aria-expanded="true" aria-controls="employeeLists">
+                    Toggle Employee Lists
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- Employee List -->
+    <div id="employeeLists" class="collapse show">
+    <!--Employee Tables -->
+        <div class="card card-body">
+<!--1. Administrative, Academic Instructors, Deans -->
+            <h6>1. Administrative, Academic Instructors, Deans</h6>
+            <table class="table table-sm table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4"></th>
+                        <th class="blue-header2" colspan="2">Certification Status</th>
+                        <th class="blue-header2" colspan="2">Years of Employment</th>
+                    </tr>
+                    <tr>
+                        <th class="blue-header2">Name</th>
+                        <th class="blue-header2">Status*</th>
+                        <th class="blue-header2">Assignment/Responsibility</th>
+                        <th class="blue-header2">Highest Degree</th>
+                        <th class="blue-header2">ISEI/NAD/State</th>
+                        <th class="blue-header2">Renewal Date</th>
+                        <th class="blue-header2">Total</th>
+                        <th class="blue-header2">At this school</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for p in admin_academic_dean %}
+                        <tr>
+                            <td class="blue-column">{{ p.first_name }}  {{ p.last_name }}</td>
+                            <td class="blue-column">{{ p.status }}</td>
+                            <td class="blue-column">
+                                    {% for position in p.position.all %}
+                                        {{ position.name }}<br>
+                                    {% empty %}
+                                        No positions assigned
+                                    {% endfor %}
+                            </td>
+                            <td class="blue-column">{{ p.highest_degree }}</td>
+                            <td class="orange-column">{{ p.certification }}</td>
+                            <td class="orange-column">{{ p.cert_renewal_date }}</td>
+                            <td class="blue-column">{{ p.years_experience }}</td>
+                            <td class="blue-column">{{ p.years_at_this_school }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+<!--2. Vocational Instructors -->
+            <h6 class="mt-2">2. Vocational Instructors</h6>
+            <table class="table table-sm table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4"></th>
+                        <th class="blue-header2" colspan="2">Certification Status</th>
+                        <th class="blue-header2" colspan="2">Years of Employment</th>
+                    </tr>
+                    <tr>
+                        <th class="blue-header2">Name</th>
+                        <th class="blue-header2">Status*</th>
+                        <th class="blue-header2">Assignment/Responsibility</th>
+                        <th class="blue-header2">Highest Degree</th>
+                        <th class="blue-header2">ISEI/NAD/State</th>
+                        <th class="blue-header2">Renewal Date</th>
+                        <th class="blue-header2">Total</th>
+                        <th class="blue-header2">At this school</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for p in vocational_instructors %}
+                        <tr>
+                            <td class="blue-column">{{ p.first_name }}  {{ p.last_name }}</td>
+                            <td class="blue-column">{{ p.status }}</td>
+                            <td class="blue-column">
+                                    {% for position in p.position.all %}
+                                        {{ position.name }}<br>
+                                    {% empty %}
+                                        No positions assigned
+                                    {% endfor %}
+                            </td>
+                            <td class="blue-column">{{ p.highest_degree }}</td>
+                            <td class="orange-column">{{ p.certificate }}</td><td class="orange-column">{{ p.cert_renewal_date }}</td>
+                            <td class="blue-column">{{ p.years_experience }}</td> <td class="blue-column">{{ p.years_at_this_school }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+<!--3. Non-instructional Staff -->
+            <h6 class="mt-2">3. Non-instructional Staff</h6>
+            <table class="table table-sm table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="3"></th>
+                    <th class="blue-header2" colspan="2">Years of Employment</th>
+                </tr>
+                <tr>
+                    <th class="blue-header2">Name</th>
+                    <th class="blue-header2">Status*</th><th class="blue-header2">Assignment/Responsibility</th>
+                    <th class="blue-header2">Total</th><th class="blue-header2">At this school</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in non_instructional %}
+                    <tr>
+                        <td class="blue-column">{{ p.first_name }}  {{ p.last_name }}</td>
+                        <td class="blue-column">{{ p.status }}</td>
+                        <td class="blue-column">
+                                {% for position in p.position.all %}
+                                    {{ position.name }}<br>
+                                {% empty %}
+                                    No positions assigned
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td class="blue-column">{{ p.years_experience }}</td> <td class="blue-column">{{ p.years_at_this_school }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+            <!-- Legend -->
+            <div class="legend">
+                    <strong class="text-ISEIblue4">*Status Legend:</strong>
+                    <span><strong>FT</strong> - Full Time</span> |
+                    <span><strong>PT</strong> - Part Time</span> |
+                    <span><strong>VO</strong> - Volunteer</span> |
+                    <span><strong>LO</strong> - Leave of Absence</span>
+            </div>
+        </div>
+    </div>
+
+<!-- Addiitional Staff Data-->
+    <div class="card-body card mt-3">
+        <h6 class="">4. Additional Staff Data</h6>
+        <hr>
+        <div>
+            <form id="fte-form" method="post">
+                {% csrf_token %}
+
+                {{ fte_formset.management_form }}
+
+                <!-- Display form errors at the formset level -->
+                {% if fte_formset.non_form_errors %}
+                    <div class="errors">
+                        {% for error in fte_formset.non_form_errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+    <!-- FTE DATA-->
+                <div class="row">
+                    <div class="col-auto">
+                        <p class="font-weight-bold"> a. Indicate the staff full-time equivalent (FTE) assigned to the following areas:
+                        </p>
+                        <table class="table table-sm table-striped table-bordered">
+                            <thead class="table-ISEIblue4">
+                                <tr>
+                                    <th>Assignment</th>
+                                    <th class="text-left">FTE Men</th>
+                                    <th class="text-left">FTE Women</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for form in fte_formset %}
+                                    <tr class="">
+                                        <td class="">{{ form.instance.assignment}}</td>
+                                        <td class=""> {{ form.id }}
+                                            {{ form.fte_men}}
+                                            {% if form.fte_men.errors %}
+                                                <div class="errors">
+                                                    {% for error in form.fte_men.errors %}
+                                                        <p class="error">{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="">
+                                            {{ form.fte_women }}
+                                            {% if form.fte_women.errors %}
+                                                <div class="errors">
+                                                    {% for error in form.fte_women.errors %}
+                                                        <p class="error">{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="fte-total">0.00</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th id="total-fte-men">0.00</th>
+                                    <th id="total-fte-women">0.00</th>
+                                    <th id="grand-total-fte">0.00</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="col-auto">
+                        <label class="font-weight-bold">
+                            b. Ratio of Students to FTE Instructional Staff:
+                        </label> <br>
+                        {{ fte_equivalency_form.fte_student_ratio }}
+                        {{ fte_equivalency_form.fte_student_ratio.errors }}
+
+                        <hr>
+                        <label class="font-weight-bold">c. Summary of academic preparation of administration and instructional staff:</label>
+
+                        <table class="table table-sm table-bordered">
+                            <thead class="blue-header2">
+                                <tr>
+                                    <th>Degree</th>
+                                    <th>Men</th>
+                                    <th>Women</th>
+                                    <th>Totals</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for degree, gender_counts in degree_gender_dict.items %}
+                                <tr>
+                                    <td>{{ degree }}</td>
+                                    <td>{{ gender_counts.M }}</td>
+                                    <td>{{ gender_counts.F }}</td>
+                                    <td>{{ gender_counts.M|add:gender_counts.F }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <button id="fte-save-button" name="fte-data" class="btn btn-sm btn-ISEIyellow" type="submit">Save FTE Data</button>
+                <hr>
+
+                <!--button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</--button>
+                <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button -->
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+
+// 1. Auto-expanding textareas
+//        { % include "includes/script_auto_expand_textarea.html" %}
+
+//2.When content changes show Save button. Also remove the Content Saved Message
+        //{ % include "includes/script_show_save_button_on_content-form_change.html"  %}
+        //2.When content changes show Save button. Also remove the Content Saved Message
+        let form = document.querySelector("#fte-form");
+        let saveButton = document.querySelector("#fte-save-button");
+        let formChanged = false;
+
+        toggleButtons(false); // Initially hide buttons
+
+    // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
+        if (form && (document.querySelector(".messages") || (saveButton && saveButton.style.display === "none"))) {
+            form.addEventListener("click", handleChange);
+        }
+
+        function handleChange() {
+            // Only remove messages if they exist
+            if (document.querySelector(".messages")) {
+                removeMessages();
+            }
+
+            // Only toggle buttons if they are hidden
+            if (!formChanged && saveButton && saveButton.style.display === "none") {
+                formChanged = true;
+                toggleButtons(true);
+            }
+        }
+
+        function removeMessages() {
+            document.querySelectorAll(".messages").forEach(message => message.remove());
+        }
+
+        function toggleButtons(show) {
+            if (saveButton) saveButton.style.display = show ? "inline-block" : "none";
+        }
+
+
+
+//3. Calculate total FTE as users enter data
+    document.addEventListener("DOMContentLoaded", function () {
+            function updateTotals() {
+                let totalFteMen = 0;
+                let totalFteWomen = 0;
+
+                document.querySelectorAll("tbody tr").forEach(row => {
+                    let fteMenInput = row.querySelector("input[name*='fte_men']");
+                    let fteWomenInput = row.querySelector("input[name*='fte_women']");
+                    let totalCell = row.querySelector(".fte-total");
+
+                    if (fteMenInput && fteWomenInput) {
+                        function calculateRowTotal() {
+                            let fteMen = parseFloat(fteMenInput.value) || 0;
+                            let fteWomen = parseFloat(fteWomenInput.value) || 0;
+                            let rowTotal = fteMen + fteWomen;
+
+                            totalCell.textContent = rowTotal.toFixed(2);
+
+                            // Recalculate overall totals
+                            updateOverallTotals();
+                        }
+
+                        // Initialize row total
+                        calculateRowTotal();
+
+                        // Listen for input events
+                        fteMenInput.addEventListener("input", calculateRowTotal);
+                        fteWomenInput.addEventListener("input", calculateRowTotal);
+                    }
+                });
+            }
+
+            function updateOverallTotals() {
+                let totalFteMen = 0;
+                let totalFteWomen = 0;
+
+                document.querySelectorAll("tbody tr").forEach(row => {
+                    let fteMenInput = row.querySelector("input[name*='fte_men']");
+                    let fteWomenInput = row.querySelector("input[name*='fte_women']");
+
+                    if (fteMenInput && fteWomenInput) {
+                        totalFteMen += parseFloat(fteMenInput.value) || 0;
+                        totalFteWomen += parseFloat(fteWomenInput.value) || 0;
+                    }
+                });
+
+                // Update totals in the footer row
+                document.getElementById("total-fte-men").textContent = totalFteMen.toFixed(2);
+                document.getElementById("total-fte-women").textContent = totalFteWomen.toFixed(2);
+                document.getElementById("grand-total-fte").textContent = (totalFteMen + totalFteWomen).toFixed(2);
+            }
+
+            updateTotals();
+        });
+
+    </script>
+{% endblock %}

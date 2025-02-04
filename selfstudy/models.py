@@ -3,9 +3,10 @@ from accreditation.models import Accreditation,Standard, Indicator
 from django.contrib.auth.models import User
 
 from users.models import StateField, Country
+from reporting.models import StaffStatus, StaffPosition
 
 
-#Models for inforormation needed from the schools (Standards + Inidcators are in Accreditation app)
+#Models for information needed from the schools (Standards + Inidcators are in Accreditation app)
 
 #Financial Data Keys
 class FinancialAdditionalDataKey(models.Model):
@@ -27,6 +28,19 @@ class FinancialTwoYearDataKey(models.Model):
         ordering = ['order_number']
     def __str__(self):
         return self.name
+
+
+#Personnel Data Keys
+class FTEAssignmentKey(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    order_number = models.PositiveSmallIntegerField(default=0, verbose_name="Order Number")
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order_number']
+    def __str__(self):
+        return self.name
+
 
 #Narrative Text (to be used after each Standard)
 class StandardNarrative(models.Model):
@@ -57,6 +71,8 @@ class ActionPlanInstructions(models.Model):
         return "Action Plan Instructions for SelfStudy"
 
 
+
+
 #Building a SelfStudy for a School
 class SelfStudy(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
@@ -67,7 +83,6 @@ class SelfStudy(models.Model):
 
     def __str__(self):
         return f"SelfStudy: {self.accreditation.school},{self.accreditation.visit_date_range()}"
-
 
 class SelfStudy_Team(models.Model):
     """A team either for coordinating or evaluating a standard."""
@@ -116,10 +131,10 @@ class SchoolProfile(models.Model):
 #B. School History
     school_history = models.TextField(null=True, blank=True)
 
+    #this belongs to D
+    fte_student_ratio = models.CharField(max_length=10, null=True, blank=True)
 
-#TODO Finalize school Profile
-
-# C.Financial Data
+#C.Financial Data
 class FinancialTwoYearDataEntry(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="two_year_financial_data")
     data_key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
@@ -134,6 +149,40 @@ class FinancialAdditionalDataEntry(models.Model):
     value = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
         return f"{self.data_key.name}: {self.value}"
+
+
+#D. Personnel Data
+class SelfStudyPersonnelData(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="personnel_data")
+    first_name=models.CharField(max_length=255, null=True, blank=True)
+    last_name=models.CharField(max_length=255, null=True, blank=True)
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+
+    status = models.CharField("status", max_length=2,
+                              choices=StaffStatus.choices, default=StaffStatus.FULL_TIME, )
+    position = models.ManyToManyField(StaffPosition, blank=True, verbose_name="Assignment/Responsibility")
+    highest_degree = models.CharField(max_length=60, null=True, blank=True)
+    certification=models.CharField(max_length=255, null=True, blank=True)
+    cert_renewal_date=models.DateField(null=True, blank=True)
+    endorsements=models.CharField(max_length=400, null=True, blank=True)
+    years_experience=models.PositiveSmallIntegerField(null=True, blank=True)
+    years_at_this_school=models.PositiveSmallIntegerField(null=True, blank=True)
+
+class FullTimeEquivalency(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="fte_assignments")
+    assignment = models.ForeignKey(FTEAssignmentKey, on_delete=models.CASCADE)
+    fte_men = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    fte_women = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+
+    def total_fte(self):
+        return self.fte_men + self.fte_women
+
+    def __str__(self):
+        return f"{self.assignment.name} - Men: {self.fte_men}, Women: {self.fte_women}"
 
 
 

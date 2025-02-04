@@ -7,7 +7,8 @@ urlpatterns = [
 
     path('<int:selfstudy_id>/selfstudy_profile/', views.selfstudy_profile, name='selfstudy_profile'),
     path('<int:selfstudy_id>/profile_history/', views.profile_history, name='profile_history'),
-    path('<int:selfstudy_id>/profile_financial_data/', views.profile_financial_data, name='profile_financial_data'),
+    path('<int:selfstudy_id>/profile_financial/', views.profile_financial, name='profile_financial'),
+    path('<int:selfstudy_id>/profile_personnel/', views.profile_personnel, name='profile_personnel'),
 
     path('<int:selfstudy_id>/standard/<int:standard_id>/', views.selfstudy_standard, name='selfstudy_standard'),
     path('<int:selfstudy_id>/selfstudy_actionplan_instructions/', views.selfstudy_actionplan_instructions, name='selfstudy_actionplan_instructions'),

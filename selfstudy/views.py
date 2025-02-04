@@ -6,7 +6,7 @@ from django.urls import reverse
 from users.utils import is_in_any_group
 from django.contrib import messages
 
-from django.db.models import Max
+from django.db.models import Max, Count, Q
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
@@ -15,8 +15,10 @@ from users.models import UserProfile
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
 from apr.models import APR, ActionPlan
-from reporting.models import AnnualReport, Personnel, StaffStatus
+from reporting.models import AnnualReport, Personnel, StaffStatus, StaffCategory
 from .models import *
+
+from teachercert.myfunctions import newest_certificate
 
 #Creating the self-study views
 def get_or_create_selfstudy(accreditation):
@@ -34,17 +36,24 @@ def setup_coordinating_team(selfstudy, standards):
 def setup_school_profile(selfstudy):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
 
-    # Create entries for FinancialTwoYearDataEntries for all keys
+    # Create entries for FinancialTwoYearDataEntries for all active keys
     for data_key in FinancialTwoYearDataKey.objects.filter(active=True):
         FinancialTwoYearDataEntry.objects.get_or_create(
             school_profile=school_profile,
             data_key=data_key,
         )
-    # Create entries for FinancialAdditionalDataEntries for all keys
+    # Create entries for FinancialAdditionalDataEntries for all active keys
     for data_key in FinancialAdditionalDataKey.objects.filter(active=True):
         FinancialAdditionalDataEntry.objects.get_or_create(
             school_profile=school_profile,
             data_key=data_key,
+        )
+
+    # Create entries for FullTimeEquivalency for all keys
+    for assignment in FTEAssignmentKey.objects.filter(active=True):
+        FullTimeEquivalency.objects.get_or_create(
+            school_profile=school_profile,
+            assignment=assignment,
         )
 
 def setup_indicator_evaluations(selfstudy):
@@ -473,7 +482,6 @@ def selfstudy_profile(request, selfstudy_id):
     return render(request, "selfstudy/profile.html", context )
 
 
-
 def profile_history(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -496,7 +504,7 @@ def profile_history(request, selfstudy_id):
 
     return render(request, 'selfstudy/profile_history.html', context)
 
-def profile_financial_data(request, selfstudy_id):
+def profile_financial(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
@@ -526,7 +534,143 @@ def profile_financial_data(request, selfstudy_id):
     two_year_formset = FinancialTwoYearDataFormSet(queryset=two_year_data_queryset, prefix="two_years")
     additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset, prefix="additional")
 
-    context = dict(selfstudy=selfstudy, standards = standards,active_link="profile",
+    context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial",
                     two_year_formset = two_year_formset, additional_formset = additional_formset )
 
-    return render(request, 'selfstudy/profile_financial_data.html', context)
+    return render(request, 'selfstudy/profile_financial.html', context)
+
+
+#helper functions for Profile Personnel
+def import_personnel_data(request, school_profile, annual_report):
+    """Imports personnel data from the latest annual report."""
+    if not annual_report:
+        messages.error(request, "Employee Report for this school not found!")
+        return
+
+    active_personnel = annual_report.personnel_set.exclude(status=StaffStatus.NO_LONGER_EMPLOYED)
+    updated_ids = []
+
+    for personnel in active_personnel:
+        years_experience = max(personnel.years_work_experience or 0, personnel.years_teaching_experience or 0,
+                               personnel.years_administrative_experience or 0)
+        highest_degree = personnel.degrees.order_by('-rank').first()
+        highest_degree_name = highest_degree.name if highest_degree else None
+
+        ss_personnel, created = SelfStudyPersonnelData.objects.update_or_create(
+            school_profile=school_profile,
+            first_name=personnel.first_name,
+            last_name=personnel.last_name,
+            defaults={
+                'status': personnel.status,
+                'years_experience': years_experience,
+                'years_at_this_school': personnel.years_at_this_school,
+                'highest_degree': highest_degree_name,
+                'gender': personnel.gender,
+            }
+        )
+
+        ss_personnel.position.set(personnel.positions.all())
+
+        if personnel.teacher:
+            newest_cert = newest_certificate(personnel.teacher)
+            if newest_cert:
+                endorsements = [e.endorsement.name for e in newest_cert.tendorsement_set.all()]
+                ss_personnel.certification = newest_cert.certification_type.name
+                ss_personnel.cert_renewal_date = newest_cert.renewal_date
+                ss_personnel.endorsements = ', '.join(endorsements)
+
+        ss_personnel.save()
+        updated_ids.append(ss_personnel.id)
+
+    SelfStudyPersonnelData.objects.filter(school_profile=school_profile).exclude(id__in=updated_ids).delete()
+
+    messages.success(request, "Personnel was successfully imported/updated!")
+
+def handle_fte_data(request, school_profile, fte_queryset):
+    """Handles FTE data form submission."""
+    FTE_formset = FTEFormSet(request.POST, queryset=fte_queryset, prefix="fte")
+    fte_equivalency_form = FTEEquivalencyForm(request.POST, instance=school_profile)
+
+    if FTE_formset.is_valid():
+        if any(form.has_changed() for form in FTE_formset):
+            FTE_formset.save()
+            messages.success(request, "Full Time Equivalency Data has been successfully saved!")
+    else:
+        messages.error(request, "Some Full Time Equivalency Data was not saved!")
+
+    if fte_equivalency_form.is_valid():
+        if fte_equivalency_form.has_changed():
+            fte_equivalency_form.save()
+            messages.success(request, "FTE Student Ratio has been successfully saved!")
+    else:
+        messages.error(request, "FTE Student Ratio was not saved!")
+
+    if not list(messages.get_messages(request)):
+        messages.info(request, "No changes were made in FTE Data.")
+
+    return FTEFormSet(queryset=fte_queryset, prefix="fte"), FTEEquivalencyForm(instance=school_profile)
+
+def profile_personnel(request, selfstudy_id):
+    """Main personnel profile view, handling personnel data and FTE data."""
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school = selfstudy.accreditation.school
+    standards = Standard.objects.top_level()
+
+    #get the last annual_report to import data from
+    annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER").order_by('school_year__name').last()
+    arID=annual_report.id or None
+    ar_school_year=annual_report.school_year or None
+
+    FTE_formset = FTEFormSet(queryset=FullTimeEquivalency.objects.filter(school_profile=school_profile), prefix="fte")
+    fte_equivalency_form = FTEEquivalencyForm(instance=school_profile)
+
+    #import_personnel and fte-data functions are defined above
+    if request.method == "POST":
+        if "import_personnel" in request.POST:
+            import_personnel_data(request, school_profile, annual_report)
+        if "fte-data" in request.POST:
+            FTE_formset, fte_equivalency_form = handle_fte_data(request, school_profile, FullTimeEquivalency.objects.filter(school_profile=school_profile))
+
+#Personnel Data to be displayed (was imported with "import_personnel"
+    personnel_data = SelfStudyPersonnelData.objects.filter(school_profile__selfstudy=selfstudy)
+    if personnel_data:
+        personnel_imported = True
+    else:
+        personnel_imported = False
+
+    teaching_admin_positions = StaffPosition.objects.filter(
+        category__in=[StaffCategory.TEACHING, StaffCategory.ADMINISTRATIVE]).exclude(
+        name="Practical Arts/Life Skills Teacher")
+    admin_academic_dean = personnel_data.filter(position__in=teaching_admin_positions).distinct()
+    vocational_instructors = personnel_data.filter(position__name="Practical Arts/Life Skills Teacher").exclude(
+        id__in=admin_academic_dean.values_list('id', flat=True))
+    non_instructional = personnel_data.filter(Q(position__category=StaffCategory.GENERAL_STAFF) & ~Q(
+        position__category__in=[StaffCategory.TEACHING, StaffCategory.ADMINISTRATIVE]))
+
+    # Count men and women in each degree category
+    degree_gender_counts = personnel_data.values('highest_degree', 'gender') \
+        .annotate(gender_count=Count('id'),).order_by('highest_degree', 'gender')
+    # Prepare the data into a dictionary for easy display
+    degree_gender_dict = {}
+
+    for item in degree_gender_counts:
+        degree = item['highest_degree']
+        gender = item['gender']
+        count = item['gender_count']
+
+        if degree not in degree_gender_dict:
+            degree_gender_dict[degree] = {'M': 0, 'F': 0}
+
+        degree_gender_dict[degree][gender] = count
+
+
+    context = dict( selfstudy=selfstudy, standards=standards, active_sublink="personnel",
+        admin_academic_dean=admin_academic_dean, vocational_instructors=vocational_instructors, non_instructional=non_instructional,
+        arID=arID, ar_school_year=ar_school_year, personnel_imported = False,
+        fte_formset=FTE_formset, fte_equivalency_form=fte_equivalency_form,
+        degree_gender_dict=degree_gender_dict,
+    )
+
+    return render(request, 'selfstudy/profile_personnel.html', context)
+

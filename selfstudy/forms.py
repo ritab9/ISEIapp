@@ -84,6 +84,27 @@ class FinancialAdditionalDataEntryForm(forms.ModelForm):
 FinancialTwoYearDataFormSet = modelformset_factory(FinancialTwoYearDataEntry, form=FinancialTwoYearDataEntryForm, extra=0, can_delete=False)
 FinancialAdditionalDataFormSet = modelformset_factory(FinancialAdditionalDataEntry,form=FinancialAdditionalDataEntryForm, extra=0, can_delete=False)
 
+class FullTimeEquivalencyForm(forms.ModelForm):
+    class Meta:
+        model = FullTimeEquivalency
+        fields = ['id', 'fte_men','fte_women']
+
+    fte_men=forms.DecimalField(
+        required=False, max_digits=10, decimal_places=2,
+        widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
+    )
+    fte_women=forms.DecimalField(
+        required=False, max_digits=10, decimal_places=2,
+        widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
+    )
+
+FTEFormSet = modelformset_factory(FullTimeEquivalency, form=FullTimeEquivalencyForm, extra=0, can_delete=False)
+
+class FTEEquivalencyForm(forms.ModelForm):
+    class Meta:
+        model = SchoolProfile
+        fields = ['fte_student_ratio']
+
 class StandardEvaluationForm(forms.ModelForm):
     class Meta:
         model = StandardEvaluation
