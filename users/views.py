@@ -383,6 +383,8 @@ def update_school_info(request, schoolID):
         form_school = SchoolForm(instance=school)
         form_address = SchoolAddressForm(instance=address)
 
+
+
     context = {
         'form_school': form_school,
         'form_address': form_address,

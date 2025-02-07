@@ -12,30 +12,36 @@
             {% csrf_token %}
             <div class="row">
                 <div class="col col-auto">
-                    {{ form_school.name|as_crispy_field  }}
-                    {{ form_school.phone_number|as_crispy_field  }}
-                    {{ form_school.website|as_crispy_field  }}
-                    <br><br>
-                    {% if tn_school %}
-                        {% if is_old %}
-                            <span class="error">
-                                {{ form_school.fire_marshal_date|as_crispy_field }}
-                            </span>
-                        {% else %}
-                            {{ form_school.fire_marshal_date|as_crispy_field }}
+                    <table class="table">
+                    <tbody>
+                        <tr><td>School Name:</td><td>{{ form_school.name }}</td></tr>
+                        <tr><td>Phone Number</td><td> {{ form_school.phone_number }}</td></tr>
+                        <tr><td>Website:</td><td>{{ form_school.website }}</td></tr>
+                        {% if tn_school %}
+                            <tr></tr><td>Last Fire Marshal Evaluation </td>
+                            <td>{% if is_old %}
+                                    <span class="error">
+                                        {{ form_school.fire_marshal_date }}
+                                    </span>
+                                {% else %}
+                                    {{ form_school.fire_marshal_date }}
+                                {% endif %}
+                            </td></tr>
                         {% endif %}
-                    {% endif %}
+
+                        <tr><td>Principal</td><td>{{ form_school.principal }}</td></tr>
+                        <tr><td>President</td><td>{{ form_school.president }}</td></tr>
+                        <tr><td>TextApp</td><td>{{ form_school.textapp }}</td></tr>
+                        <tr><td>Grade Levels</td><td>{{ form_school.grade_levels }}</td></tr>
+                    </tbody>
+                </table>
                 </div>
-                <div class="col col-auto">
-                    {{ form_school.principal|as_crispy_field  }}
-                    {{ form_school.president|as_crispy_field  }}
-                    {{ form_school.textapp|as_crispy_field  }}
-                     {{ form_school.type|as_crispy_field  }}
-                </div>
+
                 <div class="col col-auto">
                     {{ form_address|crispy }}
                 </div>
             </div>
+
             <button class="btn btn-ISEIblue3 btn-sm" type="submit">Update</button>
         </form>
 </div>
