@@ -36,19 +36,20 @@
                     </div>
                 </div>
 
-                    <!-- Display the rest of the recipients -->
-                    <div class="other-recipients">
-                        <p><strong>Other Recipients:</strong></p>
-                        <ul>
-                            {% for recipient in other_recipients %}
-                                <li>{{ recipient.full_name }} ({{ recipient.email }})</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+<!-- Display the rest of the recipients with checkboxes -->
+                <div class="other-recipients">
+                    <p><strong>Select Recipients:</strong></p>
+                    <ul>
+                        {% for recipient in team_members %}
+                            <li>
+                                <input type="checkbox" name="recipients" value="{{ recipient.user.id }}" id="recipient_{{ recipient.user.id }}">
+                                <label for="recipient_{{ recipient.user.id }}">{{ recipient.user.get_full_name }} ({{ recipient.user.email }})</label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-
-
-                    <button type="submit" class="btn btn-sm btn-ISEIblue4">Send Emails</button>
+                <button type="submit" class="btn btn-sm btn-ISEIblue4">Send Emails</button>
 
         </form>
 </div>

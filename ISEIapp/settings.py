@@ -201,7 +201,7 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBacke
 #print emails to console
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-if DEVELOPMENT_MODE is True:
+if DEVELOPMENT_MODE is False:
 #print emails to a file
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = '/Users/ritab/Dropbox/B2 IT Development/Web Development/Email testing'

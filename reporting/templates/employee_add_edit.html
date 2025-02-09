@@ -79,7 +79,7 @@
                             </tr>
                           <tr>
                             <th class="text-left">Teacher Certification <br>Account
-                                <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Teachers in this list have an account on ISEI Teachercertification Platform. Please select if applicable."></i>
+                                <i tabindex="0" class="fas fa-info-circle" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Teachers in this list have an account on ISEI Teachercertification Platform. Please select if applicable."></i>
                                 </th>
                             <td>{{ p_form.teacher }} {{ p_form.teacher.errors }}</td>
                           </tr>
@@ -296,7 +296,7 @@
 
  //Popover
       document.addEventListener("DOMContentLoaded", function(){
-          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
           var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl, {
               trigger: 'hover'

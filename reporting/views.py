@@ -1317,6 +1317,9 @@ def closing_report(request, arID):
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
             else:
                 part_time_grade_count_fields = None
+        else:
+            part_time_grade_count_fields = None
+            grade_count_fields = None
 
     closing.save()
     context = dict(form=form, closing=closing, grade_count_fields = grade_count_fields,

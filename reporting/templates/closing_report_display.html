@@ -112,8 +112,8 @@
                              <tr>
                                 <td colspan="2">
                                     Baptisms as a result of student evangelism
-                                    <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                        data-bs-content="Does not include student baptisms"></i>
+                                    <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                        data-content="Does not include student baptisms"></i>
                                 </td>
                                 <td>{{ closing.student_evangelistic_meetings_baptism }}</td>
                             </tr>
@@ -156,7 +156,7 @@
     <script>
     //Popover
       document.addEventListener("DOMContentLoaded", function(){
-          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
           var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl, {
               trigger: 'hover'

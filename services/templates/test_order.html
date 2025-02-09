@@ -40,7 +40,7 @@
 <!--Answer Sheets -->
                 <div class="col-auto ">
                     <div class="row">
-                        <h6 class="col-auto">Answer Sheets<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Order one per student"></i>
+                        <h6 class="col-auto">Answer Sheets<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Order one per student"></i>
                         </h6>
                         <div class="col-auto"> Price: ${{ answer_sheet.price }}</div>
                     </div>
@@ -87,7 +87,7 @@
 <!-- Booklets -->
                 <div class="col-auto ">
                     <div class="row">
-                        <h6 class="col-auto">Reusable Test Booklets<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Can be reused from previous year. Only order if more students are taking the test then booklets already available at the school."></i>
+                        <h6 class="col-auto">Reusable Test Booklets<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Can be reused from previous year. Only order if more students are taking the test then booklets already available at the school."></i>
                         </h6>
                         <div class="col-auto"> Price: ${{ test_material_booklet.price }}</div>
                     </div>
@@ -140,7 +140,7 @@
 <!--Direction Booklets -->
                 <div class="col-auto ">
                     <div class="row">
-                        <h6 class="col-auto">Admin Direction Booklets <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Only one needed of each type."></i>
+                        <h6 class="col-auto">Admin Direction Booklets <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Only one needed of each type."></i>
                         </h6>
                         <div class="col-auto"> Price: ${{ admin_directions_booklet.price }}</div>
                     </div>
@@ -297,7 +297,7 @@
 
 //Popover
       document.addEventListener("DOMContentLoaded", function(){
-          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
           var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl, {
               trigger: 'hover'

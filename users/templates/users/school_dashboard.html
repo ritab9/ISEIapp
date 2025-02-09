@@ -113,8 +113,8 @@
                                                         <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
                                                     {% else %}
                                                         <span style="color: gray;">Edit</span>
-                                                        <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                                                          data-bs-content="Opening report needs to be submitted first."></i>
+                                                        <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                                                          data-content="Opening report needs to be submitted first."></i>
                                                     {% endif %}
                                                     </div>
                                                     <div class="col">
@@ -141,8 +141,8 @@
                                                             <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
                                                         {% else %}
                                                             <span style="color: gray;">Edit</span>
-                                                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                                                              data-bs-content="Student and Employee report needs to be submitted first."></i>
+                                                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                                                              data-content="Student and Employee report needs to be submitted first."></i>
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if report.report_type.code == "CR" %}
@@ -150,8 +150,8 @@
                                                             <a class="error report_edit" href="{% url report.report_type.view_name report.id %}"> Edit </a>
                                                         {% else %}
                                                             <span style="color: gray;">Edit</span>
-                                                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                                                              data-bs-content="Opening report needs to be submitted first."></i>
+                                                            <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                                                              data-content="Opening report needs to be submitted first."></i>
                                                         {% endif %}
                                                     {% endif %}
 
@@ -223,7 +223,7 @@
     });
 
     document.addEventListener("DOMContentLoaded", function(){
-          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
           var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl, {
               trigger: 'hover'

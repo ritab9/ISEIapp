@@ -32,15 +32,15 @@
                                 <tr>
                                     <td style="width: 1px; white-space: nowrap;">
                                         <b>{{ day190_form.start_date.label_tag }}</b>
-                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="First day students are present"></i>
+                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="First day students are present"></i>
                                     </td>
                                     <td>{{ day190_form.start_date }}{{ day190_form.start_date.errors }}</td>
                                 </tr>
                                 <tr>
                                     <td style="width: 1px; white-space: nowrap;">
                                         <b>{{ day190_form.end_date.label_tag }}</b>
-                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                data-bs-content="Either the last school day, or graduation date if all students are present for graduation."></i>
+                                        <i tabindex="0" class="fas fa-info-circle" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                data-content="Either the last school day, or graduation date if all students are present for graduation."></i>
                                     </td>
                                     <td> {{ day190_form.end_date }}{{ day190_form.end_date.errors }}</td>
                                 </tr>
@@ -75,7 +75,7 @@
                             <table class="table-sm table-bordered">
 
                                 <thead>
-                                    <th colspan="2">School Calendar<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Upload File OR provide a Link"></i>
+                                    <th colspan="2">School Calendar<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Upload File OR provide a Link"></i>
 
                                     </th>
                                 </thead>
@@ -96,7 +96,7 @@
 
 <!-- Vacations formset -->
                     <div class="col-auto vertical-divider">
-                            <h6>Vacations and School Breaks<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right" data-bs-content="Vacation weekdays subtracted from no. of weekdays in school year"></i>
+                            <h6>Vacations and School Breaks<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="Vacation weekdays subtracted from no. of weekdays in school year"></i>
                             </h6>
                         <div id="vacation-formset">
                             {{ formset_vacation.management_form }}
@@ -144,8 +144,8 @@
 
 <!-- Sunday School Formset-->
                     <div class="col-auto vertical-divider">
-                            <h6>Sunday School Days<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                data-bs-content="Days added to no. of school days. These are Sundays on which the majority of the students involved in Educational Activity. "></i>
+                            <h6>Sunday School Days<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                data-content="Days added to no. of school days. These are Sundays on which the majority of the students involved in Educational Activity. "></i>
                             </h6>
                         <div id="sunday-formset">
                             {{ formset_sunday.management_form }}
@@ -201,14 +201,14 @@
 <!-- Inservice and Discretionary Days and Hours -->
                     <div class="col-auto vertical-divider">
                         <h6>
-                            In-service<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                data-bs-content="In-Services are school-wide planned activities designed to increase the competencies needed by teachers."></i>
+                            In-service<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                data-content="In-Services are school-wide planned activities designed to increase the competencies needed by teachers."></i>
                             and
-                            Discretionary<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                data-bs-content="Work days provided to teachers for setting up the classroom at the beginning of the school year (elementary), yearly planning, end of term grades, individual PD days."></i>
+                            Discretionary<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                data-content="Work days provided to teachers for setting up the classroom at the beginning of the school year (elementary), yearly planning, end of term grades, individual PD days."></i>
                              Days/Hours
-                             <i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                data-bs-content="Added to the 180 days to make up 190."></i>
+                             <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                data-content="Added to the 180 days to make up 190."></i>
 
                              </h6>
 
@@ -272,8 +272,8 @@
 
 <!-- Enrichement Activity Formset-->
                     <div class="col-auto vertical-divider">
-                        <h6>Educational Enrichment Activity<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                data-bs-content="In lieu of regular classroom instruction. These days do not alter the number of school days."></i>
+                        <h6>Educational Enrichment Activity<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                data-content="In lieu of regular classroom instruction. These days do not alter the number of school days."></i>
 
 
                         </h6>
@@ -322,8 +322,8 @@
 
 <!-- AbbreviatedDays formset -->
                     <div class="col-auto vertical-divider">
-                        <h6>Abbreviated Days<i tabindex="0" class="fas fa-info-circle span80" role="button" data-bs-toggle="popover" data-trigger="focus" data-bs-placement="right"
-                                                data-bs-content="Part of the 180 days (last day before break, orientation, graduation, etc.)"></i>
+                        <h6>Abbreviated Days<i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                                data-content="Part of the 180 days (last day before break, orientation, graduation, etc.)"></i>
                         </h6>
 
                         <div id="abbreviated-formset">
@@ -960,13 +960,8 @@
     });
 
 //Popover
-      document.addEventListener("DOMContentLoaded", function(){
-          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl, {
-              trigger: 'hover'
-            })
-          })
+      $(document).ready(function(){
+          $('[data-toggle="popover"]').popover();
         });
 
 </script>

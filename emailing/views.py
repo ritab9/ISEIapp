@@ -82,25 +82,28 @@ def send_email_selfstudy_coordinating_team(request, selfstudy_id):
 
     if request.method == 'POST':
         failed_recipients = []  # Track failed sends
+        selected_recipients = request.POST.getlist('recipients') # Get the selected recipients
+
         # Get the edited body content from the form if it exists
         override = request.POST.get('override') == 'true'
         edited_body = request.POST.get('edited_body') if override else None
 
         for member in team_members:
             user = member.user
-            context = {'user': user}
-            # Render subject and body, using the edited content if provided
-            subject, body = template.render(context, body_override=edited_body)
-            try:
-                send_mail(
-                    subject=subject,
-                    message=body,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    html_message=linebreaksbr(body),
-                )
-            except Exception as e:
-                failed_recipients.append(member.user.email)  # Track failures
+            if str(user.id) in selected_recipients:
+                context = {'user': user}
+                # Render subject and body, using the edited content if provided
+                subject, body = template.render(context, body_override=edited_body)
+                try:
+                    send_mail(
+                        subject=subject,
+                        message=body,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        html_message=linebreaksbr(body),
+                    )
+                except Exception as e:
+                    failed_recipients.append(member.user.email)  # Track failures
 
         #if failed_recipients:
         #    messages.error(request,
@@ -112,7 +115,8 @@ def send_email_selfstudy_coordinating_team(request, selfstudy_id):
 
     context=dict(selfstudy=selfstudy, standards=standards,
                  example_email=example_email, other_recipients=other_recipients,
-                 template_body=template.body)
+                 template_body=template.body,
+                 team_members=team_members,)
 
     return render(request, 'send_email_selfstudy_coordinating_team.html', context)
 
