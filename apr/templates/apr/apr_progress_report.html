@@ -67,6 +67,8 @@
 
 </div>
 
+    <meta name="csrf-token" content="{% csrf_token %}">
+
 {% endblock %}
 
 
@@ -76,8 +78,7 @@
 
 //update yearly  Progress
     function saveProgress(progressId, newDescription) {
-
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch(`/update_progress/${progressId}/`, {
             method: 'POST',
@@ -198,6 +199,8 @@
 //Update Action Plan Directive submission date
     document.addEventListener('DOMContentLoaded', function () {
         const dateInputs = document.querySelectorAll('.completed-date-input');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 
         dateInputs.forEach(input => {
           input.addEventListener('change', function () {
@@ -208,7 +211,7 @@
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': csrfToken,
               },
               body: JSON.stringify({
                 id: directiveId,
