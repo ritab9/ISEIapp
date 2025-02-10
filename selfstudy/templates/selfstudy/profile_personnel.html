@@ -24,9 +24,9 @@
                 </div>
         {% endif %}
 
-        <hr>
 <!-- Import/Update button -->
             <div class="noprint">
+              <hr>
                 <form method="POST">
                     {% csrf_token %}
 
@@ -56,10 +56,9 @@
                             </button>
                          </div>
                     {% endif %}
-
                 </form>
+                 <hr class="noprint">
             </div>
-        <hr>
     </div>
 
 <!-- Employee lists imported from opening Employee Report -->
@@ -85,8 +84,8 @@
                 <thead>
                     <tr>
                         <th colspan="4"></th>
-                        <th class="blue-header2" colspan="2">Certification Status</th>
-                        <th class="blue-header2" colspan="2">Years of Employment</th>
+                        <th class="blue-header" colspan="2">Certification Status</th>
+                        <th class="blue-header" colspan="2">Years of Employment</th>
                     </tr>
                     <tr>
                         <th class="blue-header2">Name</th>
@@ -103,34 +102,34 @@
                 <tbody>
                     {% for p in admin_academic_dean %}
                         <tr>
-                            <td class="blue-column">{{ p.first_name }}  {{ p.last_name }}</td>
-                            <td class="blue-column">{{ p.status }}</td>
-                            <td class="blue-column">
+                            <td>{{ p.first_name }}  {{ p.last_name }}</td>
+                            <td>{{ p.status }}</td>
+                            <td>
                                     {% for position in p.position.all %}
                                         {{ position.name }}<br>
                                     {% empty %}
                                         No positions assigned
                                     {% endfor %}
                             </td>
-                            <td class="blue-column">{{ p.highest_degree }}</td>
-                            <td class="orange-column">{{ p.certification }}</td>
-                            <td class="orange-column">{{ p.cert_renewal_date }}</td>
-                            <td class="blue-column">{{ p.years_experience }}</td>
-                            <td class="blue-column">{{ p.years_at_this_school }}</td>
+                            <td>{{ p.highest_degree }}</td>
+                            <td>{{ p.certification }}</td>
+                            <td>{{ p.cert_renewal_date }}</td>
+                            <td>{{ p.years_experience }}</td>
+                            <td>{{ p.years_at_this_school }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
 
             </table>
-
+            <hr class="noprint">
 <!--2. Vocational Instructors -->
             <h6 class="mt-2">2. Vocational Instructors</h6>
             <table class="table table-sm table-striped table-bordered">
                 <thead>
                     <tr>
                         <th colspan="4"></th>
-                        <th class="blue-header2" colspan="2">Certification Status</th>
-                        <th class="blue-header2" colspan="2">Years of Employment</th>
+                        <th class="blue-header" colspan="2">Certification Status</th>
+                        <th class="blue-header" colspan="2">Years of Employment</th>
                     </tr>
                     <tr>
                         <th class="blue-header2">Name</th>
@@ -147,23 +146,23 @@
                 <tbody>
                     {% for p in vocational_instructors %}
                         <tr>
-                            <td class="blue-column">{{ p.first_name }}  {{ p.last_name }}</td>
-                            <td class="blue-column">{{ p.status }}</td>
-                            <td class="blue-column">
+                            <td>{{ p.first_name }}  {{ p.last_name }}</td>
+                            <td>{{ p.status }}</td>
+                            <td>
                                     {% for position in p.position.all %}
                                         {{ position.name }}<br>
                                     {% empty %}
                                         No positions assigned
                                     {% endfor %}
                             </td>
-                            <td class="blue-column">{{ p.highest_degree }}</td>
-                            <td class="orange-column">{{ p.certificate }}</td><td class="orange-column">{{ p.cert_renewal_date }}</td>
-                            <td class="blue-column">{{ p.years_experience }}</td> <td class="blue-column">{{ p.years_at_this_school }}</td>
+                            <td>{{ p.highest_degree }}</td>
+                            <td>{{ p.certificate }}</td><td>{{ p.cert_renewal_date }}</td>
+                            <td>{{ p.years_experience }}</td> <td>{{ p.years_at_this_school }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
+            <hr class="noprint">
 <!--3. Non-instructional Staff -->
             <h6 class="mt-2">3. Non-instructional Staff</h6>
             <table class="table table-sm table-striped table-bordered">
@@ -182,9 +181,9 @@
             <tbody>
                 {% for p in non_instructional %}
                     <tr>
-                        <td class="blue-column">{{ p.first_name }}  {{ p.last_name }}</td>
-                        <td class="blue-column">{{ p.status }}</td>
-                        <td class="blue-column">
+                        <td>{{ p.first_name }}  {{ p.last_name }}</td>
+                        <td>{{ p.status }}</td>
+                        <td>
                                 {% for position in p.position.all %}
                                     {{ position.name }}<br>
                                 {% empty %}
@@ -192,13 +191,13 @@
                                 {% endfor %}
                             </ul>
                         </td>
-                        <td class="blue-column">{{ p.years_experience }}</td> <td class="blue-column">{{ p.years_at_this_school }}</td>
+                        <td>{{ p.years_experience }}</td> <td>{{ p.years_at_this_school }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
 
         </table>
-
+            <hr class="noprint">
             <!-- Legend -->
             <div class="legend">
                     <strong class="text-ISEIblue4">*Status Legend:</strong>
@@ -213,7 +212,7 @@
 <!-- Addiitional Staff Data-->
     <div class="card-body card mt-3">
         <h6 class="">4. Additional Staff Data</h6>
-        <hr>
+        <hr class="noprint">
         <div>
             <form id="fte-form" method="post">
                 {% csrf_token %}
@@ -288,10 +287,10 @@
                         {{ fte_equivalency_form.fte_student_ratio }}
                         {{ fte_equivalency_form.fte_student_ratio.errors }}
 
-                        <hr>
+                        <hr class="noprint">
                         <label class="font-weight-bold">c. Summary of academic preparation of administration and instructional staff:</label>
 
-                        <table class="table table-sm table-bordered">
+                        <table class="table table-sm table-bordered table-striped">
                             <thead class="blue-header2">
                                 <tr>
                                     <th>Degree</th>
@@ -316,7 +315,7 @@
                 </div>
 
                 <button id="fte-save-button" name="fte-data" class="btn btn-sm btn-ISEIyellow" type="submit">Save FTE Data</button>
-                <hr>
+                <hr class="noprint">
 
                 <!--button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</--button>
                 <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button -->
@@ -327,7 +326,8 @@
 <!-- Professional Growth Activities -->
     <div class="card card-body mt-3">
         <h6 class="">5. Professional Growth Activities </h6>
-        <hr>
+        <hr class="noprint">
+            <p>List any significant professional growth activities provided for your teachers that have improved instructional methods in the past two years.</p>
         <div>
             <form id="pga-form" method="post">
                 {% csrf_token %}
@@ -343,9 +343,9 @@
                     </div>
                 {% endif %}
 
-                <table class="table table-sm">
+                <table class="table table-sm table-striped table-bordered">
                     <thead>
-                        <tr class="blue-header">
+                        <tr class="blue-header2">
                             <th>#</th>
                             <th>Professional Growth Activity</th>
                             <th>Briefly describe improvements</th>
@@ -362,7 +362,7 @@
                     </tbody>
                 </table>
                 <button id="pga-save-button" name="pga" class="btn btn-sm btn-ISEIyellow" type="submit">Save Professional Growth Activities</button>
-                <hr>
+                <hr class="noprint">
 
             </form>
         </div>
