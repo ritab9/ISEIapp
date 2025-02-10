@@ -154,3 +154,14 @@ class ActionPlanStepsForm(forms.ModelForm):
 
 # Inline formset to manage ActionPlanSteps with ActionPlan
 ActionPlanStepsFormSet = inlineformset_factory( ActionPlan, ActionPlanSteps, form=ActionPlanStepsForm, extra=10, can_delete=True)
+
+class ProfessionalActivityForm(forms.ModelForm):
+    class Meta:
+        model = ProfessionalActivity
+        fields = ['activity', 'improvement']
+        widgets={
+            'activity': forms.Textarea(attrs={'cols': 50, 'rows': 1 }),
+            'improvement': forms.Textarea(attrs={'cols': 300, 'rows': 1 }),
+        }
+
+ProfessionalActivityFormSet = inlineformset_factory(SchoolProfile, ProfessionalActivity, form=ProfessionalActivityForm, extra=5)

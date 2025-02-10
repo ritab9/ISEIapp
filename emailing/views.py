@@ -113,7 +113,7 @@ def send_email_selfstudy_coordinating_team(request, selfstudy_id):
 
         return redirect('selfstudy_coordinating_team', selfstudy_id=selfstudy.id)
 
-    context=dict(selfstudy=selfstudy, standards=standards,
+    context=dict(selfstudy=selfstudy, standards=standards, active_link="coordinating_team",
                  example_email=example_email, other_recipients=other_recipients,
                  template_body=template.body,
                  team_members=team_members,)

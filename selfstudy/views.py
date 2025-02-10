@@ -402,6 +402,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
 
 
     context = dict(form=form, selfstudy=selfstudy, team=team, standards=standards,
+                   active_link="coordinating_team",
                    personnel_without_users=personnel_without_users,
                    inactive_users =inactive_users,)
 
@@ -476,7 +477,8 @@ def selfstudy_profile(request, selfstudy_id):
         form = SchoolProfileForm(instance=school_profile)
 
     context= dict(selfstudy=selfstudy, standards = standards,
-                   active_link="profile", form=form,
+                   active_link="profile", active_sublink="general_info",
+                    form=form,
                    )
 
     return render(request, "selfstudy/profile.html", context )
@@ -499,7 +501,7 @@ def profile_history(request, selfstudy_id):
 
     context = dict(selfstudy=selfstudy, standards = standards,
                    history_form = history_form,
-                   active_sublink="history",
+                   active_sublink="history", active_link="profile",
                    )
 
     return render(request, 'selfstudy/profile_history.html', context)
@@ -534,7 +536,7 @@ def profile_financial(request, selfstudy_id):
     two_year_formset = FinancialTwoYearDataFormSet(queryset=two_year_data_queryset, prefix="two_years")
     additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset, prefix="additional")
 
-    context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial",
+    context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial", active_link="profile",
                     two_year_formset = two_year_formset, additional_formset = additional_formset )
 
     return render(request, 'selfstudy/profile_financial.html', context)
@@ -625,12 +627,27 @@ def profile_personnel(request, selfstudy_id):
     FTE_formset = FTEFormSet(queryset=FullTimeEquivalency.objects.filter(school_profile=school_profile), prefix="fte")
     fte_equivalency_form = FTEEquivalencyForm(instance=school_profile)
 
+    pga_formset=ProfessionalActivityFormSet(instance=school_profile)
+
     #import_personnel and fte-data functions are defined above
     if request.method == "POST":
         if "import_personnel" in request.POST:
-            import_personnel_data(request, school_profile, annual_report)
+            import_personnel_data(request, school_profile, annual_report) #Functions above to handle this and the next one
         if "fte-data" in request.POST:
             FTE_formset, fte_equivalency_form = handle_fte_data(request, school_profile, FullTimeEquivalency.objects.filter(school_profile=school_profile))
+        if "pga" in request.POST:
+            pga_formset = ProfessionalActivityFormSet(request.POST, instance=school_profile)
+            if pga_formset.is_valid():
+                pga_formset.save()
+                #for pga in pga_formset:
+                #    pga.school_profile = school_profile
+                #    pga.save()
+                messages.success(request, "Professional Activity Data has been successfully saved!")
+            else:
+                print(pga_formset.errors)
+
+                messages.error(request, "Some Professional Activity Data was not saved!")
+
 
 #Personnel Data to be displayed (was imported with "import_personnel"
     personnel_data = SelfStudyPersonnelData.objects.filter(school_profile__selfstudy=selfstudy)
@@ -646,7 +663,7 @@ def profile_personnel(request, selfstudy_id):
     vocational_instructors = personnel_data.filter(position__name="Practical Arts/Life Skills Teacher").exclude(
         id__in=admin_academic_dean.values_list('id', flat=True))
     non_instructional = personnel_data.filter(Q(position__category=StaffCategory.GENERAL_STAFF) & ~Q(
-        position__category__in=[StaffCategory.TEACHING, StaffCategory.ADMINISTRATIVE]))
+        position__category__in=[StaffCategory.TEACHING, StaffCategory.ADMINISTRATIVE])).distinct()
 
     # Count men and women in each degree category
     degree_gender_counts = personnel_data.values('highest_degree', 'gender') \
@@ -665,11 +682,12 @@ def profile_personnel(request, selfstudy_id):
         degree_gender_dict[degree][gender] = count
 
 
-    context = dict( selfstudy=selfstudy, standards=standards, active_sublink="personnel",
+    context = dict( selfstudy=selfstudy, standards=standards, active_sublink="personnel", active_link="profile",
         admin_academic_dean=admin_academic_dean, vocational_instructors=vocational_instructors, non_instructional=non_instructional,
-        arID=arID, ar_school_year=ar_school_year, personnel_imported = False,
+        arID=arID, ar_school_year=ar_school_year, personnel_imported = personnel_imported,
         fte_formset=FTE_formset, fte_equivalency_form=fte_equivalency_form,
         degree_gender_dict=degree_gender_dict,
+        pga_formset=pga_formset,
     )
 
     return render(request, 'selfstudy/profile_personnel.html', context)

@@ -172,6 +172,11 @@ class SelfStudyPersonnelData(models.Model):
     years_experience=models.PositiveSmallIntegerField(null=True, blank=True)
     years_at_this_school=models.PositiveSmallIntegerField(null=True, blank=True)
 
+class ProfessionalActivity(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="activities")
+    activity = models.CharField(max_length=255, null=True, blank=True)
+    improvement = models.TextField(null=True, blank=True)
+
 class StudentEnrollmentData(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="enrollment_data")
 

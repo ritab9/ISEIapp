@@ -43,12 +43,17 @@ class FullTimeEquivalencyInline(admin.TabularInline):  # or admin.StackedInline
     model = FullTimeEquivalency
     extra = 0
 
+class ProfessionalActivityInline(admin.TabularInline):
+    model = ProfessionalActivity
+    extra=0
+
     # Admin for SchoolProfile with inlines for FinancialTwoYearDataEntry and FinancialAdditionalDataEntry
 class SchoolProfileAdmin(admin.ModelAdmin):
     list_display = ('selfstudy', )  # Modify to show relevant fields
     search_fields = ('school__name',)  # Enable search by school name (assuming you have this field)
     inlines = [FinancialTwoYearDataEntryInline, FinancialAdditionalDataEntryInline,
-               SelfStudyPersonnelDataInline, FullTimeEquivalencyInline]
+               SelfStudyPersonnelDataInline, FullTimeEquivalencyInline,
+               ProfessionalActivityInline,]
     ordering = ('selfstudy',)  # You can adjust ordering as needed
 
 # Register SchoolProfile admin

@@ -63,7 +63,7 @@
     </div>
 
 <!-- Employee lists imported from opening Employee Report -->
-<!-- Toggle Button -->
+<!-- Toggle Button ->
     <div class="card card-body mt-3 noprint">
         <div class="row">
             <div class="col"><h6>Employee lists 1., 2. and 3.</h6></div>
@@ -73,7 +73,7 @@
                 </button>
             </div>
         </div>
-    </div>
+    </div -->
 
 <!-- Employee List -->
     <div id="employeeLists" class="collapse show">
@@ -320,6 +320,49 @@
 
                 <!--button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</--button>
                 <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button -->
+            </form>
+        </div>
+    </div>
+
+<!-- Professional Growth Activities -->
+    <div class="card card-body mt-3">
+        <h6 class="">5. Professional Growth Activities </h6>
+        <hr>
+        <div>
+            <form id="pga-form" method="post">
+                {% csrf_token %}
+
+                {{ pga_formset.management_form }}
+
+                <!-- Display form errors at the formset level -->
+                {% if pga_formset.non_form_errors %}
+                    <div class="errors">
+                        {% for error in pga_formset.non_form_errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="blue-header">
+                            <th>#</th>
+                            <th>Professional Growth Activity</th>
+                            <th>Briefly describe improvements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in pga_formset %}
+                            <tr>
+                                <td>{{ forloop.counter }}{{ form.id }}</td>
+                                <td>{{ form.activity }}{{ form.activity.error }}</td>
+                                <td>{{ form.improvement }} {{ form.improvement.error }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button id="pga-save-button" name="pga" class="btn btn-sm btn-ISEIyellow" type="submit">Save Professional Growth Activities</button>
+                <hr>
 
             </form>
         </div>
@@ -332,32 +375,65 @@
     <script>
 
 // 1. Auto-expanding textareas
-//        { % include "includes/script_auto_expand_textarea.html" %}
+       {% include "includes/script_auto_expand_textarea.html" %}
 
-//2.When content changes show Save button. Also remove the Content Saved Message
+//2.When content of Professional Growth Activities changes show Save button. Also remove the Content Saved Message
         //{ % include "includes/script_show_save_button_on_content-form_change.html"  %}
-        //2.When content changes show Save button. Also remove the Content Saved Message
-        let form = document.querySelector("#fte-form");
-        let saveButton = document.querySelector("#fte-save-button");
-        let formChanged = false;
 
-        toggleButtons(false); // Initially hide buttons
+        let pga_form = document.querySelector("#pga-form");
+        let pga_saveButton = document.querySelector("#pga-save-button");
+        let pga_formChanged = false;
+
+        pga_toggleButtons(false); // Initially hide buttons
 
     // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
-        if (form && (document.querySelector(".messages") || (saveButton && saveButton.style.display === "none"))) {
-            form.addEventListener("click", handleChange);
+        if (pga_form && (document.querySelector(".messages") || (pga_saveButton && pga_saveButton.style.display === "none"))) {
+            pga_form.addEventListener("click", pga_handleChange);
         }
 
-        function handleChange() {
+        function pga_handleChange() {
             // Only remove messages if they exist
             if (document.querySelector(".messages")) {
                 removeMessages();
             }
 
             // Only toggle buttons if they are hidden
-            if (!formChanged && saveButton && saveButton.style.display === "none") {
-                formChanged = true;
-                toggleButtons(true);
+            if (!pga_formChanged && pga_saveButton && pga_saveButton.style.display === "none") {
+                pga_formChanged = true;
+                pga_toggleButtons(true);
+            }
+        }
+
+
+        function pga_toggleButtons(show) {
+            if (pga_saveButton) pga_saveButton.style.display = show ? "inline-block" : "none";
+        }
+
+
+
+
+//3.When Full Time Equivalency content changes show Save button. Also remove the Content Saved Message
+        let fte_form = document.querySelector("#fte-form");
+        let fte_saveButton = document.querySelector("#fte-save-button");
+        let fte_formChanged = false;
+
+        fte_toggleButtons(false); // Initially hide buttons
+
+    // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
+        if (fte_form && (document.querySelector(".messages") || (fte_saveButton && fte_saveButton.style.display === "none"))) {
+            fte_form.addEventListener("click", fte_handleChange);
+        }
+
+        function fte_handleChange() {
+            // Only remove messages if they exist
+            if (document.querySelector(".messages")) {
+                removeMessages();
+            }
+
+            // Only toggle buttons if they are hidden
+            if (!fte_formChanged && fte_saveButton && fte_saveButton.style.display === "none") {
+                fte_formChanged = true;
+                fte_toggleButtons(true);
             }
         }
 
@@ -365,13 +441,12 @@
             document.querySelectorAll(".messages").forEach(message => message.remove());
         }
 
-        function toggleButtons(show) {
-            if (saveButton) saveButton.style.display = show ? "inline-block" : "none";
+        function fte_toggleButtons(show) {
+            if (fte_saveButton) fte_saveButton.style.display = show ? "inline-block" : "none";
         }
 
 
-
-//3. Calculate total FTE as users enter data
+//4. Calculate total FTE as users enter data
     document.addEventListener("DOMContentLoaded", function () {
             function updateTotals() {
                 let totalFteMen = 0;
