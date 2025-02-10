@@ -521,14 +521,20 @@ def profile_financial(request, selfstudy_id):
         additional_formset = FinancialAdditionalDataFormSet(request.POST or None, queryset=additional_data_queryset, prefix="additional")
 
         if two_year_formset.is_valid():
-            two_year_formset.save()
-            messages.success(request, "2-Year Financial Data has been successfully saved!")
+            if any(form.has_changed() for form in two_year_formset):
+                two_year_formset.save()
+                messages.success(request, "2-Year Financial Data has been successfully saved!")
+            else:
+                messages.info(request, "No changes made to 2-Year Financial Data")
         else:
             messages.error(request, "Some 2-year Financial Data was not saved!")
 
         if additional_formset.is_valid():
-            additional_formset.save()
-            messages.success(request, "Additional Financial Data has been successfully saved!")
+            if any(form.has_changed() for form in additional_formset):
+                additional_formset.save()
+                messages.success(request, "Additional Financial Data has been successfully saved!")
+            else:
+                messages.info(request, "No changes made to Additional Financial Data")
         else:
             messages.error(request, "Some Additional Financial Data was not saved!")
 
@@ -596,19 +602,22 @@ def handle_fte_data(request, school_profile, fte_queryset):
     if FTE_formset.is_valid():
         if any(form.has_changed() for form in FTE_formset):
             FTE_formset.save()
-            messages.success(request, "Full Time Equivalency Data has been successfully saved!")
+            if "fte-data" in request.POST or "submit-all" in request.POST:
+                messages.success(request, "Full Time Equivalency Data has been successfully saved!")
     else:
         messages.error(request, "Some Full Time Equivalency Data was not saved!")
 
     if fte_equivalency_form.is_valid():
         if fte_equivalency_form.has_changed():
             fte_equivalency_form.save()
-            messages.success(request, "FTE Student Ratio has been successfully saved!")
+            if "fte-data" in request.POST or "submit-all" in request.POST:
+                messages.success(request, "FTE Student Ratio has been successfully saved!")
     else:
         messages.error(request, "FTE Student Ratio was not saved!")
 
     if not list(messages.get_messages(request)):
-        messages.info(request, "No changes were made in FTE Data.")
+        if "fte-data" in request.POST or "submit-all" in request.POST:
+            messages.info(request, "No changes were made in FTE Data.")
 
     return FTEFormSet(queryset=fte_queryset, prefix="fte"), FTEEquivalencyForm(instance=school_profile)
 
@@ -633,23 +642,26 @@ def profile_personnel(request, selfstudy_id):
     if request.method == "POST":
         if "import_personnel" in request.POST:
             import_personnel_data(request, school_profile, annual_report) #Functions above to handle this and the next one
-        if "fte-data" in request.POST:
+
+        #I will save it all for each submit to avoid loosing data
+        else:
             FTE_formset, fte_equivalency_form = handle_fte_data(request, school_profile, FullTimeEquivalency.objects.filter(school_profile=school_profile))
-        if "pga" in request.POST:
+
             pga_formset = ProfessionalActivityFormSet(request.POST, instance=school_profile)
             if pga_formset.is_valid():
-                pga_formset.save()
-                #for pga in pga_formset:
-                #    pga.school_profile = school_profile
-                #    pga.save()
-                messages.success(request, "Professional Activity Data has been successfully saved!")
+                if any(form.has_changed() for form in pga_formset):
+                    pga_formset.save()
+                    if "pga" in request.POST or "submit-all" in request.POST:
+                        messages.success(request, "Professional Activity Data has been successfully saved!")
+                else:
+                    if "pga" in request.POST or "submit-all" in request.POST:
+                        messages.info(request, "No changes in Professional Activity Data")
             else:
-                print(pga_formset.errors)
-
                 messages.error(request, "Some Professional Activity Data was not saved!")
 
 
-#Personnel Data to be displayed (was imported with "import_personnel"
+
+    #Personnel Data to be displayed (was imported with "import_personnel"
     personnel_data = SelfStudyPersonnelData.objects.filter(school_profile__selfstudy=selfstudy)
     if personnel_data:
         personnel_imported = True

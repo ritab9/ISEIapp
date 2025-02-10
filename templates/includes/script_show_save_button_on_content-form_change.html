@@ -1,36 +1,54 @@
 <!-- use it as { % include "includes/script_show_save_button_on_content-form_change.html" %} in the script area-->
-
-//2.When content changes show Save button. Also remove the Content Saved Message
-        let form = document.querySelector("#content-form");
-        let saveButton1 = document.querySelector("#save-button1");
-        let saveButton2 = document.querySelector("#save-button2");
-        let formChanged = false;
-
-        toggleButtons(false); // Initially hide buttons
-
-    // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
-        if (form && (document.querySelector(".messages") || (saveButton1 && saveButton1.style.display === "none"))) {
-            form.addEventListener("click", handleChange);
-        }
-
-        function handleChange() {
-            // Only remove messages if they exist
-            if (document.querySelector(".messages")) {
+<!--
+window.divsButtonMapping = [
+        { divs: ["div1", "div2"], buttons: ["save-button1", "save-button2"] } // Both forms trigger both buttons
+    ];
+-->
+<script>
+//2.When content changes in a DIV show Save button. Also remove the Content Saved Message
+    document.addEventListener("DOMContentLoaded", function () {
+        function setupDivTracking(divIds, buttonIds) {
+            let divs = divIds.map(id => document.querySelector(`#${id}`)).filter(div => div !== null);
+            let saveButtons = buttonIds.map(id => document.querySelector(`#${id}`)).filter(btn => btn !== null);
+            let formChanged = false;
+    
+            if (divs.length === 0 || saveButtons.length === 0) return; // Exit if no valid divs or buttons
+    
+            toggleButtons(saveButtons, false); // Initially hide buttons
+    
+            // Attach event listeners to each div
+            divs.forEach(div => {
+                div.addEventListener("input", handleChange);
+                div.addEventListener("change", handleChange);
+                div.addEventListener("click", handleChange);
+            });
+    
+            function handleChange() {
                 removeMessages();
-            }
-
-            // Only toggle buttons if they are hidden
-            if (!formChanged && saveButton1 && saveButton1.style.display === "none") {
-                formChanged = true;
-                toggleButtons(true);
+                if (!formChanged) {
+                    formChanged = true;
+                    toggleButtons(saveButtons, true);
+                }
             }
         }
-
+    
         function removeMessages() {
             document.querySelectorAll(".messages").forEach(message => message.remove());
         }
-
-        function toggleButtons(show) {
-            if (saveButton1) saveButton1.style.display = show ? "inline-block" : "none";
-            if (saveButton2) saveButton2.style.display = show ? "inline-block" : "none";
+    
+        function toggleButtons(buttons, show) {
+            buttons.forEach(button => {
+                button.style.display = show ? "inline-block" : "none";
+            });
         }
+    
+        // Automatically call setupDivTracking if div IDs and button IDs are passed via template
+        if (window.divButtonMapping) {
+            window.divButtonMapping.forEach(mapping => {
+                setupDivTracking(mapping.divs, mapping.buttons);
+            });
+        }
+    });
+
+
+</script>

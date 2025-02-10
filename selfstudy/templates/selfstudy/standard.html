@@ -40,169 +40,174 @@
     </div>
 
 <!-- Indicators Evaluation Form -->
-    <form method="post" id="content-form">
-        {% csrf_token %}
-        {{ formset.management_form }}
-        <div class="form-group">
+    <div id="content-div">
+        <form method="post" id="content-form">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="form-group">
 
-    <!-- Error Messages -->
-            {% if formset.non_form_errors %}
-                <div class="alert alert-danger">
-                    <ul>
-                        {% for error in formset.non_form_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
+        <!-- Error Messages -->
+                {% if formset.non_form_errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in formset.non_form_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-            {% if error_message %}
-                <div class="alert alert-danger">
-                    <p>{{ error_message }}</p>
-                </div>
-            {% endif %}
+                {% if error_message %}
+                    <div class="alert alert-danger">
+                        <p>{{ error_message }}</p>
+                    </div>
+                {% endif %}
 
-            {% for group in grouped_data %}
-            <div>
-    <!--Name and description for substandards-->
-                {%  if substandards_exist %}
-                    <div class="card card-body">
-                        <h5> {{ group.standard.name }}</h5>
-                        <div class="text-ISEIblue4 mt-3 mb-3">
-                            <i>{{ group.standard.description }}</i>
+                {% for group in grouped_data %}
+                <div>
+        <!--Name and description for substandards-->
+                    {%  if substandards_exist %}
+                        <div class="card card-body">
+                            <h5> {{ group.standard.name }}</h5>
+                            <div class="text-ISEIblue4 mt-3 mb-3">
+                                <i>{{ group.standard.description }}</i>
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
-    <!-- Indicators formset -->
-                {% for form in formset %}
-                {% if form.instance.standard.id == group.standard.id %}
-                    <fieldset>
-    <!-- Table for each indicator -->
-                    <div class="card">
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr class="bg-ISEIblue1">
-                                    <td>
-                                        <strong>Indicator: {{ standard.number }}.{{ forloop.counter }}</strong>
-                                        <br><span class="span80">({{ form.instance.indicator.code }})</span>
-                                    </td>
-                                    <td>{{ form.instance.indicator.description }}</td>
-                                </tr>
-                                {% for indicator_id, levels in group.levels_dict.items %}
-                                    {% if indicator_id == form.instance.indicator.id %}
-        <!-- Levels -->
-                                        {% for level in levels %}
-                                            <tr data-index="{{ forloop.parentloop.counter0 }}">
-                                                <td style="width: 130px">
-                                                    <a class="level-button clickable-no-underline span90 text-ISEIblue4" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
-                                                        {{ level.get_level_display }}
-                                                    </a>
-                                                </td>
-                                                <td class="level-description" data-level="{{ level.level }}">{{ level.description }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-        <!-- Score -->
-                                <tr>
-                                    <td>
-                                        <label><strong>Score:</strong></label>
-                                        {{ form.score }}
-                                        {% if form.score.errors %}
-                                            <div class="alert alert-danger">
-                                                {% for error in form.score.errors %}
-                                                    <p>{{ error }}</p>
-                                                {% endfor %}
-                                            </div>
+                    {% endif %}
+        <!-- Indicators formset -->
+                    {% for form in formset %}
+                    {% if form.instance.standard.id == group.standard.id %}
+                        <fieldset>
+        <!-- Table for each indicator -->
+                        <div class="card">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr class="bg-ISEIblue1">
+                                        <td>
+                                            <strong>Indicator: {{ standard.number }}.{{ forloop.counter }}</strong>
+                                            <br><span class="span80">({{ form.instance.indicator.code }})</span>
+                                        </td>
+                                        <td>{{ form.instance.indicator.description }}</td>
+                                    </tr>
+                                    {% for indicator_id, levels in group.levels_dict.items %}
+                                        {% if indicator_id == form.instance.indicator.id %}
+            <!-- Levels -->
+                                            {% for level in levels %}
+                                                <tr data-index="{{ forloop.parentloop.counter0 }}">
+                                                    <td style="width: 130px">
+                                                        <a class="level-button clickable-no-underline span90 text-ISEIblue4" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
+                                                            {{ level.get_level_display }}
+                                                        </a>
+                                                    </td>
+                                                    <td class="level-description" data-level="{{ level.level }}">{{ level.description }}</td>
+                                                </tr>
+                                            {% endfor %}
                                         {% endif %}
-                                    </td>
-        <!-- Reference documents -->
-                                    <td>
-                                        <label>Document Reference(s):</label>
-                                        {{ form.reference_documents }}
-                                        {% if form.reference_documents.errors %}
-                                            <div class="alert alert-danger">
-                                                {% for error in form.reference_documents.errors %}
-                                                    <p>{{ error }}</p>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-        <!-- Score Explanation -->
-                                <tr>
-                                    <td colspan="2">
-                                        <label>Explain the score:</label>
-                                        {{ form.explanation }}
-                                        {% if form.explanation.errors %}
-                                            <div class="alert alert-danger">
-                                                {% for error in form.explanation.errors %}
-                                                    <p>{{ error }}</p>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                        <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
-                    </fieldset>
-                {% endif %}
+                                    {% endfor %}
+            <!-- Score -->
+                                    <tr>
+                                        <td>
+                                            <label><strong>Score:</strong></label>
+                                            {{ form.score }}
+                                            {% if form.score.errors %}
+                                                <div class="alert alert-danger">
+                                                    {% for error in form.score.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+            <!-- Reference documents -->
+                                        <td>
+                                            <label>Document Reference(s):</label>
+                                            {{ form.reference_documents }}
+                                            {% if form.reference_documents.errors %}
+                                                <div class="alert alert-danger">
+                                                    {% for error in form.reference_documents.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+            <!-- Score Explanation -->
+                                    <tr>
+                                        <td colspan="2">
+                                            <label>Explain the score:</label>
+                                            {{ form.explanation }}
+                                            {% if form.explanation.errors %}
+                                                <div class="alert alert-danger">
+                                                    {% for error in form.explanation.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
+                        </fieldset>
+                    {% endif %}
+                    {% endfor %}
+                </div>
                 {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <div class="card">
-            <h6 class="ml-2 mt-2">Standard {{ standard.number }}: Narrative</h6>
-            <table class="table table-bordered">
-                <tbody>
-                    <tr> <td class="bg-ISEIblue1">{{ narrative.text1|safe }}</td> </tr>
-                    <tr> <td> {{ narrative.text2 }}</td></tr>
-                    <tr><td>{{ standard_form.narrative }}</td></tr>
-                    <tr style="display:none;">
-                        <td>{{ standard_form.average_score }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <div class="card">
+                <h6 class="ml-2 mt-2">Standard {{ standard.number }}: Narrative</h6>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr> <td class="bg-ISEIblue1">{{ narrative.text1|safe }}</td> </tr>
+                        <tr> <td> {{ narrative.text2 }}</td></tr>
+                        <tr><td>{{ standard_form.narrative }}</td></tr>
+                        <tr style="display:none;">
+                            <td>{{ standard_form.average_score }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
 <!-- Floating boxes -->
             <div class="floating-box-background noprint">
                 <div id="average-score" class="span80 text-ISEIblue4">Running Average: 0</div>
             </div>
             <div class="floating-box noprint">
-                <button id="save-button1" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                <button id="floating-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
             </div>
 
             <div class="card card-body">
                 <div style="width: auto; text-align: center;">
-                    <button id="save-button2" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                    <button id="end-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
                 </div>
             </div>
 
         </form>
+    </div>
 
 {% endblock %}
 
 
 {% block script %}
 
-<script>
+
+    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"] } // Both forms trigger both buttons
+         ];
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-
-// 1. Auto-expanding textareas
+// 2. Auto-expanding textareas
         {% include "includes/script_auto_expand_textarea.html" %}
-
-//2.When content changes show Save button. Also remove the Content Saved Message
-        {% include "includes/script_show_save_button_on_content-form_change.html"  %}
 
 
 // 3. Update score, calculate the running average, and update background when level button is clicked,
-    // Update score and calculate the running average when level button is clicked
+        document.addEventListener('DOMContentLoaded', function () {
+
+        // Update score and calculate the running average when level button is clicked
         const levelButtons = document.querySelectorAll('.level-button');
         const scoreFields = document.querySelectorAll('[name$="-score"]');
         const averageDisplay = document.getElementById('average-score');
@@ -280,7 +285,7 @@
 
     });
 
-</script>
+    </script>
 
 {% endblock %}
 

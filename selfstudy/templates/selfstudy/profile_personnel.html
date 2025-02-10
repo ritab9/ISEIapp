@@ -209,13 +209,16 @@
         </div>
     </div>
 
-<!-- Addiitional Staff Data-->
-    <div class="card-body card mt-3">
+
+    <form id="content-form" method="post">
+                {% csrf_token %}
+<!-- Additional Staff Data-->
+        <div class="card-body card mt-3">
         <h6 class="">4. Additional Staff Data</h6>
         <hr class="noprint">
-        <div>
-            <form id="fte-form" method="post">
-                {% csrf_token %}
+        <div id="fte-div">
+            <!--form id="fte-form" method="post">
+                { % csrf_token %} -->
 
                 {{ fte_formset.management_form }}
 
@@ -314,23 +317,20 @@
                     </div>
                 </div>
 
-                <button id="fte-save-button" name="fte-data" class="btn btn-sm btn-ISEIyellow" type="submit">Save FTE Data</button>
+                <button id="fte-save-btn" name="fte-data" class="btn btn-sm btn-ISEIyellow" type="submit">Save FTE Data</button>
                 <hr class="noprint">
-
-                <!--button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</--button>
-                <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button -->
-            </form>
+            <!--/form -->
         </div>
     </div>
 
 <!-- Professional Growth Activities -->
-    <div class="card card-body mt-3">
+        <div class="card card-body mt-3">
         <h6 class="">5. Professional Growth Activities </h6>
         <hr class="noprint">
             <p>List any significant professional growth activities provided for your teachers that have improved instructional methods in the past two years.</p>
-        <div>
-            <form id="pga-form" method="post">
-                {% csrf_token %}
+        <div id="pga-div">
+            <!-- form id="pga-form" method="post"
+                { % csrf_token %} -->
 
                 {{ pga_formset.management_form }}
 
@@ -361,146 +361,90 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <button id="pga-save-button" name="pga" class="btn btn-sm btn-ISEIyellow" type="submit">Save Professional Growth Activities</button>
+                <button id="pga-save-btn" name="pga" class="btn btn-sm btn-ISEIyellow" type="submit">Save Professional Growth Activities</button>
                 <hr class="noprint">
-
-            </form>
+            <!-- /form -->
         </div>
     </div>
+
+        <div class="floating-box noprint">
+            <button id="floating-save-btn" name="submit-all" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+        </div>
+
+    </form>
 
 {% endblock %}
 
 
 {% block script %}
-    <script>
 
-// 1. Auto-expanding textareas
+    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+             { divs: ["fte-div"], buttons: ["fte-save-btn","floating-save-btn"] },
+             { divs: ["pga-div"], buttons: ["pga-save-btn","floating-save-btn"] },
+         ];
+
+// 3. Auto-expanding textareas
        {% include "includes/script_auto_expand_textarea.html" %}
 
-//2.When content of Professional Growth Activities changes show Save button. Also remove the Content Saved Message
-        //{ % include "includes/script_show_save_button_on_content-form_change.html"  %}
-
-        let pga_form = document.querySelector("#pga-form");
-        let pga_saveButton = document.querySelector("#pga-save-button");
-        let pga_formChanged = false;
-
-        pga_toggleButtons(false); // Initially hide buttons
-
-    // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
-        if (pga_form && (document.querySelector(".messages") || (pga_saveButton && pga_saveButton.style.display === "none"))) {
-            pga_form.addEventListener("click", pga_handleChange);
-        }
-
-        function pga_handleChange() {
-            // Only remove messages if they exist
-            if (document.querySelector(".messages")) {
-                removeMessages();
-            }
-
-            // Only toggle buttons if they are hidden
-            if (!pga_formChanged && pga_saveButton && pga_saveButton.style.display === "none") {
-                pga_formChanged = true;
-                pga_toggleButtons(true);
-            }
-        }
-
-
-        function pga_toggleButtons(show) {
-            if (pga_saveButton) pga_saveButton.style.display = show ? "inline-block" : "none";
-        }
-
-
-
-
-//3.When Full Time Equivalency content changes show Save button. Also remove the Content Saved Message
-        let fte_form = document.querySelector("#fte-form");
-        let fte_saveButton = document.querySelector("#fte-save-button");
-        let fte_formChanged = false;
-
-        fte_toggleButtons(false); // Initially hide buttons
-
-    // Check if the form has any messages or if buttons need to be shown - call handle Change on Click
-        if (fte_form && (document.querySelector(".messages") || (fte_saveButton && fte_saveButton.style.display === "none"))) {
-            fte_form.addEventListener("click", fte_handleChange);
-        }
-
-        function fte_handleChange() {
-            // Only remove messages if they exist
-            if (document.querySelector(".messages")) {
-                removeMessages();
-            }
-
-            // Only toggle buttons if they are hidden
-            if (!fte_formChanged && fte_saveButton && fte_saveButton.style.display === "none") {
-                fte_formChanged = true;
-                fte_toggleButtons(true);
-            }
-        }
-
-        function removeMessages() {
-            document.querySelectorAll(".messages").forEach(message => message.remove());
-        }
-
-        function fte_toggleButtons(show) {
-            if (fte_saveButton) fte_saveButton.style.display = show ? "inline-block" : "none";
-        }
-
-
 //4. Calculate total FTE as users enter data
-    document.addEventListener("DOMContentLoaded", function () {
-            function updateTotals() {
-                let totalFteMen = 0;
-                let totalFteWomen = 0;
+        document.addEventListener("DOMContentLoaded", function () {
+        function updateTotals() {
+            let totalFteMen = 0;
+            let totalFteWomen = 0;
 
-                document.querySelectorAll("tbody tr").forEach(row => {
-                    let fteMenInput = row.querySelector("input[name*='fte_men']");
-                    let fteWomenInput = row.querySelector("input[name*='fte_women']");
-                    let totalCell = row.querySelector(".fte-total");
+            document.querySelectorAll("tbody tr").forEach(row => {
+                let fteMenInput = row.querySelector("input[name*='fte_men']");
+                let fteWomenInput = row.querySelector("input[name*='fte_women']");
+                let totalCell = row.querySelector(".fte-total");
 
-                    if (fteMenInput && fteWomenInput) {
-                        function calculateRowTotal() {
-                            let fteMen = parseFloat(fteMenInput.value) || 0;
-                            let fteWomen = parseFloat(fteWomenInput.value) || 0;
-                            let rowTotal = fteMen + fteWomen;
+                if (fteMenInput && fteWomenInput) {
+                    function calculateRowTotal() {
+                        let fteMen = parseFloat(fteMenInput.value) || 0;
+                        let fteWomen = parseFloat(fteWomenInput.value) || 0;
+                        let rowTotal = fteMen + fteWomen;
 
-                            totalCell.textContent = rowTotal.toFixed(2);
+                        totalCell.textContent = rowTotal.toFixed(2);
 
-                            // Recalculate overall totals
-                            updateOverallTotals();
-                        }
-
-                        // Initialize row total
-                        calculateRowTotal();
-
-                        // Listen for input events
-                        fteMenInput.addEventListener("input", calculateRowTotal);
-                        fteWomenInput.addEventListener("input", calculateRowTotal);
+                        // Recalculate overall totals
+                        updateOverallTotals();
                     }
-                });
-            }
 
-            function updateOverallTotals() {
-                let totalFteMen = 0;
-                let totalFteWomen = 0;
+                    // Initialize row total
+                    calculateRowTotal();
 
-                document.querySelectorAll("tbody tr").forEach(row => {
-                    let fteMenInput = row.querySelector("input[name*='fte_men']");
-                    let fteWomenInput = row.querySelector("input[name*='fte_women']");
+                    // Listen for input events
+                    fteMenInput.addEventListener("input", calculateRowTotal);
+                    fteWomenInput.addEventListener("input", calculateRowTotal);
+                }
+            });
+        }
 
-                    if (fteMenInput && fteWomenInput) {
-                        totalFteMen += parseFloat(fteMenInput.value) || 0;
-                        totalFteWomen += parseFloat(fteWomenInput.value) || 0;
-                    }
-                });
+        function updateOverallTotals() {
+            let totalFteMen = 0;
+            let totalFteWomen = 0;
 
-                // Update totals in the footer row
-                document.getElementById("total-fte-men").textContent = totalFteMen.toFixed(2);
-                document.getElementById("total-fte-women").textContent = totalFteWomen.toFixed(2);
-                document.getElementById("grand-total-fte").textContent = (totalFteMen + totalFteWomen).toFixed(2);
-            }
+            document.querySelectorAll("tbody tr").forEach(row => {
+                let fteMenInput = row.querySelector("input[name*='fte_men']");
+                let fteWomenInput = row.querySelector("input[name*='fte_women']");
 
-            updateTotals();
-        });
+                if (fteMenInput && fteWomenInput) {
+                    totalFteMen += parseFloat(fteMenInput.value) || 0;
+                    totalFteWomen += parseFloat(fteWomenInput.value) || 0;
+                }
+            });
+
+            // Update totals in the footer row
+            document.getElementById("total-fte-men").textContent = totalFteMen.toFixed(2);
+            document.getElementById("total-fte-women").textContent = totalFteWomen.toFixed(2);
+            document.getElementById("grand-total-fte").textContent = (totalFteMen + totalFteWomen).toFixed(2);
+        }
+
+        updateTotals();
+    });
 
     </script>
 {% endblock %}

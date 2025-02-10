@@ -24,7 +24,8 @@
                 </div> <hr>
             {% endif %}
 
-    <form id="content-form" method="post">
+   <div id="content-div">
+       <form id="content-form" method="post">
         {% csrf_token %}
 
         <!-- Add the ManagementForm for each formset -->
@@ -123,10 +124,11 @@
         </div>
 
 
-        <button id="save-button1" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</button>
-        <button id="save-button2" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
+        <button id="end-save-btn" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</button>
+        <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
 
     </form>
+   </div>
 </div>
 
 
@@ -134,13 +136,18 @@
 
 {% block script %}
 
-<script>
-// 1. Auto-expanding textareas
-    {% include "includes/script_auto_expand_textarea.html" %}
+     {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+    <script>
 
-//2.When content changes show Save button. Also remove the Content Saved Message
-    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+        //1.When content changes show Save button. Also remove the Content Saved Message
+         window.divButtonMapping = [
+            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"] } // Both forms trigger both buttons
+         ];
 
-</script>
+        // 2. Auto-expanding textareas
+        {% include "includes/script_auto_expand_textarea.html" %}
+
+
+    </script>
 
 {% endblock script %}
