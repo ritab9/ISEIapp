@@ -1135,9 +1135,9 @@ def opening_report(request, arID):
 
 
 
-        students= Student.objects.filter(annual_report=annual_report_student, status="enrolled",  registration_date__lte=annual_report_student.submit_date)
+        students= Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
         if not students.exists():
-            students = Student.objects.filter(annual_report=annual_report_student, status="enrolled",
+            students = Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student,
                                               registration_date__lte=annual_report_student.submit_date + timedelta(weeks=3))
 
         if students.exists():
