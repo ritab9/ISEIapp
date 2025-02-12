@@ -674,8 +674,10 @@ def profile_personnel(request, selfstudy_id):
     admin_academic_dean = personnel_data.filter(position__in=teaching_admin_positions).distinct()
     vocational_instructors = personnel_data.filter(position__name="Practical Arts/Life Skills Teacher").exclude(
         id__in=admin_academic_dean.values_list('id', flat=True))
-    non_instructional = personnel_data.filter(Q(position__category=StaffCategory.GENERAL_STAFF) & ~Q(
-        position__category__in=[StaffCategory.TEACHING, StaffCategory.ADMINISTRATIVE])).distinct()
+    non_instructional = (personnel_data.filter(Q(position__category=StaffCategory.GENERAL_STAFF))
+                         .exclude(id__in=admin_academic_dean.values_list('id', flat=True)) \
+                         .exclude(id__in=vocational_instructors.values_list('id', flat=True)).distinct())
+
 
     # Count men and women in each degree category
     degree_gender_counts = personnel_data.values('highest_degree', 'gender') \
