@@ -11,8 +11,6 @@ class Command(BaseCommand):
         users_with_profiles = 0
         teachers_updated = 0
 
-        print("running")
-
         for user in User.objects.all():
             # Skip users who already have profiles
             if UserProfile.objects.filter(user=user).exists():

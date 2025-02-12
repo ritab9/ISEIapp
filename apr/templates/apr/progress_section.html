@@ -71,49 +71,49 @@
 
 <!-- Progress Table -->
             <table class="table table-sm">
-            <thead>
-                <tr class="text">
-                    <th style="white-space: nowrap">School year</th>
-                    <th style="width:100%" class="">Progress</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for school_year, progress in data.progress.items %}
-                <tr>
-                    <td>{{ school_year }}</td>
-                    {% for p in progress %}
-                        <td x-data="{
-                                isEditing: false,
-                                editedDescription: `{{ p.description|default:'' }}`.trim(),
-                                originalDescription: `{{ p.description|default:'' }}`.trim()
-                            }" class="edit-progress">
-                            <!-- View Mode -->
-                            <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to add/edit">
-                                <span
-                                    :class="editedDescription === '' ? 'text-ISEIblue4 small' : ''"
-                                    x-text="editedDescription !== '' ? editedDescription : 'Click to add' "
-                                    style="white-space: pre-line;">
-                                </span>
-                            </div>
+                <thead>
+                    <tr class="text">
+                        <th style="white-space: nowrap">School year</th>
+                        <th style="width:100%" class="">Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for school_year, progress in data.progress.items %}
+                    <tr>
+                        <td>{{ school_year }}</td>
+                        {% for p in progress %}
+                            <td x-data="{
+                                    isEditing: false,
+                                    editedDescription: `{{ p.description|default:'' }}`.trim(),
+                                    originalDescription: `{{ p.description|default:'' }}`.trim()
+                                }" class="edit-progress">
+                                <!-- View Mode -->
+                                <div x-show="!isEditing" @click="isEditing = true" class="editable" style="cursor: pointer;" title="Click to add/edit">
+                                    <span
+                                        :class="editedDescription === '' ? 'text-ISEIblue4 small' : ''"
+                                        x-text="editedDescription !== '' ? editedDescription : 'Click to add' "
+                                        style="white-space: pre-line;">
+                                    </span>
+                                </div>
 
-                            <!-- Edit Mode -->
-                            <div x-show="isEditing" class="editing">
-                                <textarea x-model="editedDescription" style="width: 100%; resize: none;"> </textarea>
-                                <button @click="saveProgress('{{ p.id }}', editedDescription); originalDescription = editedDescription; isEditing = false" class="btn btn-ISEIblue btn-sm">
-                                    Save
-                                </button>
-                                <button @click="editedDescription = originalDescription; isEditing = false" class="btn btn-ISEIyellow btn-sm">
-                                    Cancel
-                                </button>
-                                <small>* Cancel will reset the description to the last saved value.</small>
-                            </div>
-                        </td>
+                                <!-- Edit Mode -->
+                                <div x-show="isEditing" class="editing">
+                                    <textarea x-model="editedDescription" style="width: 100%; resize: none;"> </textarea>
+                                    <button @click="saveProgress('{{ p.id }}', editedDescription); originalDescription = editedDescription; isEditing = false" class="btn btn-ISEIblue btn-sm">
+                                        Save
+                                    </button>
+                                    <button @click="editedDescription = originalDescription; isEditing = false" class="btn btn-ISEIyellow btn-sm">
+                                        Cancel
+                                    </button>
+                                    <small>* Cancel will reset the description to the last saved value.</small>
+                                </div>
+                            </td>
 
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
         </div>
 
     {% empty %}

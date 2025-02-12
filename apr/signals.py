@@ -10,7 +10,6 @@ from .models import Progress, PriorityDirective, Directive, Recommendation, Acti
 def update_apr_on_progress_update(sender, instance, created, **kwargs):
     # Check if any of the foreign keys are set, and find the related APR
     apr = None
-    print("update")
 
     # Check each related model to find the APR
     if instance.priority_directive:

@@ -95,8 +95,8 @@ def setup_standard_evaluation(selfstudy, standards):
     # Create StandardEvaluation objects for the selfstudy
     for standard in standards:
         standard, created= StandardEvaluation.objects.get_or_create(selfstudy=selfstudy,standard=standard,)
-        if created:
-            print(standard)
+        #if created:
+         #   print(standard)
 
 def setup_selfstudy(request, accreditation_id):
     # Retrieve the Accreditation object by ID
@@ -132,13 +132,10 @@ def selfstudy(request, selfstudy_id):
 
 
         if request.method == "POST":
-            print("POST")
             if "submit_selfstudy" in request.POST:
                 selfstudy.submission_date = timezone.now().date()
-                print("submit")
             elif "reopen_selfstudy" in request.POST:
                 selfstudy.submission_date = None
-                print("reopen")
             selfstudy.save()
             return redirect('selfstudy', selfstudy_id=selfstudy.id)  # Reload the page after submission
 
