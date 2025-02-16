@@ -9,6 +9,28 @@
    background-color: #fcfcb7;
 }
 
+.bg-lighter-yellow {
+    background-color: rgba(231, 231, 160, 0.2);
+}
+
+.bg-muted-orange {
+    background-color: rgba(215, 143, 72, 0.5);
+}
+.bg-light-muted-orange {
+    background-color: rgba(215, 143, 72, 0.2);
+}
+
+.bg-muted-green {
+    background-color: rgba(107, 142, 117, 0.5); /* A soft, desaturated green */
+}
+.bg-light-muted-green {
+    background-color: rgba(107, 142, 117, 0.1); /* A soft, desaturated green */
+}
+
+.muted-green {
+    color: #6B8E75;
+}
+
 .light-yellow {
     color:#fdfd96;
 }
@@ -23,3 +45,4 @@
 .dark-blue {
     color:#053A64; /* ISEIblue4  */
 }
+

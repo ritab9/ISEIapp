@@ -7,10 +7,11 @@
 {% block content %}
 
 <div class="container-fluid">
-    <div class="card card-body">
-
+    <div class="card card-body bg-light-blue">
         <h6 class="text-center mt-2">Progress Overview for {{ apr }}</h6>
+    </div>
 
+    <div class="card card-body">
         <b>Instructions:</b>
         The APR is to be completed annually describing the progress made on the directives and action plans from the last Accreditation Visit.
         <br> Please also choose the appropriate progress descriptor:
@@ -26,10 +27,11 @@
     {% if action_plan_directives %}
     <div x-data="{ showContent: true }">
     <!-- Section Title -->
+        <div class="card card-body bg-light-yellow">
         <h6 class="text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
             Action Plan Directives
             <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
-        </h6>
+        </h6></div>
         {% for directive in action_plan_directives %}
             <div x-show="showContent" class="card card-body">
               <div id="directive-{{ directive.id }}">
@@ -60,7 +62,7 @@
         {% include 'apr/progress_section.html' with section_title='Action Plan' directives_progress=action_plans_progress %}
     {% endif %}
 
-    <div class="d-flex justify-content-center align-items-center">
+    <div class="card card-body d-flex justify-content-center align-items-center">
         <a href="javascript:history.back()" class="btn btn-sm btn-ISEIblue4">Return</a>
     </div>
     <!-- a href="{ % url 'isei_accreditation_dashboard' %}" class="btn btn-sm btn-ISEIblue4">Done</a -->
@@ -75,6 +77,8 @@
 {% block script %}
 
 <script>
+//Auto Expand Text Area
+    {% include "includes/script_auto_expand_textarea.html" %}
 
 //update yearly  Progress
     function saveProgress(progressId, newDescription) {

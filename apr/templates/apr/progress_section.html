@@ -1,16 +1,28 @@
 <!-- Progress Section, to be used with apr_progress report -->
 <div x-data="{ showContent: true }">
     <!-- Section Title -->
+    <div class="card card-body
+        {% if section_title == "Directive" %}bg-ISEIblue1
+        {% elif section_title == "Priority Directive" %}bg-muted-orange
+        {% elif section_title == "Action Plan" %}bg-light-yellow
+        {% elif section_title == "Recommendation" %} bg-muted-green
+        {% endif %}">
     <h6 class="text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
         {{ section_title }}s
         <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
-    </h6>
+    </h6></div>
 
 
     {% for directive, data in directives_progress.items %}
         <div x-show="showContent" class="card card-body">
-            <p><b>{{ section_title }} {{ directive.number }}.</b>
-
+            <p><b>
+                <!--div class="{ % if section_title == "Directive" %}bg-light-ISEIblue1
+                    { % elif section_title == "Priority Directive" %}bg-light-muted-orange
+                    { % elif section_title == "Action Plan" %}bg-lighter-yellow
+                    { % elif section_title == "Recommendation" %} bg-light-muted-green
+                    { % endif %}" -->
+                {{ section_title }} {{ directive.number }}.
+            </b>
                  {% if directive.description %}
                     {{ directive.description }}
                 {% elif directive.objective %}
@@ -23,7 +35,7 @@
 <!-- Display steps for Action Plans -->
             {% if data.steps %}
                 <table class="table table-bordered">
-                    <thead>
+                    <thead class="bg-light-blue">
                         <tr>
                             <th>#</th>
                             <th>Person(s) Responsible</th>
@@ -115,7 +127,7 @@
                 </tbody>
             </table>
         </div>
-
+        <hr>
     {% empty %}
         <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
     {% endfor %}
