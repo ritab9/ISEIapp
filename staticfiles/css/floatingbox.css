@@ -13,11 +13,13 @@
 }
 
 .floating-box-background {
-    bottom: 20px;
+    /* bottom: 20px; */
+    top:200px;
     background-color: #fdfd96;
     padding: 5px 10px;
 }
 
 .floating-box {
-    bottom: 60px;
+    /* bottom: 60px; */
+    top: 140px;
 }
