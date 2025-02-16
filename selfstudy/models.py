@@ -1,9 +1,27 @@
 from django.db import models
 from accreditation.models import Accreditation,Standard, Indicator
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+from datetime import timedelta
 
 from users.models import StateField, Country
 from reporting.models import StaffStatus, StaffPosition
+
+class CurrentlyEditing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    form_id = models.CharField(max_length=255)  # Identifies which form is being edited
+    last_active = models.DateTimeField(auto_now=True)  # Updated when user interacts
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('form_id', 'user')  # Prevents duplicate locks for the same user
+
+    @staticmethod
+    def remove_stale_entries():
+        """Remove entries older than 60 minutes (stale locks)."""
+        threshold = now() - timedelta(minutes=60)
+        CurrentlyEditing.objects.filter(last_active__lt=threshold).delete()
+
 
 
 #Models for information needed from the schools (Standards + Inidcators are in Accreditation app)
@@ -69,8 +87,6 @@ class ActionPlanInstructions(models.Model):
 
     def __str__(self):
         return "Action Plan Instructions for SelfStudy"
-
-
 
 
 #Building a SelfStudy for a School

@@ -10,6 +10,8 @@
 <!-- Standard Name and Description -->
         <h5>Standard {{ standard.number }}: {{ standard.name }}</h5>
 
+        <div id="lock-message" class="error" style="display: none;"></div>
+
         {% if messages %}
             <div class="card card-body messages">
                 {% for message in messages %}
@@ -192,11 +194,11 @@
 {% block script %}
 
 
-    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+    {% include "includes/script_lock_and_save_forms.html" %}
     <script>
 //1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
          window.divButtonMapping = [
-            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"] } // Both forms trigger both buttons
+            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"], formId: "{{ form_id|escapejs  }}" } // Both forms trigger both buttons
          ];
 
 

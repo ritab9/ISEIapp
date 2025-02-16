@@ -13,6 +13,7 @@
     <h5>B. Significant Financial Data</h5>
     <hr>
 
+        <div id="lock-message" class="error" style="display: none;"></div>
 
         {% if messages %}
                 <div class="messages">
@@ -51,7 +52,7 @@
                 <table class="table table-sm table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th class="blue-header text-left">2 Years Ago</th>
+                            <th class="blue-header text-left" >2 Years Ago</th>
                             <th class="orange-header text-left">1 Year Ago</th>
                             <th></th>
                         </tr>
@@ -124,25 +125,31 @@
         </div>
 
 
-        <button id="end-save-btn" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</button>
-        <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
+        <button id="end-save-btn" class="btn btn-sm btn-ISEIyellow" type="submit" {% if locked_by %}disabled{% endif %}>Save Changes</button>
+        <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3" {% if locked_by %}disabled{% endif %}>Save Changes</button>
 
     </form>
    </div>
 </div>
 
+<p> form id: {{ selfstudy.id }}</p>
 
 {% endblock content%}
 
 {% block script %}
 
-     {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+     {% include "includes/script_lock_and_save_forms.html" %}
     <script>
 
         //1.When content changes show Save button. Also remove the Content Saved Message
-         window.divButtonMapping = [
-            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"] } // Both forms trigger both buttons
-         ];
+            window.divButtonMapping = [
+                {
+                    divs: ["content-div"],
+                    buttons: ["floating-save-btn", "end-save-btn"],
+                    formId: "{{ form_id|escapejs  }}"
+                } // Both forms trigger both buttons
+            ];
+
 
         // 2. Auto-expanding textareas
         {% include "includes/script_auto_expand_textarea.html" %}

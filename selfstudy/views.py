@@ -20,6 +20,34 @@ from .models import *
 
 from teachercert.myfunctions import newest_certificate
 
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
+from django.views.decorators.csrf import csrf_exempt
+
+@login_required
+def check_lock(request, form_id):
+    """Returns JSON indicating whether the form is locked by another user."""
+    CurrentlyEditing.remove_stale_entries()
+    active_locks = CurrentlyEditing.objects.filter(form_id=form_id).exclude(user=request.user).first()
+    if active_locks:
+        return JsonResponse({"locked": True, "username": f"{active_locks.user.first_name} {active_locks.user.last_name}" })
+    return JsonResponse({"locked": False})
+
+@login_required
+def acquire_lock(request, form_id):
+    """Acquire a lock on the form."""
+    CurrentlyEditing.objects.update_or_create(user=request.user, form_id=form_id, defaults={"last_active": now()})
+    return JsonResponse({"status": "locked"})
+
+@csrf_exempt
+@login_required
+def release_lock(request, form_id):
+    """Release the lock when the user leaves the page."""
+    CurrentlyEditing.objects.filter(user=request.user, form_id=form_id).delete()
+    return JsonResponse({"status": "released"})
+
+
 #Creating the self-study views
 def get_or_create_selfstudy(accreditation):
     selfstudy, created = SelfStudy.objects.get_or_create(
@@ -156,6 +184,7 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
     standard = get_object_or_404(Standard, id=standard_id, parent_standard__isnull=True)
+    form_id = f"{selfstudy.id}_standard_{standard_id}"
 
     evidence_list = standard.evidence.split(';') if standard.evidence else []
     narrative = StandardNarrative.objects.first()
@@ -223,7 +252,8 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
     context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
                    formset = formset, standard_form=standard_form,
                    active_link=standard_id, evidence_list=evidence_list, narrative=narrative,
-                   grouped_data = grouped_data, substandards_exist=substandards_exist)
+                   grouped_data = grouped_data, substandards_exist=substandards_exist,
+                   form_id=form_id)
 
     return render(request, 'selfstudy/standard.html', context)
 
@@ -258,6 +288,8 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
         action_plan = get_object_or_404(ActionPlan, id=action_plan_id, accreditation=accreditation)
     else:
         action_plan = ActionPlan(accreditation=accreditation)
+
+    form_id = f"{selfstudy.id}_actionplan_{action_plan.id}"
 
     if request.method == 'POST':
         if 'delete' in request.POST and action_plan.id:
@@ -299,7 +331,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
 
     context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
                    selfstudy=selfstudy,standards=standards,
-                   active_link=action_plan.id, actionplans=actionplans)
+                   active_link=action_plan.id, actionplans=actionplans, form_id=form_id)
 
     return render(request, 'selfstudy/action_plan.html', context)
 
@@ -485,6 +517,7 @@ def profile_history(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
+    form_id= f"{selfstudy.id}_history"
 
     history_form = SchoolHistoryForm(instance=school_profile)
 
@@ -499,7 +532,7 @@ def profile_history(request, selfstudy_id):
     context = dict(selfstudy=selfstudy, standards = standards,
                    history_form = history_form,
                    active_sublink="history", active_link="profile",
-                   )
+                   form_id=form_id)
 
     return render(request, 'selfstudy/profile_history.html', context)
 
@@ -507,6 +540,7 @@ def profile_financial(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
+    form_id = f"{selfstudy.id}_financial"
 
     # Query related financial data entries
     two_year_data_queryset = FinancialTwoYearDataEntry.objects.filter(school_profile=school_profile)
@@ -540,7 +574,8 @@ def profile_financial(request, selfstudy_id):
     additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset, prefix="additional")
 
     context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial", active_link="profile",
-                    two_year_formset = two_year_formset, additional_formset = additional_formset )
+                    two_year_formset = two_year_formset, additional_formset = additional_formset,
+                   form_id=form_id)
 
     return render(request, 'selfstudy/profile_financial.html', context)
 
@@ -624,6 +659,7 @@ def profile_personnel(request, selfstudy_id):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
+    form_id = f"{selfstudy.id}_personnel"
 
     #get the last annual_report to import data from
     annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER").order_by('school_year__name').last()
@@ -699,6 +735,7 @@ def profile_personnel(request, selfstudy_id):
         fte_formset=FTE_formset, fte_equivalency_form=fte_equivalency_form,
         degree_gender_dict=degree_gender_dict,
         pga_formset=pga_formset,
+        form_id=form_id,
     )
 
     return render(request, 'selfstudy/profile_personnel.html', context)

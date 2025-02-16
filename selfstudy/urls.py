@@ -2,6 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+
+    path('check-lock/<str:form_id>/', views.check_lock, name='check_lock'),
+    path('acquire-lock/<str:form_id>/', views.acquire_lock, name='acquire_lock'),
+    path('release-lock/<str:form_id>/', views.release_lock, name='release_lock'),
+
     path('setup_selfstudy/<int:accreditation_id>/', views.setup_selfstudy, name='setup_selfstudy'),
     path('selfstudy/<int:selfstudy_id>/', views.selfstudy, name='selfstudy'),
 

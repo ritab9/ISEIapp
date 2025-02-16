@@ -19,6 +19,8 @@
                     <h5>Add New Action Plan </h5>
                 {% endif %}
 
+                <div id="lock-message" class="error" style="display: none;"></div>
+
                 {% if messages %}
                     <div class="messages card card-body">
                         {% for message in messages %}
@@ -93,13 +95,13 @@
 
 {% block script %}
 
-    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+    {% include "includes/script_lock_and_save_forms.html" %}
 
     <script>
 
 //1.When content changes show Save button. Also remove the Content Saved Message
         window.divButtonMapping = [
-             { divs: ["content-div"], buttons: ["end-save-btn","floating-save-btn"] },
+             { divs: ["content-div"], buttons: ["end-save-btn","floating-save-btn"], formId: "{{ form_id|escapejs  }}" },
          ];
 
 

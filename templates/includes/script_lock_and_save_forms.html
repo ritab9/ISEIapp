@@ -1,0 +1,143 @@
+<!-- use it as { % include "includes/script_lock_and_save_forms.html" %} in the script area-->
+<!--
+window.divsButtonMapping = [
+        { divs: ["div1", "div2"], buttons: ["save-button1", "save-button2"], formId: "{ { formId|escapejs  }}" } // Both forms trigger both buttons
+    ];
+-->
+<script>
+//2.Locks/unlocks forms for editing. When content changes in a DIV show Save button. Also remove the Content Saved Message.
+        document.addEventListener("DOMContentLoaded", function () {
+            function setupDivTracking(divIds, buttonIds, formId) {
+                let divs = divIds.map(id => document.querySelector(`#${id}`)).filter(div => div !== null);
+                let saveButtons = buttonIds.map(id => document.querySelector(`#${id}`)).filter(btn => btn !== null);
+                let formChanged = false;
+                let lockAcquired = false;
+                let checkingLock = false;
+        
+                if (divs.length === 0 || saveButtons.length === 0) return; // Exit if no valid divs or buttons
+        
+                toggleButtons(saveButtons, false); // Initially hide buttons
+        
+                // Attach event listeners to each div for user interaction
+                divs.forEach(div => {
+                    div.addEventListener("input", handleChange);
+                    div.addEventListener("change", handleChange);
+                    div.addEventListener("click", handleChange);
+                });
+        
+                function handleChange() {
+                    removeMessages();
+                    if (!checkingLock && !lockAcquired) {
+                        checkingLock = true;
+                        checkFormLock(formId);
+                    }
+                }
+        
+                function removeMessages() {
+                    document.querySelectorAll(".messages").forEach(message => message.remove());
+                }
+        
+                function toggleButtons(buttons, show) {
+                    buttons.forEach(button => {
+                        button.style.display = show ? "inline-block" : "none";
+                    });
+                }
+        
+                function checkFormLock(formId) {
+                    fetch(`/check-lock/${formId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            checkingLock = false;
+                            let lockMessageDiv = document.querySelector("#lock-message");
+                            
+                            if (data.locked) {
+                                let message = `This form is currently being edited by ${data.username}. You cannot edit it until the other user saves his/her work.`
+                                alert(message);
+                                lockMessageDiv.innerHTML = `${message} <hr>`;
+                                lockMessageDiv.style.display = "block"; // Show the message
+                                disableFormInputs();
+                                toggleButtons(saveButtons, false);
+                            } else {
+                                enableFormInputs(); // Re-enable inputs if no lock exists
+                                lockMessageDiv.style.display = "none"; // Hide the message if not locked
+                                acquireLock(formId);
+                            }
+                        })
+                        .catch(error => {
+                            checkingLock = false;
+                            console.error("Error checking lock:", error);
+                        });
+                }
+        
+                function acquireLock(formId) {
+                    fetch(`/acquire-lock/${formId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "locked") {
+                                lockAcquired = true;
+                                window.currentFormId = formId; // Track the form for unloading
+                                toggleButtons(saveButtons, true);
+                            }
+                        })
+                        .catch(error => console.error("Error acquiring lock:", error));
+                }
+        
+                function releaseLock(formId) {
+                    if (!lockAcquired) return; // No lock to release
+                    fetch(`/release-lock/${formId}/`, { method: "POST" })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "released") {
+                                lockAcquired = false;
+                                window.currentFormId = null; // Clear the tracking variable
+                                toggleButtons(saveButtons, false);
+                                // Check if another user has locked the form before re-enabling
+                                checkFormLock(formId); 
+                            }
+                        })
+                        .catch(error => console.error("Error releasing lock:", error));
+                }
+        
+                function disableFormInputs() {
+                    divs.forEach(div => {
+                        div.querySelectorAll("input, textarea, select").forEach(field => {
+                            field.disabled = true;
+                        });
+                    });
+                }
+                
+                function enableFormInputs() {
+                    divs.forEach(div => {
+                        div.querySelectorAll("input, textarea, select").forEach(field => {
+                            field.disabled = false;
+                        });
+                    });
+                }
+        
+                // Attach event listeners to save buttons to release lock when clicked
+                saveButtons.forEach(button => {
+                    button.addEventListener("click", function () {
+                        releaseLock(formId);
+                    });
+                });
+            }
+        
+            // Ensure `window.divButtonMapping` is available before running
+            if (window.divButtonMapping && window.divButtonMapping.length > 0) {
+                window.divButtonMapping.forEach(mapping => {
+                    setupDivTracking(mapping.divs, mapping.buttons, mapping.formId);
+                });
+            } else {
+                console.warn("divButtonMapping is not set or empty. Locking setup may not work.");
+            }
+        
+            // Release lock when the user leaves the page
+            window.addEventListener("beforeunload", function () {
+                if (window.currentFormId) {
+                    navigator.sendBeacon(`/release-lock/${window.currentFormId}/`);
+                }
+            });
+        });
+
+
+</script>

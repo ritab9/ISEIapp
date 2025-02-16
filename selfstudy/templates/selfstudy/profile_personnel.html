@@ -13,6 +13,8 @@
     <div class="card card-body">
         <h5>D. Personnel Data</h5>
 
+        <div id="lock-message" class="error" style="display: none;"></div>
+
 <!-- Success and Error Messages -->
         {% if messages %}
                 <div class="messages noprint"><hr>
@@ -378,13 +380,13 @@
 
 {% block script %}
 
-    {% include "includes/script_show_save_button_on_content-form_change.html"  %}
+    {% include "includes/script_lock_and_save_forms.html" %}
 
     <script>
 //1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
          window.divButtonMapping = [
-             { divs: ["fte-div"], buttons: ["fte-save-btn","floating-save-btn"] },
-             { divs: ["pga-div"], buttons: ["pga-save-btn","floating-save-btn"] },
+             { divs: ["fte-div"], buttons: ["fte-save-btn","floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
+             { divs: ["pga-div"], buttons: ["pga-save-btn","floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
          ];
 
 // 3. Auto-expanding textareas
