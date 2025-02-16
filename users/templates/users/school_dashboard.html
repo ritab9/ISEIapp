@@ -188,8 +188,17 @@
                     </table>
                 </div>
     </div>
-<!-- Teacher Cert -->
-    <div class = "col col-auto card card-body ">
+
+
+<!-- Teacher Cert and Safety Form Link -->
+    <div class = "col col-auto ">
+    <!-- Safety form link-->
+        <div class="card-body card">
+            <h6><a href="{{ safety_form_link }}" target="_blank" rel="noopener noreferrer">Safety &amp; Maintenance Inspection Form</a></h6>
+            *To be completed each year before/at the start of the school year*
+        </div>
+
+        <div class="card-body card">
 <!-- Teacher Certification Status-->
             <h6 class="mb-3">
                 <a href="{% url 'principal_teachercert' school.id %}">Teacher Certification </a>
@@ -206,6 +215,7 @@
                     {% endif %}
                 </p>
             </div>
+        </div>
     </div>
 
 </div>

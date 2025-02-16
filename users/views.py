@@ -28,6 +28,7 @@ from reporting.models import Personnel
 from services.models import TestOrder
 from accreditation.models import Accreditation
 from apr.models import APR
+from services.models import Resource
 
 # authentication functions
 @login_required(login_url='login')
@@ -322,12 +323,19 @@ def school_dashboard(request, schoolID):
     else:
         apr=None
 
+    #Link to Safety and Maintenance Inspection Forms
+    if school.address.country.code == "US":
+        safety_form_link=Resource.objects.filter(name="Safety & Maintenance Inspection Form (USA)").values_list("link",flat=True).first()
+    else:
+        safety_form_link = Resource.objects.filter(name="Safety & Maintenance Inspection Form (International)").values_list("link",flat=True).first()
+
     context = dict( percent_certified=percent_certified, number_of_teachers=number_of_teachers,
                     school = school, annual_reports = annual_reports,
                     other_agency_accreditation_info=other_agency_accreditation_info, accreditation=accreditation,
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted, cr_submitted=cr_submitted,
                     is_old = is_old, fire_marshal_date=fire_marshal_date, wss=wss,
                     apr=apr, dashboard=True,
+                    safety_form_link=safety_form_link,
                   )
 
     return render(request, 'users/school_dashboard.html', context)
