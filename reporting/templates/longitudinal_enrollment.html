@@ -44,7 +44,11 @@
                         <td class="blue-column">{{ year }}</td>
                         <td class="blue-column"><b>{{ grade_counts.total_enrollment }}</b></td>
                         {% for grade in grade_range %}
-                            <td class="blue-column">{{ grade_counts|get_from_dict:grade|default:0 }}</td>
+                            {% with color_index=forloop.counter0|add:forloop.parentloop.counter0|modulus:12 %}
+                                <td class="{{ colors|get_item:color_index }}">
+                                    {{ grade_counts|get_from_dict:grade|default:0 }}
+                                </td>
+                            {% endwith %}
                         {% endfor %}
                     </tr>
                 {% endfor %}

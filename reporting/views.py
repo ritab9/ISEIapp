@@ -1790,8 +1790,10 @@ def longitudinal_enrollment(request):
             school["year_data"][year_name]["total_enrollment"] = total_enrollment
 
     grade_range=list(range(1,13))
+    colors = ["dark-blue", "muted-orange", "muted-green", "medium-blue", "text-dark", "text-danger",
+              "text-success", "text-primary", "muted-orange", "muted-green", "dark-blue", "text-danger"]
 
-    context=dict(enrollment_data=enrollment_data, grade_range=grade_range)
+    context=dict(enrollment_data=enrollment_data, grade_range=grade_range, colors=colors)
     return render(request, 'longitudinal_enrollment.html', context)
 
 
