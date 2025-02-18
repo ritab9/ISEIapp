@@ -85,7 +85,7 @@ def register_teacher_from_employee_report(request, personnelID):
         user=new_user,
         first_name=personnel.first_name,
         last_name=personnel.last_name,
-        #school=school,
+        school=school,
         phone_number=personnel.phone_number,
         joined_at=timezone.now()  # make sure `joined_at` attribute is available in the `Personnel` model
     )
