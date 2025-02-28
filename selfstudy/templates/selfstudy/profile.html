@@ -12,6 +12,8 @@
     <div class="card card-body">
         <h5>School Profile</h5> <hr>
 
+        <div id="lock-message" class="error" style="display: none;"></div>
+
         <p>The principal, with assistance from the Coordinating Committee, is responsible for completing sections A-F. The principal may delegate responsibility for completion of applicable sections to others, such as the media center to the librarian, etc.</p>
 
         <hr>
@@ -137,17 +139,20 @@
 
 {% block script %}
 
-    {% include "includes/script_lock_and_save_forms.html" %}
+     {% include "includes/script_lock_and_save_forms.html" %}
 
     <script>
-
         //1.When content changes show Save button. Also remove the Content Saved Message
         window.divButtonMapping = [
-            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"] } // Both forms trigger both buttons
-        ];
+            {
+                divs: ["content-div"],
+                buttons: ["floating-save-btn", "end-save-btn"],
+                formId: "{{ form_id|escapejs  }}" } // Both forms trigger both buttons
+         ];
 
 // 2. Auto-expanding textareas
         {% include "includes/script_auto_expand_textarea.html" %}
+
 
 //3. Show US State only if the chosen country is US
 

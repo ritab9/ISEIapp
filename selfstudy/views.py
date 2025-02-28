@@ -293,7 +293,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
 
     if request.method == 'POST':
         if 'delete' in request.POST and action_plan.id:
-            print("delete",action_plan)
+            #print("delete",action_plan)
             action_plan.delete()
             return HttpResponseRedirect(reverse('selfstudy_actionplan_instructions', kwargs={'selfstudy_id': selfstudy.id}))
         else:
@@ -440,6 +440,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
 def selfstudy_profile(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
+    form_id=f"{selfstudy.id}_profile"
 
     # Retrieve or create the SchoolProfile
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -507,7 +508,7 @@ def selfstudy_profile(request, selfstudy_id):
 
     context= dict(selfstudy=selfstudy, standards = standards,
                    active_link="profile", active_sublink="general_info",
-                    form=form,
+                    form=form, form_id=form_id
                    )
 
     return render(request, "selfstudy/profile.html", context )
