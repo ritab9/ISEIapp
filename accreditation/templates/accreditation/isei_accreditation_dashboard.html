@@ -102,7 +102,7 @@
 
                         <td class="orange-column">
                             <a href="{% url 'manage_apr' accreditation.id %}">
-                                {% if accreditation.apr %} Edit APR {% else %} Add APR {% endif %}
+                                {% if accreditation.apr %} Edit APR {% elif accreditation.term_end_date %} Add APR {% endif %}
                             </a>
                         </td>
                         <td class="orange-column">
