@@ -327,6 +327,7 @@ def update_progress(request, progress_id):
 
 @csrf_exempt  # This is optional if you're using the CSRF token properly
 def update_progress_status(request):
+
     if request.method == 'POST':
         # Parse the data sent from the AJAX request
         data = json.loads(request.body)
