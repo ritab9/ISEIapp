@@ -13,8 +13,8 @@ class APR(models.Model):
     created_at = models.DateField(auto_now_add=True, blank=True)
     updated_at = models.DateField(blank=True, null=True)
 
-    #def __str__(self):
-    #    return f"APR: {self.accreditation.school}, {self.accreditation.term_start_date.strftime('%Y')} - {self.accreditation.term_end_date.strftime('%Y')}"
+    def __str__(self):
+        return f"APR: {self.accreditation.school}"
 
 
 class APRSchoolYear(models.Model):
