@@ -72,6 +72,8 @@ def manage_apr(request, accreditation_id):
     return render(request, 'apr/manage_apr.html', context)
 
 #a general function to handle Priority Directives, Directives and Recommendations formsets
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 def handle_formset(request, apr_id, model, formset_class, form_action_url):
     apr = APR.objects.get(id=apr_id)
 
@@ -101,28 +103,38 @@ def handle_formset(request, apr_id, model, formset_class, form_action_url):
     return render(request, 'apr/handle_formset.html', context)
 
 #view for adding priority_directives
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def add_action_plan_directives(request, apr_id):
     return handle_formset(
         request, apr_id, ActionPlanDirective, ActionPlanDirectiveFormSet, form_action_url=f"/apr/{apr_id}/add_action_plan_directives/"
     )
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def add_priority_directives(request, apr_id):
     return handle_formset(
         request, apr_id, PriorityDirective, PriorityDirectiveFormSet, form_action_url=f"/apr/{apr_id}/add_priority_directives/"
     )
 
 # View for adding Directives
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def add_directives(request, apr_id):
     return handle_formset(
         request, apr_id, Directive, DirectiveFormSet, form_action_url=f"/apr/{apr_id}/add_directives/"
     )
 
 # View for adding Recommendations
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def add_recommendations(request, apr_id):
     return handle_formset(
         request, apr_id, Recommendation, RecommendationFormSet, form_action_url=f"/apr/{apr_id}/add_recommendations/"
     )
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 def manage_action_plan(request, accreditation_id, action_plan_id=None):
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
     apr= APR.objects.get(accreditation=accreditation)
@@ -171,6 +183,8 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
     return render(request, 'apr/manage_action_plan.html', context)
 
 #create the records to tag progress per school year
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def create_progress_records(apr, model):
     model_name = model.__name__
 
@@ -259,7 +273,8 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
 
     return sorted_grouped_progress
 
-
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 def apr_progress_report(request, apr_id):
     apr = get_object_or_404(APR, id=apr_id)
     apr.updated_at = now().date()
@@ -307,7 +322,8 @@ def apr_progress_report(request, apr_id):
 
     return render(request, 'apr/apr_progress_report.html', context)
 
-
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 @csrf_exempt  # Use this temporarily for testing
 def update_progress(request, progress_id):
     if request.method == 'POST':
@@ -325,6 +341,8 @@ def update_progress(request, progress_id):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 @csrf_exempt  # This is optional if you're using the CSRF token properly
 def update_progress_status(request):
 
@@ -369,6 +387,8 @@ def update_progress_status(request):
     # If it's not a POST request, return a bad request response
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 @csrf_exempt
 def update_actionplandirective_completed_date(request):
     if request.method == 'POST':

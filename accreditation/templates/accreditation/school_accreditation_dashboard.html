@@ -17,7 +17,7 @@
                     <th class="orange-header2">SelfStudy</th>
                     <th class="blue-header2">Visit dates </th>
                     <th class="blue-header2">Term </th>
-                    <th class="orange-header2">APR (<small>Last Update</small>)</th>
+                    <th class="orange-header2">AAPR (<small>Last Update</small>)</th>
                 </tr>
 
             </thead>
@@ -53,7 +53,7 @@
 
                          <td class="orange-column">
                             {% if accreditation.apr %}
-                                <a href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
+                                <a href="{% url 'apr_progress_report' accreditation.apr.id %}">AAPR Progress</a>
                                 <div class="small">{{ accreditation.apr.updated_at|default_if_none:"" }}</div>
                             {% endif %}
                         </td>

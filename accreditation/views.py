@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -44,6 +45,8 @@ def isei_accreditation_dashboard(request):
 
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
 def add_accreditation(request):
     if request.method == 'POST':
         form = AccreditationForm(request.POST)
@@ -91,6 +94,7 @@ def delete_accreditation(request, id):
 #School Accreditation Views
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 def school_accreditation_dashboard(request, school_id):
     school=get_object_or_404(School, id=school_id)
 
