@@ -3,9 +3,9 @@ from .models import *
 
 
 class AccreditationAdmin(admin.ModelAdmin):
-    list_display = ['school', 'status', 'term', 'term_start_date', 'term_end_date']
+    list_display = ['school', 'status', 'term', 'term_start_date', 'term_end_date', 'previous_self_study_link']
     list_filter = ['term_start_date', 'term_end_date', 'status']
-    list_editable = ['status']
+    list_editable = ['status', 'previous_self_study_link']
     search_fields = ['school__name', ]
 
 admin.site.register(Accreditation, AccreditationAdmin)

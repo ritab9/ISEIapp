@@ -40,7 +40,9 @@
                             {% else %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a>
-                                {% else %} N/A
+                                {% elif accreditation.previous_self_study_link %}
+                                    <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy</a>
+                                {% else %}N/A
                                 {% endif %}
                             {% endif %}
                         </td>

@@ -32,6 +32,7 @@ class Accreditation(models.Model):
         choices=AccreditationStatus.choices,
         default=AccreditationStatus.SCHEDULED
     )
+    previous_self_study_link = models.URLField(null=True, blank=True)
 
     def visit_date_range(self):
         """ Returns a formatted string for the visit date range, ensuring the month is not repeated if both dates are in the same month."""
