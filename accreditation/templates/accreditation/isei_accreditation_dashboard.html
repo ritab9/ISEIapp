@@ -72,7 +72,7 @@
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SS</a>
                                 {% elif accreditation.previous_self_study_link %}
-                                    <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy</a>
+                                    <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
                                 {% else %} N/A
                                 {% endif %}
                             {% endif %}
@@ -87,8 +87,9 @@
                             <small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}</small></td-->
 
                         <td class="blue-column">
-                            {{ accreditation.term|default_if_none:"" }} <br>
                             <small>
+                             {{ accreditation.term|default_if_none:"" }} <br>
+
                                 {{ accreditation.term_start_date|default_if_none:"" }}-
                                 {% if accreditation.term_end_date %}
                                     {% if accreditation.term_end_date < months_ahead_6 %}
@@ -99,7 +100,10 @@
                                         <span>{{ accreditation.term_end_date }}</span>
                                     {% endif %}
                                 {% endif %}
-                            </small>
+
+                            {% if accreditation.term_comment %}<br> {{ accreditation.term_comment }}
+                            {% endif %}
+                             </small>
                         </td>
 
                         <td class="orange-column">
