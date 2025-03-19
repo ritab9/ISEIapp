@@ -106,6 +106,7 @@ class ActionPlan(models.Model):
     standard = models.TextField()
     objective = models.TextField()
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
+    isei_reviewed = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only set the number for new instances

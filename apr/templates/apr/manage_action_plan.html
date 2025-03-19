@@ -1,4 +1,5 @@
 {% extends 'accreditation_base.html' %}
+{% load group_tags %}
 
 {% block title %} Manage Action Plan {% endblock title %}
 
@@ -13,14 +14,53 @@
             <div class="col-auto"><h6>Manage Action Plan for {{ accreditation }}</h6></div>
             <div class="col-auto ml-auto d-flex justify-content-end">
                 <button type="submit" class="btn btn-sm btn-ISEIblue mr-3">Save</button>
-                <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+                {% if isei_reviewed %}
+                    <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+                {% else %}
+                    <a href="{% url 'apr_progress_report' accreditation.apr.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+                {% endif %}
             </div>
         </div>
 
+<!--Standards, Objective, ISEI Approval -->
         <div class="card card-body mb-3">
-            {{ form.as_p }}
+            <!-- Render Standard Field -->
+            <div class="form-group">
+                <label class="font-weight-bold" for="{{ form.standard.id_for_label }}">{{ form.standard.label }}</label>
+                {{ form.standard }}
+                {% if form.standard.errors %}
+                    <div class="text-danger">
+                        {{ form.standard.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Render Objective Field -->
+            <div class="form-group">
+                <label class="font-weight-bold" for="{{ form.objective.id_for_label }}">{{ form.objective.label }}</label>
+                {{ form.objective }}
+                {% if form.objective.errors %}
+                    <div class="text-danger">
+                        {{ form.objective.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Render isei_reviewed Conditionally -->
+            {% if request.user|in_group:"staff" %}
+                <div class="form-group">
+                    <label class="font-weight-bold" for="{{ form.isei_reviewed.id_for_label }}">{{ form.isei_reviewed.label }}</label>
+                    {{ form.isei_reviewed }}
+                    {% if form.isei_reviewed.errors %}
+                        <div class="text-danger">
+                            {{ form.isei_reviewed.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
 
+<!-- Action Plan Steps-->
         <div class="card card-body">
             <h5>Action Plan Steps</h5>
             {{ formset.management_form }}
@@ -52,7 +92,11 @@
         </div>
 
         <button type="submit" class="btn btn-sm btn-ISEIblue">Save</button>
-        <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+        {% if isei_reviewed %}
+            <a href="{% url 'manage_apr' accreditation.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+        {% else %}
+            <a href="{% url 'apr_progress_report' accreditation.apr.id %}" class="btn btn-sm btn-ISEIyellow">Cancel</a>
+        {% endif %}
     </form>
 </div>
 {% endblock %}

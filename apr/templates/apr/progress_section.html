@@ -7,30 +7,51 @@
         {% elif section_title == "Action Plan" %}bg-light-yellow
         {% elif section_title == "Recommendation" %} bg-muted-green
         {% endif %}">
-    <h6 class="text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
-        {{ section_title }}s
-        <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
-    </h6></div>
+    <div class="row">
+        <h6 class="col text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
+            {{ section_title }}s
+            <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
+        </h6>
+            {% if section_title == "Action Plan" %}
+                <div class="col text-right">
+                     <a href="{% url 'add_action_plan' apr.accreditation.id %}?isei_reviewed=false" class="btn btn-sm btn-outline-ISEIblue">Add Action Plan</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
 
     {% for directive, data in directives_progress.items %}
         <div x-show="showContent" class="card card-body">
-            <p><b>
-                <!--div class="{ % if section_title == "Directive" %}bg-light-ISEIblue1
-                    { % elif section_title == "Priority Directive" %}bg-light-muted-orange
-                    { % elif section_title == "Action Plan" %}bg-lighter-yellow
-                    { % elif section_title == "Recommendation" %} bg-light-muted-green
-                    { % endif %}" -->
-                {{ section_title }} {{ directive.number }}.
-            </b>
-                 {% if directive.description %}
-                    {{ directive.description }}
-                {% elif directive.objective %}
-                    {{ directive.objective }}
-                {% else %}
-                    <span class="error">Error. Please contact ISEI.</span>
+            <div class="row">
+                <div class="col">
+                <p><b>
+                    <!--div class="{ % if section_title == "Directive" %}bg-light-ISEIblue1
+                        { % elif section_title == "Priority Directive" %}bg-light-muted-orange
+                        { % elif section_title == "Action Plan" %}bg-lighter-yellow
+                        { % elif section_title == "Recommendation" %} bg-light-muted-green
+                        { % endif %}" -->
+                    {{ section_title }} {{ directive.number }}.
+                </b>
+                     {% if directive.description %}
+                        {{ directive.description }}
+                    {% elif directive.objective %}
+                        {{ directive.objective }}
+                    {% else %}
+                        <span class="error">Error. Please contact ISEI.</span>
+                    {% endif %}
+                </p>
+                </div>
+
+                {% if section_title == "Action Plan" %}
+                    <div class="col text-right">
+                        <a href="{% url 'edit_action_plan' apr.accreditation.id directive.id %}?isei_reviewed=false" class="btn btn-sm btn-outline-ISEIblue">Revise Action Plan</a>
+                        {% if not directive.isei_reviewed %}
+                            <br><span class="error">ISEI Approval Needed</span>
+                        {% endif %}
+                    </div>
                 {% endif %}
-            </p>
+            </div>
 
 <!-- Display steps for Action Plans -->
             {% if data.steps %}

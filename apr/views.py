@@ -15,6 +15,8 @@ from datetime import datetime
 from django.utils.timezone import now
 import json
 
+from emailing.teacher_cert_functions import send_email
+
 
 #ISEI views for managing APRs - creating and updating if needed
 
@@ -145,6 +147,10 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
     else:
         action_plan = ActionPlan(accreditation=accreditation)
 
+    isei_reviewed = request.GET.get('isei_reviewed', 'true').lower() == 'true'
+    if not isei_reviewed:
+        action_plan.isei_reviewed = False
+
     if request.method == 'POST':
         form = ActionPlanForm(request.POST, instance=action_plan)
         formset = ActionPlanStepsFormSet(request.POST, instance=action_plan)
@@ -166,10 +172,16 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
                 #for i, step in enumerate(existing_steps, start=1):
                 #    step.number = i
                 #    step.save()
-                create_progress_records(apr, ActionPlan)
+                create_progress_records(request, apr, ActionPlan)
 
-            #return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
-
+            if isei_reviewed:
+                return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
+            else:
+                if not action_plan.isei_reviewed:
+                    subject ="Action Plan Revision"
+                    message = f"{accreditation.school} has revised/added Action Plan number {action_plan.number}. ISEI revision is needed"
+                    send_email(subject, message);
+                return redirect('apr_progress_report', apr_id=apr.id)
     else:
         form = ActionPlanForm(instance=action_plan)
         formset = ActionPlanStepsFormSet(instance=action_plan)
@@ -179,13 +191,14 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
         'formset': formset,
         'accreditation': accreditation,
         'action_plan': action_plan,
+        'isei_reviewed': isei_reviewed,
     }
     return render(request, 'apr/manage_action_plan.html', context)
 
 #create the records to tag progress per school year
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff'])
-def create_progress_records(apr, model):
+@allowed_users(allowed_roles=['staff', 'principal'])
+def create_progress_records(request, apr, model):
     model_name = model.__name__
 
     if model_name == 'Recommendation':
@@ -246,6 +259,8 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
                     'number', 'person_responsible', 'action_steps', 'start_date', 'completion_date', 'resources'
                 ))
                 grouped_progress[directive]["steps"] = steps
+            grouped_progress[directive]["id"] = directive.id
+            grouped_progress[directive]["isei_reviewed"] = directive.isei_reviewed
 
         # Group progress by school year
         grouped_progress[directive]["progress"][progress.school_year].append(progress)
@@ -269,7 +284,6 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
             key=lambda item: item[0].number  # Extract and sort by the directive number
         )
     )
-
 
     return sorted_grouped_progress
 

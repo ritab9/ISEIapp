@@ -41,7 +41,7 @@ RecommendationFormSet = modelformset_factory( Recommendation, form=Recommendatio
 class ActionPlanForm(forms.ModelForm):
     class Meta:
         model = ActionPlan
-        fields = ['standard', 'objective']
+        fields = ['standard', 'objective', 'isei_reviewed']
         widgets = {
             'standard': forms.Textarea(attrs={'rows': 1, 'class': 'autosize'}),
             'objective': forms.Textarea(attrs={'rows': 1, 'class': 'autosize'}),
