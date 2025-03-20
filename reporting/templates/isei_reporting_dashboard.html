@@ -1,4 +1,6 @@
 {% extends 'reporting_base.html' %}
+{% load template_extras %}
+
 
 {% block title %} School Reports {% endblock title %}
 
@@ -41,8 +43,10 @@
                                 <br><small> Update:  {{ report.last_update_date }}</small>
                             {% endif %}
 
-                            {% if report.day190.first.file or report.day190.first.calendar_link %}
-                               📅
+                            {% if report.day190.first.file %}
+                               <a href="{{ report.day190.first.file.url }}">📅</a>
+                            {%elif report.day190.first.calendar_link %}
+                                <a href=" {{ report.day190.first.calendar_link }}">📅</a>
                             {% endif %}
                         {% endif %}
                     {% endfor %}

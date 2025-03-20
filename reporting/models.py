@@ -296,7 +296,7 @@ class Day190(models.Model):
     end_date = models.DateField(verbose_name= "School-year end date", default=None, null=True, blank=True)
     number_of_days = models.PositiveIntegerField(verbose_name= "Number of School Days", default=0)
     inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
-    file = models.FileField(upload_to='School_calendars', null=True, blank=True, verbose_name="School Calendar")
+    file = models.FileField(upload_to='School_calendars/%Y', null=True, blank=True, verbose_name="School Calendar/%Y")
     calendar_link = models.URLField(null=True, blank=True, verbose_name="School Calendar Link")
 
     def __str__(self):
