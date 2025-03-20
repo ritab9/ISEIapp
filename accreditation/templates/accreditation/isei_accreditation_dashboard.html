@@ -90,6 +90,9 @@
 
                         <td class="blue-column">
                             <small>
+                                {% if not accreditation.coa_approval_date %}
+                                    <b>Recommended</b> term:
+                                {% endif %}
                                 {{ accreditation.term|default_if_none:"" }} <br></small>
 
                                 {{ accreditation.term_start_date|default_if_none:"" }}-
