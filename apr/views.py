@@ -93,7 +93,7 @@ def handle_formset(request, apr_id, model, formset_class, form_action_url):
                         instance.save()  # Now save the object
                     else:
                         instance.delete()
-            create_progress_records(apr, model)
+            create_progress_records(request, apr, model)
             # Redirect after saving
             return redirect('manage_apr', apr.accreditation.id)
     else:
