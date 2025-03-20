@@ -261,6 +261,7 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
                 grouped_progress[directive]["steps"] = steps
             grouped_progress[directive]["id"] = directive.id
             grouped_progress[directive]["isei_reviewed"] = directive.isei_reviewed
+            grouped_progress[directive]["standard"] = directive.standard
 
         # Group progress by school year
         grouped_progress[directive]["progress"][progress.school_year].append(progress)

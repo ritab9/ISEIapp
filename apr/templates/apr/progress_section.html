@@ -37,6 +37,7 @@
                         {{ directive.description }}
                     {% elif directive.objective %}
                         {{ directive.objective }}
+                         <br><small><b><i>Standard(s):</i></b>  {{ directive.standard }}</small>
                     {% else %}
                         <span class="error">Error. Please contact ISEI.</span>
                     {% endif %}

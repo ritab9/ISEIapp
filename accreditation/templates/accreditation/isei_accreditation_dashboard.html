@@ -82,7 +82,7 @@
                         <td class="blue-column">
                             <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a>
                         </td>
-                        <td class="blue-column">
+                        <td class="blue-column small">
                             {{ accreditation.visit_date_range|default_if_none:"" }}
                         </td>
                         <!-- td class="blue-column"> {{ accreditation.term|default_if_none:"" }} <br>
@@ -90,7 +90,7 @@
 
                         <td class="blue-column">
                             <small>
-                             {{ accreditation.term|default_if_none:"" }} <br>
+                                {{ accreditation.term|default_if_none:"" }} <br></small>
 
                                 {{ accreditation.term_start_date|default_if_none:"" }}-
                                 {% if accreditation.term_end_date %}
@@ -102,9 +102,9 @@
                                         <span>{{ accreditation.term_end_date }}</span>
                                     {% endif %}
                                 {% endif %}
-
-                            {% if accreditation.term_comment %}<br> {{ accreditation.term_comment }}
-                            {% endif %}
+                            <small>
+                                {% if accreditation.term_comment %}<br> {{ accreditation.term_comment }}
+                                {% endif %}
                              </small>
                         </td>
 
