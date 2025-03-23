@@ -1,5 +1,7 @@
 {% extends 'accreditation_base.html' %}
 {% load group_tags %}
+{% load template_extras %}
+
 
 {% block title %} Manage Action Plan {% endblock title %}
 
@@ -7,7 +9,7 @@
 {% block content %}
 <div class="container mt-4">
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="row mb-2">
@@ -46,18 +48,27 @@
                 {% endif %}
             </div>
 
-            <!-- Render isei_reviewed Conditionally -->
-            {% if request.user|in_group:"staff" %}
-                <div class="form-group">
-                    <label class="font-weight-bold" for="{{ form.isei_reviewed.id_for_label }}">{{ form.isei_reviewed.label }}</label>
-                    {{ form.isei_reviewed }}
-                    {% if form.isei_reviewed.errors %}
-                        <div class="text-danger">
-                            {{ form.isei_reviewed.errors }}
+            <div class="row">
+                <div class="col-auto">
+                     <label class="font-weight-bold">Supporting Evidence</label><br>
+                    {{ form.file }}
+                </div>
+
+                <div class="col text-right">
+                    <!-- Render isei_reviewed Conditionally -->
+                    {% if request.user|in_group:"staff" %}
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="{{ form.isei_reviewed.id_for_label }}">{{ form.isei_reviewed.label }}</label>
+                            {{ form.isei_reviewed }}
+                            {% if form.isei_reviewed.errors %}
+                                <div class="text-danger">
+                                    {{ form.isei_reviewed.errors }}
+                                </div>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
-            {% endif %}
+            </div>
         </div>
 
 <!-- Action Plan Steps-->

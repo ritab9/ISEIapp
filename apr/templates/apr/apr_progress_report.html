@@ -1,6 +1,7 @@
 <!-- apr_progress_reportB-->
 {% extends 'accreditation_base.html' %}
 
+
 {% block title %} AAPR Progress {% endblock title %}
 
 
@@ -144,6 +145,55 @@
                 alert('An error occurred.');
             });
         }
+
+//File Upload
+    function uploadFile(directiveId, sectionTitle) {
+        let formData = new FormData();
+        let fileInput = document.getElementById("fileInput-" + directiveId);
+
+        if (fileInput.files.length === 0) {
+            alert("Please select a file.");
+            return;
+        }
+
+        formData.append("file", fileInput.files[0]);
+        formData.append("directive_id", directiveId);
+        formData.append("section_title", sectionTitle);
+
+        fetch("/upload_file/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")  // CSRF protection
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            let statusDiv = document.getElementById("uploadStatus-" + directiveId);
+            if (data.success) {
+                statusDiv.innerHTML = `<span class="text-success">File uploaded successfully!
+                                       <a href="${data.file_url}" target="_blank">View File</a></span>`;
+            } else {
+                statusDiv.innerHTML = `<span class="text-danger">Error: ${data.error}</span>`;
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    // CSRF token helper function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            document.cookie.split(";").forEach(cookie => {
+                let trimmed = cookie.trim();
+                if (trimmed.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+                }
+            });
+        }
+        return cookieValue;
+    }
+
 
 //set color of Progress Status
     function setColor(selectElement) {

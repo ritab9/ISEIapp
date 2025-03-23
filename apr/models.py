@@ -55,6 +55,7 @@ class PriorityDirective(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -71,6 +72,7 @@ class Directive(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -87,6 +89,7 @@ class Recommendation(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -107,6 +110,7 @@ class ActionPlan(models.Model):
     objective = models.TextField()
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
     isei_reviewed = models.BooleanField(default=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only set the number for new instances

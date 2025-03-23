@@ -152,7 +152,7 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
         action_plan.isei_reviewed = False
 
     if request.method == 'POST':
-        form = ActionPlanForm(request.POST, instance=action_plan)
+        form = ActionPlanForm(request.POST,  request.FILES or None, instance=action_plan)
         formset = ActionPlanStepsFormSet(request.POST, instance=action_plan)
 
         if form.is_valid():
@@ -423,3 +423,35 @@ def update_actionplandirective_completed_date(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
+@csrf_exempt  # Use CSRF protection in production!
+def upload_file(request):
+
+    if request.method == "POST" and request.FILES.get("file"):
+        directive_id = request.POST.get("directive_id")
+        section_title = request.POST.get("section_title")
+
+        try:
+            if section_title == "Directive":
+                directive = Directive.objects.get(id=directive_id)
+            elif section_title == "Priority Directive":
+                directive = PriorityDirective.objects.get(id=directive_id)
+            elif section_title == "Action Plan":
+                directive = ActionPlan.objects.get(id=directive_id)
+            else:
+                return JsonResponse({"success": False, "error": "Invalid section title"}, status=400)
+
+            directive.file = request.FILES["file"]
+            directive.save()
+
+            return JsonResponse({
+                "success": True,
+                "file_url": directive.file.url
+            })
+
+        except Directive.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Directive not found"}, status=404)
+
+    return JsonResponse({"success": False, "error": "Invalid request"}, status=400)

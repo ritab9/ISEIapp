@@ -1,4 +1,6 @@
 <!-- Progress Section, to be used with apr_progress report -->
+{% load template_extras %}
+
 <div x-data="{ showContent: true }">
     <!-- Section Title -->
     <div class="card card-body
@@ -88,8 +90,6 @@
                     <label for="progress_status_{{ directive.id }}" class="form-label fw-bold">
                         <b>Progress Status:</b>
                     </label>
-                </div>
-                <div class="col-auto">
                     <select class="form-select" id="progress_status_{{ directive.id }}" name="progress_status_{{ directive.id }}" onchange="updateProgressStatus({{ directive.id }}, '{{ section_title }}')">
                         {% if not directive.progress_status %}
                             <option selected="selected">----------</option>
@@ -102,6 +102,7 @@
                     </select>
                 </div>
             </div>
+
 
 <!-- Progress Table -->
             <table class="table table-sm">
@@ -148,11 +149,34 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+
+        <hr>
+            <div class="row mb-3">
+            <!-- File Upload Section -->
+                <div class="col-auto">
+                    <form id="uploadForm-{{ directive.id }}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <b>Optional Evidence Upload</b><br>
+                        <input type="file" name="file" id="fileInput-{{ directive.id }}">
+                        <button type="button" onclick="uploadFile({{ directive.id }}, '{{ section_title }}')"
+                                class="btn btn-sm text-ISEIblue4 clickable">
+                            Upload File
+                        </button>
+                    </form>
+                    <div id="uploadStatus-{{ directive.id }}"></div>
+                        {% if directive.file %}
+                            <b>Current File:</b> <a href="{{ directive.file.url }}" target="_blank">{{ directive.file.name|filename }}</a>
+                        {% endif %}
+                </div>
+            </div>
+
         </div>
         <hr>
     {% empty %}
         <p>No {{ section_title }} found.</p> <!-- Handling empty case -->
     {% endfor %}
+
 </div>
 
 

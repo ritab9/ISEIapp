@@ -148,7 +148,7 @@ class CEUInstance(models.Model):
     amount = models.DecimalField(max_digits=5, decimal_places=1, null=False, blank = False)
 
     evidence = models.CharField(max_length=300, null=True, blank = True)
-    file = models.FileField(upload_to='Supporting_Files/%Y/%m/%d', null=True, blank=True)
+    file = models.FileField(upload_to='Supporting_Files/%Y', null=True, blank=True)
 
     #used only for individual resubmission
     date_resubmitted = models.DateField(null=True, blank=True)

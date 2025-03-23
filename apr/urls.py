@@ -17,6 +17,7 @@ urlpatterns = [
     path('apr_progress_report/<int:apr_id>/', views.apr_progress_report, name='apr_progress_report'),
     path('update_progress/<int:progress_id>/', views.update_progress, name='update_progress'),
     path('update_progress_status/', views.update_progress_status, name='update_progress_status'),
+    path('upload_file/', views.upload_file, name='upload_file'),
     path('update_actionplandirective_completed_date/', views.update_actionplandirective_completed_date, name='update_actionplandirective_completed_date'),
 
 ]
