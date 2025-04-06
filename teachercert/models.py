@@ -136,7 +136,7 @@ class CEUInstance(models.Model):
     ceu_category = models.ForeignKey(CEUCategory, on_delete=models.PROTECT, null=True, blank=True)
     ceu_type = models.ForeignKey(CEUType, on_delete=models.PROTECT, null=False, blank=False)
     date_completed = models.DateField(null=False)
-    description = models.CharField(validators=[MinLengthValidator(1)], max_length=3000, blank=False, null=False)
+    description = models.CharField(validators=[MinLengthValidator(1)], max_length=500, blank=False, null=False)
 
     UNIT_CHOICES = (
         ('c', 'CEUs'),

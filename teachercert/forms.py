@@ -59,6 +59,29 @@ CEUInstanceFormSet = inlineformset_factory(CEUReport, CEUInstance, form=CEUInsta
                                            can_delete=False)
 
 
+class BulkCEUForm(forms.Form):
+    school = forms.ModelChoiceField(queryset=School.objects.all(), required=False)
+    school_year = forms.ModelChoiceField(queryset=SchoolYear.objects.filter(active_year=True), required=True)
+    ceu_type = forms.ModelChoiceField(queryset=CEUType.objects.filter(ceu_category__name__in=["Collaboration", "Group"]), required=True)
+    description = forms.CharField(
+                                  required=True)
+    approved_ceu = forms.DecimalField(max_digits=5, decimal_places=2, required=False)
+    date_completed = forms.DateField(required=True)
+    evidence = forms.CharField(required=False)
+    file = forms.FileField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.teachers = kwargs.pop('teachers', [])
+        is_principal = kwargs.pop('is_principal', False)  # Pass this from the view
+        super().__init__(*args, **kwargs)
+        if is_principal:
+            self.fields.pop('school')
+        for teacher in self.teachers:
+            self.fields[f'approved_ceu_{teacher.id}'] = forms.DecimalField(
+                max_digits=5, decimal_places=2, required=False,
+                initial= 0
+            )
+
 #not used
 class RenewalForm(forms.ModelForm):
     class Meta:

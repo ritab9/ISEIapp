@@ -1,0 +1,160 @@
+{%  extends 'teachercert_base.html' %}
+{% load crispy_forms_tags %}
+{%  load group_tags %}
+{% load static %}
+
+{% block title %}
+   Add Bulk CEUs
+{% endblock %}
+
+{% block content %}
+    <div class="card card-body">
+        <h6>Group CEU Entry</h6>
+        <hr>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+               {% if not is_principal %}
+                    <div class="col-auto">
+                      <label for="school">School:</label> {{ form.school }}
+                    </div>
+                {% endif %}
+                <div class="col-auto">
+                  <label for="school_year">School Year:</label>
+                  {{ form.school_year }}
+                </div>
+                <div class="col-auto">
+                  <label for="ceu_type">CEU Type:</label>
+                  {{ form.ceu_type }}
+                </div>
+            </div> <br>
+
+            <div class="row">
+                <div class="col-auto">
+                    <label for="{{ form.description.id_for_label }}">Description:</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="col-auto">
+                  <label for="approved_ceu">CEUs:</label>
+                  {{ form.approved_ceu }}
+                </div>
+                <div class="col-auto">
+                  <label for="date_completed">Date Completed:</label>
+                  {{ form.date_completed }}
+                </div>
+                <div class="col-auto">
+                  <label for="evidence">Evidence:</label>
+                  {{ form.evidence }}
+                    <br>
+                  <label for="file">Supporting File (Optional):</label>
+                  {{ form.file }}
+                </div>
+            </div>
+        <hr>
+
+        <div class="row">
+            <div class="col-auto">
+                <h6>Teachers</h6>
+                <table>
+              <thead>
+                <tr>
+                  <th>Teacher Name</th>
+                  <th>CEUs</th>
+                </tr>
+              </thead>
+              <tbody id="teacher-list-container">
+                {% for teacher in teachers %}
+                  <tr>
+                    <td>{{ teacher.name }}</td>
+                    <td>
+                        <input type="number"  step="0.1" name="approved_ceu_{{ teacher.id }}" value=""
+                        id="approved_ceu_{{ teacher.id }}" class="teacher-approved-ceu"/>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            </div>
+            <div class="col-auto" >
+                <button class = "btn btn-sm btn-ISEIblue4" type="submit">Submit</button>
+            </div>
+          </form>
+
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        //Add CEU value to all teachers
+            // Get the global 'approved_ceu' field
+            const globalApprovedCEU = document.getElementById("id_approved_ceu");
+            if (globalApprovedCEU) {
+                const globalValue = globalApprovedCEU.value;
+                document.querySelectorAll('.teacher-approved-ceu').forEach(function(input) {
+                    input.value = globalValue;
+                });
+
+                // Update all teachers' CEU fields when the global 'approved_ceu' field changes
+                globalApprovedCEU.addEventListener("input", function() {
+                    const newValue = this.value;
+
+                    // Immediately update all teachers' CEU fields with the new value
+                    document.querySelectorAll('.teacher-approved-ceu').forEach(function(input) {
+                        input.value = newValue;
+                    });
+                });
+            }
+
+// Filter Teacher by changes to the school dropdown
+        const schoolSelect = document.getElementById('id_school');
+        const teacherListContainer = document.getElementById('teacher-list-container');
+
+        function fetchTeachers(schoolId) {
+            //if (!schoolId) return;
+
+            fetch(`/bulk_ceu_entry/?school=${schoolId}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                teacherListContainer.innerHTML = '';  // Clear previous teacher list
+
+                data.teachers.forEach(teacher => {
+                    const teacherRow = document.createElement('tr');
+                    teacherRow.innerHTML = `
+                       <td>${teacher.name}</td>
+                        <td>
+                            <input type="number" step="0.1" name="approved_ceu_${teacher.id}" value=""
+                            id="approved_ceu_${teacher.id}" class="teacher-approved-ceu">
+                        </td>
+                    `;
+                    teacherListContainer.appendChild(teacherRow);
+                });
+            })
+            .catch(error => console.error('Error fetching teachers:', error));
+        }
+
+        // ✅ Call fetchTeachers if a school is already selected on page load
+        if (schoolSelect.value) {
+            fetchTeachers(schoolSelect.value);
+        }
+
+        // ✅ Fetch teachers when the school dropdown changes
+        schoolSelect.addEventListener('change', function() {
+            fetchTeachers(schoolSelect.value);
+        });
+
+    });
+
+
+    </script>
+
+{% endblock %}

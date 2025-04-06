@@ -10,6 +10,9 @@ from django.db.models import Max, Count, Q
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
+from django.contrib.auth.decorators import login_required
+from users.decorators import allowed_users
+
 from users.utils import is_in_any_group
 from users.models import UserProfile
 from .forms import *
@@ -25,7 +28,7 @@ from django.http import JsonResponse
 
 from django.views.decorators.csrf import csrf_exempt
 
-@login_required
+@login_required(login_url='login')
 def check_lock(request, form_id):
     """Returns JSON indicating whether the form is locked by another user."""
     CurrentlyEditing.remove_stale_entries()
@@ -34,14 +37,14 @@ def check_lock(request, form_id):
         return JsonResponse({"locked": True, "username": f"{active_locks.user.first_name} {active_locks.user.last_name}" })
     return JsonResponse({"locked": False})
 
-@login_required
+@login_required(login_url='login')
 def acquire_lock(request, form_id):
     """Acquire a lock on the form."""
     CurrentlyEditing.objects.update_or_create(user=request.user, form_id=form_id, defaults={"last_active": now()})
     return JsonResponse({"status": "locked"})
 
 @csrf_exempt
-@login_required
+@login_required(login_url='login')
 def release_lock(request, form_id):
     """Release the lock when the user leaves the page."""
     CurrentlyEditing.objects.filter(user=request.user, form_id=form_id).delete()
@@ -49,18 +52,21 @@ def release_lock(request, form_id):
 
 
 #Creating the self-study views
+@login_required(login_url='login')
 def get_or_create_selfstudy(accreditation):
     selfstudy, created = SelfStudy.objects.get_or_create(
         accreditation=accreditation,
     )
     return selfstudy
 
+@login_required(login_url='login')
 def setup_coordinating_team(selfstudy, standards):
     """ Creates a general coordinating team for the given self-study and a team for each standard in the standards list. """
     general_team, created = SelfStudy_Team.objects.get_or_create(selfstudy=selfstudy, standard=None)
     for standard in standards:
         team, created = SelfStudy_Team.objects.get_or_create(selfstudy=selfstudy, standard=standard)
 
+@login_required(login_url='login')
 def setup_school_profile(selfstudy):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
 
@@ -84,6 +90,7 @@ def setup_school_profile(selfstudy):
             assignment=assignment,
         )
 
+@login_required(login_url='login')
 def setup_indicator_evaluations(selfstudy):
     """
     Creates IndicatorEvaluation objects for all active Indicators associated with
@@ -119,6 +126,7 @@ def setup_indicator_evaluations(selfstudy):
 
     #return len(indicator_evaluations)  # Optionally return the count of created objects
 
+@login_required(login_url='login')
 def setup_standard_evaluation(selfstudy, standards):
     # Create StandardEvaluation objects for the selfstudy
     for standard in standards:
@@ -126,6 +134,7 @@ def setup_standard_evaluation(selfstudy, standards):
         #if created:
          #   print(standard)
 
+@login_required(login_url='login')
 def setup_selfstudy(request, accreditation_id):
     # Retrieve the Accreditation object by ID
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
@@ -142,6 +151,7 @@ def setup_selfstudy(request, accreditation_id):
 
     return render(request, 'selfstudy/selfstudy.html', context)
 
+@login_required(login_url='login')
 def selfstudy(request, selfstudy_id):
     try:
         # Try to retrieve the existing SelfStudy object
@@ -180,6 +190,7 @@ def selfstudy(request, selfstudy_id):
 
 #School filling out the self study views
 
+@login_required(login_url='login')
 def selfstudy_standard(request, selfstudy_id, standard_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
@@ -257,6 +268,7 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
 
     return render(request, 'selfstudy/standard.html', context)
 
+@login_required(login_url='login')
 def selfstudy_actionplan_instructions(request, selfstudy_id):
 
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -276,6 +288,7 @@ def selfstudy_actionplan_instructions(request, selfstudy_id):
 
     return render(request, 'selfstudy/action_plan_instructions.html', context)
 
+@login_required(login_url='login')
 def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
 
@@ -335,6 +348,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
 
     return render(request, 'selfstudy/action_plan.html', context)
 
+@login_required(login_url='login')
 def selfstudy_coordinating_team(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards= Standard.objects.top_level()
@@ -350,6 +364,7 @@ def selfstudy_coordinating_team(request, selfstudy_id):
                  teams=teams, privileges=privileges)
     return render(request, 'selfstudy/coordinating_team.html', context)
 
+@login_required(login_url='login')
 def add_coordinating_team_members(request, selfstudy_id, team_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school = selfstudy.accreditation.school
@@ -437,6 +452,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
 
     return render(request, 'selfstudy/add_coordinating_team_members.html', context)
 
+@login_required(login_url='login')
 def selfstudy_profile(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
@@ -514,6 +530,7 @@ def selfstudy_profile(request, selfstudy_id):
     return render(request, "selfstudy/profile.html", context )
 
 
+@login_required(login_url='login')
 def profile_history(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -537,6 +554,7 @@ def profile_history(request, selfstudy_id):
 
     return render(request, 'selfstudy/profile_history.html', context)
 
+@login_required(login_url='login')
 def profile_financial(request, selfstudy_id):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -582,6 +600,7 @@ def profile_financial(request, selfstudy_id):
 
 
 #helper functions for Profile Personnel
+@login_required(login_url='login')
 def import_personnel_data(request, school_profile, annual_report):
     """Imports personnel data from the latest annual report."""
     if not annual_report:
@@ -627,6 +646,7 @@ def import_personnel_data(request, school_profile, annual_report):
 
     messages.success(request, "Personnel was successfully imported/updated!")
 
+@login_required(login_url='login')
 def handle_fte_data(request, school_profile, fte_queryset):
     """Handles FTE data form submission."""
     FTE_formset = FTEFormSet(request.POST, queryset=fte_queryset, prefix="fte")
@@ -654,6 +674,7 @@ def handle_fte_data(request, school_profile, fte_queryset):
 
     return FTEFormSet(queryset=fte_queryset, prefix="fte"), FTEEquivalencyForm(instance=school_profile)
 
+@login_required(login_url='login')
 def profile_personnel(request, selfstudy_id):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -743,3 +764,19 @@ def profile_personnel(request, selfstudy_id):
 
 
 
+
+@login_required(login_url='login')
+def profile_student(request, selfstudy_id):
+    """Main personnel profile view, handling personnel data and FTE data."""
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school = selfstudy.accreditation.school
+    standards = Standard.objects.top_level()
+
+    form_id = f"{selfstudy.id}_personnel"
+
+
+    context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
+                   form_id=form_id)
+
+    return render(request, 'selfstudy/profile_student.html', context)

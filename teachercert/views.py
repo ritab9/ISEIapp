@@ -13,10 +13,15 @@ from django.forms import modelformset_factory
 from .myfunctions import *
 from emailing.teacher_cert_functions import *
 
+import datetime
 from datetime import datetime, timedelta
 from django.contrib import messages
 
 from django.db import IntegrityError
+from django.http import JsonResponse
+
+from django.core.files.storage import default_storage
+
 
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
 
@@ -1111,6 +1116,84 @@ def isei_manage_application(request, appID):
                    teacher=teacher, address=address,
                    school_of_employment=school_of_employment, college_attended=college_attended)
     return render(request, 'teachercert/isei_manage_application.html', context)
+
+
+
+#in works
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff', 'principal'])
+def bulk_ceu_entry(request):
+    is_isei = request.user.groups.filter(name='staff').exists()
+    is_principal = request.user.groups.filter(name='principal').exists()
+
+    if is_principal:
+        teachers = Teacher.objects.filter(user__is_active=True, school=request.user.profile.school)
+    else:
+        teachers = Teacher.objects.filter(user__is_active=True)  # Show all active teachers for ISEI
+
+    if request.is_ajax():
+        if request.GET.get('school'):
+            school_id = request.GET['school']
+            teachers = Teacher.objects.filter(school_id=school_id, user__is_active=True)
+        else:
+            teachers = Teacher.objects.filter(user__is_active=True)
+        teacher_list = [{'id': teacher.id, 'name': teacher.name()} for teacher in teachers]
+        return JsonResponse({'teachers': teacher_list})
+
+
+    if request.method == 'POST':
+        form = BulkCEUForm(request.POST, request.FILES)
+        if form.is_valid():
+            school = form.cleaned_data.get('school') if not is_principal else request.user.profile.school
+            school_year = form.cleaned_data['school_year']
+            ceu_type = form.cleaned_data['ceu_type']
+            description = form.cleaned_data['description']
+            evidence = form.cleaned_data['evidence']
+            approved_ceu = form.cleaned_data['approved_ceu']
+            date_completed = form.cleaned_data['date_completed']
+            file = form.cleaned_data['file']
+
+            if school:
+                teachers =Teacher.objects.filter(school=school, user__is_active=True)
+
+            if file:
+                current_year = datetime.now().year
+                saved_file_path = default_storage.save(f'Supporting_Files/{current_year}/{file.name}', file)
+
+            for teacher in teachers:
+                individual_ceu = request.POST.get(f'approved_ceu_{teacher.id}', approved_ceu)
+                try:
+                    individual_ceu = float(individual_ceu) if individual_ceu.strip() else 0
+                except ValueError:
+                    individual_ceu = 0
+
+                if individual_ceu > 0:
+                    ceu_report, _ = CEUReport.objects.get_or_create(
+                        teacher=teacher, school_year=school_year
+                    )
+
+                    ceu_instance, created = CEUInstance.objects.get_or_create(
+                        ceu_report=ceu_report, ceu_type=ceu_type, date_completed=date_completed,
+                        defaults={
+                            'description': description,
+                            'evidence': evidence,
+                            'approved_ceu': individual_ceu,
+                            'amount':individual_ceu,
+                            'units': 'c',
+                            'file': saved_file_path,
+                            'isei_reviewed': 'a' if is_isei else 'n',
+                            'principal_reviewed': 'a' if is_principal else 'n',
+                        }
+                    )
+                    #if created:
+                    #    print(teacher)
+            return redirect('CEUreports')
+    else:
+        form = BulkCEUForm(teachers=teachers)
+
+    context = dict(form=form, teachers=teachers, is_principal=is_principal)
+
+    return render(request, 'teachercert/bulk_ceu_entry.html', context)
 
 
 @login_required(login_url='login')

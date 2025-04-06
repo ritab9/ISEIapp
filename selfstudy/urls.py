@@ -14,6 +14,7 @@ urlpatterns = [
     path('<int:selfstudy_id>/profile_history/', views.profile_history, name='profile_history'),
     path('<int:selfstudy_id>/profile_financial/', views.profile_financial, name='profile_financial'),
     path('<int:selfstudy_id>/profile_personnel/', views.profile_personnel, name='profile_personnel'),
+    path('<int:selfstudy_id>/profile_student/', views.profile_student, name='profile_student'),
 
     path('<int:selfstudy_id>/standard/<int:standard_id>/', views.selfstudy_standard, name='selfstudy_standard'),
     path('<int:selfstudy_id>/selfstudy_actionplan_instructions/', views.selfstudy_actionplan_instructions, name='selfstudy_actionplan_instructions'),

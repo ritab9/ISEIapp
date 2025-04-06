@@ -21,6 +21,9 @@
         <li class="nav-item">
             <a class="nav-link" href="{% url "isei_ceu_approval" %}">CEU Approval</a>
         </li>
+         <li class="nav-item">
+            <a class= "nav-link" href="{% url 'bulk_ceu_entry' %}"> Group CEU Entry</a>
+         </li>
     {% endif %}
 
 <!-- Principal links -->
@@ -34,6 +37,9 @@
         <li class="nav-item" >
             <a class="nav-link" href="{% url "principal_ceu_approval" %}">CEU Reports Review</a>
         </li>
+        <li class="nav-item">
+            <a class= "nav-link" href="{% url 'bulk_ceu_entry' %}"> Group CEU Entry</a>
+         </li>
                     
           <!-- teacher links for principal -->
         {% if request.user|in_group:"teacher"%}
