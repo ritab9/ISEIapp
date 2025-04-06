@@ -1159,6 +1159,8 @@ def bulk_ceu_entry(request):
             if file:
                 current_year = datetime.now().year
                 saved_file_path = default_storage.save(f'Supporting_Files/{current_year}/{file.name}', file)
+            else:
+                saved_file_path=None
 
             for teacher in teachers:
                 individual_ceu = request.POST.get(f'approved_ceu_{teacher.id}', approved_ceu)
