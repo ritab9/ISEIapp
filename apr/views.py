@@ -356,8 +356,7 @@ def update_progress(request, progress_id):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
+
 @csrf_exempt  # This is optional if you're using the CSRF token properly
 def update_progress_status(request):
 
