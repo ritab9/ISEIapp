@@ -9,11 +9,11 @@
         {% elif section_title == "Action Plan" %}bg-light-yellow
         {% elif section_title == "Recommendation" %} bg-muted-green
         {% endif %}">
-    <div class="row">
-        <h6 class="col text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
-            {{ section_title }}s
-            <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
-        </h6>
+        <div class="row">
+            <h6 class="col text-left mt-2 mb-1" @click="showContent = !showContent" style="cursor: pointer;">
+                {{ section_title }}s
+                <span x-text="showContent ? '▼' : '▲'" class="ml-2"></span>
+            </h6>
             {% if section_title == "Action Plan" %}
                 <div class="col text-right">
                      <a href="{% url 'add_action_plan' apr.accreditation.id %}?isei_reviewed=false" class="btn btn-sm btn-outline-ISEIblue">Add Action Plan</a>
@@ -27,23 +27,27 @@
         <div x-show="showContent" class="card card-body">
             <div class="row">
                 <div class="col">
-                <p><b>
-                    <!--div class="{ % if section_title == "Directive" %}bg-light-ISEIblue1
-                        { % elif section_title == "Priority Directive" %}bg-light-muted-orange
-                        { % elif section_title == "Action Plan" %}bg-lighter-yellow
-                        { % elif section_title == "Recommendation" %} bg-light-muted-green
-                        { % endif %}" -->
-                    {{ section_title }} {{ directive.number }}.
-                </b>
-                     {% if directive.description %}
-                        {{ directive.description }}
-                    {% elif directive.objective %}
-                        {{ directive.objective }}
-                         <br><small><b><i>Standard(s):</i></b>  {{ directive.standard }}</small>
-                    {% else %}
-                        <span class="error">Error. Please contact ISEI.</span>
+                    <p><b>
+                        <!--div class="{ % if section_title == "Directive" %}bg-light-ISEIblue1
+                            { % elif section_title == "Priority Directive" %}bg-light-muted-orange
+                            { % elif section_title == "Action Plan" %}bg-lighter-yellow
+                            { % elif section_title == "Recommendation" %} bg-light-muted-green
+                            { % endif %}" -->
+                        {{ section_title }} {{ directive.number }}.
+                    </b>
+                         {% if directive.description %}
+                            {{ directive.description }}
+                        {% elif directive.objective %}
+                            {{ directive.objective }}
+                             <br><small><b><i>Standard(s):</i></b>  {{ directive.standard }}</small>
+                        {% else %}
+                            <span class="error">Error. Please contact ISEI.</span>
+                        {% endif %}
+                    </p>
+
+                    {% if directive.note %}
+                        <p class="notes font-italic">Note: {{ directive.note }}</p>
                     {% endif %}
-                </p>
                 </div>
 
                 {% if section_title == "Action Plan" %}
@@ -150,26 +154,43 @@
                 </tbody>
             </table>
 
+<!-- File Upload Section -->
+            <hr>
+           <div class="mb-3 noprint">
+               <div class="border rounded p-2 bg-light small">
+                   <div class="row">
+                       <div class="col-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-muted">Optional Evidence Upload</strong>
+                                <div id="uploadStatus-{{ directive.id }}" class="text-success small"></div>
+                            </div>
+                       </div>
+                       <div class="col-auto">
+                            {% if directive.file %}
+                                <div class="mb-2">
+                                    <span class="text-muted">Current File:</span>
+                                    <a href="{{ directive.file.url }}" target="_blank">{{ directive.file.name|filename }}</a>
+                                </div>
+                            {% endif %}
+                       </div>
+                        <div class="col-auto">
+                            <form id="uploadForm-{{ directive.id }}" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center gap-2">
+                                {% csrf_token %}
+                                {% if directive.file %}
+                                    Replace with:
+                                {% endif %}
+                                <input type="file" name="file" id="fileInput-{{ directive.id }}"
+                                       class="form-control form-control-sm form-control-file" style="width: auto; font-size: 0.65rem; padding: 0.25rem 0.5rem;">
 
-        <hr>
-            <div class="row mb-3">
-            <!-- File Upload Section -->
-                <div class="col-auto">
-                    <form id="uploadForm-{{ directive.id }}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <b>Optional Evidence Upload</b><br>
-                        <input type="file" name="file" id="fileInput-{{ directive.id }}">
-                        <button type="button" onclick="uploadFile({{ directive.id }}, '{{ section_title }}')"
-                                class="btn btn-sm text-ISEIblue4 clickable">
-                            Upload File
-                        </button>
-                    </form>
-                    <div id="uploadStatus-{{ directive.id }}"></div>
-                        {% if directive.file %}
-                            <b>Current File:</b> <a href="{{ directive.file.url }}" target="_blank">{{ directive.file.name|filename }}</a>
-                        {% endif %}
-                </div>
-            </div>
+                                <button type="button" onclick="uploadFile({{ directive.id }}, '{{ section_title }}')"
+                                        class="btn btn-sm btn-outline-primary" style="font-size: 0.65rem; padding: 0.25rem 0.5rem;">
+                                    Upload
+                                </button>
+                            </form>
+                        </div>
+                   </div>
+               </div>
+           </div>
 
         </div>
         <hr>

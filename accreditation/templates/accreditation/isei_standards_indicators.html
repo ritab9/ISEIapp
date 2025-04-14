@@ -1,0 +1,43 @@
+{% extends 'accreditation_base.html' %}
+
+{% block title %} ISEI Standards {% endblock title %}
+
+
+{% block content %}
+
+    <div class="card card-body">
+
+    <h5>ISEI-EA Standards</h5>
+
+        <hr>
+
+    {% for standard in standards %}
+        <h6>{{ standard.number }}. {{ standard.name }}</h6>
+        <hr>
+
+        {% for substandard in standard.substandards.all %}
+            <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
+
+            {% for indicator in substandard.indicator_set.all %}
+
+                <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
+                    {% if indicator.school_type.name != "All School Types" %}
+                        ({{ indicator.school_type }})
+                    {% endif %}</p>
+            {% endfor %}
+        {% endfor %}
+
+        {% for indicator in standard.indicator_set.all %}
+            <p>{{ standard.number }}.{{ forloop.counter }}. {{ indicator.description }}
+                    {% if indicator.school_type.name != "All School Types" %}
+                        ({{ indicator.school_type }})
+                    {% endif %}</p>
+        {% endfor %}
+
+        <hr>
+    {% endfor %}
+
+    <p class="text-center"> As of April, 2025</p>
+    </div>
+
+{% endblock %}

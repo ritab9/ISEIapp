@@ -37,6 +37,7 @@ class ActionPlanDirective(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     completed_date = models.DateField(null=True, blank=True)
+    note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
 
 
     def save(self, *args, **kwargs):
@@ -56,6 +57,8 @@ class PriorityDirective(models.Model):
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
+
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -73,6 +76,8 @@ class Directive(models.Model):
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
+
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -90,6 +95,8 @@ class Recommendation(models.Model):
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
+
 
     def save(self, *args, **kwargs):
         if not self.number:

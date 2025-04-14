@@ -763,8 +763,6 @@ def profile_personnel(request, selfstudy_id):
     return render(request, 'selfstudy/profile_personnel.html', context)
 
 
-
-
 @login_required(login_url='login')
 def profile_student(request, selfstudy_id):
     """Main personnel profile view, handling personnel data and FTE data."""

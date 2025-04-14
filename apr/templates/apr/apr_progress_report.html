@@ -13,14 +13,21 @@
     </div>
 
     <div class="card card-body">
-        <b>Instructions:</b>
-        The AAPR is to be completed annually describing the progress made on the directives and action plans from the last Accreditation Visit.
-        <br> Please also choose the appropriate progress descriptor:
-            <ul>
-              <li><b>Not Started</b>: Indicates there has been no activity on this directive.</li>
-              <li><b>In Progress</b>: Give a brief description of the progress made in the comment box.</li>
-              <li><b>Completed/Ongoing</b>: Give a brief description explaining how the directive was completed or how it will continue.</li>
-            </ul>
+        <div class="row">
+            <div class="col">
+                <b>Instructions:</b>
+                The AAPR is to be completed annually describing the progress made on the directives and action plans from the last Accreditation Visit.
+                <br> Please also choose the appropriate progress descriptor:
+                    <ul>
+                      <li><b>Not Started</b>: Indicates there has been no activity on this directive.</li>
+                      <li><b>In Progress</b>: Give a brief description of the progress made in the comment box.</li>
+                      <li><b>Completed/Ongoing</b>: Give a brief description explaining how the directive was completed or how it will continue.</li>
+                    </ul>
+            </div>
+            <div class="col-auto ms-auto align-content-end vertical-divider">
+                <button class="btn btn-sm btn-outline-ISEIblue4" id="toggle-notes">Toggle Notes</button>
+            </div>
+        </div>
     </div>
 
     <!-- Action Plan Directives -->
@@ -287,6 +294,20 @@
           });
         });
       });
+
+//Toggle Notes
+
+    document.getElementById("toggle-notes").addEventListener("click", function() {
+        let notes = document.querySelectorAll(".notes");
+        notes.forEach(note => {
+            // Toggle screen visibility via class
+            note.classList.toggle("hidden");
+
+            // Toggle print visibility via noprint class
+            note.classList.toggle("noprint");
+        });
+    });
+
 
 </script>
 

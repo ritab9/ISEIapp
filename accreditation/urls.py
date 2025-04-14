@@ -8,5 +8,5 @@ urlpatterns = [
     path('delete_accreditation/<int:id>/', views.delete_accreditation, name='delete_accreditation'),
 
     path('school_accreditation_dashboard/<int:school_id>/', views.school_accreditation_dashboard, name='school_accreditation_dashboard'),
-
+    path('isei_standards_indicators/', views.isei_standards_indicators, name='isei_standards_indicators'),
 ]

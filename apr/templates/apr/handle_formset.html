@@ -28,17 +28,17 @@
                 <tr>
                     <th>#</th>
                     <th>{{ model_name }}</th>
-                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
                 {% for form in formset %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                        <td class="font-weight-bold">{{ forloop.counter }}.</td>
                         <td> {{ form.id }} <!--hidden field -->
                             {{ form.description }}</td>
-                        <td>{{ form.DELETE }}</td>
                     </tr>
+                    <tr><td>Note:</td><td>{{ form.note }}</td></tr>
+
                 {% endfor %}
             </tbody>
         </table>
@@ -52,3 +52,10 @@
 
 {% endblock %}
 
+{% block script %}
+    <script>
+        //Auto Expand Text Area
+        {% include "includes/script_auto_expand_textarea.html" %}
+
+    </script>
+{% endblock %}

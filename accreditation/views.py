@@ -8,10 +8,18 @@ from selfstudy.models import SelfStudy
 from users.decorators import allowed_users
 from django.contrib import messages
 
-from .models import Accreditation
+from .models import Accreditation, Standard
 from .forms import *
 
 #ISEI Views
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def isei_standards_indicators(request):
+    standards = Standard.objects.top_level().prefetch_related('substandards', 'indicator_set')
+
+    context=dict(standards=standards)
+    return render(request, 'accreditation/isei_standards_indicators.html', context)
+
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])

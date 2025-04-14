@@ -8,13 +8,10 @@ from .models import  ActionPlanDirective, PriorityDirective, Directive, Recommen
 #base form to be used for PriorityDirective, Directive and Recommendation Forms
 class BaseDirectiveForm(forms.ModelForm):
     class Meta:
-        fields = ['description']
+        fields = ['description', 'note']
         widgets = {
-            'description': forms.Textarea(attrs={
-                'rows': 2,
-                'cols': 40,
-                #'style': 'resize: none;',
-            }),
+            'description': forms.Textarea(attrs={'rows': 2, 'cols': 40,}),
+            'note': forms.Textarea(attrs={'rows': 1, 'cols': 30, }),
         }
 class ActionPlanDirectiveForm(BaseDirectiveForm):
     class Meta(BaseDirectiveForm.Meta):
