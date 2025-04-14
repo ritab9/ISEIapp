@@ -48,6 +48,11 @@ a,h1,h2,h5,h6,h7 {
     height: auto;
 }
 
+.hidden {
+    display: none;
+}
+
+
 /* to remove increment bars from number boxes*/
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -63,5 +68,4 @@ input[type="number"] {
 input[type="number"] {
     text-align: right; !important;
 }
-
 
