@@ -7,10 +7,28 @@
 
     <div class="row">
         <div class="card card-body">
-            <form method="get">
-                    {{ application_filter.form}}
-                <button class="btn btn-ISEIblue3 btn-sm" type="submit" name="search">Search</button> &nbsp;
-                <a href="{%  url 'isei_teacher_applications' %}">Clear all filters</a>
+            <form method="get" class="mb-3">
+              <div class="row">
+                  <div class="col-md-auto">
+                    <div class="">{{ application_filter.form.school.label_tag }} {{ application_filter.form.school }}</div>
+                  </div>
+                  <div clas="col-md-auto">
+                    <div class="">{{ application_filter.form.first_name.label_tag }} {{ application_filter.form.first_name }}</div>
+                    <div class="">{{ application_filter.form.last_name.label_tag }} {{ application_filter.form.last_name }}</div>
+                  </div>
+                  <div class="col-md-auto">
+                    <div class="">{{ application_filter.form.closed.label_tag }} {{ application_filter.form.closed }}</div>
+                    <div class="">{{ application_filter.form.billed.label_tag }} {{ application_filter.form.billed }}</div>
+                  </div>
+                  <div class="col-md-auto">
+                    <div class="">{{ application_filter.form.applied_after.label_tag }} {{ application_filter.form.applied_after }}</div>
+                    <div class="">{{ application_filter.form.applied_before.label_tag }} {{ application_filter.form.applied_before }}</div>
+                  </div>
+                  <div class="col-md-auto">
+                    <button type="submit" class="btn btn-sm btn-ISEIblue4">Filter</button><br>
+                    <a class="" href="{%  url 'isei_teacher_applications' %}">Clear all filters</a>
+                  </div>
+                </div>
             </form>
         </div>
     </div>
