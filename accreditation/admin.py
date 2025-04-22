@@ -14,14 +14,12 @@ admin.site.register(Accreditation, AccreditationAdmin)
 class AccreditationTermAdmin(admin.ModelAdmin):
     list_display = ['code', 'name', 'description']
 
-
 #Self Study models
 
 class SchoolTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name',)
-    list_editable = ('name',)
+    list_display = ('id', 'name', 'code')
+    list_editable = ('name', 'code')
     #list_display_links = ('id',)
-
 
 class LevelInline(admin.TabularInline):
     model = Level
@@ -37,10 +35,21 @@ class IndicatorInline(admin.StackedInline):
     model = Indicator
     extra = 1
 
-
 class StandardAdmin(admin.ModelAdmin):
     inlines = [IndicatorInline]
 
 admin.site.register(Indicator, IndicatorAdmin)
 admin.site.register(Standard, StandardAdmin)
 admin.site.register(SchoolType, SchoolTypeAdmin)
+
+@admin.register(InfoPage)
+class InfoPageAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(AccreditationApplication)
+class AccreditationApplicationAdmin(admin.ModelAdmin):
+    list_display = ('school', 'anticipated_accreditation', 'date', 'ss_orientation_date')
+    list_filter = ('anticipated_accreditation', 'date')
+    search_fields = ('school__name',)

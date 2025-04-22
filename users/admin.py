@@ -43,6 +43,10 @@ class SchoolAdmin(admin.ModelAdmin):
 
     get_school_types.short_description = 'School Types'
 
+@admin.register(SchoolTypeChoice)
+class SchoolTypeChoiceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code', 'name')
+    list_editable = ('code', 'name')
 @admin.register(AccreditationAgency)
 class AccreditationAgencyAdmin(admin.ModelAdmin):
     list_display = ['name', 'abbreviation']

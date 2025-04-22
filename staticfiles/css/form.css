@@ -60,3 +60,16 @@ width: 5px;
     outline: none;
     box-shadow: 0 0 5px rgba(71, 120, 153, 0.5);
 }
+
+/* Address input fields custom */
+.zip-code-input {
+    width: 8ch; /* Postal code (7 characters) */
+}
+
+.address-1-input {
+    width: 20ch; /* Street address (more characters) */
+}
+
+.city-input {
+    width: 15ch; /* City name (average length) */
+}

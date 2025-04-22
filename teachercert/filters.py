@@ -77,11 +77,12 @@ class TeacherCertificationApplicationFilter(django_filters.FilterSet):
     first_name = CharFilter(field_name = 'teacher__first_name',label = "First Name", lookup_expr = 'icontains')
     last_name = CharFilter(field_name = 'teacher__last_name',label = "Last Name", lookup_expr = 'icontains')
     CHOICES_B = (
-        (False, 'Not Billed'),
-        (True, 'Billed'),
-        (None, 'Any')
+        ('y', 'Billed'),
+        ('n', 'Not Billed'),
+        ('z', 'N/A'),
     )
     billed = ChoiceFilter(field_name="billed", choices=CHOICES_B, label='Billed')
+
     CHOICES_C = (
         (False, 'Processing'),
         (True, 'Finalized'),

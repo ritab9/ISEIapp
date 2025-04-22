@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import datetime
-from django.utils.timezone import utc
+from django.utils import timezone
 
 
 class Migration(migrations.Migration):

@@ -1,0 +1,43 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+{% block title %} Accreditation Applications {% endblock title %}
+
+
+{% block content %}
+
+    <div class="card card-body">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-left"> School</th>
+                    <th class="text-left"> Submission Date</th>
+                    <th class="text-left"> Application</th>
+                    <th class="text-left"> Planned Site Visit Dates</th>
+                    <th class="text-left"> Self Study Orientation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                  {% for application in applications %}
+                      <tr>
+                          <td>{{ application.school.name }}</td>
+                          <td>{{ application.date }}</td>
+                          <td>
+                              <a href="{% url 'accreditation_application_review' application.pk %}">
+                                Review</a>
+                          </td>
+                          <td> {{ application.visit_date_range|default_if_none:"-" }}</td>
+                          <td>{{ application.ss_orientation_date|default_if_none:"-" }}</td>
+                      </tr>
+                  {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}

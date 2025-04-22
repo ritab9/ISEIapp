@@ -1,10 +1,46 @@
 from datetime import timezone
+from django.utils import timezone as dj_timezone
 
 from django.db import models
 from users.models import School, SchoolType
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
+
+class InfoPage(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)  # For easy lookup, e.g. "accreditation-intro"
+    content = models.TextField()
+    def __str__(self):
+        return self.name
+
+class AccreditationApplication(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+
+    lowest_grade = models.CharField(max_length=5)
+    current_highest_grade = models.CharField(max_length=5)
+    planned_highest_grade = models.CharField(max_length=5)
+
+    anticipated_accreditation = models.CharField(verbose_name=_('Anticipated School Year for Accreditation Site Visit'), max_length=10, blank=True)
+    signature = models.CharField(max_length=30)
+    date = models.DateField(default=dj_timezone.now)
+
+    ss_orientation_date = models.DateField(blank=True, null=True, verbose_name="SelfStudy Orientation Date")
+    site_visit_start_date=models.DateField(blank=True, null=True)
+    site_visit_end_date=models.DateField(blank=True, null=True)
+    def __str__(self):
+        return f"Accreditation Application: + {self.school}"
+
+    def visit_date_range(self):
+        """ Returns a formatted string for the visit date range, ensuring the month is not repeated if both dates are in the same month."""
+        if not self.site_visit_start_date or not self.site_visit_end_date:
+            return "-"
+        start_date = self.site_visit_start_date
+        end_date = self.site_visit_end_date
+        if start_date.strftime("%B") == end_date.strftime("%B"):
+            return f"{start_date.strftime('%B %d')}-{end_date.strftime('%d, %Y')}"
+        else:
+            return f"{start_date.strftime('%B %d')}-{end_date.strftime('%B %d, %Y')}"
 
 class AccreditationTerm(models.Model):
     code = models.CharField(max_length=10, unique=True)
@@ -61,12 +97,12 @@ class Accreditation(models.Model):
 
         super().save(*args, **kwargs)
 
+#Standards Models (to be used for SelfStudy)
 class StandardManager(models.Manager):
     def top_level(self):
         # Exclude substandards by filtering out those with a parent_standard
         return self.filter(parent_standard__isnull=True)
 
-#Standards Models (to be used for SelfStudy)
 class Standard(models.Model):
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=255)

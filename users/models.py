@@ -93,42 +93,68 @@ class Country(models.Model):
     class Meta:
         ordering = ['-student_occurrence_log', 'name']
 
+#This is for the SelfStudy
 class SchoolType(models.Model):
     name = models.CharField(max_length=30)
+    code = models.CharField(max_length=3, unique = True, blank = True, null=True)
 
     class Meta:
         db_table = "users_schooltype"
     def __str__(self):
         return self.name
 
+#This is to display to the school in the application and add SchoolType based on this
+class SchoolTypeChoice(models.Model):
+    code = models.CharField(max_length=5, unique=True, blank=True, null=True)
+    name = models.CharField(max_length=30, unique=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 class School(models.Model):
-    name = models.CharField(max_length=50, help_text='Enter the name of the school', unique=True, blank=False,
+    name = models.CharField(max_length=50, unique=True, blank=False,
                             null=False)
-    abbreviation = models.CharField(max_length=6, default=" ", help_text=' Enter the abbreviation for this school')
-    school_type=models.ManyToManyField(SchoolType, blank=True, verbose_name='School Type')
+    abbreviation = models.CharField(max_length=6, default=" ")
     ordering = ['name']
     foundation = models.BooleanField(default=False)
+
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
-    website = models.URLField(max_length=200, blank=True, null=True)
+    website = models.CharField(max_length=200, blank=True, null=True)
+
     principal = models.CharField(max_length=100, blank=True, null=True)
+    date_hired = models.CharField(max_length=20, blank=True, null=True) #Principal Date Hired
+    principal_phone = models.CharField(max_length=20, null=True, blank=True)
+    principal_email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
+
     president = models.CharField(max_length=100, blank=True, null=True)
     board_chair = models.CharField(max_length=100, blank=True, null=True)
+    board_chair_phone = models.CharField(max_length=20, null=True, blank=True)
+    board_chair_email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
+
     member = models.BooleanField(default=True)
     textapp= models.CharField(max_length=20, blank=True, null=True)
     fire_marshal_date = models.DateField(blank=True, null=True, verbose_name='Date of Last Fire Marshal Inspection')
     active=models.BooleanField(default=True)
     test=models.BooleanField(default=False)
     initial_accreditation_date= models.DateField(blank=True, null=True)
+
     worthy_student_report_needed = models.BooleanField(default=False)
 
-    TYPE_CHOICES = [
+    year_school_started = models.PositiveIntegerField(blank=True, null=True)
+
+    GRADE_CHOICES = [
         ('K-8', 'K-8'),
         ('K-12', 'K-12'),
         ('9-12', '9-12'),
     ]
-    grade_levels = models.CharField(max_length=5, choices=TYPE_CHOICES, default='9-12',
+    grade_levels = models.CharField(max_length=5, choices=GRADE_CHOICES, default='9-12',
                                    verbose_name="Grade Levels")
+
+    #this is used for creating the self-study and selecting the indicators
+    school_type=models.ManyToManyField(SchoolType, blank=True, verbose_name='School Type')
+    #this is what the school will interface with
+    school_type_choice = models.ManyToManyField(SchoolTypeChoice, blank=True, verbose_name='School Type (Selected by School)')
 
     current_school_year=models.ForeignKey('teachercert.SchoolYear', on_delete=models.CASCADE, null=True, blank=True)
 

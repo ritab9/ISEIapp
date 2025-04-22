@@ -236,7 +236,10 @@ class IndicatorEvaluation(models.Model):
     explanation = models.TextField(null=True, blank=True)
     class Meta:
         unique_together = [['selfstudy', 'indicator']]  # Ensure no duplicate evaluations for the same indicator
-        index_together = [['selfstudy', 'standard'], ['selfstudy', 'indicator']]
+        indexes = [
+            models.Index(fields=['selfstudy', 'standard']),
+            models.Index(fields=['selfstudy', 'indicator']),
+        ]
         ordering = ['selfstudy', 'standard', 'indicator']
 
     def __str__(self):

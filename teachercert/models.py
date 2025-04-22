@@ -187,7 +187,6 @@ class CEUInstance(models.Model):
         return self.description
 
 
-
 class AcademicClass(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=False, blank=False)
     university = models.CharField(max_length=50, blank=False)

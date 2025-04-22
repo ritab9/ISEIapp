@@ -15,4 +15,19 @@
     table td, table th {
         font-size: 10px;
     }
+
+    /* Page break before an element */
+    .page-break-before {
+        page-break-before: always;
+    }
+
+    /* Page break after an element */
+    .page-break-after {
+        page-break-after: always;
+    }
+
+    /* Avoid page break inside an element */
+    .no-page-break {
+        page-break-inside: avoid;
+    }
 }

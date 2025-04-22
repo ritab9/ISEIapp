@@ -52,21 +52,18 @@ def release_lock(request, form_id):
 
 
 #Creating the self-study views
-@login_required(login_url='login')
 def get_or_create_selfstudy(accreditation):
     selfstudy, created = SelfStudy.objects.get_or_create(
         accreditation=accreditation,
     )
     return selfstudy
 
-@login_required(login_url='login')
 def setup_coordinating_team(selfstudy, standards):
     """ Creates a general coordinating team for the given self-study and a team for each standard in the standards list. """
     general_team, created = SelfStudy_Team.objects.get_or_create(selfstudy=selfstudy, standard=None)
     for standard in standards:
         team, created = SelfStudy_Team.objects.get_or_create(selfstudy=selfstudy, standard=standard)
 
-@login_required(login_url='login')
 def setup_school_profile(selfstudy):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
 
@@ -90,7 +87,6 @@ def setup_school_profile(selfstudy):
             assignment=assignment,
         )
 
-@login_required(login_url='login')
 def setup_indicator_evaluations(selfstudy):
     """
     Creates IndicatorEvaluation objects for all active Indicators associated with
@@ -126,7 +122,6 @@ def setup_indicator_evaluations(selfstudy):
 
     #return len(indicator_evaluations)  # Optionally return the count of created objects
 
-@login_required(login_url='login')
 def setup_standard_evaluation(selfstudy, standards):
     # Create StandardEvaluation objects for the selfstudy
     for standard in standards:

@@ -1131,7 +1131,7 @@ def bulk_ceu_entry(request):
     else:
         teachers = Teacher.objects.filter(user__is_active=True)  # Show all active teachers for ISEI
 
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         if request.GET.get('school'):
             school_id = request.GET['school']
             teachers = Teacher.objects.filter(school_id=school_id, user__is_active=True)

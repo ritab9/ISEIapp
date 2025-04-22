@@ -1,5 +1,5 @@
 from .models import MessageTemplate
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 
 #not used
@@ -27,3 +27,9 @@ def send_custom_email(template_id, recipient, context):
         )
     except MessageTemplate.DoesNotExist:
         raise ValueError(f"Template with id {template_id} does not exist.")
+
+
+def send_simple_email(subject, message, send_to = ["info@iseiea.org"]):
+    message = message
+    mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to)
+    mail.send()

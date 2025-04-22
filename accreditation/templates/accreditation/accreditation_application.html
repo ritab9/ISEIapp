@@ -1,0 +1,340 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+{% block title %} Accreditation Application {% endblock title %}
+
+
+{% block content %}
+
+    <div class="card card-body">
+        <div class="row">
+            <div class="col-auto">
+                <img src="{% static 'appfiles/ISEIcolored.png' %}" class="mr-3" alt="ISEIapp Logo" style="width: 130px; height: auto;">
+            </div>
+            <div class="col">
+                <h5 class="text-right"> Accreditation Site Visit Application</h5>
+            </div>
+        </div>
+
+
+        <hr>
+        <h6>{{ info_page.name }}</h6>
+          <div class="info-content mt-3">
+            {{ info_page.content|safe }}
+          </div>
+
+        <hr>
+          <h6 class="page-break-before">Accreditation Site Visit Application</h6>
+
+<!-- Form Errors-->
+        <div>
+            {% if school_form.non_field_errors %}
+              <div class="alert alert-danger">
+                <strong>School Form Errors:</strong>
+                <ul>
+                  {% for error in school_form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            {% if app_form.non_field_errors %}
+              <div class="alert alert-danger">
+                <strong>Application Form Errors:</strong>
+                <ul>
+                  {% for error in app_form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            {% if address_form.non_field_errors %}
+              <div class="alert alert-danger">
+                <strong>Address Form Errors:</strong>
+                <ul>
+                  {% for error in address_form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+        </div>
+        <hr>
+          <form method="post">
+            {% csrf_token %}
+<!-- School Name and Year School Started-->
+                <div class="row">
+                     <div class="col-3">
+                        <label for="{{ school_form.name.id_for_label }}" class="form-label text-muted small d-block">
+                            Name of School
+                        </label>
+                        {{ school_form.name }}
+                        <div class="text-danger small">
+                            {{ school_form.name.errors }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label for="{{  school_form.year_school_started.id_for_label }}" class="form-label text-muted small d-block">
+                            Year School Started
+                        </label>
+                        {{ school_form.year_school_started }}
+                        <div class="text-danger small">
+                            {{ school_form.year_school_started.errors }}
+                        </div>
+                    </div>
+                </div>
+          <hr>
+<!-- Email and Phone number, Website-->
+
+                <div class="row">
+                    <div class="col-3">
+                        <label for="{{ school_form.phone_number.id_for_label }}" class="form-label text-muted small d-block">
+                            Phone Number
+                        </label>
+                        {{ school_form.phone_number }}
+                        <div class="text-danger small">
+                            {{ school_form.phone_number.errors }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label for="{{ school_form.email.id_for_label }}" class="form-label text-muted small d-block">
+                            E-mail
+                        </label>
+                        {{  school_form.email}}
+                        <div class="text-danger small">
+                            {{  school_form.email.errors }}
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label for="{{ school_form.website.id_for_label }}" class="form-label text-muted small d-block">
+                            Website
+                        </label>
+                        {{  school_form.website}}
+                        <div class="text-danger small">
+                            {{  school_form.website.errors }}
+                        </div>
+                    </div>
+                </div>
+                <hr>
+<!-- Address -->
+              <div class="row">
+                  <div class="col">
+                        <label for="{{ address_form.country.id_for_label }}" class="form-label text-muted small d-block">
+                            Country
+                        </label>
+                        {{ address_form.country}}
+                        <div class="text-danger small">
+                            {{ address_form.country.errors }}
+                        </div>
+                  </div>
+                  <div class="col">
+                    <label for="{{ address_form.address_1.id_for_label }}" class="form-label text-muted small d-block">
+                        Street Address
+                    </label>
+                    {{ address_form.address_1 }}
+                    <div class="text-danger small">
+                        {{ address_form.address_1.errors }}
+                    </div>
+                </div>
+                  <div class="col">
+                    <label for="{{ address_form.city.id_for_label }}" class="form-label text-muted small d-block">
+                        City
+                    </label>
+                    {{ address_form.city }}
+                    <div class="text-danger small">
+                        {{ address_form.city.errors }}
+                    </div>
+                </div>
+                    {% if school.address.country == "US" %}
+                    <div class="col mb-3">
+                        <label for="{{ address_form.state_us.id_for_label }}" class="form-label text-muted small d-block">
+                            State
+                        </label>
+                        {{ address_form.state_us }}
+                        <div class="text-danger small">
+                            {{ address_form.state_us.errors }}
+                        </div>
+                    </div>
+                  {% endif %}
+                  <div class="col">
+                    <label for="{{ address_form.zip_code.id_for_label }}" class="form-label text-muted small d-block">
+                        Zip/Postal Code
+                    </label>
+                    {{ address_form.zip_code }}
+                    <div class="text-danger small">
+                        {{ address_form.zip_code.errors }}
+                    </div>
+                </div>
+              </div>
+                <hr>
+<!-- Principal -->
+               <div class="">Principal:</div>
+              <div class ="row mb-4">
+                  <div class="col-3">
+                    <label for="{{  school_form.principal.id_for_label }}" class="form-label text-muted small d-block">
+                        Name
+                    </label>
+                    {{ school_form.principal }}
+                    <div class="text-danger small">
+                        {{ school_form.principal.errors }}
+                    </div>
+                </div>
+                  <div class="col-3">
+                        <label for="{{ school_form.principal_phone.id_for_label }}" class="form-label text-muted small d-block">
+                            Phone (preferred)
+                        </label>
+                        {{ school_form.principal_phone }}
+                        <div class="text-danger small">
+                            {{ school_form.principal_phone.errors }}
+                        </div>
+                  </div>
+                  <div class="col-3">
+                        <label for="{{ school_form.principal_email.id_for_label }}" class="form-label text-muted small d-block">
+                            E-mail
+                        </label>
+                        {{  school_form.principal_email}}
+                        <div class="text-danger small">
+                            {{  school_form.principal_email.errors }}
+                        </div>
+                  </div>
+                  <div class="col-3">
+                        <label for="{{ school_form.date_hired.id_for_label }}" class="form-label text-muted small d-block">
+                           Date hired
+                        </label>
+                        {{  school_form.date_hired}}
+                        <div class="text-danger small">
+                            {{  school_form.date_hired.errors }}
+                        </div>
+                  </div>
+              </div>
+            <hr>
+<!-- Board Chair -->
+             <div class="">Board Chair:</div>
+              <div class ="row">
+                  <div class="col-3">
+                    <label for="{{  school_form.board_chair.id_for_label }}" class="form-label text-muted small d-block">
+                        Name
+                    </label>
+                    {{ school_form.board_chair }}
+                    <div class="text-danger small">
+                        {{ school_form.board_chair.errors }}
+                    </div>
+                </div>
+                  <div class="col-3">
+                        <label for="{{ school_form.board_chair_phone.id_for_label }}" class="form-label text-muted small d-block">
+                            Phone (preferred)
+                        </label>
+                        {{ school_form.board_chair_phone }}
+                        <div class="text-danger small">
+                            {{ school_form.board_chair_phone.errors }}
+                        </div>
+                  </div>
+                  <div class="col-3">
+                        <label for="{{ school_form.board_chair_email.id_for_label }}" class="form-label text-muted small d-block">
+                            E-mail
+                        </label>
+                        {{  school_form.board_chair_email}}
+                        <div class="text-danger small">
+                            {{  school_form.board_chair_email.errors }}
+                        </div>
+                  </div>
+              </div>
+            <hr>
+<!-- Type of school, Grade levels, Anticipated Accrediatation Site visit Date -->
+              <div class="row">
+                  <div class="col-3">
+                        <label for="{{ school_form.school_type_choice.id_for_label }}" class="form-label text-muted small">
+                            Type of School (check all that apply)
+                        </label>
+                        {{ school_form.school_type_choice}}
+                        <div class="text-danger small">
+                            {{  school_form.school_type_choice.errors }}
+                        </div>
+                  </div>
+
+                  <div class="col-3">
+                    <table class="table table-borderless w-auto">
+                        <tr>
+                            <td class="text-end pe-2">
+                                <label for="{{ app_form.lowest_grade.id_for_label }}" class="form-label text-muted small mb-0">
+                                    Lowest Grade
+                                </label>
+                            </td>
+                            <td>
+                                {{ app_form.lowest_grade }}
+                                <div class="text-danger small">{{ app_form.lowest_grade.errors }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-end pe-2">
+                                <label for="{{ app_form.current_highest_grade.id_for_label }}" class="form-label text-muted small mb-0">
+                                    Current Highest Grade
+                                </label>
+                            </td>
+                            <td>
+                                {{ app_form.current_highest_grade }}
+                                <div class="text-danger small">{{ app_form.current_highest_grade.errors }}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-end pe-2">
+                                <label for="{{ app_form.planned_highest_grade.id_for_label }}" class="form-label text-muted small mb-0">
+                                    Planned Highest Grade
+                                </label>
+                            </td>
+                            <td>
+                                {{ app_form.planned_highest_grade }}
+                                <div class="text-danger small">{{ app_form.planned_highest_grade.errors }}</div>
+                            </td>
+                        </tr>
+                    </table>
+                  </div>
+
+                  <div class="col">
+                        <label for="{{ app_form.anticipated_accreditation.id_for_label }}" class="form-label text-muted small d-block">
+                            Anticipated School Year for Accreditation Site Visit</label>
+                        {{  app_form.anticipated_accreditation}}
+                        <div class="text-danger small">
+                            {{  app_form.anticipated_accreditation.errors}}
+                        </div>
+                  </div>
+              </div>
+
+            <hr>
+          <div class="row">
+              <div class="col">
+                <label for="{{ app_form.signature.id_for_label }}" class="form-label text-muted small d-block">
+                    Signature</label>
+                {{  app_form.signature}}
+                <div class="text-danger small">
+                    {{  app_form.signature.errors}}
+                </div>
+              </div>
+              <div class="col">
+                <label for="{{ app_form.date.id_for_label }}" class="form-label text-muted small d-block">
+                    Date</label>
+                {{  app_form.date }}
+                <div class="text-danger small">
+                    {{  app_form.date.errors}}
+                </div>
+              </div>
+          </div>
+            <hr>
+                A Site Visit fee of $500 will be billed to the school at the time of the SelfStudy Report due date.
+            <hr>
+            <button type="submit" class="btn btn-ISEIblue4 btn-sm">Submit Application</button>
+          </form>
+
+    </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}
