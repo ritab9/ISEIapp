@@ -21,7 +21,7 @@
         <div class="row ml-2">
             <div class="col col-auto mt-2">
                 <form method="GET">
-                    {{ filter_form }}
+                    {{ filter_form.as_table }}
                     <input class="btn btn-sm btn-ISEIblue2" type="submit" value="Filter">
                     <a class="btn btn-sm btn-ISEIblue2" href="{% url 'student_report_display' annual_report.id %}" class="btn btn-default">Reset</a>
                 </form>
