@@ -1297,11 +1297,24 @@ def closing_report(request, arID):
             grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
             grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
 
-            grade_count, created = GradeCount.objects.update_or_create(
-                closing=closing,
-                defaults=grade_counts)
-            grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
-                                  GradeCount._meta.fields if field.name != 'id']
+            # Check if a GradeCount already exists for this closing
+            if closing.grade_count:
+                # If grade_count exists, update it
+                for key, value in grade_counts.items():
+                    setattr(closing.grade_count, key, value)
+                closing.grade_count.save()
+            else:
+                # If grade_count does not exist, create a new one
+                grade_count = GradeCount.objects.create(**grade_counts)
+                closing.grade_count = grade_count  # Associate the new grade_count with the closing
+                closing.save()
+
+            # Access the grade count fields to store them in the closing report
+            grade_count_fields = [
+                (field.verbose_name, getattr(closing.grade_count, field.name))
+                for field in GradeCount._meta.fields if field.name != 'id'
+            ]
+
 
             part_time_students = Student.objects.filter(annual_report=annual_report_student, status='part-time')
             if part_time_students.exists():
@@ -1310,9 +1323,18 @@ def closing_report(request, arID):
                 part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
                 part_time_grade_counts["k_count"] = part_time_grade_counts.pop("grade_-1_count")
 
-                part_time_grade_count, created = PartTimeGradeCount.objects.update_or_create(
-                    closing=closing,
-                    defaults=part_time_grade_counts)
+                # Check if a PartTimeGradeCount already exists for this closing
+                if closing.part_time_grade_count:
+                    # If part_time_grade_count exists, update it
+                    for key, value in part_time_grade_counts.items():
+                        setattr(closing.part_time_grade_count, key, value)
+                    closing.part_time_grade_count.save()
+                else:
+                    # If part_time_grade_count does not exist, create a new one
+                    part_time_grade_count = PartTimeGradeCount.objects.create(**part_time_grade_counts)
+                    closing.part_time_grade_count = part_time_grade_count  # Associate the new part_time_grade_count with the closing
+                    closing.save()
+
                 part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
             else:

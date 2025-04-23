@@ -180,7 +180,7 @@ def manage_action_plan(request, accreditation_id, action_plan_id=None):
                 if not action_plan.isei_reviewed:
                     subject ="Action Plan Revision"
                     message = f"{accreditation.school} has revised/added Action Plan number {action_plan.number}. ISEI revision is needed"
-                    send_email(subject, message);
+                    send_email(subject, message, ["info@iseiea.org"]);
                 return redirect('apr_progress_report', apr_id=apr.id)
     else:
         form = ActionPlanForm(instance=action_plan)
