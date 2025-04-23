@@ -68,7 +68,7 @@ class AnnualReport(models.Model):
 
     def due_date(self):
         report_due_date = ReportDueDate.objects.filter(report_type=self.report_type,
-                                                       region=self.school.address.country.region).first()
+                                                       region=self.school.street_address.country.region).first()
         if not report_due_date:
             return None
 

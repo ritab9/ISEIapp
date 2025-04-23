@@ -292,14 +292,14 @@ def school_dashboard(request, schoolID):
     else:
         percent_certified = 0
 
-    #if school.address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
+    #if school.street_address.country.code == "US" and school.abbreviation not in ["AAA", "LBE", "AIS"]:
     if school.worthy_student_report_needed:
         wss=True
     else:
         wss=False
 
     # Get all ReportingDueDate objects for this region
-    report_due_dates = ReportDueDate.objects.filter(region=school.address.country.region).order_by('report_type__order_number')
+    report_due_dates = ReportDueDate.objects.filter(region=school.street_address.country.region).order_by('report_type__order_number')
     annual_reports=[]
     for report_dd in report_due_dates:
         if report_dd.report_type.code != "WS" or wss:
@@ -324,7 +324,7 @@ def school_dashboard(request, schoolID):
         apr=None
 
     #Link to Safety and Maintenance Inspection Forms
-    if school.address.country.code == "US":
+    if school.street_address.country.code == "US":
         safety_form_link=Resource.objects.filter(name="Safety & Maintenance Inspection Form (USA)").values_list("link",flat=True).first()
     else:
         safety_form_link = Resource.objects.filter(name="Safety & Maintenance Inspection Form (International)").values_list("link",flat=True).first()
@@ -363,7 +363,7 @@ def isei_dashboard(request):
 def update_school_info(request, schoolID):
 
     school = get_object_or_404(School, id=schoolID)
-    address = school.address
+    address = school.street_address
 
     if address.state_us == "TN":
         tn_school=True

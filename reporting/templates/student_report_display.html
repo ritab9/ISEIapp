@@ -13,7 +13,7 @@
                 <h6>{{ annual_report }}</h6>
             </div>
             <div class="col col-auto">
-                    {% if annual_report.school.address.state_us == "TN" %}
+                    {% if annual_report.school.street_address.state_us == "TN" %}
                         <a href="{% url 'tn_student_export' arID=annual_report.id %}">Download Data for TN_Report</a>
                     {% endif %}
             </div>
@@ -34,9 +34,9 @@
                     <thead class="table-ISEIblue4 sticky_head">
                         <tr><th>#</th>
                             <th>Name</th><th>Address</th>
-                            {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
+                            {% if annual_report and annual_report.school and annual_report.school.street_address.country and annual_report.school.street_address.country.code == 'US' %}
                                 <th>US State</th>
-                                {% if annual_report.school.address.state_us == 'TN' %}
+                                {% if annual_report.school.street_address.state_us == 'TN' %}
                                     <th>TN County</th>
                                 {% endif %}
                             {% endif %}
@@ -53,9 +53,9 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.address }}</td>
-                                {% if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US' %}
+                                {% if annual_report and annual_report.school and annual_report.school.street_address.country and annual_report.school.street_address.country.code == 'US' %}
                                     <td>{{ student.us_state|default_if_none:"" }}</td>
-                                    {% if annual_report.school.address.state_us == 'TN' %}
+                                    {% if annual_report.school.street_address.state_us == 'TN' %}
                                         <td>{{ student.TN_county|default_if_none:"" }}</td>
                                     {% endif %}
                                 {% endif %}

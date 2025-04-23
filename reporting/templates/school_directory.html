@@ -28,13 +28,13 @@
                         <td>{{ forloop.counter }}</td>
                       <td><a class="" href="{% url 'school_dashboard' school.id %}"> {{school.name}} </a></td>
                       <td>
-                        {{ school.address.address_1 }}<br>
-                        {% if school.address.address_2 %} {{ school.address.address_2 }}<br>{% endif %}
-                        {{ school.address.city }},
-                        {% if school.address.state_us %}{{ school.address.state_us }},{% endif %}
-                        {% if school.address.tn_county %}{{school.address.tn_county }},{% endif %}
-                        {{ school.address.zip_code }}<br>
-                        {{ school.address.country }}
+                        {{ school.street_address.address_1 }}<br>
+                        {% if school.street_address.address_2 %} {{ school.street_address.address_2 }}<br>{% endif %}
+                        {{ school.street_address.city }},
+                        {% if school.street_address.state_us %}{{ school.street_address.state_us }},{% endif %}
+                        {% if school.street_address.tn_county %}{{school.street_address.tn_county }},{% endif %}
+                        {{ school.street_address.zip_code }}<br>
+                        {{ school.street_address.country }}
                       </td>
                       <td>{% if school.phone_number %} {{ school.phone_number }} {% else %} - {% endif %}</td>
                       <td>{% if school.email %} <a href="mailto:{{ school.email }}">{{ school.email }}</a> {% else %} - {% endif %}</td>

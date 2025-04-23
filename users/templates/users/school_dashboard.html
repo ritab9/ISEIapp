@@ -27,13 +27,13 @@
             <h6 class="card-title">{{ school.name }}</h6>
                 <p class="card-text">
                     <strong>Address:</strong><br>
-                    {{ school.address.address_1 }}<br>
-                    {% if school.address.address_2 %} {{ school.address.address_2 }}<br>{% endif %}
-                    {{ school.address.city }},
-                    {% if school.address.state_us %}{{ school.address.state_us }},{% endif %}
-                    {% if school.address.tn_county %}{{ school.address.tn_county }},{% endif %}
-                    {{ school.address.zip_code }}<br>
-                    {{ school.address.country }}
+                    {{ school.street_address.address_1 }}<br>
+                    {% if school.street_address.address_2 %} {{ school.street_address.address_2 }}<br>{% endif %}
+                    {{ school.street_address.city }},
+                    {% if school.street_address.state_us %}{{ school.street_address.state_us }},{% endif %}
+                    {% if school.street_address.tn_county %}{{ school.street_address.tn_county }},{% endif %}
+                    {{ school.street_address.zip_code }}<br>
+                    {{ school.street_address.country }}
                 </p>
                 {% if school.phone_number %}
                     <p><strong>Phone:</strong> {{ school.phone_number }}</p>
@@ -74,7 +74,7 @@
                 <p><strong>Grade Levels:</strong> {{ school.get_grade_levels_display }}</p>
                 {% endif %}
 
-                {% if school.address.state_us == "TN"  %}
+                {% if school.street_address.state_us == "TN"  %}
                     <p>Date of last <b>Fire Marshal Inspection</b>: <br>
                         {% if is_old == None %}
                             <span class="error">Required! Please Update!!!</span>

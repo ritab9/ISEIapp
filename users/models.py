@@ -122,6 +122,11 @@ class School(models.Model):
     email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
     website = models.CharField(max_length=200, blank=True, null=True)
 
+    street_address = models.OneToOneField('Address', related_name='school_street', on_delete=models.SET_NULL,
+                                            null=True, blank=True)
+    postal_address = models.OneToOneField('Address', related_name='school_postal', on_delete=models.SET_NULL,
+                                           null=True, blank=True)
+
     principal = models.CharField(max_length=100, blank=True, null=True)
     date_hired = models.CharField(max_length=20, blank=True, null=True) #Principal Date Hired
     principal_phone = models.CharField(max_length=20, null=True, blank=True)

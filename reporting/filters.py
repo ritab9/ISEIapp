@@ -20,11 +20,11 @@ class StudentFilterForm(forms.Form):
         self.fields['country'] = forms.ModelChoiceField(queryset=Country.objects.all(), required=False)
 
         # Check the properties of the annual report
-        if annual_report and annual_report.school and annual_report.school.address.country and annual_report.school.address.country.code == 'US':
+        if annual_report and annual_report.school and annual_report.school.street_address.country and annual_report.school.street_address.country.code == 'US':
             self.fields['us_state'] = forms.ChoiceField(choices=[('', '---------')] + list(StateField.STATE_CHOICES),
                                                         required=False)
 
-            if annual_report.school.address.state_us == 'TN':
+            if annual_report.school.street_address.state_us == 'TN':
                 self.fields['TN_county'] = forms.ModelChoiceField(queryset=TNCounty.objects.all(), required=False)
 
 
@@ -41,11 +41,17 @@ class EmployeeFilterForm(forms.Form):
 class PersonnelFilterForm(forms.Form):
     school = forms.ModelChoiceField(queryset=School.objects.filter(active=True), required=False)
     name = forms.CharField(max_length=100, required=False)
+
     position = forms.ChoiceField(
-        choices=[('', '---------')] + list(StaffPosition.objects.values_list('name', 'name').distinct()),
+        choices=[('', '---------')] + [
+            (name, name) for name in StaffPosition.objects.order_by().values_list('name', flat=True).distinct()
+        ],
         required=False
     )
+
     subject = forms.ChoiceField(
-        choices=[('', '---------')] + list(Subject.objects.values_list('name', 'name').distinct()),
+        choices=[('', '---------')] + [
+            (name, name) for name in Subject.objects.order_by().values_list('name', flat=True).distinct()
+        ],
         required=False
     )

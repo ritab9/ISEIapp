@@ -38,13 +38,13 @@
                  <tr>
                      <td><b>Principal:</b>{% if school_data.school.principal %} {{ school_data.school.principal }} {% else %} - {% endif %}</td>
                      <td colspan="2"><b>Address:</b>
-                        {{ school_data.school.address.address_1 }},
-                        {% if school_data.school.address.address_2 %} {{ school_data.school.address.address_2 }}{% endif %}
-                        {{ school_data.school.address.city }},
-                        {% if school_data.school.address.state_us %}{{ school_data.school.address.state_us }},{% endif %}
-                        {% if school_data.school.address.tn_county %}{{school_data.school.address.tn_county }},{% endif %}
-                        {{ school_data.school.address.zip_code }},
-                        {{ school_data.school.address.country }}
+                        {{ school_data.school.street_address.address_1 }},
+                        {% if school_data.school.street_address.address_2 %} {{ school_data.school.street_address.address_2 }}{% endif %}
+                        {{ school_data.school.street_address.city }},
+                        {% if school_data.school.street_address.state_us %}{{ school_data.school.street_address.state_us }},{% endif %}
+                        {% if school_data.school.street_address.tn_county %}{{school_data.school.street_address.tn_county }},{% endif %}
+                        {{ school_data.school.street_address.zip_code }},
+                        {{ school_data.school.street_address.country }}
                       </td>
                 </tr>
                 <tr>

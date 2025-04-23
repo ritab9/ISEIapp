@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateInput
 from .models import Accreditation, AccreditationApplication
-from users.models import School, Address
+from users.models import School, Address, Country
 
 
 class AccreditationForm(forms.ModelForm):
@@ -73,6 +73,18 @@ class AddressForm(forms.ModelForm):
             'country': forms.Select(attrs={}),
             'state_us': forms.Select(attrs={}),
         }
+
+    def __init__(self, *args, **kwargs):
+        # Extract the 'is_required' argument passed to the form constructor
+        is_required = kwargs.pop('is_required', False)
+
+        super().__init__(*args, **kwargs)
+
+        # Set all fields' 'required' attribute based on the is_required argument
+        for field in self.fields:
+            self.fields[field].required = is_required
+        self.fields['state_us'].required = False
+
 
 class AccreditationApplicationReviewForm(forms.ModelForm):
     class Meta:

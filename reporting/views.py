@@ -50,8 +50,8 @@ def student_report(request,arID):
         school = annual_report.school
 
         # Determine if the school is in US and in TN
-        is_us_school = school.address.country.code == "US"
-        is_tn_school = is_us_school and school.address.state_us == "TN"
+        is_us_school = school.street_address.country.code == "US"
+        is_tn_school = is_us_school and school.street_address.state_us == "TN"
 
         exclude_fields = ['annual_report', 'id', 'age_at_registration']
         if not is_us_school or not is_tn_school:
@@ -265,7 +265,7 @@ def student_report_display(request, arID):
 class StudentExcelDownload(View):
     def get(self, request, *args, **kwargs):
         #TODO take out age; it's only for importing old data (or maybe keep it as an alternative to birth_date?)
-        address = request.user.profile.school.address
+        address = request.user.profile.school.street_address
         if address.state_us == "TN":
             column_headers = ['name', 'gender', 'grade_level', 'age',  'birth_date', 'address', 'us_state', 'TN_county', 'country',
                           'registration_date',  'withdraw_date', 'status', 'location','baptized', 'parent_sda',
@@ -299,7 +299,7 @@ class StudentExcelDownload(View):
 def student_import_dashboard(request, arID):
 
     annual_report_instance = AnnualReport.objects.get(id=arID)
-    school_state = annual_report_instance.school.address.state_us
+    school_state = annual_report_instance.school.street_address.state_us
 
     valid_state_codes = [code for code, state in StateField.STATE_CHOICES]
     valid_choices = ['Y', 'N', 'U']
@@ -493,7 +493,7 @@ def tn_student_export(request, arID):
     date=annual_report.last_update_date
     school= annual_report.school
     school_name = school.name
-    address=school.address
+    address=school.street_address
     school_address = address.address_1
     school_city = address.city
     school_zip = address.zip_code
@@ -1497,10 +1497,10 @@ def download_TN_reports(request, schoolyearID):
         student_count = report.students.filter(status="enrolled").count()
         data.append({
             'School name': school.name,
-            'Address': school.address.address_1,
-            'City': school.address.city,
-            'Zip code': school.address.zip_code,
-            'TN County': school.address.tn_county,
+            'Address': school.street_address.address_1,
+            'City': school.street_address.city,
+            'Zip code': school.street_address.zip_code,
+            'TN County': school.street_address.tn_county,
             'Principal': school.principal,
             'Email': school.email,
             'Phone number': school.phone_number,
@@ -1594,11 +1594,11 @@ def download_NCPSA_directory(request, schoolyearID):
         data.append({
             'Institution': school.name,
             'Representative': school.principal,
-            'Address': school.address.address_1,
-            'City': school.address.city,
-            'Zip code': school.address.zip_code,
-            'State': school.address.state_us,
-            'Country':school.address.country,
+            'Address': school.street_address.address_1,
+            'City': school.street_address.city,
+            'Zip code': school.street_address.zip_code,
+            'State': school.street_address.state_us,
+            'Country':school.street_address.country,
             'Phone': school.phone_number,
             'E-mail': school.email,
             'Website': school.website,
@@ -1713,6 +1713,9 @@ def school_personnel_directory(request):
         if filter_form.cleaned_data['name']:
             staff = staff.filter(
                 Q(first_name__icontains=filter_form.cleaned_data['name']) | Q(last_name__icontains=filter_form.cleaned_data['name']))
+
+        if not staff.exists():
+            continue
 
         personnel_data = {}
         personnel_data["school"] = school

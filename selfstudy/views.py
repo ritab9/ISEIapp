@@ -457,7 +457,7 @@ def selfstudy_profile(request, selfstudy_id):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
 
     school = selfstudy.accreditation.school
-    address = school.address
+    address = school.street_address
 
     # Populate missing fields from other sources
     if not school_profile.school_name:

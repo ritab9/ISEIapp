@@ -120,6 +120,7 @@
                 <hr>
 <!-- Address -->
               <div class="row">
+                  <div class="col-auto text-muted">Street Address</div>
                   <div class="col">
                         <label for="{{ address_form.country.id_for_label }}" class="form-label text-muted small d-block">
                             Country
@@ -147,8 +148,8 @@
                         {{ address_form.city.errors }}
                     </div>
                 </div>
-                    {% if school.address.country == "US" %}
-                    <div class="col mb-3">
+                    {% if school.street_address.country.code == "US" %}
+                    <div class="col">
                         <label for="{{ address_form.state_us.id_for_label }}" class="form-label text-muted small d-block">
                             State
                         </label>
@@ -169,10 +170,63 @@
                 </div>
               </div>
                 <hr>
+<!-- Optional Postal Address -->
+                <div class="row">
+                    <div class="col-auto text-muted">Postal Address <br>(if different)</div>
+                  <div class="col">
+                        <label for="{{ postal_address_form.country.id_for_label }}" class="form-label text-muted small d-block">
+                            Country
+                        </label>
+                        {{ postal_address_form.country}}
+                        <div class="text-danger small">
+                            {{ postal_address_form.country.errors }}
+                        </div>
+                  </div>
+                  <div class="col">
+                    <label for="{{ postal_address_form.address_1.id_for_label }}" class="form-label text-muted small d-block">
+                        Street Address
+                    </label>
+                    {{ postal_address_form.address_1 }}
+                    <div class="text-danger small">
+                        {{ postal_address_form.address_1.errors }}
+                    </div>
+                </div>
+                  <div class="col">
+                    <label for="{{ postal_address_form.city.id_for_label }}" class="form-label text-muted small d-block">
+                        City
+                    </label>
+                    {{ postal_address_form.city }}
+                    <div class="text-danger small">
+                        {{ postal_address_form.city.errors }}
+                    </div>
+                </div>
+                    {% if school.street_address.country.code == "US" %}
+                    <div class="col">
+                        <label for="{{ postal_address_form.state_us.id_for_label }}" class="form-label text-muted small d-block">
+                            US State
+                        </label>
+                        {{ postal_address_form.state_us }}
+                        <div class="text-danger small">
+                            {{ postal_address_form.state_us.errors }}
+                        </div>
+                    </div>
+                  {% endif %}
+                  <div class="col">
+                    <label for="{{ postal_address_form.zip_code.id_for_label }}" class="form-label text-muted small d-block">
+                        Zip/Postal Code
+                    </label>
+                    {{ postal_address_form.zip_code }}
+                    <div class="text-danger small">
+                        {{ postal_address_form.zip_code.errors }}
+                    </div>
+                </div>
+              </div>
+                <hr>
+
 <!-- Principal -->
-               <div class="">Principal:</div>
               <div class ="row mb-4">
-                  <div class="col-3">
+                  <div class="col-auto text-muted">Principal</div>
+                  <div class="col">
                     <label for="{{  school_form.principal.id_for_label }}" class="form-label text-muted small d-block">
                         Name
                     </label>
@@ -181,7 +235,7 @@
                         {{ school_form.principal.errors }}
                     </div>
                 </div>
-                  <div class="col-3">
+                  <div class="col">
                         <label for="{{ school_form.principal_phone.id_for_label }}" class="form-label text-muted small d-block">
                             Phone (preferred)
                         </label>
@@ -190,7 +244,7 @@
                             {{ school_form.principal_phone.errors }}
                         </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col">
                         <label for="{{ school_form.principal_email.id_for_label }}" class="form-label text-muted small d-block">
                             E-mail
                         </label>
@@ -199,7 +253,7 @@
                             {{  school_form.principal_email.errors }}
                         </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col">
                         <label for="{{ school_form.date_hired.id_for_label }}" class="form-label text-muted small d-block">
                            Date hired
                         </label>
@@ -211,9 +265,10 @@
               </div>
             <hr>
 <!-- Board Chair -->
-             <div class="">Board Chair:</div>
+
               <div class ="row">
-                  <div class="col-3">
+                  <div class="col-auto text-muted">Board Chair</div>
+                  <div class="col">
                     <label for="{{  school_form.board_chair.id_for_label }}" class="form-label text-muted small d-block">
                         Name
                     </label>
@@ -222,7 +277,7 @@
                         {{ school_form.board_chair.errors }}
                     </div>
                 </div>
-                  <div class="col-3">
+                  <div class="col">
                         <label for="{{ school_form.board_chair_phone.id_for_label }}" class="form-label text-muted small d-block">
                             Phone (preferred)
                         </label>
@@ -231,7 +286,7 @@
                             {{ school_form.board_chair_phone.errors }}
                         </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col">
                         <label for="{{ school_form.board_chair_email.id_for_label }}" class="form-label text-muted small d-block">
                             E-mail
                         </label>
@@ -240,6 +295,7 @@
                             {{  school_form.board_chair_email.errors }}
                         </div>
                   </div>
+                  <div class="col"></div>
               </div>
             <hr>
 <!-- Type of school, Grade levels, Anticipated Accrediatation Site visit Date -->

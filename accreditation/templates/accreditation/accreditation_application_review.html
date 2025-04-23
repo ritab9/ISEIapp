@@ -57,40 +57,85 @@
                 <hr>
 <!-- Address -->
               <div class="row">
+                    <div class="col-1 d-flex justify-content-center align-items-center">
+                        <div class="text-muted">Address</div>
+                    </div>
                   <div class="col">
-                        <label for="{{ school.address.country.id_for_label }}" class="form-label text-muted small d-block">
+                        <label for="{{ school.street_address.country.id_for_label }}" class="form-label text-muted small d-block">
                             Country
                         </label>
-                        {{ school.address.country}}
+                        {{ school.street_address.country}}
                   </div>
                   <div class="col">
-                    <label for="{{ school.address.address_1.id_for_label }}" class="form-label text-muted small d-block">
+                    <label for="{{ school.street_address.address_1.id_for_label }}" class="form-label text-muted small d-block">
                         Street Address
                     </label>
-                    {{ school.address.address_1 }}
+                    {{ school.street_address.address_1 }}
                 </div>
                   <div class="col">
-                    <label for="{{ school.address.city.id_for_label }}" class="form-label text-muted small d-block">
+                    <label for="{{ school.street_address.city.id_for_label }}" class="form-label text-muted small d-block">
                         City
                     </label>
-                    {{ school.address.city }}
+                    {{ school.street_address.city }}
                 </div>
-                    {% if school.address.country == "US" %}
+                    {% if school.street_address.country == "US" %}
                     <div class="col mb-3">
-                        <label for="{{ school.address.state_us.id_for_label }}" class="form-label text-muted small d-block">
+                        <label for="{{ school.street_address.state_us.id_for_label }}" class="form-label text-muted small d-block">
                             State
                         </label>
-                        {{ school.address.state_us }}
+                        {{ school.street_address.state_us }}
                     </div>
                   {% endif %}
                   <div class="col">
-                    <label for="{{ school.address.zip_code.id_for_label }}" class="form-label text-muted small d-block">
+                    <label for="{{ school.street_address.zip_code.id_for_label }}" class="form-label text-muted small d-block">
                         Zip/Postal Code
                     </label>
-                    {{ school.address.zip_code }}
+                    {{ school.street_address.zip_code }}
                 </div>
               </div>
                 <hr>
+
+<!-- Postal Address-->
+            {% if school.postal_address %}
+            <div class="row">
+                 <div class="col-1 d-flex justify-content-center align-items-center">
+                        <div class="text-muted">Postal Address</div>
+                    </div>
+                  <div class="col">
+                        <label for="{{ school.postal_address.country.id_for_label }}" class="form-label text-muted small d-block">
+                            Country
+                        </label>
+                        {{ school.postal_address.country}}
+                  </div>
+                  <div class="col">
+                    <label for="{{ school.postal_address.address_1.id_for_label }}" class="form-label text-muted small d-block">
+                        Street Address
+                    </label>
+                    {{ school.postal_address.address_1 }}
+                </div>
+                  <div class="col">
+                    <label for="{{ school.postal_address.city.id_for_label }}" class="form-label text-muted small d-block">
+                        City
+                    </label>
+                    {{ school.postal_address.city }}
+                </div>
+                    {% if school.postal_address.country == "US" %}
+                    <div class="col mb-3">
+                        <label for="{{ school.postal_address.state_us.id_for_label }}" class="form-label text-muted small d-block">
+                            State
+                        </label>
+                        {{ school.postal_address.state_us }}
+                    </div>
+                  {% endif %}
+                  <div class="col">
+                    <label for="{{ school.postal_address.zip_code.id_for_label }}" class="form-label text-muted small d-block">
+                        Zip/Postal Code
+                    </label>
+                    {{ school.postal_address.zip_code }}
+                </div>
+              </div>
+                <hr>
+            {% endif %}
 <!-- Principal -->
               <div class="row mb-4">
                     <div class="col-1 d-flex justify-content-center align-items-center">
@@ -124,28 +169,28 @@
 
 <!-- Board Chair -->
               <div class="row mb-4">
-    <div class="col-1 d-flex justify-content-center align-items-center">
-        <div class="text-muted">Board Chair:</div>
-    </div>
-    <div class="col-2">
-        <label for="{{ school.board_chair.id_for_label }}" class="form-label text-muted small d-block">
-            Name
-        </label>
-        {{ school.board_chair }}
-    </div>
-    <div class="col-3">
-        <label for="{{ school.board_chair_phone.id_for_label }}" class="form-label text-muted small d-block">
-            Phone (preferred)
-        </label>
-        {{ school.board_chair_phone }}
-    </div>
-    <div class="col-3">
-        <label for="{{ school.board_chair_email.id_for_label }}" class="form-label text-muted small d-block">
-            E-mail
-        </label>
-        {{ school.board_chair_email }}
-    </div>
-</div>
+                <div class="col-1 d-flex justify-content-center align-items-center">
+                    <div class="text-muted">Board Chair:</div>
+                </div>
+                <div class="col-2">
+                    <label for="{{ school.board_chair.id_for_label }}" class="form-label text-muted small d-block">
+                        Name
+                    </label>
+                    {{ school.board_chair }}
+                </div>
+                <div class="col-3">
+                    <label for="{{ school.board_chair_phone.id_for_label }}" class="form-label text-muted small d-block">
+                        Phone (preferred)
+                    </label>
+                    {{ school.board_chair_phone }}
+                </div>
+                <div class="col-3">
+                    <label for="{{ school.board_chair_email.id_for_label }}" class="form-label text-muted small d-block">
+                        E-mail
+                    </label>
+                    {{ school.board_chair_email }}
+                </div>
+            </div>
 
             <hr>
 <!-- Type of school, Grade levels, Anticipated Accrediatation Site visit Date -->

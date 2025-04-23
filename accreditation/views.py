@@ -186,15 +186,23 @@ def accreditation_application(request, school_id):
     in_progress_app = AccreditationApplication.objects.filter(school=school,
                 site_visit_start_date__isnull=True, site_visit_end_date__isnull=True).first()
 
-    address, created = Address.objects.get_or_create(school=school)
-    address_form = AddressForm(request.POST or None, instance=address)
+    address_form = AddressForm(request.POST or None, instance=school.street_address, prefix="main", is_required=True)
+    postal_address_form = AddressForm(request.POST or None, instance=school.postal_address, prefix="postal", is_required=False)
+
     school_form = SchoolInfoForApplicationForm(request.POST or None, instance=school)
     app_form = AccreditationApplicationForm(request.POST or None, instance= in_progress_app)
 
     if request.method == 'POST':
         if school_form.is_valid() and app_form.is_valid() and address_form.is_valid():
             school_form.save()
-            address_form.save()
+            address=address_form.save()
+            school.street_address = address
+
+            if postal_address_form.is_valid() and postal_address_form.has_changed() and postal_address_form.cleaned_data.get('country'):
+                postal_address = postal_address_form.save()
+                school.postal_address = postal_address
+
+            school.save()
 
             app = app_form.save(commit=False)
             app.school = school
@@ -211,9 +219,11 @@ def accreditation_application(request, school_id):
             print("School form errors:", school_form.errors)
             print("Application form errors:", app_form.errors)
             print("Address form errors:", address_form.errors)
+            print("Postal Address form errors:", postal_address_form.errors)
 
     context=dict(info_page=info_page, school=school,
-                 app_form=app_form, school_form=school_form, address_form = address_form)
+                 app_form=app_form, school_form=school_form,
+                 address_form = address_form, postal_address_form = postal_address_form)
 
     return render(request, 'accreditation/accreditation_application.html', context)
 
