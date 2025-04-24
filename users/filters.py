@@ -7,5 +7,10 @@ from .models import *
 
 
 class SchoolFilter(django_filters.FilterSet):
-    school = ModelChoiceFilter(field_name="school__name", label='School', queryset=School.objects.filter(active=True) )
+
+    school = ModelChoiceFilter(
+            field_name="user__profile__school__name",  # Use the profile relation to access the school
+            label='School',
+            queryset=School.objects.filter(active=True)
+        )
 

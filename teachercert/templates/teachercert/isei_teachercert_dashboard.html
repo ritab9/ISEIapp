@@ -119,7 +119,7 @@
                     <tbody>
                         {% for t in non_certified_teachers %}
                           <tr>
-                              <td>{{ t.school}}</td>
+                              <td>{{ t.user.profile.school}}</td>
                               <td><a class="nav-link" href = "{% url 'account_settings' t.user.id %}"><div class="spanyellow">Info</div></a>
                                   <a class="nav-link" href = "{% url 'teacher_dashboard' t.user.id %}">{{t.name}}</a></td>
                               </td>
