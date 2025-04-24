@@ -10,6 +10,7 @@ class ReportDueDateInline(admin.TabularInline):
 class ReportAdmin(admin.ModelAdmin):
     inlines = [ReportDueDateInline]
 
+
 class ReportDueDateAdmin(admin.ModelAdmin):
     list_display = ['region','report_type', 'due_date','opening_report']
     list_display_links = ['report_type']
@@ -17,6 +18,15 @@ class ReportDueDateAdmin(admin.ModelAdmin):
     list_editable = ['due_date', 'opening_report']
 
 admin.site.register(ReportDueDate, ReportDueDateAdmin)
+
+class SchoolSpecificReportDueDateAdmin(admin.ModelAdmin):
+    list_display = ['school', 'report_type', 'due_date', 'opening_report']
+    list_filter = ['school__address__country__region', 'report_type']
+    search_fields = ['school__name']
+    list_editable = ['due_date', 'opening_report']
+
+admin.site.register(SchoolSpecificReportDueDate, SchoolSpecificReportDueDateAdmin)
+
 
 class ReportTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'order_number','for_all_schools', 'view_name']

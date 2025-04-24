@@ -34,7 +34,15 @@ class ReportDueDate(models.Model):
     def __str__(self):
         return self.region.name +", "+ self.report_type.name
 
-    def get_actual_due_date(self, school_year = None):
+    def get_actual_due_date(self, school=None, school_year = None):
+        if school:
+            try:
+                return SchoolSpecificReportDueDate.objects.get(
+                    school=school, report_type=self.report_type,
+                ).get_actual_due_date(school_year)
+            except SchoolSpecificReportDueDate.DoesNotExist:
+                pass  # Fallback to the region-based one
+
         # Fetch the active school year if no school year given
         if not school_year:
             school_year = SchoolYear.objects.get(current_school_year=True)
@@ -52,6 +60,20 @@ class ReportDueDate(models.Model):
         # Construct a new datetime object with the correct year
         return timezone.datetime(year=year, month=month, day=day).date()
 
+class SchoolSpecificReportDueDate(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    report_type = models.ForeignKey(ReportType, on_delete=models.CASCADE)
+    due_date = models.DateField()
+    opening_report = models.BooleanField(default=False)
+
+    def get_actual_due_date(self, school_year=None):
+        if not school_year:
+            school_year = SchoolYear.objects.get(current_school_year=True)
+
+        start_year, end_year = map(int, school_year.name.split('-'))
+        year = start_year if self.opening_report else end_year
+
+        return timezone.datetime(year=year, month=self.due_date.month, day=self.due_date.day).date()
 
 class AnnualReport(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
@@ -67,12 +89,22 @@ class AnnualReport(models.Model):
         ordering = ('school_year', 'school', 'report_type')
 
     def due_date(self):
-        report_due_date = ReportDueDate.objects.filter(report_type=self.report_type,
-                                                       region=self.school.street_address.country.region).first()
-        if not report_due_date:
-            return None
+        # Try to find a school-specific due date first
+        specific_due = SchoolSpecificReportDueDate.objects.filter(
+            school=self.school, report_type=self.report_type).first()
 
-        return report_due_date.get_actual_due_date(self.school_year)
+        if specific_due:
+            return specific_due.get_actual_due_date(school_year=self.school_year)
+
+        # Fallback to region-level due date
+        region = self.school.street_address.country.region
+        region_due = ReportDueDate.objects.filter(
+            report_type=self.report_type,region=region).first()
+
+        if region_due:
+            return region_due.get_actual_due_date(school=self.school, school_year=self.school_year)
+
+        return None
 
     def due_date_plus(self,days=None):
         days = days or 14

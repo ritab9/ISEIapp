@@ -299,13 +299,30 @@ def school_dashboard(request, schoolID):
         wss=False
 
     # Get all ReportingDueDate objects for this region
-    report_due_dates = ReportDueDate.objects.filter(region=school.street_address.country.region).order_by('report_type__order_number')
-    annual_reports=[]
-    for report_dd in report_due_dates:
-        if report_dd.report_type.code != "WS" or wss:
-            annual_report, created = AnnualReport.objects.get_or_create(school=school, school_year=school_year,
-                                              report_type=report_dd.report_type)
-            annual_reports.append((annual_report, report_dd.get_actual_due_date(school_year=school_year)))
+    # Get the region from the school's address
+    region = school.street_address.country.region
+     # Fetch all ReportDueDate objects for this region
+    report_due_dates = ReportDueDate.objects.filter(region=region).order_by('report_type__order_number')
+
+    annual_reports = []
+    for report_due_date in report_due_dates:
+        # Skip if report type is "WS" and wss is False
+        if report_due_date.report_type.code == "WS" and not wss:
+            continue
+
+        # Get or create the annual report for the school and report type
+        annual_report, _ = AnnualReport.objects.get_or_create(
+            school=school,
+            school_year=school_year,
+            report_type=report_due_date.report_type
+        )
+
+        # Get the actual due date, considering the school
+        due_date = report_due_date.get_actual_due_date(school=school, school_year=school_year)
+        # Add to list
+        annual_reports.append((annual_report, due_date))
+
+
 
     fire_marshal_date=school.fire_marshal_date
     if fire_marshal_date:

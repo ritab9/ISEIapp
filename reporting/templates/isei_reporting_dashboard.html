@@ -33,6 +33,7 @@
                                     {% else %} 🟢 {% endif %}
                                 <a class="" href="{% url report.report_type.view_name|add:'_display' report.id %}">
                                     {{ report.submit_date }}: </a>
+                                <br><small>Due date: {{ report.due_date }}</small>
                             {% else %}
                                 {% if report.due_date_plus < todays_date %}‼️
                                 {% elif report.due_date < todays_date %}❗{% endif %}
@@ -55,6 +56,7 @@
                 <td class="orange-column">{% if school.current_accreditation.apr %}
                         <a href="{% url 'apr_progress_report' school.current_accreditation.apr.id %}">APR Progress</a>
                         <div class="small">{{ school.current_accreditation.apr.updated_at|default_if_none:"" }}</div>
+                        <br><small>Due date: May 1st</small>
                     {% else %}
                         No APR
                 {% endif %}</td>
