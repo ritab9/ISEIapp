@@ -39,7 +39,7 @@ pandas==2.2.2
 phonenumbers==8.13.39
 pillow>=10.0.0
 platformdirs==2.2.0
-psycopg2-binary==2.9.1
+psycopg2-binary==2.9.10
 Pygments==2.10.0
 pyparsing==3.0.6
 python-dateutil==2.8.2
