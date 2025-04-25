@@ -55,7 +55,10 @@ class ReportDueDate(models.Model):
         day = self.due_date.day
 
         # Use the start year for opening reports, end year otherwise
-        year = start_year if self.opening_report else end_year
+        if self.opening_report and month > 3:
+            year = start_year
+        else:
+            year = end_year
 
         # Construct a new datetime object with the correct year
         return timezone.datetime(year=year, month=month, day=day).date()
@@ -71,9 +74,14 @@ class SchoolSpecificReportDueDate(models.Model):
             school_year = SchoolYear.objects.get(current_school_year=True)
 
         start_year, end_year = map(int, school_year.name.split('-'))
-        year = start_year if self.opening_report else end_year
 
-        return timezone.datetime(year=year, month=self.due_date.month, day=self.due_date.day).date()
+        month = self.due_date.month
+        if self.opening_report and month > 3:
+            year = start_year
+        else:
+            year = end_year
+
+        return timezone.datetime(year=year, month=month, day=self.due_date.day).date()
 
 class AnnualReport(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
