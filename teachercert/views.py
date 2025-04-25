@@ -49,7 +49,7 @@ def isei_teachercert_dashboard(request):
     # Teacher Certificates Section
     # number_of_teachers = teachers.count()
     # Last certificate for each active user
-    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active=True).order_by('renewal_date', 'teacher__school')
+    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active=True).order_by('renewal_date', 'teacher__user__profile__school')
 
     # Valid certificates
     valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
@@ -531,9 +531,10 @@ def CEUreports(request):
         is_staff = True
     elif request.user.groups.filter(name='principal').exists():
         principal = request.user.teacher
-        ceu_reports = CEUReport.objects.filter(teacher__school=principal.school,
+        ceu_reports = CEUReport.objects.filter(teacher__user__profile__school=principal.user.profile.school,
                                                teacher__user__is_active=True)  # principal has access to reports from his/her school
         is_staff = False
+
     else:
         teacher = request.user.teacher
         ceu_reports = CEUReport.objects.filter(teacher=teacher)  # principal has access to reports from his/her school

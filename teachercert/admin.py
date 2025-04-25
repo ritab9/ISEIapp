@@ -145,8 +145,8 @@ class TeacherCertificationApplication(admin.ModelAdmin):
     list_display = ('School', 'teacher',  'billed', 'date', 'endors_level','isei_revision_date', 'closed')
     list_editable = ('date', 'billed', 'closed', 'endors_level')
     list_display_links = ('teacher',)
-    ordering = ('billed','closed', 'teacher__school')
-    list_filter = ('billed', 'closed', 'teacher__school')
+    ordering = ('billed','closed', 'teacher__user__profile__school')
+    list_filter = ('billed', 'closed', 'teacher__user__profile__school')
     search_fields = ['teacher__user__first_name', 'teacher__user__last_name' ]
 
 
