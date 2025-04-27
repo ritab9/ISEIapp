@@ -135,7 +135,7 @@ class School(models.Model):
     president = models.CharField(max_length=100, blank=True, null=True)
     board_chair = models.CharField(max_length=100, blank=True, null=True)
     board_chair_phone = models.CharField(max_length=20, null=True, blank=True)
-    board_chair_email = models.EmailField(max_length=254, unique=True, blank=True, null=True)
+    board_chair_email = models.EmailField(max_length=254, blank=True, null=True)
 
     member = models.BooleanField(default=True)
     textapp= models.CharField(max_length=20, blank=True, null=True)
