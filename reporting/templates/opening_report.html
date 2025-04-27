@@ -88,7 +88,7 @@
                     <tr>
                       <th colspan="2"> Boarding/Day Students</th>
                       <th>1-8</th>
-                      <th>9-12</th>
+                      <th>9-12</th><th>GA I-III</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -97,22 +97,27 @@
                       <td>Girls</td>
                       <td>{{ opening.boarding_girl_count_E }}</td>
                       <td>{{ opening.boarding_girl_count_S }}</td>
+                        <td>{{ opening.boarding_girl_count_GA }}</td>
                     </tr>
                     <tr>
                       <td>Boys</td>
                       <td>{{ opening.boarding_boy_count_E }}</td>
                       <td>{{ opening.boarding_boy_count_S }}</td>
+                        <td>{{ opening.boarding_boy_count_GA }}</td>
                     </tr>
                     <tr>
                       <td rowspan="2">Day</td>
                       <td>Girls</td>
                       <td>{{ opening.day_girl_count_E }}</td>
                       <td>{{ opening.day_girl_count_S }}</td>
+                        <td>{{ opening.day_girl_count_GA }}</td>
+
                     </tr>
                     <tr>
                       <td>Boys</td>
                       <td>{{ opening.day_boy_count_E }}</td>
                       <td>{{ opening.day_boy_count_S }}</td>
+                        <td>{{ opening.day_boy_count_GA }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -126,6 +131,7 @@
                       <th>Pre-K/K</th>
                       <th>1-8</th>
                       <th>9-12</th>
+                      <th>GA I-III</th>
                       <th>Total</th>
                     </tr>
                   </thead>
@@ -136,14 +142,16 @@
                         <td>{{ opening.baptized_parent_sda_count_K }}</td>
                         <td>{{ opening.baptized_parent_sda_count_E }}</td>
                         <td>{{ opening.baptized_parent_sda_count_S }}</td>
-                        <td>{{ opening.baptized_parent_sda_count_K|add:opening.baptized_parent_sda_count_E|add:opening.baptized_parent_sda_count_S }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_GA }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_K|add:opening.baptized_parent_sda_count_E|add:opening.baptized_parent_sda_count_S|add:opening.baptized_parent_sda_count_GA }}</td>
                     </tr>
                     <tr>
                         <td>Non-SDA parents/guardians</td>
                         <td>{{ opening.baptized_parent_non_sda_count_K }}</td>
                         <td>{{ opening.baptized_parent_non_sda_count_E }}</td>
                         <td>{{ opening.baptized_parent_non_sda_count_S }}</td>
-                        <td>{{ opening.baptized_parent_non_sda_count_K|add:opening.baptized_parent_non_sda_count_E|add:opening.baptized_parent_non_sda_count_S }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_GA }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K|add:opening.baptized_parent_non_sda_count_E|add:opening.baptized_parent_non_sda_count_S|add:opening.baptized_parent_non_sda_count_GA }}</td>
                     </tr>
                     <tr>
                         <td rowspan="2">Not Baptised</td>
@@ -151,14 +159,16 @@
                         <td>{{ opening.unbaptized_parent_sda_count_K }}</td>
                         <td>{{ opening.unbaptized_parent_sda_count_E }}</td>
                         <td>{{ opening.unbaptized_parent_sda_count_S }}</td>
-                        <td>{{ opening.unbaptized_parent_sda_count_K|add:opening.unbaptized_parent_sda_count_E|add:opening.unbaptized_parent_sda_count_S }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_GA }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K|add:opening.unbaptized_parent_sda_count_E|add:opening.unbaptized_parent_sda_count_S|add:opening.unbaptized_parent_sda_count_GA }}</td>
                     </tr>
                     <tr>
                         <td>Non-SDA parents/guardians</td>
                         <td>{{ opening.unbaptized_parent_non_sda_count_K }}</td>
                         <td>{{ opening.unbaptized_parent_non_sda_count_E }}</td>
                         <td>{{ opening.unbaptized_parent_non_sda_count_S }}</td>
-                        <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_GA }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S|add:opening.unbaptized_parent_non_sda_count_GA }}</td>
                     </tr>
 
                     {% if opening.baptized_non_sda_count > 0 %}

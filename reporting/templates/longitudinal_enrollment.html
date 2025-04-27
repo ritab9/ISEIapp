@@ -23,8 +23,8 @@
     <thead class="sticky_head blue-header2">
         <tr>
             <th>School</th> <th>Year</th><th>Total</th>
-            {% for grade in grade_range %}
-                <th>Grade {{ grade }}</th>
+            {% for label in grade_headers %}
+                <th><small>Grade</small> {{ label }}</th>
             {% endfor %}
 
         </tr>
@@ -46,7 +46,7 @@
                         {% for grade in grade_range %}
                             {% with color_index=forloop.counter0|add:forloop.parentloop.counter0|modulus:12 %}
                                 <td class="{{ colors|get_item:color_index }}">
-                                    {{ grade_counts|get_from_dict:grade|default:0 }}
+                                    {{ grade_counts|get_from_dict:grade|default:"" }}
                                 </td>
                             {% endwith %}
                         {% endfor %}

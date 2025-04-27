@@ -14,20 +14,27 @@ from django.forms.widgets import CheckboxSelectMultiple
 class UploadFileForm(forms.Form):
     file = forms.FileField()
 
-def my_formset_factory(model, form, extra, can_delete, exclude, is_us_school, is_tn_school):
+def my_formset_factory(model, form, extra, can_delete, exclude, is_us_school, is_tn_school, school):
     class _StudentForm(form):  # This way `form` parameter used
         def __init__(self, *args, **kwargs):
-            super().__init__(is_us_school=is_us_school, is_tn_school=is_tn_school, *args, **kwargs)
+            super().__init__(is_us_school=is_us_school, is_tn_school=is_tn_school, school=school, *args, **kwargs)
 
     return modelformset_factory(model=model, form=_StudentForm, extra=extra, can_delete=can_delete, exclude=exclude)
 
 
 class StudentForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         self.is_us_school = kwargs.pop('is_us_school', False)
         self.is_tn_school = kwargs.pop('is_tn_school', False)
+        self.school = kwargs.pop('school', None)
+
         super().__init__(*args, **kwargs)
+
+        if self.school:
+            self.fields['grade_level'].choices = [(None, '-----')] + self.school.get_allowed_grade_choices()
+
+        # Modify parent_sda choices to include only 'Y', 'N', and 'U'
+        self.fields['parent_sda'].choices = [('Y', 'Yes, SDA'),('N', 'No'), ('U', '-'),]
 
     class Meta:
         model = Student

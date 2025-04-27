@@ -152,9 +152,42 @@ class School(models.Model):
         ('K-8', 'K-8'),
         ('K-12', 'K-12'),
         ('9-12', '9-12'),
+        ('GAI-III', 'GAI-III'),
     ]
-    grade_levels = models.CharField(max_length=5, choices=GRADE_CHOICES, default='9-12',
+    grade_levels = models.CharField(max_length=10, choices=GRADE_CHOICES, default='9-12',
                                    verbose_name="Grade Levels")
+
+    def get_allowed_grade_choices(self):
+        from reporting.models import Student
+        base_choices = []
+
+        if self.grade_levels == 'K-8':
+            base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if -2 <= choice[0] <= 8]
+        elif self.grade_levels == '9-12':
+            base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if 9 <= choice[0] <= 12]
+        elif self.grade_levels == 'K-12':
+            base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if -2 <= choice[0] <= 12]
+        elif self.grade_levels == 'GAI-III':
+            base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if choice[0] in (14, 15, 16)]
+
+        # Always include Graduated
+        graduated_choice = next((c for c in Student.GRADE_LEVEL_CHOICES if c[0] == 13), None)
+        if graduated_choice:
+            base_choices.append(graduated_choice)
+
+        return base_choices
+
+    def get_grade_range(self):
+        """ Returns the range of valid grade levels for the school based on the grade_levels field."""
+        if self.grade_levels == 'K-8':
+            return range(-2, 9)  # Pre-K to 8th grade
+        elif self.grade_levels == '9-12':
+            return range(9, 13)  # 9th to 12th grade
+        elif self.grade_levels == 'K-12':
+            return range(-2, 13)  # Pre-K to 12th grade
+        elif self.grade_levels == 'GAI-III':
+            return range(14, 17)  # GA-I to GA-III
+        return range(-2, 13)  # Default if no grade_levels matched
 
     #this is used for creating the self-study and selecting the indicators
     school_type=models.ManyToManyField(SchoolType, blank=True, verbose_name='School Type')

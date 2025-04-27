@@ -61,14 +61,13 @@ def student_report(request,arID):
             exclude_fields.append('us_state')
 
         StudentFormSet = my_formset_factory(Student, form=StudentForm, extra=1, can_delete=True, exclude=exclude_fields,
-                                              is_us_school=is_us_school, is_tn_school=is_tn_school)
+                                              is_us_school=is_us_school, is_tn_school=is_tn_school, school=school)
 
         if request.method == 'POST':
 
             formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
             all_forms_valid = True
             formset_instances = []
-
 
             for form in formset:
 
@@ -1094,10 +1093,25 @@ def inservice_report_display(request, arID):
     return render(request, 'inservice_report_display.html', context)
 
 
+def calculate_grade_counts(students, allowed_grade_range):
+    #grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in allowed_grade_range}
+    grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in list(range(-2, 13)) + list(range(14, 17))}
+
+    # Handle renaming of grades for Pre-K, K, GA-I, GA-II, GA-III
+    if "grade_-2_count" in grade_counts: grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
+    if "grade_-1_count" in grade_counts: grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
+    if "grade_14_count" in grade_counts: grade_counts["ga_i_count"] = grade_counts.pop("grade_14_count")
+    if "grade_15_count" in grade_counts: grade_counts["ga_ii_count"] = grade_counts.pop("grade_15_count")
+    if "grade_16_count" in grade_counts: grade_counts["ga_iii_count"] = grade_counts.pop("grade_16_count")
+
+    return grade_counts
+
 @login_required(login_url='login')
 def opening_report(request, arID):
 
     annual_report = AnnualReport.objects.get(id=arID)
+    opening, created = Opening.objects.get_or_create(annual_report=annual_report)
+    school=annual_report.school
 
     if request.method == 'POST':
         if not annual_report.submit_date:
@@ -1111,29 +1125,27 @@ def opening_report(request, arID):
     annual_report_personnel = AnnualReport.objects.get(report_type__code='ER', school= annual_report.school, school_year= annual_report.school_year)
     arEmployeeID = annual_report_personnel.id
 
+    allowed_grade_range = school.get_grade_range()
     part_time_grade_count_fields=None
     grade_count_fields=None
 
     with transaction.atomic():
-        opening, created = Opening.objects.get_or_create(annual_report=annual_report)
-
         part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time", registration_date__lte=annual_report_student.submit_date)
         if part_time_students.exists():
-            part_time_grade_counts = {'grade_{}_count'.format(i): part_time_students.filter(grade_level=i).count() for i in range(-2, 13)}
-            part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
-            part_time_grade_counts["k_count"] = part_time_grade_counts.pop("grade_-1_count")
+            part_time_grade_counts = calculate_grade_counts(part_time_students, allowed_grade_range)
 
-            part_time_grade_count, created = PartTimeGradeCount.objects.update_or_create(
-                opening=opening,
-                defaults=part_time_grade_counts)
+            if opening.part_time_grade_count:
+                # If part_time_grade_count exists, update it
+                for key, value in part_time_grade_counts.items():
+                    setattr(opening.part_time_grade_count, key, value)
+                opening.part_time_grade_count.save()
+            else:
+                part_time_grade_count = PartTimeGradeCount.objects.create(**part_time_grade_counts)
+                opening.part_time_grade_count = part_time_grade_count  # Associate the new part_time_grade_count with the opening
+                opening.save()
 
-            #part_time_grade_count = PartTimeGradeCount.objects.create(**part_time_grade_counts)
-            #opening.part_time_grade_count = part_time_grade_count
-
-            part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
+            part_time_grade_count_fields = [(field.verbose_name, getattr(opening.part_time_grade_count, field.name)) for field in
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
-
-
 
         students= Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
         if not students.exists():
@@ -1141,17 +1153,8 @@ def opening_report(request, arID):
                                               registration_date__lte=annual_report_student.submit_date + timedelta(weeks=3))
 
         if students.exists():
-            grade_counts = {'grade_{}_count'.format(i): students.filter(grade_level=i).count() for i in range(-2, 13)}
-            grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
-            grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
-
-            grade_count, created = GradeCount.objects.update_or_create(
-                opening=opening,
-                defaults=grade_counts)
-
-            #grade_count = GradeCount.objects.create(**grade_counts)
-            #opening.grade_count = grade_count
-
+            grade_counts = calculate_grade_counts(students, school.get_grade_range())
+            grade_count, created = GradeCount.objects.update_or_create(opening=opening, defaults=grade_counts)
             grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                                   GradeCount._meta.fields if field.name != 'id']
 
@@ -1160,7 +1163,7 @@ def opening_report(request, arID):
             opening.graduated_count = Student.objects.filter(annual_report=annual_report_student, status="graduated").count()
             opening.did_not_return_count = Student.objects.filter(annual_report=annual_report_student, status="did_not_return").count()
 
-            grade_ranges = {'K': range(-2, 0), 'E': range(0, 9), 'S': range(9, 13), }
+            grade_ranges = {'K': range(-2, 0), 'E': range(0, 9), 'S': range(9, 13), 'GA':range(14,17)}
 
             opening.boarding_girl_count_E = students.filter(gender="F", boarding=True, grade_level__in=grade_ranges['E']).count()
             opening.boarding_boy_count_E=students.filter(gender="M", boarding=True, grade_level__in=grade_ranges['E']).count()
@@ -1171,7 +1174,12 @@ def opening_report(request, arID):
             opening.day_girl_count_S = students.filter(gender="F", boarding=False, grade_level__in=grade_ranges['S']).count()
             opening.day_boy_count_S = students.filter(gender="M", boarding=False, grade_level__in=grade_ranges['S']).count()
 
-#baptism counts
+            opening.boarding_girl_count_GA = students.filter(gender="F", boarding=True, grade_level__in=grade_ranges['GA']).count()
+            opening.boarding_boy_count_GA = students.filter(gender="M", boarding=True, grade_level__in=grade_ranges['GA']).count()
+            opening.day_girl_count_GA = students.filter(gender="F", boarding=False, grade_level__in=grade_ranges['GA']).count()
+            opening.day_boy_count_GA = students.filter(gender="M", boarding=False, grade_level__in=grade_ranges['GA']).count()
+
+            #baptism counts
 
             conditions = {
                 'baptized_parent_sda_count': ('Y', 'Y'),
@@ -1213,11 +1221,11 @@ def opening_report(request, arID):
 
         opening.save()
 
-    context = dict(arStudentID= arStudentID, arEmployeeID=arEmployeeID,
-                    opening=opening,
-                   grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields,
-                   )
 
+
+    context = dict(arStudentID= arStudentID, arEmployeeID=arEmployeeID, opening=opening,
+                   grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields,
+                   allowed_grade_range=allowed_grade_range,)
 
     return render(request, 'opening_report.html', context)
 
@@ -1278,6 +1286,7 @@ def closing_report(request, arID):
 
     opening_report = AnnualReport.objects.filter(school_year=annual_report.school_year, school=annual_report.school,
                                                  report_type__code="OR").first()
+    school=annual_report.school
     if opening_report:
         start_date = opening_report.submit_date
     else:
@@ -1293,11 +1302,10 @@ def closing_report(request, arID):
                                                         registration_date__gt=start_date).count()
 
             full_time_students = Student.objects.filter(annual_report=annual_report_student, status='enrolled')
-            grade_counts = {'grade_{}_count'.format(i): full_time_students.filter(grade_level=i).count() for i in range(-2, 13)}
-            grade_counts["pre_k_count"] = grade_counts.pop("grade_-2_count")
-            grade_counts["k_count"] = grade_counts.pop("grade_-1_count")
 
-            # Check if a GradeCount already exists for this closing
+            grade_counts = calculate_grade_counts(full_time_students, school.get_grade_range())
+
+             # Check if a GradeCount already exists for this closing
             if closing.grade_count:
                 # If grade_count exists, update it
                 for key, value in grade_counts.items():
@@ -1315,13 +1323,9 @@ def closing_report(request, arID):
                 for field in GradeCount._meta.fields if field.name != 'id'
             ]
 
-
             part_time_students = Student.objects.filter(annual_report=annual_report_student, status='part-time')
             if part_time_students.exists():
-                part_time_grade_counts = {'grade_{}_count'.format(i): part_time_students.filter(grade_level=i).count() for i in
-                                range(-2, 13)}
-                part_time_grade_counts["pre_k_count"] = part_time_grade_counts.pop("grade_-2_count")
-                part_time_grade_counts["k_count"] = part_time_grade_counts.pop("grade_-1_count")
+                part_time_grade_counts = calculate_grade_counts(part_time_students, school.get_grade_range())
 
                 # Check if a PartTimeGradeCount already exists for this closing
                 if closing.part_time_grade_count:
@@ -1335,7 +1339,7 @@ def closing_report(request, arID):
                     closing.part_time_grade_count = part_time_grade_count  # Associate the new part_time_grade_count with the closing
                     closing.save()
 
-                part_time_grade_count_fields = [(field.verbose_name, getattr(part_time_grade_count, field.name)) for field in
+                part_time_grade_count_fields = [(field.verbose_name, getattr(closing.part_time_grade_count, field.name)) for field in
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
             else:
                 part_time_grade_count_fields = None
@@ -1770,7 +1774,7 @@ def longitudinal_enrollment(request):
                 annual_report = AnnualReport.objects.filter(school_year=school_year, school=school,
                                              report_type=ReportType.objects.get(code="SR")).first()
                 if annual_report:
-                    student_counts = (annual_report.students.filter(grade_level__gte=1, grade_level__lte=12)
+                    student_counts = (annual_report.students.filter(grade_level__in=list(range(1, 13)) + [14, 15, 16])
                                       .values("grade_level").annotate(count=Count("id")))
                     # Create or update EnrollmentRecord for each grade level
                     for entry in student_counts:
@@ -1814,11 +1818,16 @@ def longitudinal_enrollment(request):
             total_enrollment = sum(grade_counts.values())
             school["year_data"][year_name]["total_enrollment"] = total_enrollment
 
-    grade_range=list(range(1,13))
-    colors = ["dark-blue", "muted-orange", "muted-green", "medium-blue", "text-dark", "text-danger",
+    grade_range = list(range(1, 13)) + [14, 15, 16]
+    # Create the display labels from the choices
+    # Create a mapping from value to label
+    GRADE_LABELS = dict(Student.GRADE_LEVEL_CHOICES)
+    grade_headers = [GRADE_LABELS[g] for g in grade_range]
+
+    colors = ["dark-blue", "muted-orange", "muted-green",  "text-dark", "text-danger", "medium-blue",
               "text-success", "text-primary", "muted-orange", "muted-green", "text-dark", "text-danger"]
 
-    context=dict(enrollment_data=enrollment_data, grade_range=grade_range, colors=colors)
+    context=dict(enrollment_data=enrollment_data, grade_range=grade_range, grade_headers=grade_headers, colors=colors)
     return render(request, 'longitudinal_enrollment.html', context)
 
 
