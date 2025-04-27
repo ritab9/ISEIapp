@@ -348,7 +348,7 @@ class Address(models.Model):
     tn_county = models.ForeignKey(TNCounty, on_delete=models.SET_NULL, null=True, blank=True)
     zip_code = models.CharField(verbose_name="zip/postal code", max_length=8, default="")
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
-    school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
+    #school = models.OneToOneField(School, on_delete=models.CASCADE, blank=True, null=True)
     teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):

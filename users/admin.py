@@ -22,21 +22,29 @@ class Country(admin.ModelAdmin):
 
 admin.site.register(TNCounty)
 
-class SchoolAddressInLine(admin.StackedInline):
-    model = Address
-    can_delete = True
-    extra = 0
-    exclude = ['teacher']
+#class SchoolAddressInLine(admin.StackedInline):
+#    model = Address
+#    can_delete = True
+#    extra = 0
+#    exclude = ['teacher']
 
 class AccreditationInfoInline(admin.StackedInline):
     model = OtherAgencyAccreditationInfo
     extra = 0  # Number of extra forms to display
 
+
+@admin.register(Address)
+class AddressAdmin(admin.ModelAdmin):
+    search_fields = ['country']
+
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
-    inlines = [AccreditationInfoInline, SchoolAddressInLine,]
+    inlines = [AccreditationInfoInline]
     list_display = ('name', 'abbreviation', 'grade_levels', 'get_school_types','current_school_year','initial_accreditation_date','worthy_student_report_needed')
     list_editable = ('current_school_year','initial_accreditation_date', 'worthy_student_report_needed')
+
+    # This enables the little "+" button to add Address directly
+    autocomplete_fields = ['street_address', 'postal_address']
 
     def get_school_types(self, obj):
         return ", ".join([school_type.name for school_type in obj.school_type.all()])

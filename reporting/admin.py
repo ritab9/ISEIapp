@@ -21,7 +21,7 @@ admin.site.register(ReportDueDate, ReportDueDateAdmin)
 
 class SchoolSpecificReportDueDateAdmin(admin.ModelAdmin):
     list_display = ['school', 'report_type', 'due_date', 'opening_report']
-    list_filter = ['school__address__country__region', 'report_type']
+    list_filter = ['school__street_address__country__region', 'report_type']
     search_fields = ['school__name']
     list_editable = ['due_date', 'opening_report']
 
