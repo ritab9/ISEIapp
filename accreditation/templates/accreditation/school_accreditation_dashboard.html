@@ -36,6 +36,7 @@
             <thead class="thead table-bordered sticky_head">
              <tr>
                     <th class="orange-header2">SelfStudy</th>
+                    <th class="orange-header2">Evidence Documents</th>
                     <th class="blue-header2">Visit dates </th>
                     <th class="blue-header2">Term </th>
                     <th class="orange-header2">AAPR (<small>Last Update</small>)</th>
@@ -67,7 +68,11 @@
                                 {% endif %}
                             {% endif %}
                         </td>
-
+                        <td class="orange-column">
+                            {% if accreditation.evidence_documents_link %}
+                                <a href="{{ accreditation.evidence_documents_link }}" target="_blank">Evidence Documents</a>
+                            {% endif %}
+                        </td>
                         <td class="blue-column small">
                             {{ accreditation.visit_date_range|default_if_none:"" }}
                         </td>
@@ -77,7 +82,8 @@
                                     <b class="error">Recommended</b> term:
                             {% endif %}
                             {{ accreditation.term|default_if_none:"" }} <br>
-                            </small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}</td>
+                            </small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}
+                        </td>
 
                          <td class="orange-column">
                             {% if accreditation.apr %}

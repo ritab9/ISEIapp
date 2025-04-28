@@ -80,7 +80,10 @@
                             {% endif %}
                         </td>
                         <td class="blue-column">
-                            <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a>
+                            <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a><br>
+                            {% if accreditation.evidence_documents_link %}
+                                <a href="{{ accreditation.evidence_documents_link }}" target="_blank" class="small">Evidence Documents</a>
+                            {% endif %}
                         </td>
                         <td class="blue-column small">
                             {{ accreditation.visit_date_range|default_if_none:"" }}

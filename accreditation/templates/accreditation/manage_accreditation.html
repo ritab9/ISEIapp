@@ -39,16 +39,25 @@
         <div class="card card-body">
         <h6>Documents</h6>
             <div class="row">
-                {%  if accreditation %}
-                <div class="col-auto">
-                        <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Setup SelfStudy Document</a>
-                </div>
-                {% endif %}
-                {% if accreditation.selfstudy %}
+                <div class="col vertical-divider">
+                    {% if accreditation.selfstudy %}
+                        <div class="col-auto">
+                                <a href="{% url 'selfstudy' selfstudy_id=accreditation.selfstudy.id %}"> SelfStudy Document</a>
+                        </div>
+                    {%  elif accreditation %}
                     <div class="col-auto">
-                            <a href="{% url 'selfstudy' selfstudy_id=accreditation.selfstudy.id %}"> Edit SelfStudy Document</a>
+                            <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Setup SelfStudy Document</a>
                     </div>
-                {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    {% if form.instance.evidence_documents_link %}
+                        <a href="{{ form.instance.evidence_documents_link }}" target="_blank">Evidence Documents</a><br>
+                        Change link: {{ form.evidence_documents_link }}
+                    {% else %}
+                        Evidence Documents link: {{ form.evidence_documents_link }}
+                    {% endif %}
+                </div>
             </div>
         </div>
 
@@ -56,7 +65,6 @@
           <div class="card card-body">
               <h6>Term Info</h6>
             <div class="row">
-
                 <div class="col-auto">
                     <div class = "row">
                         <div class="col-auto">

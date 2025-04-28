@@ -68,6 +68,8 @@ class Accreditation(models.Model):
         choices=AccreditationStatus.choices,
         default=AccreditationStatus.SCHEDULED
     )
+
+    evidence_documents_link = models.URLField(null=True, blank=True)
     previous_self_study_link = models.URLField(null=True, blank=True)
 
     def visit_date_range(self):
