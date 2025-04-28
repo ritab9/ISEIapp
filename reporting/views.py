@@ -46,7 +46,7 @@ def student_report(request,arID):
 
     redirect_to_school_dashboard = False
     try:
-        annual_report = AnnualReport.objects.select_related('school__address__country').get(id=arID)
+        annual_report = AnnualReport.objects.select_related('school__street_address__country').get(id=arID)
         school = annual_report.school
 
         # Determine if the school is in US and in TN
@@ -68,6 +68,7 @@ def student_report(request,arID):
             formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
             all_forms_valid = True
             formset_instances = []
+
 
             for form in formset:
 
