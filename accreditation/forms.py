@@ -22,6 +22,7 @@ class AccreditationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['school'].queryset = School.objects.filter(active=True)
+        self.fields['school_year'].required = True
 
 
 class SchoolInfoForApplicationForm(forms.ModelForm):
