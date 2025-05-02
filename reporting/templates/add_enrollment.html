@@ -1,0 +1,55 @@
+{% extends 'reporting_base.html' %}
+{% load static %}
+{% load template_extras %}
+
+{% block title %} Student Report {% endblock title %}
+
+
+{% block content %}
+    <div class="card card-body">
+         <form method="post">
+            {% csrf_token %}
+            {% if not school or not year %}
+                <h6> Add/Edit Enrollment Data for:</h6>
+                {% if not school %}
+                    <label>School:</label>
+                    <select name="school" required>
+                        {% for sch in schools %}
+                            <option value="{{ sch.name }}">{{ sch.name }}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <p><strong>School:</strong> {{ school.name }}</p>
+                    <input type="hidden" name="school" value="{{ school.name }}">
+                {% endif %}
+
+                    <label>School Year:</label>
+                    <select name="year" required>
+                        {% for yr in years %}
+                            <option value="{{ yr.name }}">{{ yr.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="btn btn-sm btn-ISEIblue4">Select</button>
+            {% else %}
+                <h6>Enrollment by Grade for {{ school.name }}, {{ year.name }}</h6>
+
+                <table class="table table-sm" style="table-layout: auto; width:auto">
+                    <thead><tr><th>Grade</th><th>Enrollment</th></tr></thead>
+                    <tbody>
+                        {% for grade in school.get_grade_range %}
+                            <tr>
+                                <td class="mr-3"><label>{{ grade_mapping|get_item:grade|default:grade }}:</label></td>
+                                <td><input type="number" name="enrollment_count_{{ grade }}" style="width: 5em;"
+                                           value="{{ enrollment_data|get_from_dict:grade|default_if_none:'' }}"></td>
+                            </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                <button class="btn btn-ISEIblue4 btn-sm" type="submit">Save</button>
+            {% endif %}
+        </form>
+    </div>
+
+{% endblock %}

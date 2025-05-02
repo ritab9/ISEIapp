@@ -215,8 +215,6 @@ class InserviceForm(forms.ModelForm):
 #Employee Forms
 
 class PersonnelForm(forms.ModelForm):
-
-
     def __init__(self, *args, **kwargs):
         schoolID = kwargs.pop('schoolID', None)
         super().__init__(*args, **kwargs)
@@ -272,7 +270,6 @@ class ClosingForm(forms.ModelForm):
         }
 
 
-
 class WorthyStudentScholarshipForm(forms.ModelForm):
     class Meta:
         model = WorthyStudentScholarship
@@ -291,3 +288,15 @@ class WorthyStudentScholarshipForm(forms.ModelForm):
             'letter': forms.FileInput(attrs={'size': 1}),
 
         }
+
+
+"""class EnrollmentForm(forms.Form):
+
+    # Dynamically create fields for each grade level in the school's range
+    def __init__(self, *args, **kwargs):
+        allowed_grades = kwargs.pop('allowed_grades', [])
+        super().__init__(*args, **kwargs)
+
+        for grade in allowed_grades:
+            self.fields[f'enrollment_count_{grade}'] = forms.IntegerField(
+                label=f"Grade {grade}", min_value=0, initial=0, required=True) """

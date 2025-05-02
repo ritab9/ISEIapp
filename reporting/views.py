@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 
-from django.http import HttpResponsePermanentRedirect
+from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.urls import reverse
 
 from django.forms import modelformset_factory
@@ -1764,18 +1764,25 @@ def school_personnel_directory(request):
     return render(request, 'school_personnel_directory.html', context)
 
 @login_required(login_url='login')
-def longitudinal_enrollment(request):
+def longitudinal_enrollment(request, individual_school_name=None):
+
+    if not individual_school_name:
+        schools = School.objects.filter(active=True).order_by("name")
+        individual_school = None
+    else:
+        schools = School.objects.filter(active=True, name=individual_school_name)
+        individual_school = schools.first()
 
     if request.method == "POST":
-        schools=School.objects.filter(active=True)
         school_years = SchoolYear.objects.all()
 
         for school_year in school_years:
             for school in schools:
+                allowed_grades = school.get_grade_range()
                 annual_report = AnnualReport.objects.filter(school_year=school_year, school=school,
                                              report_type=ReportType.objects.get(code="SR")).first()
                 if annual_report:
-                    student_counts = (annual_report.students.filter(grade_level__in=list(range(1, 13)) + [14, 15, 16])
+                    student_counts = (annual_report.students.filter(grade_level__in=allowed_grades)
                                       .values("grade_level").annotate(count=Count("id")))
                     # Create or update EnrollmentRecord for each grade level
                     for entry in student_counts:
@@ -1786,7 +1793,13 @@ def longitudinal_enrollment(request):
                             defaults={"enrollment_count": count},)
 
     # Fetch enrollment data for display
-    records = LongitudinalEnrollment.objects.select_related("school", "year")
+    if not individual_school_name:
+        records = LongitudinalEnrollment.objects.select_related("school", "year")
+        grade_range = list(range(1, 13)) + [14, 15, 16]
+    else:
+        records =LongitudinalEnrollment.objects.filter(school__name=individual_school_name).select_related("school", "year")
+        grade_range=individual_school.get_grade_range()
+
 
     enrollment_data_dict = {}
 
@@ -1803,7 +1816,7 @@ def longitudinal_enrollment(request):
         # Ensure each year within the school has a dictionary of grade counts (1-12)
         if year_name not in enrollment_data_dict[school_name]:
             # Initialize counts for all grades (1-12) as 0
-            enrollment_data_dict[school_name][year_name] = {grade: 0 for grade in range(1, 13)}
+            enrollment_data_dict[school_name][year_name] = {grade: 0 for grade in grade_range}
 
         # Update the count for the specific grade for that school-year combination
         enrollment_data_dict[school_name][year_name][grade] = enrollment_count
@@ -1811,7 +1824,7 @@ def longitudinal_enrollment(request):
         # Convert the dictionary to a list of dicts for template rendering
     enrollment_data = [
         {"school_name": school_name, "year_data": year_data}
-        for school_name, year_data in enrollment_data_dict.items()
+        for school_name, year_data in sorted(enrollment_data_dict.items())  # Sort schools alphabetically
     ]
 
     for school in enrollment_data:
@@ -1819,7 +1832,7 @@ def longitudinal_enrollment(request):
             total_enrollment = sum(grade_counts.values())
             school["year_data"][year_name]["total_enrollment"] = total_enrollment
 
-    grade_range = list(range(1, 13)) + [14, 15, 16]
+
     # Create the display labels from the choices
     # Create a mapping from value to label
     GRADE_LABELS = dict(Student.GRADE_LEVEL_CHOICES)
@@ -1828,7 +1841,64 @@ def longitudinal_enrollment(request):
     colors = ["dark-blue", "muted-orange", "muted-green",  "text-dark", "text-danger", "medium-blue",
               "text-success", "text-primary", "muted-orange", "muted-green", "text-dark", "text-danger"]
 
-    context=dict(enrollment_data=enrollment_data, grade_range=grade_range, grade_headers=grade_headers, colors=colors)
+    context=dict(enrollment_data=enrollment_data, grade_range=grade_range, grade_headers=grade_headers, colors=colors,
+                 individual_school_name=individual_school_name)
     return render(request, 'longitudinal_enrollment.html', context)
 
+
+def add_enrollment(request, school_name=None, year_name=None):
+    school = None
+    year = None
+
+    if school_name:
+        school = get_object_or_404(School, name=school_name)
+    if year_name:
+        year = get_object_or_404(SchoolYear, name=year_name)
+
+    if request.method == "POST":
+        # If school and year not selected yet, pick from POST
+        if not school or not year:
+            school_name = request.POST.get('school')
+            year_name = request.POST.get('year')
+            if school_name and year_name:
+                return redirect('add_enrollment_with_school_year', school_name=school_name, year_name=year_name)
+
+        # If already have school and year, it's enrollment submission
+        for grade in school.get_grade_range():
+            enrollment_count = request.POST.get(f'enrollment_count_{grade}')
+            if enrollment_count is not None:
+                enrollment_count = int(enrollment_count or 0)
+                enrollment_obj, created = LongitudinalEnrollment.objects.get_or_create(
+                    school=school,
+                    year=year,
+                    grade=grade,
+                    defaults={'enrollment_count': enrollment_count}
+                )
+                if not created:
+                    enrollment_obj.enrollment_count = enrollment_count
+                    enrollment_obj.save()
+
+        next_url = request.GET.get('next') or reverse('longitudinal_enrollment_single', args=[school_name])
+        return redirect(next_url)
+
+    schools = School.objects.all().order_by('name')
+    years = SchoolYear.objects.all().order_by('name')
+
+    enrollment_data = {}
+    if school and year:
+        existing_enrollments = LongitudinalEnrollment.objects.filter(school=school, year=year)
+        enrollment_data = {e.grade: e.enrollment_count for e in existing_enrollments}
+
+        # Map grade numbers to their user-friendly labels
+    grade_mapping = {v: k for k, v in GRADE_LEVEL_DICT.items()}
+
+    context = {
+        'school': school,
+        'year': year,
+        'schools': schools,
+        'years': years,
+        'enrollment_data': enrollment_data,
+        'grade_mapping': grade_mapping
+    }
+    return render(request, 'add_enrollment.html', context)
 

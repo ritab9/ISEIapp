@@ -1,0 +1,168 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+{% load template_extras %}
+
+{% block title %} Profile Achievements {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+<!-- Title and Success and Error Messages -->
+    <div class="card card-body">
+        <h5>F. Student Achievement </h5>
+<!-- Success and Error Messages -->
+        {% if messages %}
+                <div class="messages noprint"><hr>
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+
+        <div id="lock-message" class="error" style="display: none;"></div>
+    </div>
+
+
+     <div id="content-div">
+        <form id="content-form" method="post">
+            {% csrf_token %}
+
+            <div id="studentAchievementData">
+                <div class="card card-body">
+<!-- List of administered tests -->
+                    {{ grade_level_test_formset.management_form }}
+                    <div class="form-group">
+                        <p>1. List the standardized tests administered each year in each grade.</p>
+                        <table>
+                            <thead>
+                                <th>Grade Level(s)</th><th>Standardized Test(s) Administered</th>
+                            </thead>
+                            <tbody>
+                                {% for form in grade_level_test_formset %}
+                                    <tr>
+                                        {{ form.non_field_errors }}
+                                        <td>{{ form.grade_level }}</td>
+                                        <td>{{ form.test_administered }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+<!-- Communication with parents -->
+                    {{ student_achievement_form.non_field_errors }}
+                    <div class="form-group">
+                        {{ student_achievement_form.communication_parents.errors }}
+                        <p>2. Explain school communication with parents and constituents regarding student achievement test results.</p>
+                        {{ student_achievement_form.communication_parents }}
+                      </div>
+<!-- Improvement Process -->
+                      <div class="form-group">
+                        {{ student_achievement_form.process_to_improve.errors }}
+                          <p>3. Describe the process initated to improve student performance in subject areas that have been identified as inadequate on achievement tests.</p>
+                        {{ student_achievement_form.process_to_improve }}
+                      </div>
+
+<!-- Save Buttons -->
+                        <div>
+                         <button id="end-save-btn" name="projected_enrollment_submit" class="btn btn-sm btn-ISEIyellow" type="submit">Save </button>
+                        </div>
+                            <div class="floating-box noprint">
+                            <button id="floating-save-btn" name="projected_enrollment_submit" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                        </div>
+                </div>
+            </div>
+        </form>
+     </div>
+
+    <div class="scores">
+        {% for level_type in level_types %}
+            <div class="card card-body">
+                <h6> {{ level_type|capfirst }} Standardized Test Scores</h6>
+                <p>{{ forloop.counter|add:3 }}. List the class average standardized test scores/grade equivalency for students in each grade tested on ISEI-EA recognized assessments for the three most recent years.</p>
+                {% for school_year in school_years %}
+                    <hr><b>{{ school_year }}</b>
+
+                    {# Display existing sessions #}
+                    {% for year_data in serialized_sessions %}
+                        {% if year_data.level_type|lower == level_type|lower %}
+                            {% for year in year_data.school_years %}
+                                {% if year.school_year == school_year.name %}
+                                    {% for session_data in year.sessions %}
+                                        <div class="row mt-2">
+                                            <div class="col">
+                                               Test Type: <strong> {{ session_data.test_type }} </strong>
+                                                ( {{ session_data.test_name|default_if_none:"" }})
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <a class="text-ISEIblue4 font-weight-bold clickable" href="{% url 'edit_standardized_test_scores' session_id=session_data.session_id%}?next={{ request.get_full_path }}">
+                                                  Edit scores
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <table class="table table-sm table-bordered text-center">
+                                            <thead>
+                                                <tr class="blue-header2">
+                                                    <th><b>{{ session_data.test_type }}</b></th>
+                                                    {% for grade in session_data.grade_range %}
+                                                        <th>Grade {{ grade }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for subject, grade_scores in session_data.scores.items %}
+                                                    <tr>
+                                                        <td>{{ subject }}</td>
+                                                        {% for grade in session_data.grade_range %}
+                                                            <td>{{ grade_scores|get_from_dict:grade|default_if_none:"" }}</td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Check for missing combinations #}
+                    {% with key=level_type|lower|stringformat:"s"|add:"|"|add:school_year.name %}
+                        {% if key not in existing_keys %}
+                            <a class="error" href="{% url 'add_standardized_test_scores' school_id=school.id school_year_name=school_year.name level_type=level_type %}?next={{ request.get_full_path }}">
+                                Add {{ level_type|capfirst }} Standardized Test Scores for {{ school_year.name }}
+                            </a>
+                        {% else %}
+                            <a class="text-muted" href="{% url 'add_standardized_test_scores' school_id=school.id school_year_name=school_year.name level_type=level_type %}?next={{ request.get_full_path }}">
+                                Add additional Test Scores for {{ school_year.name }}
+                            </a>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+    {% include "includes/script_lock_and_save_forms.html" %}
+
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+             { divs: ["content-div"], buttons: ["end-save-btn", "floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
+         ];
+
+// 3. Auto-expanding textareas
+       {% include "includes/script_auto_expand_textarea.html" %}
+
+    </script>
+{% endblock %}

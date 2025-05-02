@@ -9,7 +9,7 @@ class AccreditationForm(forms.ModelForm):
         model = Accreditation
         fields = ['school', 'visit_start_date', 'visit_end_date',
                   'term', 'term_start_date', 'term_end_date', 'term_comment',
-                  'coa_approval_date', 'status', 'evidence_documents_link']
+                  'coa_approval_date', 'status', 'evidence_documents_link', 'school_year']
         widgets = {
             'visit_start_date': DateInput(attrs={'type': 'date'}),
             'visit_end_date': DateInput(attrs={'type': 'date'}),
@@ -31,7 +31,7 @@ class SchoolInfoForApplicationForm(forms.ModelForm):
             'name', 'phone_number', 'email','website',
             'principal', 'date_hired', 'principal_phone', 'principal_email',
             'board_chair', 'board_chair_phone', 'board_chair_email',
-            'year_school_started','school_type_choice',
+            'year_school_started','school_type_choice', 'grade_levels'
         ]
         widgets = {
             'school_type_choice': forms.CheckboxSelectMultiple(),

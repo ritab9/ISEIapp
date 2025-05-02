@@ -1,0 +1,101 @@
+<!--profile.html-->
+{% extends 'base.html' %}
+{% load template_extras %}
+
+{% block title %} Add Standardized Test Scores {% endblock title %}
+
+
+{% block content %}
+
+<!-- Title and Success and Error Messages -->
+    <div class="card card-body">
+
+        <h6>Standardized Test Scores for {{ school.name }} - {{ school_year.name }}</h6>
+<!-- Success and Error Messages -->
+        {% if messages %}
+                <div class="messages noprint"><hr>
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+    </div>
+
+
+     <div id="content-div" class="card card-body">
+        <form id="content-form" method="post">
+            {% csrf_token %}
+                <!-- Session Form for Test Type and Name -->
+                <div class="mb-4">
+                         <!-- Display non-field errors (if any) -->
+                         {{ session_form.non_field_errors }}
+
+                        <div class="row">
+                            <div class="col-auto">
+                                 <label for="{{ session_form.test_type.id_for_label }}">Test Type:</label>
+                                    {{ session_form.test_type }} {{ session_form.test_type.errors }}
+                            </div>
+                            <div class="col-auto">
+                                <div class="row">
+                                    <div class="col-auto">Additional Info:</div>
+                                    <div class="col-auto">{{ session_form.test_name }}{{ session_form.test_name.errors }}</div>
+                            </div>
+                        </div>
+                  </div>
+                <hr>
+                    <div style="overflow-x: auto; display: inline-block;">
+                        <table class="table table-sm table-bordered w-auto table-striped">
+                      <thead>
+                        <tr>
+                          <th class="orange-header2">Subject</th>
+                          {% for grade in grade_range %}
+                            <th class="blue-header2">Grade {{ grade }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for subject, grade_forms in form_dict.items %}
+                          <tr>
+                            <td class="orange-column">{{ subject }}</td>
+                            {% for grade in grade_range %}
+                              {% with grade_forms|get_from_dict:grade as form %}
+                                <td class="blue-column">
+                                  {{ form.score }}
+                                  {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                  {% endfor %}
+                                </td>
+                              {% endwith %}
+                            {% endfor %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    </div>
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                <div class="row d-flex justify-content-center">
+                    <button type="submit" class="btn btn-sm btn-ISEIblue4">Save</button>
+                </div>
+        </form>
+     </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+    {% include "includes/script_lock_and_save_forms.html" %}
+
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+             { divs: ["content-div"], buttons: ["end-save-btn", "floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
+         ];
+
+// 3. Auto-expanding textareas
+       {% include "includes/script_auto_expand_textarea.html" %}
+
+    </script>
+{% endblock %}

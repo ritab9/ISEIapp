@@ -31,26 +31,26 @@
             </a>
         </div>
         <div class="submenu-item mb-1">
-            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'selfstudy_profile' selfstudy.id %}">
+            <a class="nav-link {% if active_sublink == 'achievement' %}active{% endif %}"
+               href="{% url 'profile_student_achievement' selfstudy.id %}">
                 F. Student Achievement
             </a>
         </div>
         <div class="submenu-item mb-1">
-            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'selfstudy_profile' selfstudy.id %}">
+            <a class="nav-link {% if active_sublink == 'curriculum' %}active{% endif %}"
+               href="{% url 'profile_secondary_curriculum' selfstudy.id %}">
                 G. Secondary Curriculum
             </a>
         </div>
         <div class="submenu-item mb-1">
-            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'selfstudy_profile' selfstudy.id %}">
+            <a class="nav-link {% if active_sublink == 'services' %}active{% endif %}"
+               href="{% url 'profile_support_services' selfstudy.id %}">
                 H. Student Support Services
             </a>
         </div>
         <div class="submenu-item mb-1">
-            <a class="nav-link {% if active_sublink == 'documents' %}active{% endif %}"
-               href="{% url 'selfstudy_profile' selfstudy.id %}">
+            <a class="nav-link {% if active_sublink == 'philanthropy' %}active{% endif %}"
+               href="{% url 'profile_philanthropy' selfstudy.id %}">
                 I. Philanthropy Programs
             </a>
         </div>

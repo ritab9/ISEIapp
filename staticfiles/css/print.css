@@ -2,7 +2,7 @@
 /* General Print Styling         */
 
 @media print {
-    .noprint, .floating-box-background, .floating-box, button {
+    .noprint, .floating-box-background, .floating-box, button, a {
         display: none !important;
     }
     body {

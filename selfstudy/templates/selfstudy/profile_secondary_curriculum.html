@@ -1,0 +1,165 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+{% load template_extras %}
+
+{% block title %} Profile Curriculum {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+<!-- Title and Success and Error Messages -->
+    <div class="card card-body">
+        <h5>F. Secondary Curriculum </h5>
+
+<!-- Lock Messages -->
+        <div id="lock-message" class="error" style="display: none;"></div>
+
+<!-- Success and Error Messages -->
+        {% if messages %}
+                <div class="messages noprint"><hr>
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+    </div>
+
+
+
+     <div id="content-div">
+       <form id="content-form" method="post">
+            {% csrf_token %}
+
+            <datalist id="teacher-list">
+                {% for name in teacher_names %}
+                    <option value="{{ name }}"></option>
+                {% endfor %}
+            </datalist>
+
+            <div id="somethingData">
+                <div class="card card-body">
+                    <div style="overflow-x: auto; display: inline-block;">
+                        <h6>In the following chart list every secondary credit course offered to grades 9-12 students, providing the name of the teacher and other requested course information.</h6><hr>
+                        {% for category, formset in category_formsets %}
+                            <div class="formset-wrapper" data-prefix="{{ formset.prefix }}">
+                                <h6>{{ category.name }}</h6>
+                                {{ formset.management_form }}
+                                    {% if formset.non_form_errors %}
+                                        <ul class="form-errors">
+                                            {% for error in formset.non_form_errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                <table class="table table-sm text-center w-auto">
+                                    <thead>
+                                        <tr class="blue-header2">
+                                            <th>Course Title</th>
+                                            <th>Teacher Name</th>
+                                            <th>Cert. Endorsed</th>
+                                            <th>Credits</th>
+                                            <th>Periods/Wk</th>
+                                            <th>Minutes/Wk</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for form in formset %}
+                                            <tr class="formset-row">
+                                                {{ form.non_field_errors }} {{ form.id }}
+                                                {% for field in form.visible_fields %}
+                                                    <td>{{ field }}{{ field.errors }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                <div class="row justify-content-end">
+                                    <div class="col-12 d-flex justify-content-end">
+                                    <button type="button" class="add-form-btn btn btn-sm btn-outline-ISEIblue4" data-prefix="{{ formset.prefix }}">
+                                        Add row
+                                    </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <hr>
+                        {% endfor %}
+
+                        <button id="end-save-btn" name="projected_enrollment_submit" class="btn btn-sm btn-ISEIyellow" type="submit">Save</button>
+                        <div class="floating-box noprint">
+                            <button id="floating-save-btn" name="projected_enrollment_submit" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </form>
+
+     </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+    {% include "includes/script_lock_and_save_forms.html" %}
+
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+             { divs: ["content-div"], buttons: ["end-save-btn", "floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
+         ];
+
+// 3. Auto-expanding textareas
+       {% include "includes/script_auto_expand_textarea.html" %}
+
+//4. Add rows as needed to the formsets:
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.add-form-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const prefix = this.dataset.prefix;
+                    const wrapper = this.closest('.formset-wrapper');
+
+                    const totalFormsInput = wrapper.querySelector(`[name="${prefix}-TOTAL_FORMS"]`);
+                    let totalForms = parseInt(totalFormsInput.value);
+
+                    const formRows = wrapper.querySelectorAll('.formset-row');
+                    const lastRow = formRows[formRows.length - 1];
+                    const newRow = lastRow.cloneNode(true);
+
+                    // Update all inputs in the new row
+                    newRow.querySelectorAll('input, select, textarea').forEach(el => {
+                        if (!el.name || !el.id) return;
+
+                        const nameRegex = new RegExp(`${prefix}-\\d+`);
+                        const newName = `${prefix}-${totalForms}`;
+
+                        el.name = el.name.replace(nameRegex, newName);
+                        el.id = el.id.replace(nameRegex, newName);
+
+                        // Clear value unless it's a hidden input (like id)
+                        if (el.type === 'checkbox' || el.type === 'radio') {
+                            el.checked = false;
+                        } else if (el.type !== 'hidden') {
+                            el.value = '';
+                        }
+                    });
+
+                    // Append the new row to the table body
+                    lastRow.parentNode.appendChild(newRow);
+
+                    // Increment TOTAL_FORMS
+                    totalFormsInput.value = totalForms + 1;
+                });
+            });
+        });
+
+
+    </script>
+{% endblock %}

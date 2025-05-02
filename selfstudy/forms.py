@@ -165,3 +165,108 @@ class ProfessionalActivityForm(forms.ModelForm):
         }
 
 ProfessionalActivityFormSet = inlineformset_factory(SchoolProfile, ProfessionalActivity, form=ProfessionalActivityForm, extra=5)
+
+
+class StudentEnrollmentDataForm(forms.ModelForm):
+    class Meta:
+        model = StudentEnrollmentData
+        fields = [
+            'projected_enrollment_next_year',
+            'projected_enrollment_2_years',
+            'projected_enrollment_3_years',
+        ]
+        widgets = {
+            'projected_enrollment_next_year': forms.NumberInput(attrs={'style': 'width: 80px;',}),
+            'projected_enrollment_2_years': forms.NumberInput(attrs={'style': 'width: 80px;',}),
+            'projected_enrollment_3_years': forms.NumberInput(attrs={'style': 'width: 80px;',}),
+        }
+
+
+class StudentAchievementDataForm(forms.ModelForm):
+    class Meta:
+        model = StudentAchievementData
+        fields = ['communication_parents', 'process_to_improve']
+        widgets = {
+            'communication_parents': forms.Textarea(attrs={'class': '', 'rows': 2}),
+            'process_to_improve': forms.Textarea(attrs={'class': '', 'rows': 2}),
+        }
+
+class GradeLevelTestForm(forms.ModelForm):
+    class Meta:
+        model = GradeLevelTest
+        fields = ['grade_level', 'test_administered']
+        widgets = {
+            'grade_level': forms.TextInput(attrs={'class': ''}),
+            'test_administered': forms.Textarea(attrs={'class': '', 'rows': 1}),
+        }
+
+
+SUBJECT_CHOICES = StandardizedTestScore.SUBJECT_CHOICES
+GRADE_CHOICES = [(i, str(i)) for i in range(1, 13)]
+
+class StandardizedTestSessionForm(forms.ModelForm):
+    class Meta:
+        model = StandardizedTestSession
+        fields = ['test_type', 'test_name']
+        widgets = {
+            'test_type': forms.Select(attrs={'class': ''}),
+            'test_name': forms.Textarea(attrs={'rows': 1, 'cols':70 }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Optional: restrict name options based on test type dynamically
+        self.fields['test_name'].widget.attrs.update({'placeholder': 'Optional additional Info: missing Test Type, Test sub-name (Aspire, PreSAT), etc.'})
+
+
+class StandardizedTestScoreForm(forms.ModelForm):
+    class Meta:
+        model = StandardizedTestScore
+        fields = ['subject', 'grade', 'score']
+        widgets = {
+            'subject': forms.HiddenInput(),
+            'grade': forms.HiddenInput(),
+            'score': forms.NumberInput(attrs={'class': 'form-control form-control-sm w-30', 'step': '0.01'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['score'].required = False  # 👈 allow leaving it blank
+
+class SupportServiceForm(forms.ModelForm):
+    class Meta:
+        model = SupportService
+        fields = ['academic_advisement', 'career_advisement', 'personal_counseling']  # Add the fields you want to display
+        widgets = {
+            'academic_advisement': forms.Textarea(attrs={'rows': '2', }),
+            'career_advisement': forms.Textarea(attrs={'rows': '2', }),
+            'personal_counseling': forms.Textarea(attrs={'rows': '2', }),
+        }
+
+class PhilantrophyProgramForm(forms.ModelForm):
+    class Meta:
+        model = PhilantrophyProgram
+        fields = ['development_program']
+        widgets={
+            'development_program':forms.Textarea
+        }
+
+class SecondaryCurriculumCourseForm(forms.ModelForm):
+    teacher_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'list': 'teacher-list'}))
+    class Meta:
+        model = SecondaryCurriculumCourse
+        fields = [
+            'course_title',
+            'teacher_name',
+            'certification_endorsed',
+            'credit_value',
+            'periods_per_week',
+            'minutes_per_week',
+        ]
+
+        widgets = {
+            'credit_value': forms.NumberInput(attrs={'style': 'width: 70px;'}),
+            'periods_per_week': forms.NumberInput(attrs={'style': 'width: 70px;'}),
+            'minutes_per_week': forms.NumberInput(attrs={'style': 'width: 90px;'}),
+        }

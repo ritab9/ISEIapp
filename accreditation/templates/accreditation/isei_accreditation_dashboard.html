@@ -62,7 +62,7 @@
                         <td class="blue-column">{{ forloop.counter }}</td>
                         <td class="blue-column">{{ accreditation.school }}</td>
                         <td class="orange-column">
-                            {% if category == "in works" %}
+                            {% if category == "scheduled" %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SS</a>
                                 {% elif accreditation.previous_self_study_link %}
@@ -70,6 +70,8 @@
                                 {% else %}
                                     <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SS</a>
                                 {% endif %}
+                                <p>Due:<strong>{{ accreditation.selfstudy_due_date }}</strong></p>
+
                             {% else %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SS</a>
@@ -96,7 +98,10 @@
                                 {% if not accreditation.coa_approval_date %}
                                     <b>Recommended</b> term:
                                 {% endif %}
-                                {{ accreditation.term|default_if_none:"" }} <br></small>
+                                {{ accreditation.term|default_if_none:"" }}
+                                <i tabindex="0" class="fas fa-info-circle small" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ accreditation.term.description }}"></i>
+                                 <br>
+                            </small>
 
                                 {{ accreditation.term_start_date|default_if_none:"" }}-
                                 {% if accreditation.term_end_date %}
@@ -161,7 +166,8 @@
                             <td class="blue-column">
                                 {{ accreditation.visit_date_range }}
                             </td>
-                            <td class="blue-column"> {{ accreditation.term }} <br>
+                            <td class="blue-column"> {{ accreditation.term }}
+                                <br>
                                 <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small></td>
                             <td class="orange-column" colspan="2">
                                 {% if accreditation.apr %}
@@ -209,6 +215,16 @@
                     }
                 });
             });
+        });
+
+        //Popover
+      document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
+          })
         });
 
     </script>

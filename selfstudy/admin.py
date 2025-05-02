@@ -46,6 +46,24 @@ class FullTimeEquivalencyInline(admin.TabularInline):  # or admin.StackedInline
 class ProfessionalActivityInline(admin.TabularInline):
     model = ProfessionalActivity
     extra=0
+@admin.register(CourseCategory)
+class CourseCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    search_fields = ['name']
+
+class SecondaryCurriculumCourseInline(admin.TabularInline):
+    model = SecondaryCurriculumCourse
+    extra = 1  # Number of blank forms to show
+    autocomplete_fields = ['category']
+    fields = [
+        'course_title',
+        'teacher_name',
+        'category',
+        'certification_endorsed',
+        'credit_value',
+        'periods_per_week',
+        'minutes_per_week',
+    ]
 
     # Admin for SchoolProfile with inlines for FinancialTwoYearDataEntry and FinancialAdditionalDataEntry
 class SchoolProfileAdmin(admin.ModelAdmin):
@@ -53,7 +71,7 @@ class SchoolProfileAdmin(admin.ModelAdmin):
     search_fields = ('school__name',)  # Enable search by school name (assuming you have this field)
     inlines = [FinancialTwoYearDataEntryInline, FinancialAdditionalDataEntryInline,
                SelfStudyPersonnelDataInline, FullTimeEquivalencyInline,
-               ProfessionalActivityInline,]
+               ProfessionalActivityInline, SecondaryCurriculumCourseInline]
     ordering = ('selfstudy',)  # You can adjust ordering as needed
 
 # Register SchoolProfile admin
@@ -124,3 +142,25 @@ class SelfStudy_TeamAdmin(admin.ModelAdmin):
 
 admin.site.register(SelfStudy_Team, SelfStudy_TeamAdmin)
 admin.site.register(SelfStudy_TeamMember)
+
+
+# Inline model to manage StandardizedTestScore inside StandardizedTestSession
+class StandardizedTestScoreInline(admin.TabularInline):  # Or use admin.StackedInline for a different layout
+    model = StandardizedTestScore
+    extra = 0  # Controls the number of empty forms to show
+    fields = ['subject', 'grade', 'score']  # You can specify which fields to show
+    # You can also customize the ordering of fields in the inline form like this:
+    # fields = ['score', 'subject', 'grade']
+
+
+# Admin for StandardizedTestSession
+class StandardizedTestSessionAdmin(admin.ModelAdmin):
+    list_display = ['school', 'school_year', 'test_type', 'test_name', 'grade_level_type']
+    list_filter = ['school', 'school_year', 'test_type', 'grade_level_type']
+    search_fields = ['school__name', 'school_year__name', 'test_type', 'test_name']
+
+    # Add the inline to the session admin form
+    inlines = [StandardizedTestScoreInline]
+
+
+admin.site.register(StandardizedTestSession, StandardizedTestSessionAdmin)

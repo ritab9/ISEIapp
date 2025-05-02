@@ -1,0 +1,106 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+{% load template_extras %}
+
+{% block title %} Profile Services {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+<!-- Title and Success and Error Messages -->
+    <div class="card card-body">
+        <h5>G. Student Support Services </h5>
+
+        <div id="lock-message" class="error" style="display: none;"></div>
+
+<!-- Success and Error Messages -->
+        {% if messages %}
+                <div class="messages noprint"><hr>
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+    </div>
+
+
+
+     <div id="content-div">
+        <form id="content-form" method="post">
+            {% csrf_token %}
+
+            <div id="somethingData">
+                <div class="card card-body">
+                    <h7>1. Briefly describe the guidance services of the school in each of the following areas:</h7>
+
+                    <div class="form-group mt-2">
+                        <label for="{{ form.academic_advisement.id_for_label }}">a. Academic advisement including testing.</label>
+                        {{ form.academic_advisement }}
+                        {% if form.academic_advisement.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.academic_advisement.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.career_advisement.id_for_label }}">b. Career advisement including testing.</label>
+                        {{ form.career_advisement }}
+                        {% if form.career_advisement.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.career_advisement.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.personal_counseling.id_for_label }}">c. Personal Counseling</label>
+                        {{ form.personal_counseling }}
+                        {% if form.personal_counseling.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.personal_counseling.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <button id="end-save-btn" name="projected_enrollment_submit" class="btn btn-sm btn-ISEIyellow" type="submit">Save </button>
+                    </div>
+                     <div class="floating-box noprint">
+                        <button id="floating-save-btn" name="projected_enrollment_submit" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+     </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+    {% include "includes/script_lock_and_save_forms.html" %}
+
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+             { divs: ["content-div"], buttons: ["end-save-btn", "floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
+         ];
+
+// 3. Auto-expanding textareas
+       {% include "includes/script_auto_expand_textarea.html" %}
+
+    </script>
+{% endblock %}

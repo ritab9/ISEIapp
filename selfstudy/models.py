@@ -3,9 +3,11 @@ from accreditation.models import Accreditation,Standard, Indicator
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from datetime import timedelta
+from django.core.exceptions import ValidationError
 
-from users.models import StateField, Country
-from reporting.models import StaffStatus, StaffPosition
+
+from users.models import StateField, Country, School
+from reporting.models import StaffStatus, StaffPosition, SchoolYear
 
 class CurrentlyEditing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -21,8 +23,6 @@ class CurrentlyEditing(models.Model):
         """Remove entries older than 60 minutes (stale locks)."""
         threshold = now() - timedelta(minutes=60)
         CurrentlyEditing.objects.filter(last_active__lt=threshold).delete()
-
-
 
 #Models for information needed from the schools (Standards + Inidcators are in Accreditation app)
 
@@ -46,7 +46,6 @@ class FinancialTwoYearDataKey(models.Model):
         ordering = ['order_number']
     def __str__(self):
         return self.name
-
 
 #Personnel Data Keys
 class FTEAssignmentKey(models.Model):
@@ -193,9 +192,6 @@ class ProfessionalActivity(models.Model):
     activity = models.CharField(max_length=255, null=True, blank=True)
     improvement = models.TextField(null=True, blank=True)
 
-class StudentEnrollmentData(models.Model):
-    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="enrollment_data")
-
 class FullTimeEquivalency(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="fte_assignments")
     assignment = models.ForeignKey(FTEAssignmentKey, on_delete=models.CASCADE)
@@ -209,6 +205,104 @@ class FullTimeEquivalency(models.Model):
         return f"{self.assignment.name} - Men: {self.fte_men}, Women: {self.fte_women}"
 
 
+class StudentEnrollmentData(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="enrollment_data")
+    projected_enrollment_next_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    projected_enrollment_2_years = models.PositiveSmallIntegerField(null=True, blank=True)
+    projected_enrollment_3_years = models.PositiveSmallIntegerField(null=True, blank=True)
+
+
+class StudentAchievementData(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="achievement_data")
+    communication_parents = models.TextField(null=True, blank=True)
+    process_to_improve = models.TextField(null=True, blank=True)
+
+class GradeLevelTest(models.Model):
+    achievement_data = models.ForeignKey(StudentAchievementData, on_delete=models.CASCADE, related_name="grade_level_tests")
+    grade_level = models.CharField(max_length=50)
+    test_administered = models.TextField()
+
+    def __str__(self):
+        return f"{self.grade_level}: {self.test_administered}"
+
+
+class StandardizedTestSession(models.Model):
+    TEST_TYPE_CHOICES = [
+        ('IOWA', 'IOWA'),
+        ('ACT', 'ACT'),
+        ('SAT', 'SAT'),
+        ('OT', 'OTHER')
+    ]
+
+    ACT_NAMES = ['ACT', 'PreACT', 'PreACT8_9', 'Aspire']
+    SAT_NAMES = ['SAT', 'PSAT', 'PSAT10', 'PSAT8_9']
+
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='test_sessions')
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, related_name='test_sessions')
+    test_type = models.CharField(max_length=10, choices=TEST_TYPE_CHOICES)
+    test_name = models.CharField(max_length=100, null=True, blank=True)  # Validate based on test_type in clean()
+    grade_level_type = models.CharField(max_length=10, choices=[('elementary', 'Elementary'), ('secondary', 'Secondary')], default ='secondary')
+    class Meta:
+        unique_together = ('school', 'school_year', 'test_type', 'test_name', 'grade_level_type')
+
+    def __str__(self):
+        return f"{self.school.name}: {self.school_year.name} - {self.test_type}"
+
+class StandardizedTestScore(models.Model):
+    SUBJECT_CHOICES = [
+        ('ENGLISH', 'English'),
+        ('READING', 'Reading'),
+        ('WRITING', 'Writing'),
+        ('MATH', 'Mathematics'),
+        ('SCIENCE', 'Science'),
+        ('SOCIAL STUDIES', 'Social Studies'),
+        ('COMPOSITE', 'Composite Score'),
+    ]
+
+    session = models.ForeignKey(StandardizedTestSession, on_delete=models.CASCADE, related_name='scores')
+    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
+    grade = models.IntegerField(choices=[(i, str(i)) for i in range(1, 13)], null=True, blank=True)  # Validated to be 1–8 or 9–12 based on session
+    score = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        unique_together = ('session', 'subject', 'grade')
+
+    def clean(self):
+        if self.session.grade_level_type == 'elementary' and not (1 <= self.grade <= 8):
+            raise ValidationError("Elementary tests must be for grades 1 through 8.")
+        if self.session.grade_level_type == 'secondary' and not (9 <= self.grade <= 12):
+            raise ValidationError("Secondary tests must be for grades 9 through 12.")
+
+
+class CourseCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class SecondaryCurriculumCourse(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="secondary_curriculum")
+    category = models.ForeignKey(CourseCategory, on_delete=models.CASCADE, related_name="courses")
+    course_title = models.CharField(max_length=200)
+    teacher_name = models.CharField(max_length=200)
+    certification_endorsed = models.BooleanField(default=False)
+    credit_value = models.DecimalField(max_digits=4, decimal_places=2)
+    periods_per_week = models.PositiveIntegerField()
+    minutes_per_week = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.course_title} ({self.teacher_name})"
+
+class SupportService(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="support_services")
+    academic_advisement=models.TextField(null=True, blank=True)
+    career_advisement=models.TextField(null=True, blank=True)
+    personal_counseling=models.TextField(null=True, blank=True)
+
+class PhilantrophyProgram(models.Model):
+    school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="philantrophy_program")
+    development_program=models.TextField(null=True, blank=True)
 
 #Standard Scoring Model
 class StandardEvaluation(models.Model):

@@ -1,8 +1,9 @@
-from datetime import timezone
+from datetime import timedelta
 from django.utils import timezone as dj_timezone
 
 from django.db import models
 from users.models import School, SchoolType
+from teachercert.models import SchoolYear
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -58,6 +59,7 @@ class Accreditation(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     visit_start_date = models.DateField(null=True, blank=True)
     visit_end_date = models.DateField(null=True, blank=True)
+    school_year=models.ForeignKey(SchoolYear, on_delete=models.CASCADE, null=True, blank=True)
     term = models.ForeignKey(AccreditationTerm, on_delete=models.CASCADE, null=True, blank=True)
     term_start_date = models.DateField(null=True, blank=True)
     term_end_date = models.DateField(null=True, blank=True)
@@ -82,6 +84,12 @@ class Accreditation(models.Model):
             return f"{start_date.strftime('%B %d')}-{end_date.strftime('%d, %Y')}"
         else:
             return f"{start_date.strftime('%B %d')}-{end_date.strftime('%B %d, %Y')}"
+
+    @property
+    def selfstudy_due_date(self):
+        if self.visit_start_date:
+            return self.visit_start_date - timedelta(weeks=5)
+        return None
 
     def __str__(self):
         if self.term_end_date and self.term_start_date:

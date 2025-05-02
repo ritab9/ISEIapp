@@ -614,7 +614,7 @@ class WorthyStudentScholarship(models.Model):
 class LongitudinalEnrollment(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="enrollment_records")
     year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, related_name="enrollment_records")
-    grade = models.PositiveSmallIntegerField(choices=[(i, f"Grade {i}") for i in range(1, 13)])
+    grade = models.IntegerField(choices=[(key, value) for key, value in GRADE_LEVEL_DICT.items()])
     enrollment_count = models.PositiveIntegerField(default=0)  # Total students in this grade/year
 
     class Meta:

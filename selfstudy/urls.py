@@ -15,6 +15,13 @@ urlpatterns = [
     path('<int:selfstudy_id>/profile_financial/', views.profile_financial, name='profile_financial'),
     path('<int:selfstudy_id>/profile_personnel/', views.profile_personnel, name='profile_personnel'),
     path('<int:selfstudy_id>/profile_student/', views.profile_student, name='profile_student'),
+    path('<int:selfstudy_id>/profile_student_achievement/', views.profile_student_achievement, name='profile_student_achievement'),
+    path('<int:selfstudy_id>/profile_secondary_curriculum/', views.profile_secondary_curriculum, name='profile_secondary_curriculum'),
+    path('<int:selfstudy_id>/profile_support_services/', views.profile_support_services, name='profile_support_services'),
+    path('<int:selfstudy_id>/profile_philanthropy/', views.profile_philanthropy, name='profile_philanthropy'),
+
+    path('add_standardized_test_scores/<int:school_id>/<str:school_year_name>/<str:level_type>/', views.manage_standardized_test_scores, name='add_standardized_test_scores'),
+    path('edit_standardized_test_scores/<int:session_id>/', views.manage_standardized_test_scores, name='edit_standardized_test_scores'),
 
     path('<int:selfstudy_id>/standard/<int:standard_id>/', views.selfstudy_standard, name='selfstudy_standard'),
     path('<int:selfstudy_id>/selfstudy_actionplan_instructions/', views.selfstudy_actionplan_instructions, name='selfstudy_actionplan_instructions'),

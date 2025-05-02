@@ -9,6 +9,8 @@ from django.contrib import messages
 from django.db.models import Max, Count, Q
 from django.contrib.auth.models import Group
 from django.utils import timezone
+from collections import defaultdict
+import json
 
 from django.contrib.auth.decorators import login_required
 from users.decorators import allowed_users
@@ -17,8 +19,9 @@ from users.utils import is_in_any_group
 from users.models import UserProfile
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
+from teachercert.models import SchoolYear
 from apr.models import APR, ActionPlan
-from reporting.models import AnnualReport, Personnel, StaffStatus, StaffCategory
+from reporting.models import AnnualReport, Personnel, StaffStatus, StaffCategory, LongitudinalEnrollment, Student, GRADE_LEVEL_DICT
 from .models import *
 
 from teachercert.myfunctions import newest_certificate
@@ -766,10 +769,464 @@ def profile_student(request, selfstudy_id):
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
 
-    form_id = f"{selfstudy.id}_personnel"
+    form_id = f"{selfstudy.id}_student"
 
+    # Get the current school year from the accreditation model
+    current_school_year = selfstudy.accreditation.school_year
+
+#Get enrollment Data
+
+    # Extract the start year from the 'name' field, which is in the format "2024-2025"
+    start_year = int(current_school_year.name.split('-')[0])
+    # Generate the last 5 school year names (e.g., "2024-2025", "2023-2024", ...)
+    previous_school_years = [f"{start_year - i}-{start_year + 1 - i}" for i in range(5)]
+    # Reverse the order of years to have the current year last
+    previous_school_years = previous_school_years[::-1]
+
+    # Fetch the enrollment data for the current and previous 4 school years
+    enrollment_data = LongitudinalEnrollment.objects.filter(school=school, year__name__in=previous_school_years).order_by('year', 'grade')
+
+    # Get the valid grade levels for the school using the get_grade_range method
+    valid_grades = school.get_grade_range()
+
+    # Organize the data by grade and year
+    enrollment_by_grade_and_year = {grade: {} for grade in valid_grades}
+
+    # Populate the dictionary with the enrollment count for each grade and year
+    for record in enrollment_data:
+        grade = record.grade
+        year_name = record.year.name
+        if grade in valid_grades:  # Only add data for valid grades
+            enrollment_by_grade_and_year[grade][year_name] = record.enrollment_count
+
+#Get Baptismal Data
+    annual_report = AnnualReport.objects.filter(school=school, report_type__code="SR", school_year=current_school_year).first()
+    # Initialize the nested dict
+    student_baptism_data = {
+        grade: {
+            'sda_home': {'baptized': 0, 'not_baptized': 0},
+            'non_sda_home': {'baptized': 0, 'not_baptized': 0},
+        }
+        for grade in valid_grades
+    }
+    # Fetch all relevant students
+    students = Student.objects.filter(annual_report=annual_report, status__in=["enrolled"])
+
+    for student in students:
+        grade = student.grade_level
+
+        if grade not in student_baptism_data:
+            continue  # skip irrelevant grades
+
+        if student.parent_sda == 'Y':
+            key = 'sda_home'
+        elif student.parent_sda in ('N', 'O'):
+            key = 'non_sda_home'
+        else:
+            continue  # skip if we don’t care about this row
+
+        if student.baptized == 'Y':
+            student_baptism_data[grade][key]['baptized'] += 1
+        elif student.baptized in ('N', 'O'):
+            student_baptism_data[grade][key]['not_baptized'] += 1
+
+    grade_labels = {v: k for k, v in GRADE_LEVEL_DICT.items()}
+
+    # Totals for enrollment data per year
+    total_by_year = {year: 0 for year in previous_school_years}
+    for grade in valid_grades:
+        for year in previous_school_years:
+            count = enrollment_by_grade_and_year.get(grade, {}).get(year, 0)
+            total_by_year[year] += count
+
+    # Totals for baptismal data
+    total_baptism_data = {
+        'sda_home': {'not_baptized': 0, 'baptized': 0},
+        'non_sda_home': {'not_baptized': 0, 'baptized': 0},
+    }
+
+    for grade in valid_grades:
+        grade_data = student_baptism_data.get(grade, {})
+        for home_type in ['sda_home', 'non_sda_home']:
+            for key in ['baptized', 'not_baptized']:
+                total = grade_data.get(home_type, {}).get(key, 0)
+                total_baptism_data[home_type][key] += total
+
+    # Totals for summary stats
+    total_students = 0
+    non_sda_home_students = 0
+    baptized_students = 0
+
+    for student in students:
+        total_students += 1
+        if student.parent_sda in ('N', 'O'):
+            non_sda_home_students += 1
+        if student.baptized == 'Y':
+            baptized_students += 1
+    # Avoid division by zero
+    percentage_non_sda_home = (non_sda_home_students / total_students * 100) if total_students else 0
+    percentage_baptized = (baptized_students / total_students * 100) if total_students else 0
+
+    # Get or create the projected enrollment entry
+    projected_data, created = StudentEnrollmentData.objects.get_or_create(school_profile=school_profile)
+
+    if request.method == "POST" and "projected_enrollment_submit" in request.POST:
+        form = StudentEnrollmentDataForm(request.POST, instance=projected_data)
+        if form.is_valid():
+            form.save()
+            return redirect(request.path_info)  # or use ?next= like before
+    else:
+        form = StudentEnrollmentDataForm(instance=projected_data)
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
-                   form_id=form_id)
+                   form_id=form_id, grade_labels = grade_labels, valid_grades=valid_grades,
+                   enrollment_by_grade_and_year=enrollment_by_grade_and_year,
+                   previous_school_years=previous_school_years,
+                   student_baptism_data=student_baptism_data,
+                   total_by_year=total_by_year, total_baptism_data=total_baptism_data,
+                   annual_report_id=annual_report.id,
+                   percentage_non_sda_home=round(percentage_non_sda_home, 1),
+                   percentage_baptized=round(percentage_baptized, 1),
+                   projected_enrollment_form=form,
+                   )
 
     return render(request, 'selfstudy/profile_student.html', context)
+
+
+def get_grade_range_for_level(level_type):
+    if level_type == 'elementary':
+        return list(range(1, 9))  # Grades 1–8
+    elif level_type == 'secondary':
+        return list(range(9, 13))  # Grades 9–12
+    return []
+
+@login_required(login_url='login')
+def profile_student_achievement(request, selfstudy_id):
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school = selfstudy.accreditation.school
+    standards = Standard.objects.top_level()
+    form_id = f"{selfstudy.id}_achievement"
+
+#General Achievement data
+    try:
+        achievement = school_profile.achievement_data.get()
+    except StudentAchievementData.DoesNotExist:
+        achievement = StudentAchievementData(school_profile=school_profile)
+        achievement.save()
+
+    existing_tests = achievement.grade_level_tests.count()
+    extra_forms = max(1, 5 - existing_tests)  # Always show at least one blank, up to 5 total
+
+    GradeLevelTestFormSet = modelformset_factory(GradeLevelTest, form=GradeLevelTestForm, extra=extra_forms, can_delete=True)
+
+    if request.method == 'POST':
+        student_achievement_form = StudentAchievementDataForm(request.POST, instance=achievement)
+        formset = GradeLevelTestFormSet(request.POST, queryset=achievement.grade_level_tests.all())
+
+        if student_achievement_form.is_valid() and formset.is_valid():
+            achievement = student_achievement_form.save(commit=False)
+            achievement.school_profile = school_profile  # in case it was just created
+            achievement.save()
+
+            grade_tests = formset.save(commit=False)
+            for test in grade_tests:
+                test.achievement_data = achievement
+                test.save()
+    else:
+        student_achievement_form = StudentAchievementDataForm(instance=achievement)
+        formset = GradeLevelTestFormSet(queryset=achievement.grade_level_tests.all())
+
+
+#Standardized test scores for the last three years
+    level_types = school.get_school_type()
+    if level_types:
+        # Get the current school year from the accreditation model, # Extract the start year from the 'name' field, which is in the format "2024-2025"
+        current_school_year = selfstudy.accreditation.school_year
+        start_year = int(current_school_year.name.split('-')[0])
+        # Generate the last 3 school year names (e.g., "2024-2025", "2023-2024", ...)
+        school_year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(3)]
+        school_years = SchoolYear.objects.filter(name__in=school_year_names)
+        school_years = school_years[::-1]  # Reverse the order of years to have the current year last
+
+        # Prefetch related scores
+        sessions = StandardizedTestSession.objects.filter(school=school, school_year__in=school_years).select_related(
+            'school_year').prefetch_related('scores')
+
+        # Create a dictionary to lookup scores by session_id, subject, and grade
+        grouped_by_level = defaultdict(lambda: defaultdict(list))
+
+        # Loop through each session and group them by school year and grade level
+        for session in sessions:
+            score_map = defaultdict(dict)
+            for score in session.scores.all():
+                score_map[score.subject][score.grade] = score.score
+
+            session_data = {
+                'session': session,
+                'grade_range': get_grade_range_for_level(session.grade_level_type),
+                'subjects': sorted(score_map.keys()),
+                'scores': score_map
+            }
+
+            grouped_by_level[session.grade_level_type][session.school_year.name].append(session_data)
+
+        # Simplify and serialize grouped_sessions data
+        serialized_sessions = []
+        for level_type, school_years_group in grouped_by_level.items():
+            level_data = {
+                'level_type': level_type,
+                'school_years': []
+            }
+            for school_year, sessions in school_years_group.items():
+                year_data = {
+                    'school_year': school_year,
+                    'sessions': []
+                }
+                for session_data in sessions:
+                    session_info = {
+                        'session_id':session_data['session'].id,
+                        'test_type': session_data['session'].test_type,
+                        'test_name': session_data['session'].test_name,
+                        'grade_range': session_data['grade_range'],
+                        'subjects': session_data['subjects'],
+                        'scores': {subject: {grade: str(score) for grade, score in subject_scores.items()}
+                                   for subject, subject_scores in session_data['scores'].items()}
+                    }
+                    year_data['sessions'].append(session_info)
+                level_data['school_years'].append(year_data)
+            serialized_sessions.append(level_data)
+
+    else:
+        school_years = sessions = grouped_by_level = serialized_sessions = None
+
+    # Add this near your serialized_sessions generation
+    existing_keys = set()
+    for level in serialized_sessions:
+        for year_data in level["school_years"]:
+            if year_data["sessions"]:
+                key = f"{level['level_type'].lower()}|{year_data['school_year']}"
+                existing_keys.add(key)
+
+    context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="achievement", active_link="profile",
+                   form_id=form_id,
+                   level_types=level_types,
+                   student_achievement_form = student_achievement_form,
+                   grade_level_test_formset = formset,
+                   sessions=sessions, grouped_by_level=grouped_by_level, serialized_sessions=serialized_sessions,
+                   school_years=school_years,
+                   existing_keys=existing_keys)
+
+    return render(request, 'selfstudy/profile_student_achievement.html', context)
+
+
+def manage_standardized_test_scores(request, school_id=None, school_year_name=None, level_type=None, session_id=None):
+
+    if session_id:
+        session = get_object_or_404(StandardizedTestSession, id=session_id)
+        school = session.school
+        school_year = session.school_year
+        level_type = session.grade_level_type
+    else:
+        school = get_object_or_404(School, id=school_id)
+        school_year = get_object_or_404(SchoolYear, name=school_year_name)
+        session = None  # will create later if needed
+
+    next_url = request.GET.get('next')
+
+    # Determine grade range
+    grade_range = range(1, 9) if level_type == "elementary" else range(9, 13)
+
+    # Create session only if it doesn't exist yet
+    if not session:
+        session = StandardizedTestSession(
+            school=school, school_year=school_year, grade_level_type=level_type,
+            test_type="OT"  # default; you can adjust or prompt user to fill this
+        )
+
+    SUBJECTS = ['ENGLISH', 'READING', 'WRITING', 'MATH', 'SCIENCE', 'SOCIAL STUDIES', 'COMPOSITE']
+    form_dict = {}
+
+    if request.method == 'POST':
+        session_form = StandardizedTestSessionForm(request.POST, instance=session)
+        is_valid = session_form.is_valid()
+
+        for subject in SUBJECTS:
+            form_dict[subject] = {}
+            for grade in grade_range:
+                prefix = f"{subject}_{grade}"
+                if session_id:
+                    try:
+                        score = StandardizedTestScore.objects.get(session=session, subject=subject, grade=grade)
+                    except StandardizedTestScore.DoesNotExist:
+                        score = StandardizedTestScore(session=session, subject=subject, grade=grade)
+                else:
+                    score = StandardizedTestScore(session=session, subject=subject, grade=grade)
+                form = StandardizedTestScoreForm(request.POST, instance=score, prefix=prefix)
+                form_dict[subject][grade] = form
+                if form.has_changed():
+                    is_valid = is_valid and form.is_valid()
+
+        if is_valid:
+            session_form.save()
+            for subject_forms in form_dict.values():
+                for form in subject_forms.values():
+                    if form.has_changed() and form.is_valid():
+                        score = form.save(commit=False)
+                        if score.score is not None:
+                            score.session = session
+                            score.save()
+            messages.success(request, "Scores updated successfully.")
+            return redirect(next_url)
+
+    else:
+        session_form = StandardizedTestSessionForm(instance=session)
+        for subject in SUBJECTS:
+            form_dict[subject] = {}
+            for grade in grade_range:
+                if session_id:
+                    try:
+                        score = StandardizedTestScore.objects.get(session=session, subject=subject, grade=grade)
+                    except StandardizedTestScore.DoesNotExist:
+                        score = StandardizedTestScore(subject=subject, grade=grade)
+                else:
+                    score = StandardizedTestScore(session=session, subject=subject, grade=grade)
+                form = StandardizedTestScoreForm(instance=score, prefix=f"{subject}_{grade}")
+                form_dict[subject][grade] = form
+
+    context = dict( session=session, session_form=session_form, form_dict=form_dict,
+        school=school, school_year=school_year,
+        level_type=level_type, grade_range=grade_range,)
+
+    return render(request, 'selfstudy/add_standardized_test_scores.html', context)
+
+
+@login_required(login_url='login')
+def profile_secondary_curriculum(request, selfstudy_id):
+    """Main personnel profile view, handling personnel data and FTE data."""
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school = selfstudy.accreditation.school
+    standards = Standard.objects.top_level()
+    form_id = f"{selfstudy.id}_curriculum"
+
+    teachers = SelfStudyPersonnelData.objects.filter(school_profile=school_profile)
+    teacher_names = [f"{t.first_name} {t.last_name}".strip() for t in teachers if t.first_name or t.last_name]
+
+    categories = CourseCategory.objects.all()
+    context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="curriculum", active_link="profile",
+                   form_id=form_id, category_formsets=[],
+                   teacher_names=teacher_names)
+
+    if request.method == 'POST':
+        all_valid = True
+        formsets_by_category = []
+
+        # Loop through categories and process the formsets
+        for category in categories:
+            prefix = f'cat_{category.id}'
+            FormSet = modelformset_factory(
+                SecondaryCurriculumCourse,
+                form=SecondaryCurriculumCourseForm,
+                extra=1,
+                can_delete=True
+            )
+            queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
+            formset = FormSet(request.POST, queryset=queryset, prefix=prefix)
+
+            if formset.is_valid():
+                formsets_by_category.append((category, formset))
+            else:
+                all_valid = False
+                print(prefix)
+                print(formset.errors)
+
+            # Always append the formset (valid or invalid) to the context
+            context['category_formsets'].append((category, formset))
+
+        # If all formsets are valid, save the data
+        if all_valid:
+            for category, formset in formsets_by_category:
+                instances = formset.save(commit=False)
+
+                for obj in formset.deleted_objects:
+                    obj.delete()
+
+                for instance in instances:
+                    instance.school_profile = school_profile
+                    instance.category = category
+                    instance.save()
+
+            return redirect(request.path)  # Redirect to the same page or to a success page
+
+    else:  # For GET request, render the initial formsets
+        for category in categories:
+            prefix = f'cat_{category.id}'
+            FormSet = modelformset_factory(
+                SecondaryCurriculumCourse,
+                form=SecondaryCurriculumCourseForm,
+                extra=1,
+                can_delete=True
+            )
+            queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
+            formset = FormSet(queryset=queryset, prefix=prefix)
+            context['category_formsets'].append((category, formset))
+
+    # Render the template with the appropriate context (now always contains formsets)
+    return render(request, 'selfstudy/profile_secondary_curriculum.html', context)
+
+
+
+@login_required(login_url='login')
+def profile_support_services(request, selfstudy_id):
+    """Main personnel profile view, handling personnel data and FTE data."""
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school = selfstudy.accreditation.school
+    standards = Standard.objects.top_level()
+    form_id = f"{selfstudy.id}_services"
+
+    # Try to get an existing SupportService for the school profile, or create a new one
+    support_service, created = SupportService.objects.get_or_create(school_profile=school_profile)
+
+    if request.method == 'POST':
+        form = SupportServiceForm(request.POST, instance=support_service)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Support service details updated successfully.')
+
+    else:
+        form = SupportServiceForm(instance=support_service)
+
+
+    context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="services", active_link="profile",
+                   form_id=form_id, form=form)
+
+    return render(request, 'selfstudy/profile_support_services.html', context)
+
+
+@login_required(login_url='login')
+def profile_philanthropy(request, selfstudy_id):
+    """Main personnel profile view, handling personnel data and FTE data."""
+    selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
+    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school = selfstudy.accreditation.school
+    standards = Standard.objects.top_level()
+    form_id = f"{selfstudy.id}_philantrophy"
+
+    philanthropy, created = PhilantrophyProgram.objects.get_or_create(school_profile=school_profile)
+
+    if request.method == 'POST':
+        form = PhilantrophyProgramForm(request.POST, instance=philanthropy)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Support service details updated successfully.')
+
+    else:
+        form = PhilantrophyProgramForm(instance=philanthropy)
+
+
+    context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="philanthropy", active_link="profile",
+                   form_id=form_id, form=form)
+
+    return render(request, 'selfstudy/profile_philanthropy.html', context)

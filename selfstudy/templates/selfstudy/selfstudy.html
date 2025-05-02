@@ -20,7 +20,8 @@
                  <form method="post">
                      {% csrf_token %}
                         {% if not selfstudy.submission_date %}
-                            <h6>Self Study is not yet submitted</h6>
+                            <h6>Due date: {{ selfstudy.accreditation.selfstudy_due_date }}</h6>
+                            <p>Self Study is not yet submitted</p>
                             {% if school_privileges %}
                                     <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="submit_selfstudy">Submit SelfStudy</button>
                             {% endif %}

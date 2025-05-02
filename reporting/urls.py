@@ -49,6 +49,13 @@ urlpatterns = [
     path('isei_worthy_student_scholarship/', views.isei_worthy_student_scholarship, name='isei_worthy_student_scholarship'),
 
     path('longitudinal_enrollment/', views.longitudinal_enrollment, name='longitudinal_enrollment'),
+    path('longitudinal_enrollment/<str:individual_school_name>/', views.longitudinal_enrollment, name='longitudinal_enrollment_single'),
+
+    path('add_enrollment/<str:school_name>/<str:year_name>/', views.add_enrollment, name='add_enrollment_with_school_year'),
+    path('add_enrollment/<str:school_name>/', views.add_enrollment, name='add_enrollment_with_school'),
+    path('add_enrollment/', views.add_enrollment, name='add_enrollment'),
+
+
     #ajax
     path('ajax/get-teacher-email/', views.get_teacher_email, name="get_teacher_email"),
 

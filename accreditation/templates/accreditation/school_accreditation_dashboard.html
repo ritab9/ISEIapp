@@ -53,12 +53,13 @@
                     {% for accreditation in accreditations %}
                     <tr>
                         <td class="orange-column">
-                            {% if category == "in works" %}
+                            {% if category == "scheduled" %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SelfStudy</a>
                                 <!-- { % else %}
                                     <a href="{ % url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SelfStudy</a-->
                                 {% endif %}
+                                <p>SelfStudy Due: <strong>{{ accreditation.selfstudy_due_date }}</strong></p>
                             {% else %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a>
@@ -81,7 +82,9 @@
                             {% if not accreditation.coa_approval_date %}
                                     <b class="error">Recommended</b> term:
                             {% endif %}
-                            {{ accreditation.term|default_if_none:"" }} <br>
+                            {{ accreditation.term|default_if_none:"" }}
+                                <i tabindex="0" class="fas fa-info-circle small" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ accreditation.term.description }}"></i>
+                                <br>
                             </small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}
                         </td>
 
@@ -107,6 +110,15 @@
 
 {% block script %}
     <script>
+     //Popover
+      document.addEventListener("DOMContentLoaded", function(){
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+              trigger: 'hover'
+            })
+          })
+        });
 
     </script>
 {% endblock %}

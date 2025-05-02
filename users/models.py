@@ -152,6 +152,7 @@ class School(models.Model):
         ('K-8', 'K-8'),
         ('K-12', 'K-12'),
         ('9-12', '9-12'),
+        ('5-12', '5-12'),
         ('GAI-III', 'GAI-III'),
     ]
     grade_levels = models.CharField(max_length=10, choices=GRADE_CHOICES, default='9-12',
@@ -165,6 +166,8 @@ class School(models.Model):
             base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if -2 <= choice[0] <= 8]
         elif self.grade_levels == '9-12':
             base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if 9 <= choice[0] <= 12]
+        elif self.grade_levels == '5-12':
+            base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if 5 <= choice[0] <= 12]
         elif self.grade_levels == 'K-12':
             base_choices = [choice for choice in Student.GRADE_LEVEL_CHOICES if -2 <= choice[0] <= 12]
         elif self.grade_levels == 'GAI-III':
@@ -183,11 +186,26 @@ class School(models.Model):
             return range(-2, 9)  # Pre-K to 8th grade
         elif self.grade_levels == '9-12':
             return range(9, 13)  # 9th to 12th grade
+        elif self.grade_levels == '5-12':
+            return range(5, 13)  # 9th to 12th grade
         elif self.grade_levels == 'K-12':
             return range(-2, 13)  # Pre-K to 12th grade
         elif self.grade_levels == 'GAI-III':
             return range(14, 17)  # GA-I to GA-III
         return range(-2, 13)  # Default if no grade_levels matched
+
+    def get_school_type(self):
+        if 'K-12' in self.grade_levels:
+            return ['elementary', 'secondary']
+        elif '5-12' in self.grade_levels:
+            return ['elementary', 'secondary']
+        elif 'K-8' in self.grade_levels:
+            return ['elementary']
+        elif '9-12' in self.grade_levels:
+            return ['secondary']
+        elif 'GAI-III' in self.grade_levels:
+            return []
+        return []
 
     #this is used for creating the self-study and selecting the indicators
     school_type=models.ManyToManyField(SchoolType, blank=True, verbose_name='School Type')

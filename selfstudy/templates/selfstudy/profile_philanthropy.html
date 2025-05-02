@@ -1,0 +1,85 @@
+<!--profile.html-->
+{% extends 'selfstudy_base.html' %}
+{% load template_extras %}
+
+{% block title %} Profile Philanthropy {% endblock title %}
+
+{% block profile_submenu %}
+    {% include 'selfstudy_profile_submenu.html' %}
+{% endblock profile_submenu %}
+
+{% block content %}
+
+<!-- Title and Success and Error Messages -->
+    <div class="card card-body">
+        <h5>H. Philanthropy Programs </h5>
+
+        <div id="lock-message" class="error" style="display: none;"></div>
+
+<!-- Success and Error Messages -->
+        {% if messages %}
+                <div class="messages noprint"><hr>
+                    {% for message in messages %}
+                        <div class="{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+
+    </div>
+
+
+
+     <div id="content-div">
+        <form id="content-form" method="post">
+            {% csrf_token %}
+
+            <div id="somethingData">
+                <div class="card card-body">
+
+                    <div class="form-group">
+                        <label for="{{ form.development_program.id_for_label }}">
+                            Briefly outline the school's development program, including alumni activities, and fund raising.
+                        </label>
+                        {{ form.development_program }}
+                        {% if form.development_program.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.development_program.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+
+                    <div>
+                         <button id="end-save-btn" name="projected_enrollment_submit" class="btn btn-sm btn-ISEIyellow" type="submit">Save </button>
+                    </div>
+                        <div class="floating-box noprint">
+                            <button id="floating-save-btn" name="projected_enrollment_submit" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                        </div>
+                </div>
+            </div>
+
+        </form>
+     </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+    {% include "includes/script_lock_and_save_forms.html" %}
+
+    <script>
+//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
+         window.divButtonMapping = [
+             { divs: ["content-div"], buttons: ["end-save-btn", "floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
+         ];
+
+// 3. Auto-expanding textareas
+       {% include "includes/script_auto_expand_textarea.html" %}
+
+    </script>
+{% endblock %}

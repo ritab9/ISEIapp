@@ -8,25 +8,41 @@
 
 <div class="card card-body">
 
-    <h5>Enrollment History</h5>
+    <h5>Enrollment History {{ individual_school_name|default_if_none:"" }}</h5>
+    <div class="row">
+        <div class="col"></div>
 
-    <!-- Button to trigger POST request -->
-    <form method="POST">
-        {% csrf_token %}
-        <button class="btn btn-sm btn-ISEIblue3" type="submit">Generate Enrollment Data</button>
-    </form>
+        <div class="col">
+            {% if not individual_school_name %}
+                <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'add_enrollment' %}?next={{ request.get_full_path }}">Add/Edit Enrollment Data </a>
+            {% else %}
+                <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'add_enrollment_with_school' school_name=individual_school_name %}?next={{ request.get_full_path }}">Add/Edit Enrollment Data </a>
+            {% endif %}
+        </div>
 
+        <div class="col">
+            {% if not individual_school_name %}
+            <!-- Button to trigger POST request -->
+            <form method="POST">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-ISEIblue3" type="submit">Generate Enrollment Data from Opening Reports</button>
+            </form>
+            {% else %}
+                *If there is data entered in opening reports on this platform that is not reflected here, please contact ISEI.
+            {% endif %}
+        </div>
+    </div>
     <br>
 
     <!-- Display Enrollment Data -->
     <table class="table mt-4 table-sm table-bordered">
     <thead class="sticky_head blue-header2">
         <tr>
-            <th>School</th> <th>Year</th><th>Total</th>
+            {% if not individual_school_name %} <th>School</th> {% endif %}
+            <th>Year</th><th>Total</th>
             {% for label in grade_headers %}
                 <th><small>Grade</small> {{ label }}</th>
             {% endfor %}
-
         </tr>
     </thead>
     <tbody>
@@ -40,8 +56,18 @@
                         </tr>
                     {% endif %}
                     <tr>
-                        {% if forloop.counter == 1 %} <td class="orange-column">{{ school.school_name }}</td>{% else %}<td class="white-column"></td>{% endif %}
-                        <td class="blue-column">{{ year }}</td>
+                        {% if not individual_school_name %}
+                            {% if forloop.counter == 1 %}
+                                <td class="orange-column">
+                                    <a href="{% url 'longitudinal_enrollment_single' individual_school_name=school.school_name %}?next={{ request.get_full_path }}">{{ school.school_name }}</a>
+                                    </td>
+                            {% else %}
+                                <td class="white-column"></td>
+                            {% endif %}
+                        {% endif %}
+                        <td class="blue-column">
+                            <a href="{% url 'add_enrollment_with_school_year' school_name=school.school_name year_name=year %}?next={{ request.get_full_path }}">{{ year }} </a>
+                        </td>
                         <td class="blue-column"><b>{{ grade_counts.total_enrollment }}</b></td>
                         {% for grade in grade_range %}
                             {% with color_index=forloop.counter0|add:forloop.parentloop.counter0|modulus:12 %}
