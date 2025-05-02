@@ -22,6 +22,7 @@ from django.views.generic import ListView
 from io import BytesIO
 from django.contrib.auth.decorators import login_required
 from reporting.models import GRADE_LEVEL_DICT
+from accreditation.models import Accreditation
 from .filters import *
 
 from users.models import OtherAgencyAccreditationInfo
@@ -1501,7 +1502,7 @@ def download_TN_reports(request, schoolyearID):
     annual_student_reports = AnnualReport.objects.filter(
         school_year=school_year,
         report_type__code="SR",
-        school__address__state_us='TN'
+        school__street_address__state_us='TN'
     )
 
     # Prepare data for DataFrame
@@ -1535,7 +1536,7 @@ def download_TN_reports(request, schoolyearID):
             'Date of last Fire marshal': str(school.fire_marshal_date) if school.fire_marshal_date else None,
             'Enrollment': student_count,
             '# Teachers': teacher_count,
-            'Grade Span': school.type,
+            'Grade Span': school.grade_levels,
         })
 
     df = pd.DataFrame(data)
@@ -1605,12 +1606,13 @@ def download_NCPSA_directory(request, schoolyearID):
         except Opening.DoesNotExist:
             enrollment = None
 
-        current_accreditation_info = OtherAgencyAccreditationInfo.objects.filter(school=school, current_accreditation=True).first()
+        #current_accreditation_info = OtherAgencyAccreditationInfo.objects.filter(school=school, current_accreditation=True).first()
+        current_accreditation_info= Accreditation.objects.filter(school=school,status=Accreditation.AccreditationStatus.ACTIVE).first()
 
         if current_accreditation_info:
             accreditation_status = "Accredited"
-            accreditation_end_date = current_accreditation_info.end_date.strftime(
-                '%m/%d/%Y') if current_accreditation_info.end_date else None
+            accreditation_end_date = current_accreditation_info.term_end_date.strftime(
+                '%m/%d/%Y') if current_accreditation_info.term_end_date else None
             initial_accreditation_date = school.initial_accreditation_date.strftime(
                 '%m/%d/%Y') if school.initial_accreditation_date else None
         else:
@@ -1618,9 +1620,14 @@ def download_NCPSA_directory(request, schoolyearID):
             accreditation_end_date = None
             initial_accreditation_date = None
 
+        if school.abbreviation == "AIS":
+            representative = school.president + ",Director"
+        else:
+            representative = school.principal + ", Principal"
+
         data.append({
             'Institution': school.name,
-            'Representative': school.principal,
+            'Representative': representative,
             'Address': school.street_address.address_1,
             'City': school.street_address.city,
             'Zip code': school.street_address.zip_code,
@@ -1630,7 +1637,7 @@ def download_NCPSA_directory(request, schoolyearID):
             'E-mail': school.email,
             'Website': school.website,
             'Public/Private': "Private",
-            'Grades': school.type,
+            'Grades': school.grade_levels,
             'Enrollment': enrollment,
             'Accreditation Status':accreditation_status,
             'Initial Accreditation Date': initial_accreditation_date,

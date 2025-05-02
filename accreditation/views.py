@@ -74,10 +74,18 @@ def add_accreditation(request):
 @allowed_users(allowed_roles=['staff'])
 def edit_accreditation(request, id):
     accreditation = get_object_or_404(Accreditation, id=id)
+
     if request.method == 'POST':
         form = AccreditationForm(request.POST, instance=accreditation)
         if form.is_valid():
-            form.save()
+            accreditation = form.save()  # Capture the saved instance
+            school = accreditation.school
+
+            # Set initial_accreditation_date if it doesn't exist and term_start_date is provided
+            if not school.initial_accreditation and accreditation.term_start_date:
+                school.initial_accreditation = accreditation.term_start_date
+                school.save()
+
             #messages.success(request, "The accreditation has been updated!")
             return redirect('/isei_accreditation_dashboard/')
     else:
