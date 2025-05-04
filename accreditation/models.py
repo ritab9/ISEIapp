@@ -141,6 +141,8 @@ class Indicator(models.Model):
     version = models.CharField(max_length=10, default = "2.0 (2005)")
     active = models.BooleanField(default=True)
 
+    met_description=models.TextField(null=True, blank=True)
+
     class Meta:
         unique_together = [['standard', 'code', 'version']]
         ordering = ['standard', 'code']
@@ -148,6 +150,24 @@ class Indicator(models.Model):
     def __str__(self):
         return f"{self.code}"
 
+class IndicatorScore(models.Model):
+    LEVEL_CHOICES = (
+        (1, 'Not Met (1)'),
+        (2, 'Partially Met (2)'),
+        (3, 'Met (3)'),
+        (4, 'Exceptional (4)'),
+    )
+    score = models.IntegerField(choices=LEVEL_CHOICES)
+    comment = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-score']
+
+    def __str__(self):
+        return self.get_score_display()
+
+
+#ToDo - this level is no longer used. I am keeping if for now though
 class Level(models.Model):
     LEVEL_CHOICES = (
         (1, 'Not Met (1)'),

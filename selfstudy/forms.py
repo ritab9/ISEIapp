@@ -115,19 +115,56 @@ class StandardEvaluationForm(forms.ModelForm):
             'average_score': forms.HiddenInput(),
         }
 
+class IndicatorScoreSelect(forms.Select):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+
+        try:
+            # If value is a model instance or a PK, get the associated IndicatorScore
+            score = IndicatorScore.objects.get(pk=value)
+            option['attrs']['data-level'] = score.level
+            option['attrs']['data-comment'] = score.comment
+        except Exception:
+            pass  # In case it's a blank or invalid
+
+        return option
+
+
 class IndicatorEvaluationForm(forms.ModelForm):
     class Meta:
         model = IndicatorEvaluation
-        fields = ['score', 'reference_documents', 'explanation']
+        fields = ['indicator_score', 'reference_documents', 'explanation']
         widgets = {
-            'score': forms.Select(attrs={'style': 'width: 45px; font-size: 14px;', 'class': 'custom-select'}),
+            'indicator_score': IndicatorScoreSelect(attrs={
+                'class': 'indicator-score-dropdown',
+            }),
             'reference_documents': forms.Textarea(attrs={'rows': 1, 'id': 'reference-documents'}),
-            'explanation': forms.Textarea(attrs={'rows': 1, 'id': 'explanation'}),
+            'explanation': forms.Textarea(attrs={'rows': 3, 'id': 'explanation'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)  # THIS LINE IS CRITICAL
+
+        self.fields['indicator_score'].choices = [('', '--- Select ---')] + [
+            (score.pk, f"{score.get_score_display()} ")
+            for score in IndicatorScore.objects.all()
+        ]
+
 
 
 IndicatorEvaluationFormSet = forms.modelformset_factory(IndicatorEvaluation, form=IndicatorEvaluationForm, extra=0)
 
+
+class MissionAndObjectivesForm(forms.ModelForm):
+    class Meta:
+        model = MissionAndObjectives
+        fields = ['mission_statement', 'vision_statement', 'philosophy_statement', 'school_objectives']
+        widgets = {
+            'mission_statement': forms.Textarea(attrs={'rows': 3, 'cols': 60}),
+            'vision_statement': forms.Textarea(attrs={'rows': 3, 'cols': 60}),
+            'philosophy_statement': forms.Textarea(attrs={'rows': 10, 'cols': 60}),
+            'school_objectives': forms.Textarea(attrs={'rows': 10, 'cols': 60}),
+        }
 
 class ActionPlanForm(forms.ModelForm):
     class Meta:

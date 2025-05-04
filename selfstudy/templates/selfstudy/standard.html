@@ -65,6 +65,35 @@
                     </div>
                 {% endif %}
 
+ <!--Mission, Vision, Philosophy, Objectives -->
+                {% if mission_form %}
+                <div class="card card-body">
+                    <div class="form-group">
+                            <h7>School Mission Statement:</h7>
+                        {{ mission_form.mission_statement }}
+                        {{ mission_form.mission_statement.errors }}
+                    </div>
+
+                    <div class="form-group">
+                            <h7>School Vision Statement:</h7>
+                        {{ mission_form.vision_statement }}
+                        {{ mission_form.vision_statement.errors }}
+                    </div>
+
+                    <div class="form-group">
+                            <h7>School Philosophy Statement:</h7>
+                        {{ mission_form.philosophy_statement }}
+                        {{ mission_form.philosophy_statement.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <h7>School-wide Goals and Objectives:</h7>
+                        {{ mission_form.school_objectives }}
+                       {{ mission_form.school_objectives.errors }}
+                    </div>
+                </div>
+                {% endif %}
+
                 {% for group in grouped_data %}
                 <div>
         <!--Name and description for substandards-->
@@ -78,79 +107,80 @@
                     {% endif %}
         <!-- Indicators formset -->
                     {% for form in formset %}
-                    {% if form.instance.standard.id == group.standard.id %}
-                        <fieldset>
-        <!-- Table for each indicator -->
-                        <div class="card">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr class="bg-ISEIblue1">
-                                        <td>
-                                            <strong>Indicator: {{ standard.number }}.{{ forloop.counter }}</strong>
-                                            <br><span class="span80">({{ form.instance.indicator.code }})</span>
-                                        </td>
-                                        <td>{{ form.instance.indicator.description }}</td>
-                                    </tr>
-                                    {% for indicator_id, levels in group.levels_dict.items %}
-                                        {% if indicator_id == form.instance.indicator.id %}
-            <!-- Levels -->
-                                            {% for level in levels %}
-                                                <tr data-index="{{ forloop.parentloop.counter0 }}">
-                                                    <td style="width: 130px">
-                                                        <a class="level-button clickable-no-underline span90 text-ISEIblue4" data-level="{{ level.level }}" data-index="{{ forloop.parentloop.counter0 }}">
-                                                            {{ level.get_level_display }}
-                                                        </a>
-                                                    </td>
-                                                    <td class="level-description" data-level="{{ level.level }}">{{ level.description }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endfor %}
-            <!-- Score -->
-                                    <tr>
-                                        <td>
-                                            <label><strong>Score:</strong></label>
-                                            {{ form.score }}
-                                            {% if form.score.errors %}
-                                                <div class="alert alert-danger">
-                                                    {% for error in form.score.errors %}
-                                                        <p>{{ error }}</p>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </td>
-            <!-- Reference documents -->
-                                        <td>
-                                            <label>Document Reference(s):</label>
-                                            {{ form.reference_documents }}
-                                            {% if form.reference_documents.errors %}
-                                                <div class="alert alert-danger">
-                                                    {% for error in form.reference_documents.errors %}
-                                                        <p>{{ error }}</p>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-            <!-- Score Explanation -->
-                                    <tr>
-                                        <td colspan="2">
-                                            <label>Explain the score:</label>
-                                            {{ form.explanation }}
-                                            {% if form.explanation.errors %}
-                                                <div class="alert alert-danger">
-                                                    {% for error in form.explanation.errors %}
-                                                        <p>{{ error }}</p>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                            <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
-                        </fieldset>
+                        {% if form.instance.standard.id == group.standard.id %}
+                            <fieldset>
+            <!-- Table for each indicator -->
+                                <div class="card">
+                                    <table class="table table-bordered">
+                                    <tbody>
+                                        <tr class="bg-ISEIblue1">
+                                            <td style="white-space: nowrap;">
+                                                <strong>Indicator: {{ standard.number }}.{{ forloop.counter }}</strong>
+                                                <br><span class="span80">({{ form.instance.indicator.code }})</span>
+                                            </td>
+                                            <td class="width: 100%">{{ form.instance.indicator.description }}</td>
+                                        </tr>
+                                        <tr><td colspan="2">Met: {{ form.instance.indicator.met_description  }}</td></tr>
+                                        <tr>
+                                            <td style="white-space: nowrap;">
+                                                <strong>Score:</strong><br>
+                                                    <select name="{{ form.prefix }}-indicator_score" class="indicator-score-dropdown" data-index="{{ forloop.counter0 }}">
+                                                        <option value="" selected>--- Select ---</option> <!-- Blank option -->
+                                                        {% for score in score_options %}
+                                                            <option value="{{ score.id }}"
+                                                                    data-comment="{{ score.comment|default_if_none:''|escape }}"
+                                                                    {% if form.instance.indicator_score and form.instance.indicator_score.id == score.id %}selected{% endif %}>
+                                                                {{ score.get_score_display }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+
+
+                                                {% if form.indicator_score.errors %}
+                                                    <div class="alert alert-danger">
+                                                        {% for error in form.indicator_score.errors %}
+                                                            <p>{{ error }}</p>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+
+                                            <td style="width: 100%">
+                                                <label>
+                                                    <div class="score-comment text-muted" id="score-comment-{{ forloop.counter0 }}"></div>
+                                                </label>
+                                                {{ form.explanation }}
+                                                {% if form.explanation.errors %}
+                                                    <div class="alert alert-danger">
+                                                        {% for error in form.explanation.errors %}
+                                                            <p>{{ error }}</p>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                Document Reference(s):
+                                            </td>
+                                            <td>
+                                                {{ form.reference_documents }}
+                                                {% if form.reference_documents.errors %}
+                                                    <div class="alert alert-danger">
+                                                        {% for error in form.reference_documents.errors %}
+                                                            <p>{{ error }}</p>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                                </div>
+                                <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
+                            </fieldset>
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -205,87 +235,69 @@
 // 2. Auto-expanding textareas
         {% include "includes/script_auto_expand_textarea.html" %}
 
-
-// 3. Update score, calculate the running average, and update background when level button is clicked,
+//3. Calculate average, color background
         document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.indicator-score-dropdown');
+            const averageDisplay = document.getElementById('average-score');
+            const averageInput = document.getElementById('id_average_score');
 
-        // Update score and calculate the running average when level button is clicked
-        const levelButtons = document.querySelectorAll('.level-button');
-        const scoreFields = document.querySelectorAll('[name$="-score"]');
-        const averageDisplay = document.getElementById('average-score');
-        const averageInput = document.getElementById('id_average_score');
-
-         // Function to calculate and update running average
-        function updateAverage() {
-            let totalScore = 0, validCount = 0;
-
-            scoreFields.forEach(field => {
-                const score = parseInt(field.value, 10);
-                if (!isNaN(score)) {
-                    totalScore += score;
-                    validCount++;
-                }
-            });
-
-            const averageScore = validCount > 0 ? (totalScore / validCount).toFixed(2) : 0;
-            averageDisplay.textContent = `Running Average: ${averageScore}`;
-            averageInput.value = averageScore;
-        }
-
-        // Function to update background color - calls getBackgroundColor
-        function updateLevelDescriptionBackground(level, index) {
-            const targetCell = document.querySelector(`tr[data-index="${index}"] .level-description[data-level="${level}"]`);
-            // Reset all background colors first
-            document.querySelectorAll(`tr[data-index="${index}"] .level-description`).forEach(cell => {
-                cell.style.backgroundColor = '';
-            });
-
-            if (targetCell) {
-                targetCell.style.backgroundColor = getBackgroundColor(level);
+            function getBackgroundColor(score) {
+                const colors = {
+                    '1': 'mistyrose',
+                    '2': 'lightyellow',
+                    '3': 'honeydew',
+                    '4': '#E5E8FB'
+                };
+                return colors[score] || '';
             }
-        }
 
-        // Helper function to get background color based on level
-        function getBackgroundColor(level) {
-            const colors = {
-                '1': 'mistyrose',
-                '2': 'lightyellow',
-                '3': 'honeydew',
-                '4': '#E5E8FB'
-            };
-            return colors[level] || '';
-        }
-
-         // Handle level button clicks - set score value, updateAverage and updateLevelDescriptionBackground
-        levelButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const level = this.dataset.level;
-                const index = this.dataset.index;
-                const scoreSelect = document.querySelector(`select[name="form-${index}-score"]`);
-
-                if (scoreSelect) {
-                    scoreSelect.value = level;
-                    updateAverage();
-                    updateLevelDescriptionBackground(level, index);
+            function updateRowBackground(selectEl) {
+                const tr = selectEl.closest('tr');
+                if (tr) {
+                    tr.style.backgroundColor = getBackgroundColor(selectEl.value);
                 }
+            }
+
+            function updateComment(selectEl) {
+                const selectedOption = selectEl.options[selectEl.selectedIndex];
+                const comment = selectedOption.getAttribute('data-comment') || '';
+                const index = selectEl.getAttribute('data-index');
+                const commentDiv = document.getElementById(`score-comment-${index}`);
+                if (commentDiv) {
+                    commentDiv.textContent = comment;
+                }
+            }
+
+            function updateAverage() {
+                let total = 0;
+                let count = 0;
+
+                dropdowns.forEach(dropdown => {
+                    const val = parseInt(dropdown.value);
+                    if (!isNaN(val)) {
+                        total += val;
+                        count++;
+                    }
+                });
+
+                const avg = count > 0 ? (total / count).toFixed(2) : 0;
+                if (averageDisplay) averageDisplay.textContent = `Running Average: ${avg}`;
+                if (averageInput) averageInput.value = avg;
+            }
+
+            dropdowns.forEach(dropdown => {
+                updateComment(dropdown);
+                updateRowBackground(dropdown);
+                dropdown.addEventListener('change', function () {
+                    updateComment(this);
+                    updateRowBackground(this);
+                    updateAverage();
+                });
             });
+
+            updateAverage();
         });
 
-        // Apply background + updateAverage to all level descriptions based on the score (on load & change)
-        scoreFields.forEach((scoreField, index) => {
-            updateLevelDescriptionBackground(scoreField.value, index); // Set background on load
-
-            // Listen for score field changes and update background + average
-            scoreField.addEventListener('change', function () {
-                updateLevelDescriptionBackground(this.value, index);
-                updateAverage();
-            });
-        });
-
-        // Initialize the average calculation when the page loads
-        updateAverage();
-
-    });
 
     </script>
 

@@ -21,12 +21,18 @@ class SchoolTypeAdmin(admin.ModelAdmin):
     list_editable = ('name', 'code')
     #list_display_links = ('id',)
 
-class LevelInline(admin.TabularInline):
-    model = Level
-    extra = 4
+@admin.register(IndicatorScore)
+class IndicatorScoreAdmin(admin.ModelAdmin):
+    list_display = ('score', 'get_score_display', 'comment')
+    list_filter = ('score',)
+    ordering = ('-score',)
+
+#class LevelInline(admin.TabularInline):
+#    model = Level
+#    extra = 4
 
 class IndicatorAdmin(admin.ModelAdmin):
-    inlines = [LevelInline]
+    #inlines = [LevelInline]
     list_display = ( 'key_word','code', 'school_type', 'version', 'active')
     list_editable = ('code','version', 'active')
     list_filter = ('standard', 'school_type',)

@@ -206,42 +206,56 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
         for substandard in substandards:
             evaluations = IndicatorEvaluation.objects.filter(selfstudy=selfstudy, standard=substandard)
             indicators = Indicator.objects.filter(standard=substandard, active=True)
-            # Group levels for each indicator
-            levels_dict = {
-                indicator.id: Level.objects.filter(indicator=indicator).order_by("-level")
-                for indicator in indicators
-            }
+
             grouped_data.append({
                 "standard": substandard,
                 "indicators": indicators,
                 "evaluations": evaluations,
-                "levels_dict": levels_dict,
             })
         # Evidence is specific to the main standard
     else:
         substandards_exist=False
         evaluations = IndicatorEvaluation.objects.filter(selfstudy=selfstudy, standard=standard)
         indicators = Indicator.objects.filter(standard=standard, active=True)
-        levels_dict = {
-            indicator.id: Level.objects.filter(indicator=indicator).order_by("-level")
-            for indicator in indicators
-        }
+
         grouped_data.append({
             "standard": standard,
             "indicators": indicators,
             "evaluations": evaluations,
-            "levels_dict": levels_dict,
         })
+
+        # Handle the MissionAndObjectives form in the same way as the standard form
+    mission_and_objectives = MissionAndObjectives.objects.filter(selfstudy=selfstudy).first()
 
     if request.method == "POST":
         formset = IndicatorEvaluationFormSet(request.POST, queryset=IndicatorEvaluation.objects.filter(
             selfstudy=selfstudy, standard__in=[standard] + list(substandards) ))
         standard_form = StandardEvaluationForm(request.POST, instance=standard_evaluation)
+        if standard.name == "Mission, Philosophy, Goals, & Objectives":
+            mission_form = MissionAndObjectivesForm(request.POST, instance=mission_and_objectives)
+        else:
+            mission_form = None
+
         if formset.is_valid() and standard_form.is_valid():
+            for form in formset:
+                if form.is_valid():
+                    # Manually set the indicator_score from the form data
+                    # Manually get the indicator_score value from POST data
+                    indicator_score_id = request.POST.get(f'{form.prefix}-indicator_score')
+                    if indicator_score_id:
+                        # Assign the selected IndicatorScore to the form instance
+                        form.instance.indicator_score = IndicatorScore.objects.get(id=indicator_score_id)
+
+                    form.save()
             formset.save()
             standard_form.save()
-            # Redirect to the next standard or a completion page
-            #return redirect('selfstudy:completion')  # Or another standard
+
+            if mission_form:
+                if mission_form.is_valid():
+                    mission_and_objectives = mission_form.save(commit=False)
+                    mission_and_objectives.selfstudy = selfstudy  # Associate with the correct SelfStudy instance
+                    mission_and_objectives.save()
+
             messages.success(request, "Your changes have been successfully saved!")
         else:
             messages.error(request, "Some of your changes were not saved!")
@@ -257,12 +271,18 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
         formset = IndicatorEvaluationFormSet(queryset=IndicatorEvaluation.objects.filter(selfstudy=selfstudy,
                                                  standard__in=[standard] + list(substandards)))
         standard_form = StandardEvaluationForm(instance=standard_evaluation)
+        if standard.name == "Mission, Philosophy, Goals, & Objectives":
+            mission_form = MissionAndObjectivesForm(instance=mission_and_objectives)
+        else: mission_form = None
+
+    score_options = IndicatorScore.objects.all()
 
     context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
-                   formset = formset, standard_form=standard_form,
+                   formset = formset, standard_form=standard_form, mission_form=mission_form,
                    active_link=standard_id, evidence_list=evidence_list, narrative=narrative,
                    grouped_data = grouped_data, substandards_exist=substandards_exist,
-                   form_id=form_id)
+                   form_id=form_id,
+                   score_options=score_options,)
 
     return render(request, 'selfstudy/standard.html', context)
 

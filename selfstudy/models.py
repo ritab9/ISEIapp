@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 
 from users.models import StateField, Country, School
 from reporting.models import StaffStatus, StaffPosition, SchoolYear
+from accreditation.models import IndicatorScore
 
 class CurrentlyEditing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -319,6 +320,9 @@ class IndicatorEvaluation(models.Model):
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name='indicator_evaluations')
     standard = models.ForeignKey(Standard, on_delete=models.CASCADE)  # Add this field
     indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE, related_name='evaluations')
+
+    indicator_score = models.ForeignKey(IndicatorScore, on_delete=models.CASCADE, null=True, blank=True)
+
     SCORE_CHOICES = (
         (4, 4),
         (3, 3),
@@ -339,3 +343,14 @@ class IndicatorEvaluation(models.Model):
     def __str__(self):
         score_display = self.get_score_display() or 'Not Scored'
         return f"Evaluation for {self.indicator} (Score: {score_display})"
+
+
+class MissionAndObjectives(models.Model):
+    selfstudy=models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name='objectives')
+    mission_statement = models.TextField(null=True, blank=True)
+    vision_statement = models.TextField(null=True, blank=True)
+    philosophy_statement = models.TextField(null=True, blank=True)
+    school_objectives = models.TextField(help_text="")
+
+    def __str__(self):
+        return f"Mission, Objectives of {self.selfstudy.accreditation.school.name}"  # Adjust as needed
