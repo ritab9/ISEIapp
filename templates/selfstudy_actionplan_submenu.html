@@ -1,17 +1,26 @@
 <!-- Submenu for Action Plans -->
+
+  {% with has_submission_date=selfstudy.submission_date %}
         <div class="submenu ml-3">
             {% for actionplan in actionplans %}
                 <div class="submenu-item mb-1">
                     <a class="nav-link {% if active_link == '' %}active{% endif %}"
-                       href="{% url 'selfstudy_actionplan' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
+                        {% if has_submission_date %}
+                            href="{% url 'selfstudy_actionplan_readonly' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
+                       {% else %}
+                            href="{% url 'selfstudy_actionplan' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
+                        {% endif %}
                         Action Plan {{ actionplan.number }}
                     </a>
                 </div>
             {% endfor %}
-                <div class="submenu-item mb-1">
-                   <a class="nav-link btn-outline-ISEIblue4 {% if active_link == actionplan.id %}active{% endif %}"
-                       href="{% url 'selfstudy_actionplan_create' accreditation_id=accreditation_id %}">
-                        Create Action Plan
-                   </a>
-                </div>
+                {% if not has_submission_date %}
+                    <div class="submenu-item mb-1">
+                       <a class="nav-link btn-outline-ISEIblue4 {% if active_link == actionplan.id %}active{% endif %}"
+                           href="{% url 'selfstudy_actionplan_create' accreditation_id=accreditation_id %}">
+                            Create Action Plan 
+                       </a>
+                    </div>
+                {% endif %}
         </div>
+  {% endwith %}

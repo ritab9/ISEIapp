@@ -10,6 +10,8 @@
 
 {% block content %}
 
+    {% with has_submission_date=selfstudy.submission_date %}
+
 <!-- Title and Success and Error Messages -->
     <div class="card card-body">
         <h5>F. Student Achievement </h5>
@@ -99,11 +101,13 @@
                                                Test Type: <strong> {{ session_data.test_type }} </strong>
                                                 ( {{ session_data.test_name|default_if_none:"" }})
                                             </div>
+                                            {% if not has_submission_date %}
                                             <div class="col d-flex justify-content-end">
                                                 <a class="text-ISEIblue4 font-weight-bold clickable" href="{% url 'edit_standardized_test_scores' session_id=session_data.session_id%}?next={{ request.get_full_path }}">
                                                   Edit scores
                                                 </a>
                                             </div>
+                                            {% endif %}
                                         </div>
                                         <table class="table table-sm table-bordered text-center">
                                             <thead>
@@ -131,22 +135,26 @@
                         {% endif %}
                     {% endfor %}
 
-                    {# Check for missing combinations #}
-                    {% with key=level_type|lower|stringformat:"s"|add:"|"|add:school_year.name %}
-                        {% if key not in existing_keys %}
-                            <a class="error" href="{% url 'add_standardized_test_scores' school_id=school.id school_year_name=school_year.name level_type=level_type %}?next={{ request.get_full_path }}">
-                                Add {{ level_type|capfirst }} Standardized Test Scores for {{ school_year.name }}
-                            </a>
-                        {% else %}
-                            <a class="text-muted" href="{% url 'add_standardized_test_scores' school_id=school.id school_year_name=school_year.name level_type=level_type %}?next={{ request.get_full_path }}">
-                                Add additional Test Scores for {{ school_year.name }}
-                            </a>
-                        {% endif %}
-                    {% endwith %}
+                    {% if not has_submission_date %}
+                        {# Check for missing combinations #}
+                        {% with key=level_type|lower|stringformat:"s"|add:"|"|add:school_year.name %}
+                            {% if key not in existing_keys %}
+                                <a class="error" href="{% url 'add_standardized_test_scores' school_id=school.id school_year_name=school_year.name level_type=level_type %}?next={{ request.get_full_path }}">
+                                    Add {{ level_type|capfirst }} Standardized Test Scores for {{ school_year.name }}
+                                </a>
+                            {% else %}
+                                <a class="text-muted" href="{% url 'add_standardized_test_scores' school_id=school.id school_year_name=school_year.name level_type=level_type %}?next={{ request.get_full_path }}">
+                                    Add additional Test Scores for {{ school_year.name }}
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
                 {% endfor %}
             </div>
         {% endfor %}
     </div>
+
+    {% endwith %}
 
 {% endblock %}
 

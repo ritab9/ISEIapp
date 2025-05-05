@@ -120,11 +120,11 @@
                                             </td>
                                             <td class="width: 100%">{{ form.instance.indicator.description }}</td>
                                         </tr>
-                                        <tr><td colspan="2">Met: {{ form.instance.indicator.met_description  }}</td></tr>
+                                        <tr><td colspan="2">{{ form.instance.indicator.met_description  }}</td></tr>
                                         <tr>
                                             <td style="white-space: nowrap;">
                                                 <strong>Score:</strong><br>
-                                                    <select name="{{ form.prefix }}-indicator_score" class="indicator-score-dropdown" data-index="{{ forloop.counter0 }}">
+                                                    <select name="{{ form.prefix }}-indicator_score" class="indicator-score-dropdown" data-index="{{ forloop.counter0 }}" {% if readonly %}disabled{% endif %}>
                                                         <option value="" selected>--- Select ---</option> <!-- Blank option -->
                                                         {% for score in score_options %}
                                                             <option value="{{ score.id }}"
@@ -201,20 +201,22 @@
                 </table>
             </div>
 
-<!-- Floating boxes -->
-            <div class="floating-box-background noprint">
-                <div id="average-score" class="span80 text-ISEIblue4">Running Average: 0</div>
-            </div>
-            <div class="floating-box noprint">
-                <button id="floating-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
-            </div>
+            {% if not readonly %}
 
-            <div class="card card-body">
-                <div style="width: auto; text-align: center;">
-                    <button id="end-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+    <!-- Floating boxes -->
+                <div class="floating-box-background noprint">
+                    <div id="average-score" class="span80 text-ISEIblue4">Running Average: 0</div>
                 </div>
-            </div>
+                <div class="floating-box noprint">
+                    <button id="floating-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                </div>
 
+                <div class="card card-body">
+                    <div style="width: auto; text-align: center;">
+                        <button id="end-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
+                    </div>
+                </div>
+            {% endif %}
         </form>
     </div>
 
@@ -223,19 +225,8 @@
 
 {% block script %}
 
-
-    {% include "includes/script_lock_and_save_forms.html" %}
+    {# --- Always-loaded script: coloring and comment update --- #}
     <script>
-//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
-         window.divButtonMapping = [
-            { divs: ["content-div"], buttons: ["floating-save-btn", "end-save-btn"], formId: "{{ form_id|escapejs  }}" } // Both forms trigger both buttons
-         ];
-
-
-// 2. Auto-expanding textareas
-        {% include "includes/script_auto_expand_textarea.html" %}
-
-//3. Calculate average, color background
         document.addEventListener('DOMContentLoaded', function () {
             const dropdowns = document.querySelectorAll('.indicator-score-dropdown');
             const averageDisplay = document.getElementById('average-score');
@@ -271,7 +262,6 @@
             function updateAverage() {
                 let total = 0;
                 let count = 0;
-
                 dropdowns.forEach(dropdown => {
                     const val = parseInt(dropdown.value);
                     if (!isNaN(val)) {
@@ -279,27 +269,47 @@
                         count++;
                     }
                 });
-
                 const avg = count > 0 ? (total / count).toFixed(2) : 0;
                 if (averageDisplay) averageDisplay.textContent = `Running Average: ${avg}`;
                 if (averageInput) averageInput.value = avg;
             }
 
+            // Initial setup (run on load)
             dropdowns.forEach(dropdown => {
                 updateComment(dropdown);
                 updateRowBackground(dropdown);
-                dropdown.addEventListener('change', function () {
-                    updateComment(this);
-                    updateRowBackground(this);
-                    updateAverage();
-                });
             });
-
             updateAverage();
+
+            {% if not readonly %}
+                // Change listeners only if editable
+                dropdowns.forEach(dropdown => {
+                    dropdown.addEventListener('change', function () {
+                        updateComment(this);
+                        updateRowBackground(this);
+                        updateAverage();
+                    });
+                });
+
+                // Show Save button when form is changed
+                window.divButtonMapping = [
+                    {
+                        divs: ["content-div"],
+                        buttons: ["floating-save-btn", "end-save-btn"],
+                        formId: "{{ form_id|escapejs }}"
+                    }
+                ];
+            {% endif %}
         });
-
-
     </script>
 
+    {% if not readonly %}
+        {% include "includes/script_lock_and_save_forms.html" %}
+        {% include "includes/script_auto_expand_textarea.html" %}
+    {% endif %}
+
 {% endblock %}
+
+
+
 

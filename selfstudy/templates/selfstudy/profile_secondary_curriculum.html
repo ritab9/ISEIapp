@@ -79,14 +79,15 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
-
-                                <div class="row justify-content-end">
-                                    <div class="col-12 d-flex justify-content-end">
-                                    <button type="button" class="add-form-btn btn btn-sm btn-outline-ISEIblue4" data-prefix="{{ formset.prefix }}">
-                                        Add row
-                                    </button>
+                                {% if not selfstudy.submission_date %}
+                                    <div class="row justify-content-end">
+                                        <div class="col-12 d-flex justify-content-end">
+                                        <button type="button" class="add-form-btn btn btn-sm btn-outline-ISEIblue4" data-prefix="{{ formset.prefix }}">
+                                            Add row
+                                        </button>
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
 
                             </div>
                             <hr>

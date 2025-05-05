@@ -27,6 +27,8 @@
 
   <div class="row">
 
+  {% with has_submission_date=selfstudy.submission_date %}
+
    <!-- Vertical Navbar -->
         <div class="col-md-3 col-lg-2 noprint">
           <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
@@ -40,13 +42,21 @@
   <!-- Profile links -->
                 <div class="nav-item mt-1 p-2 bg-ISEIblue4 text-white rounded">
                     <a class="nav-link {% if active_link == 'coordinating_team' %}active{% endif %}"
-                       href="{% url 'selfstudy_coordinating_team' selfstudy.id %}">
+                       {% if has_submission_date %}
+                            href="{% url 'selfstudy_coordinating_team_readonly' selfstudy.id %}">
+                        {% else %}
+                           href="{% url 'selfstudy_coordinating_team' selfstudy.id %}">
+                        {% endif %}
                        Coordinating Team
                     </a>
                 </div>
               <div class="nav-item mt-1 p-2 bg-ISEIblue4 text-white rounded">
                 <a class="nav-link {% if active_link == 'profile' %}active{% endif %}"
-                   href="{% url 'selfstudy_profile' selfstudy.id %}">
+                   {% if has_submission_date %}
+                        href="{% url 'selfstudy_profile_readonly' selfstudy.id %}">
+                    {% else %}
+                        href="{% url 'selfstudy_profile' selfstudy.id %}">
+                    {% endif %}
                   School Profile
                 </a>
               </div>
@@ -59,7 +69,11 @@
               {% for standard in standards %}
                 <div class="nav-item mb-1 p-2 bg-ISEIblue4 text-white rounded">
                   <a class="nav-link {% if active_link == standard.id %}active{% endif %}"
-                     href="{% url 'selfstudy_standard' selfstudy.id standard.id %}">
+                     {% if has_submission_date %}
+                        href="{% url 'selfstudy_standard_readonly' selfstudy.id standard.id %}">
+                     {% else %}
+                         href="{% url 'selfstudy_standard' selfstudy.id standard.id %}">
+                     {% endif %}
                     {{ standard.number }}. {{ standard.name }}
                   </a>
                 </div>
@@ -88,5 +102,7 @@
             {{ block.super }}
           {% endblock content %}
     </div>
+
+  {% endwith %}
   </div>
 {% endblock main_content %}

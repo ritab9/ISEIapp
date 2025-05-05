@@ -189,7 +189,8 @@ def selfstudy(request, selfstudy_id):
 #School filling out the self study views
 
 @login_required(login_url='login')
-def selfstudy_standard(request, selfstudy_id, standard_id):
+def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
+
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
     standard = get_object_or_404(Standard, id=standard_id, parent_standard__isnull=True)
@@ -277,12 +278,24 @@ def selfstudy_standard(request, selfstudy_id, standard_id):
 
     score_options = IndicatorScore.objects.all()
 
+    if readonly:
+        for form in formset:
+            for field in form.fields.values():
+                field.disabled = True
+        for field in standard_form.fields.values():
+            field.disabled = True
+        if mission_form:
+            for field in mission_form.fields.values():
+                field.disabled = True
+
+
     context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
                    formset = formset, standard_form=standard_form, mission_form=mission_form,
                    active_link=standard_id, evidence_list=evidence_list, narrative=narrative,
                    grouped_data = grouped_data, substandards_exist=substandards_exist,
                    form_id=form_id,
-                   score_options=score_options,)
+                   score_options=score_options,
+                   readonly=readonly)
 
     return render(request, 'selfstudy/standard.html', context)
 
@@ -307,7 +320,7 @@ def selfstudy_actionplan_instructions(request, selfstudy_id):
     return render(request, 'selfstudy/action_plan_instructions.html', context)
 
 @login_required(login_url='login')
-def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
+def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonly=False):
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
 
     selfstudy = get_object_or_404(SelfStudy, accreditation=accreditation)
@@ -358,7 +371,17 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
                 #return redirect('manage_apr', accreditation.id)  # Redirect to APR detail page
     else:
         ap_form = ActionPlanForm(instance=action_plan)
-        formset = ActionPlanStepsFormSet(instance=action_plan)
+        if readonly:
+            ActionPlanStepsFormSet = inlineformset_factory(ActionPlan, ActionPlanSteps, form=ActionPlanStepsForm,
+                                                           extra=0, can_delete=True)
+            formset = ActionPlanStepsFormSet(instance=action_plan)
+
+    if readonly:
+        for field in ap_form.fields.values():
+            field.disabled = True
+        for form in formset:
+            for field in form.fields.values():
+                field.disabled=True
 
     context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
                    selfstudy=selfstudy,standards=standards,
@@ -367,7 +390,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None):
     return render(request, 'selfstudy/action_plan.html', context)
 
 @login_required(login_url='login')
-def selfstudy_coordinating_team(request, selfstudy_id):
+def selfstudy_coordinating_team(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards= Standard.objects.top_level()
 
@@ -379,7 +402,7 @@ def selfstudy_coordinating_team(request, selfstudy_id):
     teams = SelfStudy_Team.objects.filter(selfstudy=selfstudy)
 
     context=dict(selfstudy=selfstudy, standards=standards, active_link="coordinating_team",
-                 teams=teams, privileges=privileges)
+                 teams=teams, privileges=privileges, readonly=readonly)
     return render(request, 'selfstudy/coordinating_team.html', context)
 
 @login_required(login_url='login')
@@ -471,7 +494,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
     return render(request, 'selfstudy/add_coordinating_team_members.html', context)
 
 @login_required(login_url='login')
-def selfstudy_profile(request, selfstudy_id):
+def selfstudy_profile(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
     form_id=f"{selfstudy.id}_profile"
@@ -540,16 +563,20 @@ def selfstudy_profile(request, selfstudy_id):
     else:
         form = SchoolProfileForm(instance=school_profile)
 
+    if readonly: # Disable all fields in the form when readonly is True
+        for field in form.fields.values():
+            field.disabled = True
+
     context= dict(selfstudy=selfstudy, standards = standards,
                    active_link="profile", active_sublink="general_info",
-                    form=form, form_id=form_id
-                   )
+                    form=form, form_id=form_id,
+                    readonly=readonly)
 
     return render(request, "selfstudy/profile.html", context )
 
 
 @login_required(login_url='login')
-def profile_history(request, selfstudy_id):
+def profile_history(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
@@ -565,15 +592,20 @@ def profile_history(request, selfstudy_id):
         else:
             messages.error(request,"School history was not saved!")
 
+    if readonly: # Disable all fields in the form when readonly is True
+        for field in history_form.fields.values():
+            field.disabled = True
+
     context = dict(selfstudy=selfstudy, standards = standards,
                    history_form = history_form,
                    active_sublink="history", active_link="profile",
-                   form_id=form_id)
+                   form_id=form_id,
+                   readonly=readonly)
 
     return render(request, 'selfstudy/profile_history.html', context)
 
 @login_required(login_url='login')
-def profile_financial(request, selfstudy_id):
+def profile_financial(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
@@ -610,9 +642,18 @@ def profile_financial(request, selfstudy_id):
     two_year_formset = FinancialTwoYearDataFormSet(queryset=two_year_data_queryset, prefix="two_years")
     additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset, prefix="additional")
 
+    if readonly: # Disable all fields in the form when readonly is True
+        for subform in two_year_formset:
+            for field in subform.fields.values():
+                field.disabled = True
+        for subform in additional_formset:
+            for field in subform.fields.values():
+                field.disabled = True
+
     context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial", active_link="profile",
                     two_year_formset = two_year_formset, additional_formset = additional_formset,
-                   form_id=form_id)
+                   form_id=form_id,
+                   readonly=readonly)
 
     return render(request, 'selfstudy/profile_financial.html', context)
 
@@ -693,7 +734,7 @@ def handle_fte_data(request, school_profile, fte_queryset):
     return FTEFormSet(queryset=fte_queryset, prefix="fte"), FTEEquivalencyForm(instance=school_profile)
 
 @login_required(login_url='login')
-def profile_personnel(request, selfstudy_id):
+def profile_personnel(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -768,6 +809,17 @@ def profile_personnel(request, selfstudy_id):
 
         degree_gender_dict[degree][gender] = count
 
+    if readonly:  # Disable all fields in the form when readonly is True
+        ProfessionalActivityFormSetReadonly = inlineformset_factory(SchoolProfile,ProfessionalActivity,
+            form=ProfessionalActivityForm,extra=0)
+        pga_formset = ProfessionalActivityFormSetReadonly(instance=school_profile, prefix='pga')
+
+        for subform in pga_formset:
+            for field in subform.fields.values():
+                field.disabled = True
+        for subform in FTE_formset:
+            for field in subform.fields.values():
+                field.disabled = True
 
     context = dict( selfstudy=selfstudy, standards=standards, active_sublink="personnel", active_link="profile",
         admin_academic_dean=admin_academic_dean, vocational_instructors=vocational_instructors, non_instructional=non_instructional,
@@ -776,13 +828,14 @@ def profile_personnel(request, selfstudy_id):
         degree_gender_dict=degree_gender_dict,
         pga_formset=pga_formset,
         form_id=form_id,
+         readonly=readonly
     )
 
     return render(request, 'selfstudy/profile_personnel.html', context)
 
 
 @login_required(login_url='login')
-def profile_student(request, selfstudy_id):
+def profile_student(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -898,6 +951,11 @@ def profile_student(request, selfstudy_id):
     else:
         form = StudentEnrollmentDataForm(instance=projected_data)
 
+    if readonly:
+        for field in form.fields.values():
+            field.disabled = True
+
+
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
                    form_id=form_id, grade_labels = grade_labels, valid_grades=valid_grades,
                    enrollment_by_grade_and_year=enrollment_by_grade_and_year,
@@ -908,7 +966,7 @@ def profile_student(request, selfstudy_id):
                    percentage_non_sda_home=round(percentage_non_sda_home, 1),
                    percentage_baptized=round(percentage_baptized, 1),
                    projected_enrollment_form=form,
-                   )
+                   readonly=readonly)
 
     return render(request, 'selfstudy/profile_student.html', context)
 
@@ -921,7 +979,7 @@ def get_grade_range_for_level(level_type):
     return []
 
 @login_required(login_url='login')
-def profile_student_achievement(request, selfstudy_id):
+def profile_student_achievement(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     school = selfstudy.accreditation.school
@@ -935,8 +993,11 @@ def profile_student_achievement(request, selfstudy_id):
         achievement = StudentAchievementData(school_profile=school_profile)
         achievement.save()
 
-    existing_tests = achievement.grade_level_tests.count()
-    extra_forms = max(1, 5 - existing_tests)  # Always show at least one blank, up to 5 total
+    if readonly:
+        extra_forms=0
+    else:
+        existing_tests = achievement.grade_level_tests.count()
+        extra_forms = max(1, 5 - existing_tests)  # Always show at least one blank, up to 5 total
 
     GradeLevelTestFormSet = modelformset_factory(GradeLevelTest, form=GradeLevelTestForm, extra=extra_forms, can_delete=True)
 
@@ -1028,6 +1089,13 @@ def profile_student_achievement(request, selfstudy_id):
                 key = f"{level['level_type'].lower()}|{year_data['school_year']}"
                 existing_keys.add(key)
 
+    if readonly:
+        for field in student_achievement_form.fields.values():
+            field.disabled = True
+        for subform in formset:
+            for field in subform.fields.values():
+                field.disabled = True
+
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="achievement", active_link="profile",
                    form_id=form_id,
                    level_types=level_types,
@@ -1035,7 +1103,8 @@ def profile_student_achievement(request, selfstudy_id):
                    grade_level_test_formset = formset,
                    sessions=sessions, grouped_by_level=grouped_by_level, serialized_sessions=serialized_sessions,
                    school_years=school_years,
-                   existing_keys=existing_keys)
+                   existing_keys=existing_keys,
+                   readonly=readonly)
 
     return render(request, 'selfstudy/profile_student_achievement.html', context)
 
@@ -1122,7 +1191,7 @@ def manage_standardized_test_scores(request, school_id=None, school_year_name=No
 
 
 @login_required(login_url='login')
-def profile_secondary_curriculum(request, selfstudy_id):
+def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -1136,7 +1205,8 @@ def profile_secondary_curriculum(request, selfstudy_id):
     categories = CourseCategory.objects.all()
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="curriculum", active_link="profile",
                    form_id=form_id, category_formsets=[],
-                   teacher_names=teacher_names)
+                   teacher_names=teacher_names,
+                   readonly=readonly)
 
     if request.method == 'POST':
         all_valid = True
@@ -1158,8 +1228,6 @@ def profile_secondary_curriculum(request, selfstudy_id):
                 formsets_by_category.append((category, formset))
             else:
                 all_valid = False
-                print(prefix)
-                print(formset.errors)
 
             # Always append the formset (valid or invalid) to the context
             context['category_formsets'].append((category, formset))
@@ -1182,14 +1250,22 @@ def profile_secondary_curriculum(request, selfstudy_id):
     else:  # For GET request, render the initial formsets
         for category in categories:
             prefix = f'cat_{category.id}'
+
+            if readonly: extra_forms=0
+            else: extra_forms=1
+
             FormSet = modelformset_factory(
                 SecondaryCurriculumCourse,
                 form=SecondaryCurriculumCourseForm,
-                extra=1,
+                extra=extra_forms,
                 can_delete=True
             )
             queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
             formset = FormSet(queryset=queryset, prefix=prefix)
+            if readonly:
+                for subform in formset:
+                    for field in subform.fields.values():
+                        field.disabled=True
             context['category_formsets'].append((category, formset))
 
     # Render the template with the appropriate context (now always contains formsets)
@@ -1198,7 +1274,7 @@ def profile_secondary_curriculum(request, selfstudy_id):
 
 
 @login_required(login_url='login')
-def profile_support_services(request, selfstudy_id):
+def profile_support_services(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -1218,15 +1294,20 @@ def profile_support_services(request, selfstudy_id):
     else:
         form = SupportServiceForm(instance=support_service)
 
+    if readonly:
+        for field in form.fields.values():
+            field.disabled = True
+
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="services", active_link="profile",
-                   form_id=form_id, form=form)
+                   form_id=form_id, form=form,
+                   readonly=readonly)
 
     return render(request, 'selfstudy/profile_support_services.html', context)
 
 
 @login_required(login_url='login')
-def profile_philanthropy(request, selfstudy_id):
+def profile_philanthropy(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -1245,8 +1326,12 @@ def profile_philanthropy(request, selfstudy_id):
     else:
         form = PhilantrophyProgramForm(instance=philanthropy)
 
+    if readonly:
+        for field in form.fields.values():
+            field.disabled = True
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="philanthropy", active_link="profile",
-                   form_id=form_id, form=form)
+                   form_id=form_id, form=form,
+                   readonly=readonly)
 
     return render(request, 'selfstudy/profile_philanthropy.html', context)

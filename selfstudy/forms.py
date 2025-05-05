@@ -150,8 +150,6 @@ class IndicatorEvaluationForm(forms.ModelForm):
             for score in IndicatorScore.objects.all()
         ]
 
-
-
 IndicatorEvaluationFormSet = forms.modelformset_factory(IndicatorEvaluation, form=IndicatorEvaluationForm, extra=0)
 
 
@@ -201,7 +199,7 @@ class ProfessionalActivityForm(forms.ModelForm):
             'improvement': forms.Textarea(attrs={'cols': 300, 'rows': 1 }),
         }
 
-ProfessionalActivityFormSet = inlineformset_factory(SchoolProfile, ProfessionalActivity, form=ProfessionalActivityForm, extra=5)
+ProfessionalActivityFormSet = inlineformset_factory(SchoolProfile, ProfessionalActivity, form=ProfessionalActivityForm, extra=4)
 
 
 class StudentEnrollmentDataForm(forms.ModelForm):

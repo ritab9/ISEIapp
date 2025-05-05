@@ -190,7 +190,7 @@ class SelfStudyPersonnelData(models.Model):
 
 class ProfessionalActivity(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="activities")
-    activity = models.CharField(max_length=255, null=True, blank=True)
+    activity = models.CharField(max_length=255)
     improvement = models.TextField(null=True, blank=True)
 
 class FullTimeEquivalency(models.Model):

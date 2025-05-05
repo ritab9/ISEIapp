@@ -1,57 +1,96 @@
 <!-- Submenu for Profile -->
+ {% with has_submission_date=selfstudy.submission_date %}
     <div class="submenu">
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'general_info' %}active{% endif %}"
-               href="{% url 'selfstudy_profile' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'selfstudy_profile_readonly' selfstudy.id %}">
+               {% else %}
+                   href="{% url 'selfstudy_profile' selfstudy.id %}">
+               {% endif %}
                 A. General Information
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'history' %}active{% endif %}"
-               href="{% url 'profile_history' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_history_readonly' selfstudy.id %}">
+               {% else %}
+                   href="{% url 'profile_history' selfstudy.id %}">
+               {% endif %}
                 B. School History
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'financial' %}active{% endif %}"
-               href="{% url 'profile_financial' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_financial_readonly' selfstudy.id %}">
+                {% else %}
+                   href="{% url 'profile_financial' selfstudy.id %}">
+               {% endif %}
                 C. Financial Data
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'personnel' %}active{% endif %}"
-               href="{% url 'profile_personnel' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_personnel_readonly' selfstudy.id %}">
+                {% else %}
+                   href="{% url 'profile_personnel' selfstudy.id %}">
+               {% endif %}
                 D. Personnel Data
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'student' %}active{% endif %}"
-               href="{% url 'profile_student' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_student_readonly' selfstudy.id %}">
+                {% else %}
+                   href="{% url 'profile_student' selfstudy.id %}">
+               {% endif %}
                 E. Student Data
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'achievement' %}active{% endif %}"
-               href="{% url 'profile_student_achievement' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_student_achievement_readonly' selfstudy.id %}">
+                {% else %}
+                   href="{% url 'profile_student_achievement' selfstudy.id %}">
+               {% endif %}
                 F. Student Achievement
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'curriculum' %}active{% endif %}"
-               href="{% url 'profile_secondary_curriculum' selfstudy.id %}">
+               {% if has_submission_date %}
+                     href="{% url 'profile_secondary_curriculum_readonly' selfstudy.id %}">
+                {% else %}
+                   href="{% url 'profile_secondary_curriculum' selfstudy.id %}">
+               {% endif %}
                 G. Secondary Curriculum
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'services' %}active{% endif %}"
-               href="{% url 'profile_support_services' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_support_services_readonly' selfstudy.id %}">
+               {% else %}
+                   href="{% url 'profile_support_services' selfstudy.id %}">
+               {% endif %}
                 H. Student Support Services
             </a>
         </div>
         <div class="submenu-item mb-1">
             <a class="nav-link {% if active_sublink == 'philanthropy' %}active{% endif %}"
-               href="{% url 'profile_philanthropy' selfstudy.id %}">
+               {% if has_submission_date %}
+                    href="{% url 'profile_philanthropy_readonly' selfstudy.id %}">
+               {% else %}
+                   href="{% url 'profile_philanthropy' selfstudy.id %}">
+               {% endif %}
                 I. Philanthropy Programs
             </a>
         </div>
     </div>
+     
+{% endwith %}

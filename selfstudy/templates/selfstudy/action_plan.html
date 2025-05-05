@@ -8,6 +8,8 @@
 
 
 {% block content %}
+
+  {% with has_submission_date=selfstudy.submission_date %}
     <div id="content-div">
         <form method="post" id="content-form">
         {% csrf_token %}
@@ -77,6 +79,8 @@
                     </tbody>
                 </table>
             </div>
+
+            {% if not has_submission_date %}
             <div class="card card-body ">
                 <div style="width: auto; text-align: center;">
                     <button id="end-save-btn" type="submit" class="btn btn-sm btn-ISEIyellow">Save Changes</button>
@@ -88,8 +92,11 @@
                     <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
                 </div>
             </div>
+            {% endif %}
         </form>
     </div>
+
+    {% endwith %}
 
 {% endblock %}
 
