@@ -119,12 +119,18 @@ def resources(request):
     teacher_evaluation_resources = Resource.objects.filter(type__name='Teacher Evaluation')
     admin_evaluation_resources = Resource.objects.filter(type__name='Admin Evaluation')
     safety_resources = Resource.objects.filter(type__name='Safety & Maintenance')
+    meeting_materials =Resource.objects.filter(type__name='Meeting Materials')
 
 
     context=dict(teacher_evaluation_resources = teacher_evaluation_resources,
                  admin_evaluation_resources = admin_evaluation_resources,
                  accreditation_resources = accreditation_resources,
                  document_resources = document_resources,
-                 safety_resources = safety_resources)
+                 safety_resources = safety_resources,
+                 meeting_materials=meeting_materials)
 
     return render(request, 'resources.html', context)
+
+
+def calendar(request):
+    return render(request, 'calendar.html')

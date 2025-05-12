@@ -39,6 +39,7 @@
                     <th class="orange-header2">Evidence Documents</th>
                     <th class="blue-header2">Visit dates </th>
                     <th class="blue-header2">Term </th>
+                    <th class="blue-header2">Visiting Team Report </th>
                     <th class="orange-header2">AAPR (<small>Last Update</small>)</th>
                 </tr>
 
@@ -59,7 +60,7 @@
                                 <!-- { % else %}
                                     <a href="{ % url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SelfStudy</a-->
                                 {% endif %}
-                                <p>SelfStudy Due: <strong>{{ accreditation.selfstudy_due_date }}</strong></p>
+                                <p class="small">Due: <strong>{{ accreditation.selfstudy_due_date }}</strong></p>
                             {% else %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a>
@@ -86,6 +87,12 @@
                                 <i tabindex="0" class="fas fa-info-circle small" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ accreditation.term.description }}"></i>
                                 <br>
                             </small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}
+                        </td>
+
+                        <td class="blue-column">
+                            {% if accreditation.visiting_team_report %}
+                                <a href="{{ accreditation.visiting_team_report }}" target="_blank">View Report</a>
+                            {% endif %}
                         </td>
 
                          <td class="orange-column">

@@ -225,6 +225,9 @@
 
 {% block script %}
 
+    {% include "includes/script_auto_expand_textarea.html" %}
+
+
     {# --- Always-loaded script: coloring and comment update --- #}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -305,7 +308,6 @@
 
     {% if not readonly %}
         {% include "includes/script_lock_and_save_forms.html" %}
-        {% include "includes/script_auto_expand_textarea.html" %}
     {% endif %}
 
 {% endblock %}

@@ -72,6 +72,8 @@ class Accreditation(models.Model):
     )
 
     evidence_documents_link = models.URLField(null=True, blank=True)
+    visiting_team_report = models.URLField(null=True, blank=True)
+
     previous_self_study_link = models.URLField(null=True, blank=True)
 
     def visit_date_range(self):

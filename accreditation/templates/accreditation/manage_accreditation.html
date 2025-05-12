@@ -39,10 +39,11 @@
                 </div>
           </div>
 
-<!-- Self Study -->
+<!-- Documents -->
         <div class="card card-body">
         <h6>Documents</h6>
             <div class="row">
+            <!-- Self Study -->
                 <div class="col vertical-divider">
                     {% if accreditation.selfstudy %}
                         <div class="col-auto">
@@ -60,6 +61,14 @@
                         Change link: {{ form.evidence_documents_link }}
                     {% else %}
                         Evidence Documents link: {{ form.evidence_documents_link }}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    {% if form.instance.visiting_team_report %}
+                        <a href="{{ form.instance.visiting_team_report }}" target="_blank">Visiting Team Report</a><br>
+                        Change link: {{ form.visiting_team_report }}
+                    {% else %}
+                        Visiting Team Report link: {{ form.visiting_team_report }}
                     {% endif %}
                 </div>
             </div>

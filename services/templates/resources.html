@@ -17,7 +17,7 @@
         <div class="col">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
-                    <strong>General Documents/Resources</strong>
+                    <i class="bi bi-book"></i>  <strong>General Documents/Resources</strong>
                 </div>
                 <div class="card-body">
                     <ul>
@@ -25,6 +25,7 @@
                             <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
                         {% endfor %}
                         <li><a href="{% url 'school_personnel_directory' %}" target="_blank">ISEI Directory</a></li>
+                        <li><a class="" href="{% url 'calendar' %}">ISEI Calendar <i class="bi bi-calendar-event"></i> </a></li>
                     </ul>
                 </div>
             </div>
@@ -33,7 +34,7 @@
         <div class="col">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
-                    <strong>Accreditation Documents</strong>
+                   <i class="bi bi-eyeglasses"></i>  <strong>Accreditation Documents</strong>
                 </div>
                 <div class="card-body">
                     <ul>
@@ -48,7 +49,7 @@
         <div class="col">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
-                    <strong>Evaluation Forms</strong>
+                    <i class="bi bi-person-lines-fill"></i>  <strong>Evaluation Forms</strong>
                 </div>
                 <div class="card-body">
                     <strong>Teacher Evaluation Forms</strong>
@@ -71,7 +72,7 @@
         <div class="col">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
-                    <strong>Safety and Maintenance</strong>
+                    <i class="bi bi-hammer"></i>  <strong>Safety and Maintenance</strong>
                 </div>
                 <div class="card-body">
                     <ul>
@@ -82,10 +83,22 @@
                 </div>
             </div>
         </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <i class="bi bi-people-fill"></i>  <strong>Meeting Materials</strong>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for resource in meeting_materials %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-
-
-
 
 {% endblock %}
 

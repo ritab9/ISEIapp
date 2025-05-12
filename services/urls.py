@@ -13,4 +13,6 @@ urlpatterns = [
     path('finalize_order/<int:order_id>/', views.finalize_order, name='finalize_order'),
 
     path('resources/', views.resources, name='resources'),
+
+    path('calendar/', views.calendar, name='calendar'),
 ]
