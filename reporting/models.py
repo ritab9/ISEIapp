@@ -55,10 +55,12 @@ class ReportDueDate(models.Model):
         day = self.due_date.day
 
         # Use the start year for opening reports, end year otherwise
-        if self.opening_report and month > 3:
+        if self.opening_report:
             year = start_year
-        else:
+        elif month < 10:
             year = end_year
+        else:
+            year = start_year
 
         # Construct a new datetime object with the correct year
         return timezone.datetime(year=year, month=month, day=day).date()
