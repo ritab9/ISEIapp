@@ -21,4 +21,7 @@ urlpatterns = [
     path('upload_file/', views.upload_file, name='upload_file'),
     path('update_actionplandirective_completed_date/', views.update_actionplandirective_completed_date, name='update_actionplandirective_completed_date'),
 
+    path('apr/<int:apr_id>/update-timestamp/', views.update_apr_timestamp, name='update_apr_timestamp'),
+    path('apr/<int:apr_id>/submit-timestamp/', views.submit_apr_timestamp, name='submit_apr_timestamp'),
+
 ]

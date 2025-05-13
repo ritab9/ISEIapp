@@ -180,7 +180,7 @@
                                     <td><strong>Annual Accreditation Progress Report</strong> <br>
                                         <a class="error report_edit" href="{% url 'apr_progress_report' apr.id %}">Edit</a>
                                     </td>
-                                    <td>May 1st</td><td></td>
+                                    <td>May 1st</td><td>{{ apr.submitted_at|default_if_none:"" }}</td>
                                     <td>{{ apr.updated_at|default_if_none:"" }}</td>
                                 </tr>
                             {% endif %}

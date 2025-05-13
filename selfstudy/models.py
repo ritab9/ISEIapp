@@ -350,7 +350,7 @@ class MissionAndObjectives(models.Model):
     mission_statement = models.TextField(null=True, blank=True)
     vision_statement = models.TextField(null=True, blank=True)
     philosophy_statement = models.TextField(null=True, blank=True)
-    school_objectives = models.TextField(help_text="")
+    school_objectives = models.TextField(help_text="", null=True, blank=True)
 
     def __str__(self):
         return f"Mission, Objectives of {self.selfstudy.accreditation.school.name}"  # Adjust as needed

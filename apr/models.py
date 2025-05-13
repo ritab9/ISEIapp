@@ -12,6 +12,7 @@ class APR(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True, blank=True)
     updated_at = models.DateField(blank=True, null=True)
+    submitted_at = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return f"AAPR: {self.accreditation.school}"

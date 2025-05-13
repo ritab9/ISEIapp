@@ -70,10 +70,71 @@
         {% include 'apr/progress_section.html' with section_title='Action Plan' directives_progress=action_plans_progress %}
     {% endif %}
 
-    <div class="card card-body d-flex justify-content-center align-items-center">
-        <a href="javascript:history.back()" class="btn btn-sm btn-ISEIblue4">Return</a>
+    <div class="card card-body">
+        <div class="row">
+            <!-- Add this inside your template -->
+            <meta name="csrf-token" content="{{ csrf_token }}">
+            <div class="col d-flex justify-content-center">
+        <!-- Update Button -->
+                <button
+                  class="btn btn-sm btn-ISEIblue4"
+                  x-data
+                  @click="
+                    fetch(`/apr/{{ apr.id }}/update-timestamp/`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+                      },
+                      body: JSON.stringify({})
+                    }).then(response => {
+                      if (response.ok) {
+                        history.back();
+                      } else {
+                        alert('Failed to update timestamp.');
+                      }
+                    }).catch(error => {
+                      console.error(error);
+                      alert('An error occurred.');
+                    });
+                  "
+                >
+                  Update AAPR
+                </button>
+            </div>
+
+        <!-- Submit Button -->
+            <!-- Submit (updates both timestamps) -->
+            <div class="col d-flex justify-content-center">
+                <button
+                  class="btn btn-sm btn-ISEIyellow"
+                  x-data
+                  @click="
+                      fetch(`/apr/{{ apr.id }}/submit-timestamp/`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content
+                        },
+                        body: JSON.stringify({})
+                      }).then(response => {
+                        if (response.ok) {
+                          history.back();
+                        } else {
+                          alert('Failed to submit.');
+                        }
+                      });
+                  "
+                >
+                  Submit AAPR
+                </button>
+            </div>
+
+            <div class="col d-flex justify-content-center">
+                <a href="javascript:history.back()" class="btn btn-sm btn-ISEIblue1">Return</a>
+            </div>
+        </div>
     </div>
-    <!-- a href="{ % url 'isei_accreditation_dashboard' %}" class="btn btn-sm btn-ISEIblue4">Done</a -->
 
 </div>
 

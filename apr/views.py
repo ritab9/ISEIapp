@@ -292,6 +292,8 @@ def group_progress_by_directive(progress_queryset, directive_attr, include_steps
 @allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
 def apr_progress_report(request, apr_id):
     apr = get_object_or_404(APR, id=apr_id)
+
+    #I want a button on my template so that when I click it, it takes me back to the previous page and runs this code.
     apr.updated_at = now().date()
     apr.save(update_fields=["updated_at"])
 
@@ -454,3 +456,23 @@ def upload_file(request):
             return JsonResponse({"success": False, "error": "Directive not found"}, status=404)
 
     return JsonResponse({"success": False, "error": "Invalid request"}, status=400)
+
+
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+
+@require_POST
+def update_apr_timestamp(request, apr_id):
+    apr = get_object_or_404(APR, id=apr_id)
+    apr.updated_at = now().date()
+    apr.save(update_fields=["updated_at"])
+    return JsonResponse({'status': 'ok'})
+
+@require_POST
+def submit_apr_timestamp(request, apr_id):
+    apr = get_object_or_404(APR, id=apr_id)
+    today = now().date()
+    apr.updated_at = today
+    apr.submitted_at = today
+    apr.save(update_fields=["updated_at", "submitted_at"])
+    return JsonResponse({'status': 'submitted'})
