@@ -187,8 +187,6 @@ class ActionPlanStepsForm(forms.ModelForm):
             'resources': forms.Textarea(attrs={'cols': 10, 'rows': 3 }),
         }
 
-# Inline formset to manage ActionPlanSteps with ActionPlan
-ActionPlanStepsFormSet = inlineformset_factory( ActionPlan, ActionPlanSteps, form=ActionPlanStepsForm, extra=10, can_delete=True)
 
 class ProfessionalActivityForm(forms.ModelForm):
     class Meta:

@@ -335,6 +335,11 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
 
     form_id = f"{selfstudy.id}_actionplan_{action_plan.id}"
 
+    # Inline formset to manage ActionPlanSteps with ActionPlan
+    ActionPlanStepsFormSet = inlineformset_factory(ActionPlan, ActionPlanSteps, form=ActionPlanStepsForm, extra=10,
+                                                   can_delete=True)
+    formset=ActionPlanStepsFormSet(instance=action_plan)
+
     if request.method == 'POST':
         if 'delete' in request.POST and action_plan.id:
             #print("delete",action_plan)
