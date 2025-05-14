@@ -1557,7 +1557,7 @@ def download_TN_reports(request, schoolyearID):
             school = report.school
 
             student_data = []
-            students = Student.objects.filter(annual_report=report, us_state='TN', status='enrolled').order_by('TN_county')
+            students = Student.objects.filter(annual_report=report, us_state='TN', status='enrolled').exclude(grade_level=-2).order_by('TN_county')
 
             for student in students:
                 student_data.append({

@@ -294,8 +294,8 @@ def apr_progress_report(request, apr_id):
     apr = get_object_or_404(APR, id=apr_id)
 
     #I want a button on my template so that when I click it, it takes me back to the previous page and runs this code.
-    apr.updated_at = now().date()
-    apr.save(update_fields=["updated_at"])
+    #apr.updated_at = now().date()
+    #apr.save(update_fields=["updated_at"])
 
     # Fetch related objects
     school_years = APRSchoolYear.objects.filter(apr=apr)

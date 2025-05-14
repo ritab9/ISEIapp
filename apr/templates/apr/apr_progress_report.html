@@ -89,7 +89,7 @@
                       body: JSON.stringify({})
                     }).then(response => {
                       if (response.ok) {
-                        history.back();
+                        window.location.href = document.referrer;
                       } else {
                         alert('Failed to update timestamp.');
                       }
@@ -119,7 +119,7 @@
                         body: JSON.stringify({})
                       }).then(response => {
                         if (response.ok) {
-                          history.back();
+                          window.location.href = document.referrer;
                         } else {
                           alert('Failed to submit.');
                         }

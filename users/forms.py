@@ -99,7 +99,12 @@ class AddressForm(ModelForm):
 class SchoolForm(forms.ModelForm):
     class Meta:
         model = School
-        fields = ['name', 'phone_number', 'website', 'principal', 'president', 'textapp', 'grade_levels', 'fire_marshal_date','initial_accreditation_date']
+        fields = ['name', 'phone_number', 'email', 'website', 'principal', 'president',
+                  'textapp', 'grade_levels', 'fire_marshal_date','initial_accreditation_date',
+                  'principal_phone', 'principal_email',
+                  'board_chair', 'board_chair_email', 'board_chair_phone',
+                  'year_school_started', 'school_type_choice',
+                  ]
         widgets = {
             'fire_marshal_date': forms.DateInput(attrs={'type': 'date'}),
         }

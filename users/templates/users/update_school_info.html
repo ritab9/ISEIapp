@@ -14,11 +14,11 @@
                 <div class="col col-auto">
                     <table class="table">
                     <tbody>
-                        <tr><td>School Name:</td><td>{{ form_school.name }}</td></tr>
+                        <tr><td><b>School Name</b></td><td>{{ form_school.name }}</td></tr>
                         <tr><td>Phone Number</td><td> {{ form_school.phone_number }}</td></tr>
-                        <tr><td>Website:</td><td>{{ form_school.website }}</td></tr>
+                        <tr><td>Website</td><td>{{ form_school.website }}</td></tr>
                         {% if tn_school %}
-                            <tr></tr><td>Last Fire Marshal Evaluation </td>
+                            <tr><td>Last Fire Marshal Evaluation </td>
                             <td>{% if is_old %}
                                     <span class="error">
                                         {{ form_school.fire_marshal_date }}
@@ -28,17 +28,34 @@
                                 {% endif %}
                             </td></tr>
                         {% endif %}
-
-                        <tr><td>Principal</td><td>{{ form_school.principal }}</td></tr>
-                        <tr><td>President</td><td>{{ form_school.president }}</td></tr>
                         <tr><td>TextApp</td><td>{{ form_school.textapp }}</td></tr>
                         <tr><td>Grade Levels</td><td>{{ form_school.grade_levels }}</td></tr>
+                        <tr><td>School Type</td><td>{{ form_school.school_type_choice }}</td></tr>
+                        <tr><td>Year School Started</td><td>{{ form_school.year_school_started }}</td></tr>
+
                     </tbody>
                 </table>
                 </div>
 
                 <div class="col col-auto">
                     {{ form_address|crispy }}
+                </div>
+
+                <div class="col col-auto">
+                    <table class="table">
+                        <tbody>
+                        <tr><td><b>Principal</b></td><td>{{ form_school.principal }}</td></tr>
+                        <tr><td>Email</td><td>{{ form_school.principal_email }}</td></tr>
+                        <tr><td>Phone</td><td>{{ form_school.principal_phone }}</td></tr>
+
+                        <tr><td><b>Board Chair</b></td><td>{{ form_school.board_chair }}</td></tr>
+                        <tr><td>Email</td><td>{{ form_school.board_chair_email }}</td></tr>
+                        <tr><td>Phone</td><td>{{ form_school.board_chair_phone }}</td></tr>
+
+                        <tr><td><b>President</b></td><td>{{ form_school.president }}</td></tr>
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
