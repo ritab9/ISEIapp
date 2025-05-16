@@ -61,14 +61,18 @@ class SchoolHistoryForm(forms.ModelForm):
 class FinancialTwoYearDataEntryForm(forms.ModelForm):
     class Meta:
         model = FinancialTwoYearDataEntry
-        fields = ['id','two_years_ago', 'one_year_ago']
-        labels = {'two_years_ago': 'Two Years Ago','one_year_ago': 'One Year Ago',}
+        fields = ['id','two_years_ago', 'one_year_ago', 'current_year']
+        labels = {'two_years_ago': 'Two Years Ago','one_year_ago': 'One Year Ago', 'current_year': 'Year to Date'}
 
     two_years_ago = forms.DecimalField(
         required=False, max_digits=10, decimal_places=2,
         widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
     )
     one_year_ago = forms.DecimalField(
+        required=False, max_digits=10, decimal_places=2,
+        widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
+    )
+    current_year = forms.DecimalField(
         required=False, max_digits=10, decimal_places=2,
         widget=forms.NumberInput(attrs={'style': 'text-align: right; width: 120px;'})
     )

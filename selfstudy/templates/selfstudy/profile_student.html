@@ -43,69 +43,99 @@
                 <p>*If <strong>baptismal data</strong> is inaccurate update <a class="font-weight-bold" href="{% url 'student_report' arID=annual_report_id %}">Student Report</a></p>
                 <hr>
             </div>
-            <table class="table table-sm table-striped table-bordered text-center">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th class="orange-header" colspan="5">Opening Enrollments (last 5 years)</th>
-                        <th class="blue-header" colspan="2">Current Students from SDA homes</th>
-                        <th class="blue-header" colspan="2">Current Students non SDA homes</th>
-                    </tr>
-                    <tr>
-                        <th class="blue-header2">Grade</th>
-                        {% for year in previous_school_years %}
-                            <th class="orange-header2">
-                                <a href="{% url 'add_enrollment_with_school_year' school_name=school.name year_name=year %}?next={{ request.get_full_path }}">{{ year }} </a>
-                            </th>
-                        {% endfor %}
 
-                        <th class="blue-header2">Non Baptised</th>
-                        <th class="blue-header2">Baptised</th>
-                        <th class="blue-header2">Non Baptised</th>
-                        <th class="blue-header2">Baptised</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for grade in valid_grades %}
+            <div class="row">
+                <div class="col-auto">
+                    <table class="table table-sm table-striped table-bordered text-center">
+                    <thead>
                         <tr>
-                            <td class="font-weight-bold">{{ grade_labels|get_from_dict:grade }}</td>
+                            <th></th>
+                            <th class="orange-header" colspan="5">Opening Enrollments (last 5 years)</th>
+
+                            <th style="background: transparent; border: none;"></th>
+
+                            <th class="blue-header" colspan="2">Current Students from SDA homes</th>
+                            <th class="blue-header" colspan="2">Current Students non SDA homes</th>
+                        </tr>
+                        <tr>
+                            <th class="blue-header2">Grade</th>
                             {% for year in previous_school_years %}
-                                <td class="orange-column text-center">
-                                    {% with grade_data=enrollment_by_grade_and_year|get_from_dict:grade %}
-                                        {% if grade_data %}
-                                            {% with enrollment_count=grade_data|get_from_dict:year %}
-                                               <!-- { { grade }} - { { year }}: --> {{ enrollment_count|default:"" }}
-                                            {% endwith %}
-                                        {% else %}
-                                            0
-                                        {% endif %}
-                                    {% endwith %}
-                                </td>
+                                <th class="orange-header2">
+                                    <a href="{% url 'add_enrollment_with_school_year' school_name=school.name year_name=year %}?next={{ request.get_full_path }}">{{ year }} </a>
+                                </th>
                             {% endfor %}
 
-                            {% with student_baptism_data|get_item:grade as row %}
-                                <td>{{ row.sda_home.not_baptized|default:"" }}</td>
-                                <td>{{ row.sda_home.baptized|default:"" }}</td>
-                                <td>{{ row.non_sda_home.not_baptized|default:"" }}</td>
-                                <td>{{ row.non_sda_home.baptized|default:"" }}</td>
-                            {% endwith %}
+                            <th style="background: transparent; border: none;"></th>
+
+                            <th class="blue-header2">Non Baptised</th>
+                            <th class="blue-header2">Baptised</th>
+                            <th class="blue-header2">Non Baptised</th>
+                            <th class="blue-header2">Baptised</th>
                         </tr>
-                    {% endfor %}
+                    </thead>
 
-                    <tr class="font-weight-bold">
-                        <th class="text-end">Total</th>
-                        {% for year in previous_school_years %}
-                            <td class ="">{{ total_by_year|get_from_dict:year|default:"" }}</td>
+                    <tbody>
+                        {% for grade in valid_grades %}
+                            <tr>
+                                <td class="font-weight-bold blue-column">{{ grade_labels|get_from_dict:grade }}</td>
+                                {% for year in previous_school_years %}
+                                    <td class="orange-column text-center">
+                                        {% with grade_data=enrollment_by_grade_and_year|get_from_dict:grade %}
+                                            {% if grade_data %}
+                                                {% with enrollment_count=grade_data|get_from_dict:year %}
+                                                   <!-- { { grade }} - { { year }}: --> {{ enrollment_count|default:"" }}
+                                                {% endwith %}
+                                            {% else %}
+                                                0
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                {% endfor %}
+                                    <td></td>
+                                {% with student_baptism_data|get_item:grade as row %}
+                                    <td class="blue-column">{{ row.sda_home.not_baptized|default:"" }}</td>
+                                    <td class="blue-column">{{ row.sda_home.baptized|default:"" }}</td>
+                                    <td class="blue-column">{{ row.non_sda_home.not_baptized|default:"" }}</td>
+                                    <td class="blue-column">{{ row.non_sda_home.baptized|default:"" }}</td>
+                                {% endwith %}
+                            </tr>
                         {% endfor %}
-                        <td class="">{{ total_baptism_data.sda_home.not_baptized|default:"" }}</td>
-                        <td class="">{{ total_baptism_data.sda_home.baptized|default:"" }}</td>
-                        <td class="">{{ total_baptism_data.non_sda_home.not_baptized|default:"" }}</td>
-                        <td class="">{{ total_baptism_data.non_sda_home.baptized|default:"" }}</td>
-                    </tr>
-                </tbody>
 
-            </table>
+                        <tr class="font-weight-bold">
+                            <th class="text-end">Total</th>
+                            {% for year in previous_school_years %}
+                                <td class ="">{{ total_by_year|get_from_dict:year|default:"" }}</td>
+                            {% endfor %}
+                            <td></td>
+                            <td class="">{{ total_baptism_data.sda_home.not_baptized|default:"" }}</td>
+                            <td class="">{{ total_baptism_data.sda_home.baptized|default:"" }}</td>
+                            <td class="">{{ total_baptism_data.non_sda_home.not_baptized|default:"" }}</td>
+                            <td class="">{{ total_baptism_data.non_sda_home.baptized|default:"" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <div class="col-auto">
+                    <table class="table table-bordered table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th class="blue-header">School Year</th>
+                            <th class="blue-header"># Student Baptisms</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in baptized_data %}
+                            <tr>
+                                <td class="blue-column">{{ item.year }}</td>
+                                <td class="blue-column">{{ item.baptized_students|default:"–" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
             <hr class="noprint">
         </div>
     </div>

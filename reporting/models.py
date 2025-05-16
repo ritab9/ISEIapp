@@ -590,6 +590,12 @@ class Closing(models.Model):
     def __str__(self):
         return str(self.annual_report)
 
+    @property
+    def baptized_students(self):
+        return (self.student_baptism_sda_parent or 0) + (self.student_baptism_non_sda_parent or 0)
+
+
+
 
 class WorthyStudentScholarship(models.Model):
     annual_report = models.OneToOneField(AnnualReport, on_delete=models.CASCADE, related_name='worthy_student')

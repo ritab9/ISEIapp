@@ -21,7 +21,7 @@ from .forms import *
 from accreditation.models import Standard, Indicator, Level
 from teachercert.models import SchoolYear
 from apr.models import APR, ActionPlan
-from reporting.models import AnnualReport, Personnel, StaffStatus, StaffCategory, LongitudinalEnrollment, Student, GRADE_LEVEL_DICT
+from reporting.models import AnnualReport, Closing, Personnel, StaffStatus, StaffCategory, LongitudinalEnrollment, Student, GRADE_LEVEL_DICT
 from .models import *
 
 from teachercert.myfunctions import newest_certificate
@@ -853,7 +853,6 @@ def profile_student(request, selfstudy_id, readonly=False):
     current_school_year = selfstudy.accreditation.school_year
 
 #Get enrollment Data
-
     # Extract the start year from the 'name' field, which is in the format "2024-2025"
     start_year = int(current_school_year.name.split('-')[0])
     # Generate the last 5 school year names (e.g., "2024-2025", "2023-2024", ...)
@@ -892,10 +891,8 @@ def profile_student(request, selfstudy_id, readonly=False):
 
     for student in students:
         grade = student.grade_level
-
         if grade not in student_baptism_data:
             continue  # skip irrelevant grades
-
         if student.parent_sda == 'Y':
             key = 'sda_home'
         elif student.parent_sda in ('N', 'O'):
@@ -960,12 +957,23 @@ def profile_student(request, selfstudy_id, readonly=False):
         for field in form.fields.values():
             field.disabled = True
 
+    previous_3_school_years = [f"{start_year - i}-{start_year + 1 - i}" for i in range(3)]
+    previous_3_school_years = previous_3_school_years[::-1]
+    baptized_data = []
+    for year in previous_3_school_years:
+        annual_report = AnnualReport.objects.filter(report_type__code="CR", school_year__name=year, school=school).first()
+        closing_report = Closing.objects.get(annual_report=annual_report)
+        baptized_students = closing_report.baptized_students if closing_report else None
+        baptized_data.append({
+            'year': year,
+            'baptized_students': baptized_students
+        })
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
                    form_id=form_id, grade_labels = grade_labels, valid_grades=valid_grades,
                    enrollment_by_grade_and_year=enrollment_by_grade_and_year,
                    previous_school_years=previous_school_years,
-                   student_baptism_data=student_baptism_data,
+                   student_baptism_data=student_baptism_data, baptized_data=baptized_data,
                    total_by_year=total_by_year, total_baptism_data=total_baptism_data,
                    annual_report_id=annual_report.id,
                    percentage_non_sda_home=round(percentage_non_sda_home, 1),

@@ -156,6 +156,7 @@ class FinancialTwoYearDataEntry(models.Model):
     data_key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
     two_years_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="2 Years Ago")
     one_year_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="1 Year Ago")
+    current_year = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="Year to date")
     def __str__(self):
         return f"{self.data_key.name}: {self.two_years_ago}, {self.one_year_ago}"
 

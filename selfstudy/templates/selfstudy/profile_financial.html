@@ -53,7 +53,9 @@
                     <thead>
                         <tr>
                             <th class="blue-header text-left" >2 Years Ago</th>
-                            <th class="orange-header text-left">1 Year Ago</th>
+                            <th class="blue-header2 text-left">1 Year Ago</th>
+                            <th class="orange-header2 text-left">Year to Date</th>
+
                             <th></th>
                         </tr>
                     </thead>
@@ -70,11 +72,21 @@
                                         </div>
                                     {% endif %}
                                 </td>
-                                <td class="orange-column">
+                                <td class="blue-column">
                                     ${{ form.one_year_ago }}
                                     {% if form.one_year_ago.errors %}
                                         <div class="errors">
                                             {% for error in form.one_year_ago.errors %}
+                                                <p class="error">{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="orange-column">
+                                    ${{ form.current_year }}
+                                    {% if form.current_year.errors %}
+                                        <div class="errors">
+                                            {% for error in form.current_year.errors %}
                                                 <p class="error">{{ error }}</p>
                                             {% endfor %}
                                         </div>
