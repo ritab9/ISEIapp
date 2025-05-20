@@ -962,7 +962,7 @@ def profile_student(request, selfstudy_id, readonly=False):
     baptized_data = []
     for year in previous_3_school_years:
         annual_report = AnnualReport.objects.filter(report_type__code="CR", school_year__name=year, school=school).first()
-        closing_report = Closing.objects.get(annual_report=annual_report)
+        closing_report = Closing.objects.filter(annual_report=annual_report).first()
         baptized_students = closing_report.baptized_students if closing_report else None
         baptized_data.append({
             'year': year,
