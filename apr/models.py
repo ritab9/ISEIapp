@@ -6,6 +6,9 @@ from accreditation.models import Accreditation
 from users.models import School
 from selfstudy.models import SelfStudy
 
+from ISEIapp.storage_backends import MediaStorage
+
+
 
 # Create your models here.
 class APR(models.Model):
@@ -57,7 +60,7 @@ class PriorityDirective(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
-    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', storage=MediaStorage(), null=True, blank=True)
     note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
 
 
@@ -76,7 +79,7 @@ class Directive(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', storage=MediaStorage(), null=True, blank=True)
     note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
 
 
@@ -95,7 +98,7 @@ class Recommendation(models.Model):
     apr = models.ForeignKey(APR, on_delete=models.CASCADE)
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True, blank=True)
-    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', storage=MediaStorage(), null=True, blank=True)
     note=models.TextField(null=True, blank=True, verbose_name="Supplemental Note:")
 
 
@@ -118,7 +121,7 @@ class ActionPlan(models.Model):
     objective = models.TextField()
     progress_status = models.ForeignKey(ProgressStatus, on_delete=models.SET_NULL, null=True, blank=True)
     isei_reviewed = models.BooleanField(default=True)
-    file = models.FileField(upload_to='AAPR_support_evidence/%Y', null=True, blank=True)
+    file = models.FileField(upload_to='AAPR_support_evidence/%Y', storage=MediaStorage, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only set the number for new instances

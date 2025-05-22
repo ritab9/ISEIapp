@@ -11,6 +11,8 @@ from django.core.exceptions import ValidationError
 from django import forms
 import numpy as np
 
+from ISEIapp.storage_backends import MediaStorage
+
 
 class ReportType(models.Model):
     name = models.CharField(max_length=255)
@@ -345,7 +347,7 @@ class Day190(models.Model):
     end_date = models.DateField(verbose_name= "School-year end date", default=None, null=True, blank=True)
     number_of_days = models.PositiveIntegerField(verbose_name= "Number of School Days", default=0)
     inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
-    file = models.FileField(upload_to='School_calendars/%Y', null=True, blank=True, verbose_name="School Calendar/%Y")
+    file = models.FileField(upload_to='School_calendars/%Y', storage=MediaStorage(), null=True, blank=True, verbose_name="School Calendar/%Y")
     calendar_link = models.URLField(null=True, blank=True, verbose_name="School Calendar Link")
 
     def __str__(self):
@@ -611,7 +613,7 @@ class WorthyStudentScholarship(models.Model):
 
     next_year_budget=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Amount of academy generated worthy student money budgeted for next year")
 
-    letter = models.FileField(upload_to='wss_letters/%Y', null=True, blank=True, verbose_name="Thank you letter")
+    letter = models.FileField(upload_to='wss_letters/%Y', storage=MediaStorage(), null=True, blank=True, verbose_name="Thank you letter")
     def __str__(self):
         return str(self.annual_report)
 

@@ -3,6 +3,7 @@ import os
 from datetime import date, timedelta
 from django.db.models import Q
 
+from ISEIapp.storage_backends import MediaStorage
 
 from django.core.validators import MinLengthValidator
 
@@ -148,7 +149,7 @@ class CEUInstance(models.Model):
     amount = models.DecimalField(max_digits=5, decimal_places=1, null=False, blank = False)
 
     evidence = models.CharField(max_length=300, null=True, blank = True)
-    file = models.FileField(upload_to='Supporting_Files/%Y', null=True, blank=True)
+    file = models.FileField(upload_to='Supporting_Files/%Y', storage=MediaStorage(), null=True, blank=True)
 
     #used only for individual resubmission
     date_resubmitted = models.DateField(null=True, blank=True)
@@ -316,9 +317,9 @@ class TeacherCertificationApplication(models.Model):
     courses_taught = models.CharField(max_length=50, blank=True, verbose_name="Courses Taught")
     #CHOICES=( ('y', 'Yes'), ('n','No'),('a', 'N/A'),)
     #resume = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Verification of experience (for Designated or Vocational)", default ='a')
-    resume_file = models.FileField(upload_to='Applications/Resumes/%Y/%m/%d', null=True, blank=True)
+    resume_file = models.FileField(upload_to='Applications/Resumes/%Y/%m/%d', storage=MediaStorage(), null=True, blank=True)
     #principal_letter = models.CharField(max_length= 1, choices = CHOICES, verbose_name = "Letter of Recommendation from Principal has been sent (for Designated )", default ='a')
-    principal_letter_file = models.FileField(upload_to='Applications/Principal Letters/%Y/%m/%d', null=True, blank=True)
+    principal_letter_file = models.FileField(upload_to='Applications/Principal Letters/%Y/%m/%d', storage=MediaStorage(), null=True, blank=True)
 
     felony = models.BooleanField(verbose_name = "Check if you have ever been convicted of a felony (including a suspended sentence).",
                                  default= False)
