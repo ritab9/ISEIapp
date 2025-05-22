@@ -225,11 +225,12 @@
 
 {% block script %}
 
-    {% include "includes/script_auto_expand_textarea.html" %}
-
 
     {# --- Always-loaded script: coloring and comment update --- #}
     <script>
+
+        {% include "includes/script_auto_expand_textarea.html" %}
+
         document.addEventListener('DOMContentLoaded', function () {
             const dropdowns = document.querySelectorAll('.indicator-score-dropdown');
             const averageDisplay = document.getElementById('average-score');
