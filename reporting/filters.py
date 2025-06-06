@@ -33,9 +33,9 @@ class EmployeeFilterForm(forms.Form):
     school = forms.ModelChoiceField(queryset=School.objects.filter(active=True,), required=False)
     last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '15'}))
     status = forms.ChoiceField(choices=[('', 'All')] + list(StaffStatus.choices), required=False)
-    position = forms.ModelChoiceField(queryset=StaffPosition.objects.all(), required=False)
+    position = forms.ModelChoiceField(queryset=StaffPosition.objects.all().order_by('name'), required=False)
     degree = forms.ModelChoiceField(queryset=Degree.objects.all(), required=False)
-    subjects_teaching = forms.ModelChoiceField(queryset=Subject.objects.all(), required=False)
+    subjects_teaching = forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), required=False)
 
 #used on school_personnel_directory (the public directory)
 class PersonnelFilterForm(forms.Form):
@@ -44,14 +44,14 @@ class PersonnelFilterForm(forms.Form):
 
     position = forms.ChoiceField(
         choices=[('', '---------')] + [
-            (name, name) for name in StaffPosition.objects.order_by().values_list('name', flat=True).distinct()
+            (name, name) for name in StaffPosition.objects.order_by().values_list('name', flat=True).distinct().order_by('name')
         ],
         required=False
     )
 
     subject = forms.ChoiceField(
         choices=[('', '---------')] + [
-            (name, name) for name in Subject.objects.order_by().values_list('name', flat=True).distinct()
+            (name, name) for name in Subject.objects.order_by().values_list('name', flat=True).distinct().order_by('name')
         ],
         required=False
     )
