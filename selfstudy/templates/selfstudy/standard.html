@@ -120,7 +120,7 @@
                                             </td>
                                             <td class="width: 100%">{{ form.instance.indicator.description }}</td>
                                         </tr>
-                                        <tr><td colspan="2">{{ form.instance.indicator.met_description  }}</td></tr>
+                                        <tr><td colspan="2">{{ form.instance.indicator.met_description|safe  }}</td></tr>
                                         <tr>
                                             <td style="white-space: nowrap;">
                                                 <strong>Score:</strong><br>
