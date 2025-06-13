@@ -116,7 +116,7 @@ class StandardManager(models.Manager):
         return self.filter(parent_standard__isnull=True)
 
 class Standard(models.Model):
-    number = models.PositiveSmallIntegerField(unique=True)
+    number = models.DecimalField(decimal_places=1, max_digits=3, unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     evidence = models.TextField(blank=True, null=True)
@@ -129,7 +129,7 @@ class Standard(models.Model):
     objects = StandardManager()
 
     class Meta:
-        ordering = ['id']
+        ordering = ['number']
 
     def __str__(self):
         return f"{self.number}. {self.name}"
