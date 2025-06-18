@@ -21,7 +21,7 @@ from .forms import *
 from accreditation.models import Standard, Indicator, Level
 from teachercert.models import SchoolYear
 from apr.models import APR, ActionPlan
-from reporting.models import AnnualReport, Closing, Personnel, StaffStatus, StaffCategory, LongitudinalEnrollment, Student, GRADE_LEVEL_DICT
+from reporting.models import AnnualReport, Closing, Opening, Personnel, StaffStatus, StaffCategory, LongitudinalEnrollment, Student, GRADE_LEVEL_DICT
 from .models import *
 
 from teachercert.myfunctions import newest_certificate
@@ -492,7 +492,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
 
 
     context = dict(form=form, selfstudy=selfstudy, team=team, standards=standards,
-                   active_link="coordinating_team",
+                   active_link="coordinating_team", report_id = last_annual_report.id,
                    personnel_without_users=personnel_without_users,
                    inactive_users =inactive_users,)
 
@@ -839,28 +839,49 @@ def profile_personnel(request, selfstudy_id, readonly=False):
     return render(request, 'selfstudy/profile_personnel.html', context)
 
 
+from django.db.models import Count
+
+
+def get_international_students_by_country(report, school_country):
+    """
+    Returns a list of dictionaries with country names and student counts
+    for international students in the given report.
+
+    Parameters:
+    - report: the AnnualStudentReport instance
+    - school_country: the country's name or ID (depends on your model)
+
+    Returns:
+    - A list like: [{'country': 'Canada', 'count': 5}, ...]
+    """
+    return Student.objects.filter(
+        annual_report=report,
+        status__in=['enrolled']
+    ).exclude(
+        country=school_country
+    ).values('country__name').annotate(
+        count=Count('id')
+    ).order_by('-count')
+
+
 @login_required(login_url='login')
 def profile_student(request, selfstudy_id, readonly=False):
-    """Main personnel profile view, handling personnel data and FTE data."""
+
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
-
     form_id = f"{selfstudy.id}_student"
 
     # Get the current school year from the accreditation model
-    current_school_year = selfstudy.accreditation.school_year
+    accreditation_school_year = selfstudy.accreditation.school_year
 
-#Get enrollment Data
-    # Extract the start year from the 'name' field, which is in the format "2024-2025"
-    start_year = int(current_school_year.name.split('-')[0])
-    # Generate the last 5 school year names (e.g., "2024-2025", "2023-2024", ...)
-    previous_school_years = [f"{start_year - i}-{start_year + 1 - i}" for i in range(5)]
-    # Reverse the order of years to have the current year last
-    previous_school_years = previous_school_years[::-1]
+#Get last 5 school-years
+    start_year = int(accreditation_school_year.name.split('-')[0]) # Extract the start year from the 'name' field, which is in the format "2024-2025"
+    previous_school_years = [f"{start_year - i}-{start_year + 1 - i}" for i in range(5)] # Generate the last 5 school year names (e.g., "2024-2025", "2023-2024", ...)
+    previous_school_years = previous_school_years[::-1] # Reverse the order of years to have the current year last
 
-    # Fetch the enrollment data for the current and previous 4 school years
+# Fetch the enrollment data for the last 5 school years
     enrollment_data = LongitudinalEnrollment.objects.filter(school=school, year__name__in=previous_school_years).order_by('year', 'grade')
 
     # Get the valid grade levels for the school using the get_grade_range method
@@ -876,8 +897,68 @@ def profile_student(request, selfstudy_id, readonly=False):
         if grade in valid_grades:  # Only add data for valid grades
             enrollment_by_grade_and_year[grade][year_name] = record.enrollment_count
 
-#Get Baptismal Data
-    annual_report = AnnualReport.objects.filter(school=school, report_type__code="SR", school_year=current_school_year).first()
+#Get student demographics for previous 5 years
+    student_data=[]
+
+    school_country=school.street_address.country
+    international=False
+
+    for year in previous_school_years:
+        annual_opening_report = AnnualReport.objects.filter(report_type__code="OR", school_year__name=year, school=school).first()
+        opening = Opening.objects.filter(annual_report=annual_opening_report).first()
+
+        if opening:
+            annual_closing_report = AnnualReport.objects.filter(report_type__code="CR", school_year__name=year, school=school).first()
+            closing = Closing.objects.filter(annual_report=annual_closing_report).first()
+
+            annual_student_report = AnnualReport.objects.filter(report_type__code="SR", school_year__name=year,school=school).first()
+
+            opening_enrollment = opening.opening_enrollment
+
+            international_student_count = Student.objects.filter(annual_report=annual_student_report, status__in=['enrolled']).exclude(
+                country=school_country).count()
+            percent_international = round( international_student_count * 100 / opening_enrollment, 1)
+
+            international_countries = get_international_students_by_country(
+                annual_student_report, school_country
+            )
+            if international_countries: international=True
+
+            not_returned = opening.did_not_return_count
+            retention = opening.retention_percentage
+
+            percent_female = opening.girl_percentage
+            percent_male = opening.boy_percentage
+
+            withdrawn_count = closing.withdraw_count or None
+            withdrawn_percentage = closing.withdrawn_percentage or None
+
+            baptized_students = closing.baptized_students if closing else None
+
+            student_data.append({
+                'year': year,
+                'opening_enrollment': opening_enrollment,
+                'not_returned': not_returned,
+                'retention': retention,
+                'withdrawn_count': withdrawn_count,
+                'withdrawn_percentage': withdrawn_percentage,
+
+                'percent_female': percent_female,
+                'percent_male': percent_male,
+
+                'baptized_students': baptized_students,
+                'closing_report':annual_closing_report,
+                'opening_report':annual_opening_report,
+                'student_report':annual_student_report,
+
+                'percent_international': percent_international,
+                'international_countries':international_countries,
+            })
+
+
+
+#Get Baptismal Data per grade level for current year
+    annual_report = AnnualReport.objects.filter(school=school, report_type__code="SR", school_year=accreditation_school_year).first()
     # Initialize the nested dict
     student_baptism_data = {
         grade: {
@@ -942,7 +1023,9 @@ def profile_student(request, selfstudy_id, readonly=False):
     percentage_non_sda_home = (non_sda_home_students / total_students * 100) if total_students else 0
     percentage_baptized = (baptized_students / total_students * 100) if total_students else 0
 
-    # Get or create the projected enrollment entry
+
+
+# Get or create the projected enrollment entry
     projected_data, created = StudentEnrollmentData.objects.get_or_create(school_profile=school_profile)
 
     if request.method == "POST" and "projected_enrollment_submit" in request.POST:
@@ -953,27 +1036,68 @@ def profile_student(request, selfstudy_id, readonly=False):
     else:
         form = StudentEnrollmentDataForm(instance=projected_data)
 
+
+#Get or create student follow-up data
+    levels = school.get_school_type() # Determine applicable levels (elementary, secondary) for this school
+
+    followup_data_tables = {}
+
+    for level in levels:
+        keys = list(StudentFollowUpDataKey.objects.filter(level=level, active=True).order_by('order_number'))
+        years = list(SchoolYear.objects.filter(name__in=previous_school_years[-3:]).order_by('name'))
+
+        # Build a lookup for quick access to entries
+        entries_lookup = {
+            (year.id, key.id): StudentFollowUpDataEntry.objects.get_or_create(
+                school=school,
+                school_year=year,
+                followup_data_key=key
+            )[0]
+            for year in years for key in keys
+        }
+
+        # Build row-wise table data
+        rows = []
+        for year in years:
+            row = {
+                'year': year,
+                'entries': [entries_lookup[(year.id, key.id)] for key in keys],
+            }
+            rows.append(row)
+
+        followup_data_tables[level] = {
+            'keys': keys,
+            'rows': rows,
+        }
+
+    if request.method == "POST":
+        for level_data in followup_data_tables.values():
+            for row in level_data['rows']:
+                for entry in row['entries']:
+                    field_name = f"entry_{entry.id}"
+                    val = request.POST.get(field_name)
+                    try:
+                        entry.value = int(val) if val else None
+                        entry.save()
+                    except ValueError:
+                        pass  # Optionally handle invalid input
+
+
+    #Disable fields for read-only version
     if readonly:
         for field in form.fields.values():
             field.disabled = True
 
-    previous_3_school_years = [f"{start_year - i}-{start_year + 1 - i}" for i in range(3)]
-    previous_3_school_years = previous_3_school_years[::-1]
-    baptized_data = []
-    for year in previous_3_school_years:
-        annual_report = AnnualReport.objects.filter(report_type__code="CR", school_year__name=year, school=school).first()
-        closing_report = Closing.objects.filter(annual_report=annual_report).first()
-        baptized_students = closing_report.baptized_students if closing_report else None
-        baptized_data.append({
-            'year': year,
-            'baptized_students': baptized_students
-        })
+
+
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
                    form_id=form_id, grade_labels = grade_labels, valid_grades=valid_grades,
                    enrollment_by_grade_and_year=enrollment_by_grade_and_year,
                    previous_school_years=previous_school_years,
-                   student_baptism_data=student_baptism_data, baptized_data=baptized_data,
+                   student_baptism_data=student_baptism_data,
+                   student_data=student_data, international=international,
+                   followup_data_tables = followup_data_tables,
                    total_by_year=total_by_year, total_baptism_data=total_baptism_data,
                    annual_report_id=annual_report.id,
                    percentage_non_sda_home=round(percentage_non_sda_home, 1),
@@ -1215,15 +1339,18 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     teachers = SelfStudyPersonnelData.objects.filter(school_profile=school_profile)
     teacher_names = [f"{t.first_name} {t.last_name}".strip() for t in teachers if t.first_name or t.last_name]
 
+    other_curriculum, _ = OtherCurriculumData.objects.get_or_create(school_profile=school_profile)
+
     categories = CourseCategory.objects.all()
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="curriculum", active_link="profile",
-                   form_id=form_id, category_formsets=[],
+                   form_id=form_id, category_formsets=[], other_curriculum = other_curriculum,
                    teacher_names=teacher_names,
                    readonly=readonly)
 
     if request.method == 'POST':
         all_valid = True
         formsets_by_category = []
+        other_form = OtherCurriculumDataForm(request.POST, instance=other_curriculum)
 
         # Loop through categories and process the formsets
         for category in categories:
@@ -1232,7 +1359,7 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
                 SecondaryCurriculumCourse,
                 form=SecondaryCurriculumCourseForm,
                 extra=1,
-                can_delete=True
+                can_delete=False
             )
             queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
             formset = FormSet(request.POST, queryset=queryset, prefix=prefix)
@@ -1244,6 +1371,8 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
 
             # Always append the formset (valid or invalid) to the context
             context['category_formsets'].append((category, formset))
+
+        context['other_form'] = other_form
 
         # If all formsets are valid, save the data
         if all_valid:
@@ -1258,6 +1387,7 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
                     instance.category = category
                     instance.save()
 
+            other_form.save()
             return redirect(request.path)  # Redirect to the same page or to a success page
 
     else:  # For GET request, render the initial formsets
@@ -1265,13 +1395,13 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
             prefix = f'cat_{category.id}'
 
             if readonly: extra_forms=0
-            else: extra_forms=1
+            else: extra_forms=3
 
             FormSet = modelformset_factory(
                 SecondaryCurriculumCourse,
                 form=SecondaryCurriculumCourseForm,
                 extra=extra_forms,
-                can_delete=True
+                can_delete=False
             )
             queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
             formset = FormSet(queryset=queryset, prefix=prefix)
@@ -1280,6 +1410,12 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
                     for field in subform.fields.values():
                         field.disabled=True
             context['category_formsets'].append((category, formset))
+
+        other_form = OtherCurriculumDataForm(instance=other_curriculum)
+        if readonly:
+            for field in other_form.fields.values():
+                field.disabled = True
+        context['other_form'] = other_form
 
     # Render the template with the appropriate context (now always contains formsets)
     return render(request, 'selfstudy/profile_secondary_curriculum.html', context)

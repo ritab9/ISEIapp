@@ -207,12 +207,36 @@ class FullTimeEquivalency(models.Model):
         return f"{self.assignment.name} - Men: {self.fte_men}, Women: {self.fte_women}"
 
 
+#E. Student Data
 class StudentEnrollmentData(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="enrollment_data")
     projected_enrollment_next_year = models.PositiveSmallIntegerField(null=True, blank=True)
     projected_enrollment_2_years = models.PositiveSmallIntegerField(null=True, blank=True)
     projected_enrollment_3_years = models.PositiveSmallIntegerField(null=True, blank=True)
 
+class StudentFollowUpDataKey(models.Model):
+    LEVEL_CHOICES = [
+        ('elementary', 'Elementary'),
+        ('secondary', 'Secondary'),
+    ]
+
+    description = models.CharField(max_length=255, null=True, blank=True)
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES)
+    order_number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
+    active = models.BooleanField(default=True, verbose_name="Active")
+
+    class Meta:
+        ordering = ['level', 'order_number']
+
+    def __str__(self):
+        return f"{self.description} ({self.get_level_display()})"
+
+
+class StudentFollowUpDataEntry(models.Model):
+    school=models.ForeignKey(School, on_delete=models.CASCADE, related_name="followup_entries")
+    school_year=models.ForeignKey(SchoolYear, on_delete=models.CASCADE, related_name="followup_entries")
+    followup_data_key = models.ForeignKey(StudentFollowUpDataKey, on_delete=models.CASCADE)
+    value = models.SmallIntegerField(null=True, blank=True)
 
 class StudentAchievementData(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="achievement_data")
@@ -264,7 +288,7 @@ class StandardizedTestScore(models.Model):
     session = models.ForeignKey(StandardizedTestSession, on_delete=models.CASCADE, related_name='scores')
     subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
     grade = models.IntegerField(choices=[(i, str(i)) for i in range(1, 13)], null=True, blank=True)  # Validated to be 1–8 or 9–12 based on session
-    score = models.DecimalField(max_digits=5, decimal_places=2)
+    score = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         unique_together = ('session', 'subject', 'grade')
@@ -295,6 +319,13 @@ class SecondaryCurriculumCourse(models.Model):
 
     def __str__(self):
         return f"{self.course_title} ({self.teacher_name})"
+
+class OtherCurriculumData(models.Model):
+    school_profile = models.OneToOneField(SchoolProfile, on_delete=models.CASCADE, related_name="other_curriculum_data")
+    dual_enrollment_number=models.SmallIntegerField(blank=True, null=True)
+    dual_enrollment_location=models.CharField(max_length=2225, blank=True, null=True)
+    dual_enrollment_courses = models.CharField(max_length=2225, blank=True, null=True)
+    vocational_certificate_areas = models.CharField(max_length=2225, blank=True, null=True)
 
 class SupportService(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="support_services")

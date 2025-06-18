@@ -61,15 +61,28 @@
 
                      <input type="checkbox" id="markAllBoarding">
                  </div>
+
+                <div class="col col-auto ml-auto">
+                    {% if show_all %}
+                        <a href="?" class="btn btn-outline-ISEIblue4 btn-sm">Do Show Graduated/Not Returning Students</a>
+                    {% else %}
+                        <a href="?show=all" class="btn btn-outline-ISEIblue4 btn-sm">Show Graduated/Not Returning Students </a>
+                    {% endif %}
+                 </div>
+
+            </div>
 <!-- Comments and instructions -->
-                <div class="col col-auto">
+            <hr>
+                <div class="">
                     <ul>
                         <li>Be sure to check data for all previous students for accuracy: enrollment status, grade level, address, baptismal status, etc.</li>
                         <li> Depending on your screen size, in order to view all columns you may need to horizontally scroll through the table.</li>
                     </ul>
                 </div>
-            </div>
+
     </div>
+
+
 
 
 <!-- Student Report -->

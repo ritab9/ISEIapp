@@ -307,3 +307,26 @@ class SecondaryCurriculumCourseForm(forms.ModelForm):
             'periods_per_week': forms.NumberInput(attrs={'style': 'width: 70px;'}),
             'minutes_per_week': forms.NumberInput(attrs={'style': 'width: 90px;'}),
         }
+
+
+class OtherCurriculumDataForm(forms.ModelForm):
+    class Meta:
+        model = OtherCurriculumData
+        fields = '__all__'
+
+        widgets = {
+            'dual_enrollment_location': forms.Textarea(attrs={
+                'rows': 1,
+                'placeholder': 'e.g., Local community college campus or online via university partnership'
+            }),
+            'dual_enrollment_courses': forms.Textarea(attrs={
+                'rows': 1,
+                'placeholder': 'e.g., College Algebra, Intro to Psychology, Composition I'
+            }),
+            'vocational_certificate_areas': forms.Textarea(attrs={
+                'rows': 1,
+                'placeholder': 'e.g., CNA, Auto Mechanics, Culinary Arts'
+            }),
+            'dual_enrollment_number': forms.NumberInput(attrs={
+            }),
+        }

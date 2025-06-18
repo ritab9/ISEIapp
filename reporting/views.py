@@ -142,7 +142,10 @@ def student_report(request,arID):
                 output_field=IntegerField()
             )
 
-            if annual_report.submit_date:
+            show_all = request.GET.get("show") == "all"
+
+            #if annual_report.submit_date:
+            if not show_all:
                 students_qs = (Student.objects.filter(annual_report=annual_report,  status__in=['enrolled', 'withdrawn', 'part-time'])
                                .select_related('country', 'TN_county')
                                .order_by(status_order,'grade_level', 'name'))
@@ -150,6 +153,7 @@ def student_report(request,arID):
                 students_qs = (Student.objects.filter(annual_report=annual_report)
                                .select_related('country', 'TN_county')
                                .order_by(status_order,'grade_level', 'name'))
+
             formset = StudentFormSet(queryset=students_qs)
 
 
@@ -164,7 +168,7 @@ def student_report(request,arID):
         messages.error(request, f'An error occurred while processing your request: {str(e)}')
     finally:
         if redirect_to_school_dashboard == False:
-            return render(request, 'student_report.html', {'formset': formset, 'annual_report': annual_report})
+            return render(request, 'student_report.html', {'formset': formset, 'annual_report': annual_report, 'show_all': show_all})
         else:
             return redirect('school_dashboard', school.id)
 
@@ -191,6 +195,7 @@ def import_students_prev_year(request, arID):
     for student in students_to_import:
         if Student.objects.filter(name=student.name, annual_report=report).exists():
             continue
+
         student.pk = None  # Makes Django create a new instance
         student.annual_report = report
         if student.age:

@@ -6,31 +6,21 @@
 
 
 {% block secondary_navbar %}
+    <!-- TOGGLE BUTTON -->
+    <button class="btn btn-link text-ISEIyellow p-0 m-0 align-baseline mr-lg-5" onclick="toggleNavbar()">
+      ☰ Menu
+    </button>    
     {% include 'accreditation_navbar_secondary.html' %}
 {% endblock secondary_navbar %}
 
 
 {% block main_content %}
-    {% block selfstudy_topox %}
-        <!--div class="card card-body">
-            <div class="row">
-                <div class="col">
-                    <h6>{ { selfstudy.accreditation.school }} SelfStudy</h6>
-                </div>
-                <div class="col-auto ml-0">
-                    { { selfstudy.accreditation.visit_date_range }}
-                </div>
-            </div>
-        </div-->
-    {% endblock %}
-
-
+    
   <div class="row">
 
   {% with has_submission_date=selfstudy.submission_date %}
-
    <!-- Vertical Navbar -->
-        <div class="col-md-3 col-lg-2 noprint">
+        <div class="col-md-3 col-lg-2 noprint" id="vertical-navbar">
           <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
           <!--h5 class="text-center">SelfStudy</h5 -->
                 <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
@@ -74,7 +64,7 @@
                      {% else %}
                          href="{% url 'selfstudy_standard' selfstudy.id standard.id %}">
                      {% endif %}
-                    {{ standard.number }}. {{ standard.name }}
+                    {{ standard.number|floatformat:"0"  }}. {{ standard.name }}
                   </a>
                 </div>
               {% endfor %}
@@ -96,7 +86,7 @@
         </div>
 
 <!-- Main Content -->
-    <div class="col-md-9 col-lg-10">
+    <div id="main-content" class="col-md-9 col-lg-10">
           {% block content %}
             <!-- Default selfstudy content placeholder -->
             {{ block.super }}
@@ -105,4 +95,26 @@
 
   {% endwith %}
   </div>
+
+
+
+    <script>
+        function toggleNavbar() {
+        const navbar = document.getElementById("vertical-navbar");
+        const content = document.getElementById("main-content");
+
+        if (navbar.style.display === "none") {
+          navbar.style.display = "block";
+          content.classList.remove("col-12");
+          content.classList.add("col-md-9", "col-lg-10");
+        } else {
+          navbar.style.display = "none";
+          content.classList.remove("col-md-9", "col-lg-10");
+          content.classList.add("col-12");
+        }
+      }
+
+    </script>
+
 {% endblock main_content %}
+

@@ -21,10 +21,12 @@
 
 
   {% if selfstudy %}
-      <a class="nav-link {% if active_link == 'selfstudy' %}active{% endif %}"
-       href="{% url 'selfstudy' selfstudy.id %}">
-          SelfStudy {{ selfstudy.accreditation.school }} <small>({{ selfstudy.accreditation.visit_date_range|default_if_none:"" }})</small>
-    </a>
+      <li class="nav-item">
+          <a class="nav-link {% if active_link == 'selfstudy' %}active{% endif %}"
+           href="{% url 'selfstudy' selfstudy.id %}">
+              SelfStudy {{ selfstudy.accreditation.school }} <small>({{ selfstudy.accreditation.visit_date_range|default_if_none:"" }})</small>
+        </a>
+      </li>
   {% endif %}
 
                          
@@ -33,7 +35,7 @@
              href="{% url 'apr_progress_report' apr.id %}">
               AAPR Progress {{ apr.accreditation.school }}
         </a>
-      {% endif %}
+   {% endif %}
 
     
     

@@ -39,7 +39,7 @@ admin.site.register(ReportType, ReportTypeAdmin)
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ['name','annual_report', 'status', 'grade_level']
-    list_filter = ['status', 'grade_level']
+    list_filter = ['annual_report__school', 'annual_report__school_year', 'status']
 
 
 # 190 day report data

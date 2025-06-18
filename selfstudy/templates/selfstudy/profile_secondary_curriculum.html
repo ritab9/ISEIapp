@@ -44,7 +44,8 @@
             <div id="somethingData">
                 <div class="card card-body">
                     <div style="overflow-x: auto; display: inline-block;">
-                        <h6>In the following chart list every secondary credit course offered to grades 9-12 students, providing the name of the teacher and other requested course information.</h6><hr>
+                        <h6>1. Secondary Courses:</h6>
+                        <p>In the following chart list every secondary credit course offered to grades 9-12 students, providing the name of the teacher and other requested course information.</p><hr>
                         {% for category, formset in category_formsets %}
                             <div class="formset-wrapper" data-prefix="{{ formset.prefix }}">
                                 <h6>{{ category.name }}</h6>
@@ -58,14 +59,13 @@
                                     {% endif %}
                                 <table class="table table-sm text-center w-auto">
                                     <thead>
-                                        <tr class="orange-header2">
+                                        <tr class="bg-light-blue">
                                             <th>Course Title</th>
                                             <th>Teacher Name</th>
                                             <th>Cert. Endorsed</th>
                                             <th>Credits</th>
                                             <th>Periods/Wk</th>
                                             <th>Minutes/Wk</th>
-                                            <th>Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -100,6 +100,37 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card card-body" id="Dual Enrollment">
+                <h6>2. Dual Enrollment</h6>
+                <p class="mb-2">
+                  If the school offers dual enrollment classes (where students earn both high school and college credit), please provide the number of students participating, the location where these courses are held, and the specific courses offered.
+                </p>
+
+                    <div class="mb-3">
+                      Number or Students Participating<br>
+                      {{ other_form.dual_enrollment_number }}
+                      {{ other_form.dual_enrollment_number.errors }}
+                    </div>
+                    <div class="mb-3">
+                      Location (school campus, local college campus, online)<br>
+                      {{ other_form.dual_enrollment_location }}
+                      {{ other_form.dual_enrollment_location.errors }}
+                    </div>
+                    <div class="mb-3">
+                      Courses Offered<br>
+                      {{ other_form.dual_enrollment_courses }}
+                      {{ other_form.dual_enrollment_courses.errors }}
+                    </div>
+            </div>
+             <div class="card card-body" id="vocational_certificates">
+                <h6>3. Vocational Education Certificates</h6>
+                    <p class="mb-3">
+                      If the school offers vocational or technical certificate programs, list the certificate areas available to students.
+                    </p>
+                      {{ other_form.vocational_certificate_areas }}
+                      {{ other_form.vocational_certificate_areas.errors }}
+             </div>
        </form>
 
      </div>

@@ -563,6 +563,29 @@ class Opening(models.Model):
     def opening_enrollment(self):
         return (self.girl_count or 0) + (self.boy_count or 0)
 
+    @property
+    def retention_percentage(self):
+        total = self.opening_enrollment
+        if total == 0:
+            return None  # or 0.0 or "N/A", depending on how you want to handle divide-by-zero
+        leavers = (self.did_not_return_count or 0)
+        retained = total - leavers
+        return round((retained / total) * 100, 1)
+
+    @property
+    def girl_percentage(self):
+        total = self.opening_enrollment
+        if total == 0:
+            return None
+        return round((self.girl_count or 0) / total * 100, 1)
+
+    @property
+    def boy_percentage(self):
+        total = self.opening_enrollment
+        if total == 0:
+            return None
+        return round((self.boy_count or 0) / total * 100, 1)
+
     def __str__(self):
         return str(self.annual_report)
 
@@ -596,7 +619,11 @@ class Closing(models.Model):
     def baptized_students(self):
         return (self.student_baptism_sda_parent or 0) + (self.student_baptism_non_sda_parent or 0)
 
-
+    @property
+    def withdrawn_percentage(self):
+        if not self.grade_count or self.grade_count.total_count() == 0:
+            return None
+        return round((self.withdraw_count or 0) / (self.grade_count.total_count()+(self.withdraw_count or 0)) * 100, 1)
 
 
 class WorthyStudentScholarship(models.Model):

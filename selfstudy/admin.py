@@ -66,6 +66,7 @@ class SecondaryCurriculumCourseInline(admin.TabularInline):
     ]
 
     # Admin for SchoolProfile with inlines for FinancialTwoYearDataEntry and FinancialAdditionalDataEntry
+
 class SchoolProfileAdmin(admin.ModelAdmin):
     list_display = ('selfstudy', )  # Modify to show relevant fields
     search_fields = ('school__name',)  # Enable search by school name (assuming you have this field)
@@ -164,3 +165,10 @@ class StandardizedTestSessionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StandardizedTestSession, StandardizedTestSessionAdmin)
+
+
+class StudentFollowUpDataKeyAdmin(admin.ModelAdmin):
+    list_display = ('id','description', 'level', 'order_number', 'active')
+    list_editable = ('level', 'description', 'order_number', 'active')  # Make both fields editable directly in the list view
+
+admin.site.register(StudentFollowUpDataKey, StudentFollowUpDataKeyAdmin)

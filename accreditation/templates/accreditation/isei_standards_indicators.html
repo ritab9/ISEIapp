@@ -12,7 +12,7 @@
         <hr>
 
     {% for standard in standards %}
-        <h6>{{ standard.number }}. {{ standard.name }}</h6>
+        <h6>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
         <hr>
 
         {% for substandard in standard.substandards.all %}
@@ -28,7 +28,7 @@
         {% endfor %}
 
         {% for indicator in standard.indicator_set.all %}
-            <p>{{ standard.number }}.{{ forloop.counter }}. {{ indicator.description }}
+            <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
                     {% if indicator.school_type.name != "All School Types" %}
                         ({{ indicator.school_type }})
                     {% endif %}</p>
