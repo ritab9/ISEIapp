@@ -1833,10 +1833,20 @@ def longitudinal_enrollment(request, individual_school_name=None):
         enrollment_data_dict[school_name][year_name][grade] = enrollment_count
 
         # Convert the dictionary to a list of dicts for template rendering
-    enrollment_data = [
-        {"school_name": school_name, "year_data": year_data}
-        for school_name, year_data in sorted(enrollment_data_dict.items())  # Sort schools alphabetically
-    ]
+    enrollment_data = []
+    for school_name, year_data in sorted(enrollment_data_dict.items()):
+        # Sort the years by actual school year start (e.g., 2020 from "2020-2021")
+        sorted_year_data = dict(
+            sorted(
+                year_data.items(),
+                key=lambda item: int(item[0].split("-")[0]),  # assumes "YYYY-YYYY" format
+                reverse = True
+            )
+        )
+        enrollment_data.append({
+            "school_name": school_name,
+            "year_data": sorted_year_data,
+        })
 
     for school in enrollment_data:
         for year_name, grade_counts in school["year_data"].items():

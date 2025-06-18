@@ -134,5 +134,10 @@ class AnnualReportAdmin(admin.ModelAdmin):
 
 @admin.register(LongitudinalEnrollment)
 class LongitudinalEnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('school', 'year', 'grade', 'enrollment_count')
+    list_display = ('school', 'year', 'grade_display', 'enrollment_count')
     list_filter = ('school', 'year')
+
+    def grade_display(self, obj):
+        return obj.get_grade_display()
+
+    grade_display.short_description = 'Grade'
