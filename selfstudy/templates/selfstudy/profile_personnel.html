@@ -315,7 +315,7 @@
                         </label> <br>
                         {{ fte_equivalency_form.fte_student_ratio }}
                         {{ fte_equivalency_form.fte_student_ratio.errors }}
-
+<!-- Academic Preparation -->
                         <hr class="noprint">
                         <label class="font-weight-bold">c. Summary of academic preparation of administration and instructional staff:</label>
 
@@ -335,6 +335,36 @@
                                     <td>{{ gender_counts.M }}</td>
                                     <td>{{ gender_counts.F }}</td>
                                     <td>{{ gender_counts.M|add:gender_counts.F }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+<!-- Staff Retention -->
+                        <hr class="noprint">
+                        <lable class="font-weight-bold">d. Staff Retention Data</lable>
+
+                        <table class="table table-sm table-bordered table-striped">
+                            <thead class="blue-header2">
+                                <tr>
+                                    <th>School Year</th>
+                                    <th>Total Staff</th>
+                                    <th>Did Not Return</th>
+                                    <th>Retention Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                {% for row in retention_data %}
+                                <tr>
+                                    <td>{{ row.year }}</td>
+                                    <td>{{ row.total|default:"–" }}</td>
+                                    <td>{{ row.not_returned|default:"–" }}</td>
+                                    <td>
+                                        {% if row.retention is not None %}
+                                            {{ row.retention }}%
+                                        {% else %}
+                                            –
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

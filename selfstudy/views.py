@@ -747,8 +747,10 @@ def profile_personnel(request, selfstudy_id, readonly=False):
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_personnel"
 
+    accreditation_school_year = selfstudy.accreditation.school_year
+
     #get the accreditation year annual_report to import data from
-    annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year= selfstudy.accreditation.school_year).first()
+    annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year= accreditation_school_year).first()
 
     arID=annual_report.id or None
     ar_school_year=annual_report.school_year or None
@@ -827,6 +829,28 @@ def profile_personnel(request, selfstudy_id, readonly=False):
             for field in subform.fields.values():
                 field.disabled = True
 
+    # Get last 5 school-years retention data
+    start_year = int(accreditation_school_year.name.split('-')[0]) # 1. Extract last 5 school year names
+    year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(5)][::-1]
+
+    school_years = SchoolYear.objects.filter(name__in=year_names)  # 2. Get SchoolYear objects
+
+    # 3. Prefetch reports for those years
+    reports = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year__in=school_years).select_related('school_year')
+    # 4. Map: {school_year_name: report}
+    reports_by_year = {report.school_year.name: report for report in reports}
+    # 5. Build retention data
+    retention_data = []
+    for year_name in year_names:
+        report = reports_by_year.get(year_name)
+        if report:
+            retention_data.append({
+                "year": year_name,
+                "total": report.total_personnel(),
+                "not_returned": report.not_returned_personnel(),
+                "retention": report.retention_rate(),  # already a percentage
+            })
+
     context = dict( selfstudy=selfstudy, standards=standards, active_sublink="personnel", active_link="profile",
         admin_academic_dean=admin_academic_dean, vocational_instructors=vocational_instructors, non_instructional=non_instructional,
         arID=arID, ar_school_year=ar_school_year, personnel_imported = personnel_imported,
@@ -834,7 +858,8 @@ def profile_personnel(request, selfstudy_id, readonly=False):
         degree_gender_dict=degree_gender_dict,
         pga_formset=pga_formset,
         form_id=form_id,
-         readonly=readonly
+         readonly=readonly,
+        retention_data=retention_data,
     )
 
     return render(request, 'selfstudy/profile_personnel.html', context)

@@ -122,6 +122,20 @@ class AnnualReport(models.Model):
         days = days or 14
         return self.due_date() + timezone.timedelta(days=days)
 
+    def total_personnel(self):
+        return self.personnel_set.count()
+
+    def not_returned_personnel(self):
+        return self.personnel_set.filter(status=StaffStatus.NO_LONGER_EMPLOYED).count()
+
+    def retention_rate(self):
+        total = self.total_personnel()
+        if total == 0:
+            return None  # or 0.0 if you prefer
+        not_returned = self.not_returned_personnel()
+        rate = (total - not_returned) / total * 100
+        return round(rate, 1)
+
 # Employee Data
 class Degree(models.Model):  # Changed to a model
     name = models.CharField(max_length=30, unique=True)
