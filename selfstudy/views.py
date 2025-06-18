@@ -747,8 +747,9 @@ def profile_personnel(request, selfstudy_id, readonly=False):
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_personnel"
 
-    #get the last annual_report to import data from
-    annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER").order_by('school_year__name').last()
+    #get the accreditation year annual_report to import data from
+    annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year= selfstudy.accreditation.school_year).first()
+
     arID=annual_report.id or None
     ar_school_year=annual_report.school_year or None
 
