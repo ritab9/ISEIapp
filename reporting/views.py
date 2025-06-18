@@ -1786,7 +1786,7 @@ def longitudinal_enrollment(request, individual_school_name=None):
         individual_school = schools.first()
 
     if request.method == "POST":
-        school_years = SchoolYear.objects.all()
+        school_years = SchoolYear.objects.all().order_by('name')
 
         for school_year in school_years:
             for school in schools:
