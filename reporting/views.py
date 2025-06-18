@@ -1801,8 +1801,7 @@ def longitudinal_enrollment(request, individual_school_name=None):
                         grade = entry["grade_level"]
                         count = entry["count"]
 
-                        LongitudinalEnrollment.objects.update_or_create(school=school,year=school_year,grade=grade,
-                            defaults={"enrollment_count": count},)
+                        LongitudinalEnrollment.objects.update_or_create(school=school,year=school_year,grade=grade, defaults={"enrollment_count": count},)
 
     # Fetch enrollment data for display
     if not individual_school_name:
@@ -1880,6 +1879,9 @@ def add_enrollment(request, school_name=None, year_name=None):
             enrollment_count = request.POST.get(f'enrollment_count_{grade}')
             if enrollment_count is not None:
                 enrollment_count = int(enrollment_count or 0)
+                if enrollment_count == 0:
+                    # Skip empty or zero entries — optionally, also delete existing ones
+                    continue
                 enrollment_obj, created = LongitudinalEnrollment.objects.get_or_create(
                     school=school,
                     year=year,
