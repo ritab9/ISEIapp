@@ -959,8 +959,8 @@ def profile_student(request, selfstudy_id, readonly=False):
             percent_female = opening.girl_percentage
             percent_male = opening.boy_percentage
 
-            withdrawn_count = closing.withdraw_count or None
-            withdrawn_percentage = closing.withdrawn_percentage or None
+            withdrawn_count = closing.withdraw_count if closing else None
+            withdrawn_percentage = closing.withdrawn_percentage if closing else None
 
             baptized_students = closing.baptized_students if closing else None
 
