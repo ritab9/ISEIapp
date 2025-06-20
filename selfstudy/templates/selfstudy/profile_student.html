@@ -127,7 +127,7 @@
                      <p> If the information below is not accurate:
                          <ul>
                              <li>click the school year to edit the Student Report</li>
-                             <li> resubmit Opening Report for that school year</li>
+                             <li class="error"> resubmit Opening/Closing Report for that school year</li>
                              <li> refresh this page to see the updated data</li>
                         </ul>
                      </p>
@@ -142,9 +142,9 @@
                                         <th class="blue-header2">Male/Female %</th>
                                         <th class="blue-header2"> % International </th>
 
-                                        <th class="orange-header2">Non-Returning</th>
-                                        <th class="orange-header2">% Retention</th>
-                                        <th class="orange-header">Withdrawn</th>
+                                        <th class="orange-header2">% Non-Returning</th>
+                                        <th class="orange-header2">% Withdrawn</th>
+                                        <th class="orange-header">% Retention</th>
 
                                     </tr>
                                 </thead>
@@ -157,16 +157,18 @@
                                             </td>
                                             <td class="blue-column">{{ item.opening_enrollment}}</td>
                                             <td class="blue-column">{{ item.percent_male}}/{{item.percent_female }}</td>
-                                            <td class="blue-column">{{ item.percent_international}}</td>
-
-                                            <td class="orange-column">{{ item.not_returned }}</td>
-                                            <td class="orange-column">{{ item.retention }}%</td>
+                                            <td class="blue-column">{{ item.percent_international}}%</td>
 
                                             <td class="orange-column">
-                                                {%  if item.withdrawn_count > 0 %}
-                                                    {{ item.withdrawn_percentage}}% ({{ item.withdrawn_count|default:"" }})
+                                                {{ item.not_returned_percentage }}%</td>
+                                            <td class="orange-column">
+                                                {%  if item.withdrawn_percentage > 0 %}
+                                                    {{ item.withdrawn_percentage}}%
                                                 {% endif %}
                                             </td>
+                                            <td class="orange-column">{{ item.retention }}%</td>
+
+
 
                                         </tr>
                                     {% endfor %}

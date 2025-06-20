@@ -948,29 +948,32 @@ def profile_student(request, selfstudy_id, readonly=False):
             else:
                 percent_international = 0
 
-            international_countries = get_international_students_by_country(
-                annual_student_report, school_country
-            )
+            international_countries = get_international_students_by_country(annual_student_report, school_country)
             if international_countries: international=True
-
-            not_returned = opening.did_not_return_count
-            retention = opening.retention_percentage
 
             percent_female = opening.girl_percentage
             percent_male = opening.boy_percentage
 
-            withdrawn_count = closing.withdraw_count if closing else None
+            #not_returned = opening.did_not_return_count
+            #withdrawn_count = closing.withdraw_count if closing else None
+
             withdrawn_percentage = closing.withdrawn_percentage if closing else None
+            if opening_enrollment > 0:
+                not_returned_percentage = 100 - opening.retention_percentage
+                retention = round(opening.retention_percentage - withdrawn_percentage if withdrawn_percentage else opening.retention_percentage, 1)
+            else:
+                not_returned_percentage = None
+                retention = None
 
             baptized_students = closing.baptized_students if closing else None
 
             student_data.append({
                 'year': year,
                 'opening_enrollment': opening_enrollment,
-                'not_returned': not_returned,
-                'retention': retention,
-                'withdrawn_count': withdrawn_count,
+                'not_returned_percentage': not_returned_percentage,
+                #'withdrawn_count': withdrawn_count,
                 'withdrawn_percentage': withdrawn_percentage,
+                'retention': retention,
 
                 'percent_female': percent_female,
                 'percent_male': percent_male,
