@@ -943,7 +943,10 @@ def profile_student(request, selfstudy_id, readonly=False):
 
             international_student_count = Student.objects.filter(annual_report=annual_student_report, status__in=['enrolled']).exclude(
                 country=school_country).count()
-            percent_international = round( international_student_count * 100 / opening_enrollment, 1)
+            if opening_enrollment > 0:
+                percent_international = round( international_student_count * 100 / opening_enrollment, 1)
+            else:
+                percent_international = 0
 
             international_countries = get_international_students_by_country(
                 annual_student_report, school_country

@@ -6,12 +6,17 @@ register = template.Library()
 @register.filter
 def add(value, arg):
     """Add a value to the argument."""
-    return value + arg
+    try:
+        return (value or 0) + (arg or 0)
+    except TypeError:
+        return ''
 
 @register.filter
 def modulus(value, arg):
     """Apply modulus operation."""
     return value % arg
+
+
 
 @register.filter
 def get_attribute(value, arg):

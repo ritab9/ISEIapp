@@ -15,9 +15,9 @@
                 <a class="btn btn-xs btn-ISEIblue2 mb-3 ml-3" href="{% url 'student_report' arStudentID %}"> Edit </a>
             {% endif %}
         </div>
-        <p><b>Enrollment:</b> {{ opening.grade_count.total_count }}
+        <p><b>Enrollment:</b> {{ opening.grade_count.total_count|default_if_none:"" }}
              {% if part_time_grade_count_fields %}
-                 (+ {{ opening.part_time_grade_count.total_count }} part time)
+                 (+ {{ opening.part_time_grade_count.total_count|default_if_none:""  }} part time)
              {% endif %}
         </p>
 
@@ -41,7 +41,7 @@
                             <td>Full-time</td>
                         {% endif %}
                       {% for field_name, value in grade_count_fields %}
-                        <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                        <td>{% if value == 0 or value == None %}{% else %}{{ value }}{% endif %}</td>
                       {% endfor %}
                     </tr>
                     <tr>
@@ -49,7 +49,7 @@
                             <td>Part-time</td>
                         {% endif %}
                       {% for field_name, value in part_time_grade_count_fields %}
-                        <td>{% if value == 0 %}{% else %}{{ value }}{% endif %}</td>
+                        <td>{% if value == 0 or value == None %}{% else %}{{ value }}{% endif %}</td>
                       {% endfor %}
                     </tr>
                   </tbody>
@@ -59,10 +59,10 @@
             <div class="col-auto">
                 <table class="table">
                     <tr>
-                        <td>Girls:</td><td> {{ opening.girl_count }}</td>
+                        <td>Girls:</td><td> {{ opening.girl_count|default_if_none:"" }}</td>
                     </tr>
                     <tr>
-                        <td>Boys:</td><td>{{ opening.boy_count }}</td>
+                        <td>Boys:</td><td>{{ opening.boy_count|default_if_none:"" }}</td>
                     </tr>
                 </table>
             </div>
@@ -70,10 +70,10 @@
             <div class="col-auto">
                 <table class="table">
                     <tr>
-                        <td>Graduated:</td><td> {{ opening.graduated_count }}</td>
+                        <td>Graduated:</td><td> {{ opening.graduated_count|default_if_none:"" }}</td>
                     </tr>
                     <tr>
-                        <td>Did Not Return:</td><td>{{ opening.did_not_return_count }}</td>
+                        <td>Did Not Return:</td><td>{{ opening.did_not_return_count|default_if_none:"" }}</td>
                     </tr>
                 </table>
             </div>
@@ -95,29 +95,29 @@
                     <tr>
                       <td rowspan="2">Boarding</td>
                       <td>Girls</td>
-                      <td>{{ opening.boarding_girl_count_E }}</td>
-                      <td>{{ opening.boarding_girl_count_S }}</td>
-                        <td>{{ opening.boarding_girl_count_GA }}</td>
+                      <td>{{ opening.boarding_girl_count_E|default_if_none:"" }}</td>
+                      <td>{{ opening.boarding_girl_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.boarding_girl_count_GA|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                       <td>Boys</td>
-                      <td>{{ opening.boarding_boy_count_E }}</td>
-                      <td>{{ opening.boarding_boy_count_S }}</td>
-                        <td>{{ opening.boarding_boy_count_GA }}</td>
+                      <td>{{ opening.boarding_boy_count_E|default_if_none:"" }}</td>
+                      <td>{{ opening.boarding_boy_count_S|default_if_none:""}}</td>
+                        <td>{{ opening.boarding_boy_count_GA|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                       <td rowspan="2">Day</td>
                       <td>Girls</td>
-                      <td>{{ opening.day_girl_count_E }}</td>
-                      <td>{{ opening.day_girl_count_S }}</td>
-                        <td>{{ opening.day_girl_count_GA }}</td>
+                      <td>{{ opening.day_girl_count_E|default_if_none:"" }}</td>
+                      <td>{{ opening.day_girl_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.day_girl_count_GA|default_if_none:"" }}</td>
 
                     </tr>
                     <tr>
                       <td>Boys</td>
-                      <td>{{ opening.day_boy_count_E }}</td>
-                      <td>{{ opening.day_boy_count_S }}</td>
-                        <td>{{ opening.day_boy_count_GA }}</td>
+                      <td>{{ opening.day_boy_count_E|default_if_none:"" }}</td>
+                      <td>{{ opening.day_boy_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.day_boy_count_GA|default_if_none:"" }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -139,36 +139,36 @@
                     <tr>
                         <td rowspan="2">Baptised</td>
                         <td>At least one parent/guardian SDA</td>
-                        <td>{{ opening.baptized_parent_sda_count_K }}</td>
-                        <td>{{ opening.baptized_parent_sda_count_E }}</td>
-                        <td>{{ opening.baptized_parent_sda_count_S }}</td>
-                        <td>{{ opening.baptized_parent_sda_count_GA }}</td>
-                        <td>{{ opening.baptized_parent_sda_count_K|add:opening.baptized_parent_sda_count_E|add:opening.baptized_parent_sda_count_S|add:opening.baptized_parent_sda_count_GA }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_K|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_E|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_GA|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_sda_count_K|add:opening.baptized_parent_sda_count_E|add:opening.baptized_parent_sda_count_S|add:opening.baptized_parent_sda_count_GA|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <td>Non-SDA parents/guardians</td>
-                        <td>{{ opening.baptized_parent_non_sda_count_K }}</td>
-                        <td>{{ opening.baptized_parent_non_sda_count_E }}</td>
-                        <td>{{ opening.baptized_parent_non_sda_count_S }}</td>
-                        <td>{{ opening.baptized_parent_non_sda_count_GA }}</td>
-                        <td>{{ opening.baptized_parent_non_sda_count_K|add:opening.baptized_parent_non_sda_count_E|add:opening.baptized_parent_non_sda_count_S|add:opening.baptized_parent_non_sda_count_GA }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_E|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_GA|default_if_none:"" }}</td>
+                        <td>{{ opening.baptized_parent_non_sda_count_K|add:opening.baptized_parent_non_sda_count_E|add:opening.baptized_parent_non_sda_count_S|add:opening.baptized_parent_non_sda_count_GA|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <td rowspan="2">Not Baptised</td>
                         <td>At least one parent/guardian SDA</td>
-                        <td>{{ opening.unbaptized_parent_sda_count_K }}</td>
-                        <td>{{ opening.unbaptized_parent_sda_count_E }}</td>
-                        <td>{{ opening.unbaptized_parent_sda_count_S }}</td>
-                        <td>{{ opening.unbaptized_parent_sda_count_GA }}</td>
-                        <td>{{ opening.unbaptized_parent_sda_count_K|add:opening.unbaptized_parent_sda_count_E|add:opening.unbaptized_parent_sda_count_S|add:opening.unbaptized_parent_sda_count_GA }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_E|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_GA|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_sda_count_K|add:opening.unbaptized_parent_sda_count_E|add:opening.unbaptized_parent_sda_count_S|add:opening.unbaptized_parent_sda_count_GA|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <td>Non-SDA parents/guardians</td>
-                        <td>{{ opening.unbaptized_parent_non_sda_count_K }}</td>
-                        <td>{{ opening.unbaptized_parent_non_sda_count_E }}</td>
-                        <td>{{ opening.unbaptized_parent_non_sda_count_S }}</td>
-                        <td>{{ opening.unbaptized_parent_non_sda_count_GA }}</td>
-                        <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S|add:opening.unbaptized_parent_non_sda_count_GA }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_E|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_S|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_GA|default_if_none:"" }}</td>
+                        <td>{{ opening.unbaptized_parent_non_sda_count_K|add:opening.unbaptized_parent_non_sda_count_E|add:opening.unbaptized_parent_non_sda_count_S|add:opening.unbaptized_parent_non_sda_count_GA|default_if_none:"" }}</td>
                     </tr>
 
                     {% if opening.baptized_non_sda_count > 0 %}
