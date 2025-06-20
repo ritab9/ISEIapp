@@ -155,20 +155,18 @@
                                                 <a href="{% url item.student_report.report_type.view_name item.student_report.id %}" target="_blank">
                                                     {{ item.year }}</a>
                                             </td>
-                                            <td class="blue-column">{{ item.opening_enrollment}}</td>
-                                            <td class="blue-column">{{ item.percent_male}}/{{item.percent_female }}</td>
-                                            <td class="blue-column">{{ item.percent_international}}%</td>
+                                            <td class="blue-column">{{ item.opening_enrollment|default_if_none:""}}</td>
+                                            <td class="blue-column">{{ item.percent_male|default_if_none:""}}/{{item.percent_female|default_if_none:"" }}</td>
+                                            <td class="blue-column">{{ item.percent_international|default_if_none:""}}%</td>
 
                                             <td class="orange-column">
-                                                {{ item.not_returned_percentage }}%</td>
+                                                {{ item.not_returned_percentage|default_if_none:"" }}%</td>
                                             <td class="orange-column">
                                                 {%  if item.withdrawn_percentage > 0 %}
-                                                    {{ item.withdrawn_percentage}}%
+                                                    {{ item.withdrawn_percentage|default_if_none:""}}%
                                                 {% endif %}
                                             </td>
-                                            <td class="orange-column">{{ item.retention }}%</td>
-
-
+                                            <td class="orange-column">{{ item.retention|default_if_none:"" }}%</td>
 
                                         </tr>
                                     {% endfor %}

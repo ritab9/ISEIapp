@@ -959,7 +959,7 @@ def profile_student(request, selfstudy_id, readonly=False):
 
             withdrawn_percentage = closing.withdrawn_percentage if closing else None
             if opening_enrollment > 0:
-                not_returned_percentage = 100 - opening.retention_percentage
+                not_returned_percentage = round(100 - opening.retention_percentage,1)
                 retention = round(opening.retention_percentage - withdrawn_percentage if withdrawn_percentage else opening.retention_percentage, 1)
             else:
                 not_returned_percentage = None

@@ -575,7 +575,7 @@ class Opening(models.Model):
 
     @property
     def opening_enrollment(self):
-        return (self.girl_count or 0) + (self.boy_count or 0)
+        return self.grade_count.total_count()
 
     @property
     def retention_percentage(self):
