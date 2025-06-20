@@ -467,7 +467,7 @@ class GradeCount(models.Model):
 
     def total_count(self):
         return (
-                self.pre_k_count + self.k_count + self.grade_1_count +
+                self.pre_k_count + self.k_count + self.grade_0_count + self.grade_1_count +
                 self.grade_2_count + self.grade_3_count + self.grade_4_count +
                 self.grade_5_count + self.grade_6_count + self.grade_7_count +
                 self.grade_8_count + self.grade_9_count + self.grade_10_count +

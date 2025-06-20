@@ -1154,10 +1154,16 @@ def opening_report(request, arID):
             part_time_grade_count_fields = [(field.verbose_name, getattr(opening.part_time_grade_count, field.name)) for field in
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
 
-        students= Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
+        #students= Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
+        students= Student.objects.filter(Q(status="enrolled"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
+
         if not students.exists():
-            students = Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student,
-                                              registration_date__lte=annual_report_student.submit_date + timedelta(weeks=3))
+            #students = Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student,
+            #                                  registration_date__lte=annual_report_student.submit_date + timedelta(weeks=3))
+            students = Student.objects.filter(Q(status="enrolled"),
+                                              annual_report=annual_report_student,
+                                              registration_date__lte=annual_report_student.submit_date + timedelta(
+                                                  weeks=3))
 
         if students.exists():
             grade_counts = calculate_grade_counts(students, school.get_grade_range())
