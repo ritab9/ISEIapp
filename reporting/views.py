@@ -1161,7 +1161,14 @@ def opening_report(request, arID):
 
         if students.exists():
             grade_counts = calculate_grade_counts(students, school.get_grade_range())
-            grade_count, created = GradeCount.objects.update_or_create(opening=opening, defaults=grade_counts)
+            #grade_count, created = GradeCount.objects.update_or_create(opening=opening, defaults=grade_counts)
+            grade_count, created = GradeCount.objects.update_or_create(
+                pk=getattr(opening.grade_count, 'pk', None),
+                defaults=grade_counts
+            )
+            opening.grade_count = grade_count
+            opening.save()
+
             grade_count_fields = [(field.verbose_name, getattr(grade_count, field.name)) for field in
                                   GradeCount._meta.fields if field.name != 'id']
 
