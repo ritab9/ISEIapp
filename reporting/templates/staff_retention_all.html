@@ -7,10 +7,10 @@
 {% block content %}
     <div class="card card-body">
         <hr class="noprint">
-        <h6>Staff Retention Data</h6>
-
+        <h5>Staff Retention Data</h5>
+        <hr>
         {% for school, data in retention_data.items %}
-            <h3>{{ school.name }}</h3>
+            <h6>{{ school.name }}</h6>
             <table class="table table-sm table-bordered table-striped">
                 <thead class="blue-header2">
                     <tr>
