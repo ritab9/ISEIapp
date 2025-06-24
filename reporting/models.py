@@ -122,8 +122,10 @@ class AnnualReport(models.Model):
         days = days or 14
         return self.due_date() + timezone.timedelta(days=days)
 
+
+#personnel data collection
     def total_personnel(self):
-        return self.personnel_set.count()
+        return self.personnel_set.exclude(status=StaffStatus.NO_LONGER_EMPLOYED).count()
 
     def not_returned_personnel(self):
         return self.personnel_set.filter(status=StaffStatus.NO_LONGER_EMPLOYED).count()

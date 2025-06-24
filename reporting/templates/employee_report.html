@@ -31,10 +31,8 @@
         </div>
         <div class="row ml-5">
             {% for message in messages %}
-                   {% for message in messages %}
-                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-                    {% endfor %}
-                {% endfor %}
+                <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+            {% endfor %}
         </div>
     {% else %}
         <h6 style="text-align:right">Employee Report {{ school}} ({{ school_year }})</h6>

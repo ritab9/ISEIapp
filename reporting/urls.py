@@ -48,6 +48,14 @@ urlpatterns = [
     path('isei_reporting_dashboard/', views.isei_reporting_dashboard, name='isei_reporting_dashboard'),
     path('isei_worthy_student_scholarship/', views.isei_worthy_student_scholarship, name='isei_worthy_student_scholarship'),
 
+
+    #Data Analysis
+
+    #Staff Retention
+    path('staff_retention_school/<int:schoolID>/', views.staff_retention_school, name='staff_retention_school'),
+    path('staff_retention_all/', views.staff_retention_all, name='staff_retention_all'),
+
+    #Student Enrollment
     path('longitudinal_enrollment/', views.longitudinal_enrollment, name='longitudinal_enrollment'),
     path('longitudinal_enrollment/<str:individual_school_name>/', views.longitudinal_enrollment, name='longitudinal_enrollment_single'),
 

@@ -174,7 +174,10 @@ def map_school_type_choices_to_school_types(school, app):
 
         # Elementary school check (e.g. lowest grade < 7)
         if app.lowest_grade:
-            grade = 0 if app.lowest_grade == "K" else int(app.lowest_grade)
+            if app.lowest_grade == "K" or app.lowest_grade == "PreK":
+                grade = 0
+            else: int(app.lowest_grade)
+
             if grade < 7:
                 result_codes.add('e')
 

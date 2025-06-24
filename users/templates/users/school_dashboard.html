@@ -220,6 +220,8 @@
         <div class="card-body card">
             <h6> School Data</h6>
             <a href="{% url 'longitudinal_enrollment_single' individual_school_name=school.name %}">Enrollment History</a>
+            <hr>
+            <a href="{% url 'staff_retention_school' schoolID=school.id %}">Staff Retention Data</a>
         </div>
 
     </div>

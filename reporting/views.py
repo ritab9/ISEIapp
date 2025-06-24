@@ -1788,6 +1788,9 @@ def school_personnel_directory(request):
 
     return render(request, 'school_personnel_directory.html', context)
 
+
+
+# Data collection and Analysis
 @login_required(login_url='login')
 def longitudinal_enrollment(request, individual_school_name=None):
 
@@ -1938,4 +1941,55 @@ def add_enrollment(request, school_name=None, year_name=None):
         'grade_mapping': grade_mapping
     }
     return render(request, 'add_enrollment.html', context)
+
+def staff_retention_year(request, schoolID=None, school_year=None):
+    data=None
+    school = School.objects.get(pk=schoolID)
+    if school and school_year:
+        report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year=school_year).first()
+        if report:
+            data = {
+                "school":school,
+                "year": school_year.name,
+                "total": report.total_personnel(),
+                "not_returned": report.not_returned_personnel(),
+                "retention": report.retention_rate(),
+                "report_id":report.id,
+            }
+    return data
+
+
+def staff_retention_school(request, schoolID=None):
+    school_years=SchoolYear.objects.all()
+    retention_data=[]
+    if schoolID:
+        for year in school_years:
+            data=staff_retention_year(request, schoolID=schoolID, school_year=year)
+            if data:
+                retention_data.append(data)
+
+    context=dict(retention_data=retention_data)
+
+    return render(request, 'staff_retention_school.html', context)
+
+
+def staff_retention_all(request):
+    school_years=SchoolYear.objects.all()
+
+    retention_data={}
+    schools =School.objects.filter(active=True).order_by('name')
+    for school in schools:
+        school_data = []
+        for year in school_years:
+            data=staff_retention_year(request, schoolID=school.id, school_year=year)
+            if data:
+                school_data.append(data)
+        if school_data:
+            retention_data[school] = school_data
+
+    context=dict(retention_data=retention_data)
+    return render(request, 'staff_retention_all.html', context)
+
+
+
 

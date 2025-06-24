@@ -1,0 +1,39 @@
+{% extends 'reporting_base.html' %}
+
+{% block title %} Closing Report {% endblock title %}
+
+
+
+{% block content %}
+    <div class="card card-body">
+        <hr class="noprint">
+        <h6>Staff Retention Data</h6>
+
+        <table class="table table-sm table-bordered table-striped">
+            <thead class="blue-header2">
+                <tr>
+                    <th>School Year</th>
+                    <th>Total Staff</th>
+                    <th>Did Not Return</th>
+                    <th>Retention Rate</th>
+                </tr>
+            </thead>
+            <tbody class="">
+                {% for row in retention_data %}
+                <tr>
+                    <td><a href="{% url 'employee_report' arID=row.report_id %}">{{ row.year }}</a></td>
+                    <td>{{ row.total|default:"–" }}</td>
+                    <td>{{ row.not_returned|default:"–" }}</td>
+                    <td>
+                        {% if row.retention is not None %}
+                            {{ row.retention }}%
+                        {% else %}
+                            –
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
