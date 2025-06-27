@@ -1087,6 +1087,24 @@ def inservice_report_display(request, arID):
     annual_report=AnnualReport.objects.get(id=arID)
     inservices = Inservice.objects.filter(annual_report = annual_report)
 
+    try:
+        report_type_190_day = ReportType.objects.get(name='190 - Day Report')
+
+        day190report = AnnualReport.objects.get(school_id=annual_report.school.id,school_year_id=annual_report.school_year.id,
+            report_type=report_type_190_day
+        )
+        day190_instance = day190report.day190.first()
+
+        if day190_instance:  # Check if Day190 instance exists
+            planed_inservices = day190_instance.inservice_discretionary_days.exclude(type='DS')
+            planed_hours = sum(inservice.hours for inservice in planed_inservices)
+        else:
+            planed_inservices = None
+            planed_hours = None
+    except ObjectDoesNotExist:
+        planed_inservices = None
+        planed_hours = None
+
     total_hours = inservices.aggregate(Sum('hours'))['hours__sum']
     if total_hours is None:
         total_hours = 0
@@ -1095,7 +1113,8 @@ def inservice_report_display(request, arID):
     else:
         enough=True
 
-    context ={'inservices':inservices, 'total_hours':total_hours, 'enough':enough, 'arID':arID, 'annual_report':annual_report}
+    context ={'inservices':inservices, 'total_hours':total_hours, 'enough':enough, 'arID':arID, 'annual_report':annual_report,
+              'planed_inservices':planed_inservices, 'planed_hours':planed_hours}
 
     return render(request, 'inservice_report_display.html', context)
 

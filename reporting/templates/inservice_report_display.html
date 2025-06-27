@@ -4,6 +4,65 @@
 
 
 {% block content %}
-
+    <div class="card card-body">
+        <div class="row mt-1">
+        <div class="col-auto">
+        <h6>{{ annual_report}}</h6>
+            <div class="">
+                    <div class="table-responsive">
+                                <table class="table-sm table-auto table-bordered">
+                                    <thead>
+                                        <th>Dates</th><th>Inservice Topic</th><th>Presenter</th><th>Hours</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for inservice in inservices %}
+                                            <tr>
+                                                <td>{{ inservice.dates }}</td>
+                                                <td>{{ inservice.topic }}</td>
+                                                <td>{{ inservice.presenter }}</td>
+                                                <td>{{ inservice.hours}}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        <tr><td></td><td></td>
+                                            <td style="text-align: right">Total hours:</td>
+                                            <td>
+                                                <b id="total-hours">{{ total_hours }}</b>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                 </table>
+                    </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <h6>In-service activities listed in the 190-day Report</h6>
+            <div class="">
+                <table class="table-sm table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Dates</th>
+                      <th>Hours</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for inservice in planed_inservices %}
+                      <tr>
+                        <td>{{ inservice.get_type_display }}</td>
+                        <td>{{ inservice.dates }}</td>
+                        <td>{{ inservice.hours }}</td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td colspan="3">No inservice days found</td>
+                      </tr>
+                    {% endfor %}
+                  <tr><td colspan="3" class="text-right">Total Hours Planned: {{ planed_hours }}</td></tr>
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
 
 {% endblock %}
