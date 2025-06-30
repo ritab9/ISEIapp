@@ -46,6 +46,7 @@ def report_dashboard(request, schoolID, school_yearID):
 def student_report(request,arID):
 
     redirect_to_school_dashboard = False
+    show_all=None
     try:
         annual_report = AnnualReport.objects.select_related('school__street_address__country').get(id=arID)
         school = annual_report.school
