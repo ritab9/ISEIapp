@@ -188,6 +188,8 @@ def teacherdashboard(request, userID):
     highest_degree = None
     tcertificate = None
 
+    academic_classes = AcademicClass.objects.filter(teacher=teacher).order_by('-date_submitted')
+
     if StandardChecklist.objects.filter(teacher=teacher):
         standard_checklist = StandardChecklist.objects.get(teacher=teacher)
     else:
@@ -249,6 +251,7 @@ def teacherdashboard(request, userID):
                    today=today, basic_met=basic_met, basic_not_met=basic_not_met,
                    tcert_application=tcert_application, highest_degree=highest_degree,
                    checklist=standard_checklist,
+                   academic_classes=academic_classes,
                   )
     return render(request, 'teachercert/teacher_dashboard.html', context)
 

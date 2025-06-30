@@ -294,6 +294,31 @@
     {% endif %}
 
 
+<!-- Academic classes listed -->
+    {% if academic_classes %}
+        <div class="card card-body">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <th>University</th><th>Course</th><th>Credits</th>
+                    <th>Date Completed</th>
+                    <th>Transcript Requested/Received</th>
+                </thead>
+                <tbody>
+                    {% for class in academic_classes %}
+                        <tr>
+                            <td>{{ class.university }}</td>
+                            <td>{{ class.name }}</td>
+                            <td>{{ class.credits }}</td>
+                            <td>{{ class.date_completed }}</td>
+                            <td>{{ transcript_requested|yesno:"Yes,No" }}/
+                                {{ transcript_received|yesno:"Yes,No" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

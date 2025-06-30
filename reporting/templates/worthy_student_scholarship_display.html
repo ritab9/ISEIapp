@@ -6,6 +6,7 @@
 
 {% block content %}
      <h6 style="text-align: center">{{ wss }}</h6>
+    <h6 class="small text-center">Provided through The Laymen Foundation (pTLF) </h6>
 
 <!-- Enrollment Data -->
      <div class="card card-body">
@@ -22,13 +23,15 @@
                 <table class="table table w-auto">
                     <tbody>
                         <tr>
-                            <td class="text-right">{{ wss|verbose_name:"school_generated_fund" }}</td>
+                            <td class="text-right">All Worthy Student Fund distributed (except pTLF):</td>
                             <td class="text-left">${{ wss.school_generated_fund }}</td>
                             <td class="text-right">{{ wss|verbose_name:'students_assisted_total' }}</td>
                             <td class="text-left">{{ wss.students_assisted_total }}</td>
                         </tr>
                         <tr>
-                            <td class="text-right">{{ wss|verbose_name:'wss_fund' }}</td>
+                            <td class="text-right">
+                                Worthy Student Scholarship Fund money distributed (pTLF only)
+                            </td>
                             <td class="text-left">${{ wss.wss_fund }}</td>
                             <td class="text-right">{{ wss|verbose_name:'students_assisted_wss' }}</td>
                             <td class="text-left">{{ wss.students_assisted_wss }}</td>

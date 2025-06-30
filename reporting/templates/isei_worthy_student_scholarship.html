@@ -27,7 +27,11 @@
             <tbody>
                 {% for wss in wssr %}
                     <tr>
-                        <td>{{ wss.annual_report.school }}</td>
+                        <td>
+                            <a class="" href="{% url wss.annual_report.report_type.view_name wss.annual_report.id %}">
+                                {{ wss.annual_report.school }}
+                            </a>
+                        </td>
                         <td>{{ wss.opening_enrollment}}</td><td>{{ wss.closing_enrollment }}</td>
                         <td>${{ wss.school_generated_fund }}</td><td>${{ wss.wss_fund }}</td>
                         <td>{{ wss.students_assisted_total }}</td><td>{{ wss.students_assisted_wss }}</td>

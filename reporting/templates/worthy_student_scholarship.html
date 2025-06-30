@@ -6,7 +6,10 @@
 
 {% block content %}
 
-    <h6 class="mt-3 text-center">{{ wss }}</h6>
+    <div class="">
+        <h6 class="mt-3 text-center">{{ wss }} </h6>
+        <h6 class="small text-center">Provided through The Laymen Foundation (<b>pTLF</b>) </h6>
+    </div>
 
 <!-- Enrollment Data -->
      <div class="card card-body">
@@ -27,15 +30,21 @@
                 <table class="table table-sm w-auto">
                     <tbody>
                         <tr>
-                            <td class="text-right">{{ form.school_generated_fund.label_tag }}</td>
+                            <td class="text-right">
+                                All Worthy Student Fund distributed (except pTLF):
+                            </td>
                             <td class="text-left">${{ form.school_generated_fund }}</td>
                             <td class="text-right">{{ form.students_assisted_total.label_tag }}</td>
                             <td class="text-left">{{ form.students_assisted_total }}</td>
                         </tr>
                         <tr>
-                            <td class="text-right">{{ form.wss_fund.label_tag }}</td>
+                            <td class="text-right">
+                                Worthy Student Scholarship Fund money distributed (pTLF only)
+                            </td>
                             <td class="text-left">${{ form.wss_fund }}</td>
-                            <td class="text-right">{{ form.students_assisted_wss.label_tag }}</td>
+                            <td class="text-right">
+                                Number of students assisted from Worthy Student Scholarship Fund (pTLF):
+                            </td>
                             <td class="text-left">{{ form.students_assisted_wss }}</td>
                         </tr>
                         <tr>
@@ -45,7 +54,7 @@
                             <td class="text-left">
                                 {% if form.instance.letter %}
                                     <p>Existing document: <a href="{{ form.instance.letter.url }}">{{ form.instance.letter.name }}</a></p>
-                                     <p>If you would like to <b>replace</b> it upload a new file. If you have more than one letter please save them together in one PDF. </p>
+                                     <p>If you would like to <b>replace</b> the Thank You letter, just upload a new file. If you have more than one letter please save them together in one PDF. </p>
                                 {% endif %}
                                 {{ form.letter }}</td>
                         </tr>
