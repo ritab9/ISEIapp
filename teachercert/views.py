@@ -188,7 +188,7 @@ def teacherdashboard(request, userID):
     highest_degree = None
     tcertificate = None
 
-    academic_classes = AcademicClass.objects.filter(teacher=teacher).order_by('-date_submitted')
+    academic_classes = AcademicClass.objects.filter(teacher=teacher).order_by('-date_completed')
 
     if StandardChecklist.objects.filter(teacher=teacher):
         standard_checklist = StandardChecklist.objects.get(teacher=teacher)
