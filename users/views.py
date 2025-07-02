@@ -121,6 +121,8 @@ def loginpage(request):
                         return redirect('test_order_dashboard', user.profile.school.id)
                     elif is_in_group(request.user, 'staff'):
                         return redirect('isei_dashboard')
+                    elif is_in_group(request.user, 'scholarship_report'):
+                        return redirect('worthy_student_scholarship_non_member', user.profile.school.id)
                     else:
                         messages.error(request, 'User not assigned to a group. Please contact ISEI.')
                         logout(request)

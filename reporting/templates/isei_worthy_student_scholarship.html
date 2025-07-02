@@ -1,16 +1,20 @@
 {% extends 'reporting_base.html' %}
 {% load verbose_name %}
+{% load humanize %}
+
 
 {% block title %} Worthy Student Scholarship {% endblock title %}
 
 
 {% block content %}
+
+     <div class="card card-body">
      <h6 style="text-align: center">Worthy Student Scholarship (WSS) Reports Summary for {{ current_school_year }}</h6>
 
 <!-- Enrollment Data -->
         <table class="table table-striped table-bordered">
-            <thead class="table-ISEIblue4">
-                <tr>
+            <thead class="table table-sm table-striped">
+                <tr class="blue-header">
                     <th rowspan="2">School</th>
                     <th colspan="2" class="text-center">Enrollment</th>
                     <th colspan="2" class="text-center">Funds</th>
@@ -18,7 +22,7 @@
                     <th rowspan="2">Next Year's Budget for WS</th>
                     <th rowspan="2">Thank you Letter</th>
                 </tr>
-                <tr>
+                <tr class="blue-header2">
                     <th>Opening</th><th>Closing</th>
                     <th>School Generated</th><th>Worthy Student Scholarship</th>
                     <th>From all funds</th><th>From Worthy Student Scholarship</th>
@@ -28,14 +32,20 @@
                 {% for wss in wssr %}
                     <tr>
                         <td>
-                            <a class="" href="{% url wss.annual_report.report_type.view_name wss.annual_report.id %}">
+                            {% if wss.annual_report.school.abbreviation == "FA" %}
+                            <a class="" href="{% url "worthy_student_scholarship_non_member" wss.annual_report.school.id %}">
                                 {{ wss.annual_report.school }}
                             </a>
+                            {% else %}
+                            <a class="" href="{% url "worthy_student_scholarship" wss.annual_report.id %}">
+                                {{ wss.annual_report.school }}
+                            </a>
+                            {% endif %}
                         </td>
                         <td>{{ wss.opening_enrollment}}</td><td>{{ wss.closing_enrollment }}</td>
-                        <td>${{ wss.school_generated_fund }}</td><td>${{ wss.wss_fund }}</td>
+                        <td>${{ wss.school_generated_fund|floatformat:2|intcomma }}</td><td>${{ wss.wss_fund|floatformat:2|intcomma }}</td>
                         <td>{{ wss.students_assisted_total }}</td><td>{{ wss.students_assisted_wss }}</td>
-                        <td>${{ wss.next_year_budget }}</td>
+                        <td>${{ wss.next_year_budget|floatformat:2|intcomma }}</td>
 
                         {% if wss.letter %}
                             <td class="text-left"><a href="{{ wss.letter.url }}">View Uploaded Letter</a></td>
@@ -47,8 +57,7 @@
             </tbody>
         </table>
 
-
-
+     </div>
 
 
 {% endblock %}

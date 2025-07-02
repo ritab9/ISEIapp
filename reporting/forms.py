@@ -269,22 +269,76 @@ class ClosingForm(forms.ModelForm):
             'student_baptism_non_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
         }
 
+from decimal import Decimal, InvalidOperation
+
+class CommaSeparatedDecimalField(forms.DecimalField):
+    def clean(self, value):
+        if value is not None:
+            print(value)
+            value = str(value).replace(',', '')  # Remove commas
+        return super().clean(value)
 
 class WorthyStudentScholarshipForm(forms.ModelForm):
+    school_generated_fund = CommaSeparatedDecimalField(
+        max_digits=12, decimal_places=2,
+        widget=forms.TextInput(attrs={'style': 'max-width: 100px;'})
+    )
+    wss_fund = CommaSeparatedDecimalField(
+        max_digits=12, decimal_places=2,
+        widget=forms.TextInput(attrs={'style': 'max-width: 100px;'})
+    )
+    next_year_budget = CommaSeparatedDecimalField(
+        max_digits=12, decimal_places=2,
+        widget=forms.TextInput(attrs={'style': 'max-width: 100px;'})
+    )
+
+
+    class Meta:
+            model = WorthyStudentScholarship
+            fields = [
+                      'school_generated_fund', 'wss_fund',
+                        'students_assisted_total', 'students_assisted_wss',
+                        'next_year_budget', 'letter'
+                      ]
+
+            widgets = {
+                #'school_generated_fund': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+                #'wss_fund': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+                'students_assisted_total': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+                'students_assisted_wss': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+                #'next_year_budget': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+                'letter': forms.FileInput(attrs={'size': 1}),
+
+            }
+
+class WorthyStudentScholarshipNonMemberForm(forms.ModelForm):
+    school_generated_fund = CommaSeparatedDecimalField(
+        max_digits=12, decimal_places=2,
+        widget=forms.TextInput(attrs={'style': 'max-width: 100px;'})
+    )
+    wss_fund = CommaSeparatedDecimalField(
+        max_digits=12, decimal_places=2,
+        widget=forms.TextInput(attrs={'style': 'max-width: 100px;'})
+    )
+    next_year_budget = CommaSeparatedDecimalField(
+        max_digits=12, decimal_places=2,
+        widget=forms.TextInput(attrs={'style': 'max-width: 100px;'})
+    )
+
     class Meta:
         model = WorthyStudentScholarship
         fields = [
-                  'school_generated_fund', 'wss_fund',
-                    'students_assisted_total', 'students_assisted_wss',
-                    'next_year_budget', 'letter'
-                  ]
+            'opening_enrollment', 'closing_enrollment',
+            'school_generated_fund', 'wss_fund',
+            'students_assisted_total', 'students_assisted_wss',
+            'next_year_budget', 'letter'
+            ]
 
         widgets = {
-            'school_generated_fund': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
-            'wss_fund': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'opening_enrollment': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
+            'closing_enrollment': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
             'students_assisted_total': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
             'students_assisted_wss': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
-            'next_year_budget': forms.NumberInput(attrs={'style': 'max-width: 100px;'}),
             'letter': forms.FileInput(attrs={'size': 1}),
 
         }

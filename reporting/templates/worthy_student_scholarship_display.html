@@ -1,5 +1,7 @@
 {% extends 'reporting_base.html' %}
 {% load verbose_name %}
+{% load humanize %}
+
 
 {% block title %} Worthy Student Scholarship {% endblock title %}
 
@@ -20,11 +22,11 @@
 
          <div class="card card-body">
              <div class="col">
-                <table class="table table w-auto">
+                <table class="table table-sm w-auto table-bordered">
                     <tbody>
                         <tr>
                             <td class="text-right">All Worthy Student Fund distributed (except pTLF):</td>
-                            <td class="text-left">${{ wss.school_generated_fund }}</td>
+                            <td class="text-left">${{ wss.school_generated_fund|floatformat:2|intcomma }}</td>
                             <td class="text-right">{{ wss|verbose_name:'students_assisted_total' }}</td>
                             <td class="text-left">{{ wss.students_assisted_total }}</td>
                         </tr>
@@ -32,13 +34,13 @@
                             <td class="text-right">
                                 Worthy Student Scholarship Fund money distributed (pTLF only)
                             </td>
-                            <td class="text-left">${{ wss.wss_fund }}</td>
+                            <td class="text-left">${{ wss.wss_fund|floatformat:2|intcomma }}</td>
                             <td class="text-right">{{ wss|verbose_name:'students_assisted_wss' }}</td>
                             <td class="text-left">{{ wss.students_assisted_wss }}</td>
                         </tr>
                         <tr>
                              <td class="text-right">{{ wss|verbose_name:'next_year_budget' }}</td>
-                            <td class="text-left">${{ wss.next_year_budget }}</td>
+                            <td class="text-left">${{ wss.next_year_budget|floatformat:2|intcomma }}</td>
                             <td class="text-right">{{ wss|verbose_name:'letter' }}</td>
                             {% if wss.letter %}
                                 <td class="text-left"><a href="{{ wss.letter.url }}">View Uploaded Letter</a></td>

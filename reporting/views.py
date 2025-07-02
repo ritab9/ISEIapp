@@ -1418,6 +1418,42 @@ def closing_report_display(request, arID):
     context = dict(closing=closing, grade_count_fields=grade_count_fields, part_time_grade_count_fields=part_time_grade_count_fields)
     return render(request, 'closing_report_display.html', context)
 
+
+@login_required(login_url='login')
+def worthy_student_scholarship_non_member(request, schoolID):
+    school = School.objects.get(id=schoolID)
+    school_year = school.current_school_year
+
+
+    report_type = ReportType.objects.get(code="WS")
+    annual_report, _ = AnnualReport.objects.get_or_create(
+        school=school,
+        school_year=school_year,
+        report_type=report_type
+    )
+
+    wss, created = WorthyStudentScholarship.objects.get_or_create(annual_report=annual_report)
+
+    if request.method == 'POST':
+        form = WorthyStudentScholarshipNonMemberForm(request.POST, request.FILES or None, instance=wss)
+        if form.is_valid():
+            form.save()
+
+            if 'submit' in request.POST:
+                if not annual_report.submit_date:
+                    annual_report.submit_date = date.today()
+                annual_report.last_update_date = date.today()
+                annual_report.save()
+
+        messages.success(request, "Your report was successfully submitted.")
+    else:
+        form = WorthyStudentScholarshipNonMemberForm(instance=wss)
+
+    context = dict(form=form, wss=wss)
+
+    return render(request, 'worthy_student_scholarship.html', context)
+
+
 @login_required(login_url='login')
 def worthy_student_scholarship(request, arID):
 
