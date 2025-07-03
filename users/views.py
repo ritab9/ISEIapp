@@ -60,7 +60,7 @@ def register_teacher(request):
 
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff'])
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
 def register_teacher_from_employee_report(request, personnelID):
     personnel = Personnel.objects.get(id=personnelID)
     school = personnel.annual_report.school

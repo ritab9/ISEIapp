@@ -85,12 +85,22 @@
                 <tr>
                     {% if 'employee_report_display' not in request.path %}
                         <td>
-                            <a href="{% url 'employee_edit' arID=arID personnelID=p.id %}">
+                            <a class="clickable" href="{% url 'employee_edit' arID=arID personnelID=p.id %}">
                                 Edit
                             </a>
                         </td>
                     {% endif %}
-                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{% if p.teacher %}
+                                <a href="{% url 'teacher_dashboard' userID=p.teacher.user.id %}">
+                                    {{ p.first_name }} {{ p.last_name }}</a>
+                        {% else %}
+                            {{ p.first_name }} {{ p.last_name }}
+                            {% if personnel_group.code in 'AT' %}
+                                <hr>
+                                 <a class="small error clickable" href="{% url 'register_teacher_from_employee_report' personnelID=p.id %}">Create teacher account</a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
                     <td>{{ p.get_status_display }}</td>
                     <td>{% for pos in p.positions.all %} {{ pos }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
                     <td>{% for deg in p.personneldegree_set.all %} {{ deg.degree }} - {{ deg.area_of_study }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
