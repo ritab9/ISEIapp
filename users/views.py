@@ -65,9 +65,15 @@ def register_teacher_from_employee_report(request, personnelID):
     personnel = Personnel.objects.get(id=personnelID)
     school = personnel.annual_report.school
 
+    username = f"{personnel.first_name}.{personnel.last_name}"
+
+    # Check if username already exists
+    if User.objects.filter(username=username).exists():
+        messages.error(request, "A user with this username already exists. Please contact ISEI.")
+        return redirect('employee_report', personnel.annual_report.id)  # Replace with your actual redirect
+
     # Generate a random password
     password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
-    username = personnel.first_name + "." + personnel.last_name
 
     new_user = User.objects.create_user(
         username=username,
@@ -96,7 +102,9 @@ def register_teacher_from_employee_report(request, personnelID):
 
     messages.success(request, 'Account was created for ' + username)
 
-    return redirect('personnel_directory', schoolID=school.id)
+    return redirect('employee_report', personnel.annual_report.id)
+
+    #return redirect('personnel_directory', schoolID=school.id)
 
 @unauthenticated_user
 def loginpage(request):
