@@ -22,8 +22,8 @@
 
 <div class="row">
 <!-- School Info -->
-    <div class = "col col-auto card">
-        <div class="card-body">
+    <div class = "col col-auto card card-body">
+        <div class="">
             <h6 class="card-title">{{ school.name }}</h6>
                 <p class="card-text">
                     <strong>Address:</strong><br>
@@ -191,7 +191,7 @@
 
 
 <!-- Teacher Cert and Safety Form Link -->
-    <div class = "col col-auto ">
+    <div class = "col col-auto card">
     <!-- Safety form link-->
         <div class="card-body card">
             <h6><a href="{{ safety_form_link }}" target="_blank" rel="noopener noreferrer">Safety &amp; Maintenance Inspection Form</a></h6>
@@ -218,12 +218,11 @@
         </div>
 
         <div class="card-body card">
-            <h6> School Data</h6>
+            <h6> School Data</h6><hr>
             <a href="{% url 'longitudinal_enrollment_single' individual_school_name=school.name %}">Enrollment History</a>
             <hr>
             <a href="{% url 'staff_retention_school' schoolID=school.id %}">Staff Retention Data</a>
         </div>
-
     </div>
 
 </div>

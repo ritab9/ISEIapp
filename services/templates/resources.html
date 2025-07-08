@@ -14,7 +14,7 @@
 
 
     <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
-        <div class="col">
+        <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-book"></i>  <strong>General Documents/Resources</strong>
@@ -31,7 +31,22 @@
             </div>
         </div>
 
-        <div class="col">
+        <div class="col mb-2">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <i class="bi bi-pencil-square"></i>  <strong>Event Registrations</strong>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for resource in registrations %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                    <i class="bi bi-eyeglasses"></i>  <strong>Accreditation Documents</strong>
@@ -46,7 +61,7 @@
             </div>
         </div>
 
-        <div class="col">
+        <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-person-lines-fill"></i>  <strong>Evaluation Forms</strong>
@@ -67,9 +82,9 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
-        <div class="col">
+    <!--/div>
+    <div class="row row-cols-1 row-cols-md-3 g-3 mt-2"-->
+        <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-hammer"></i>  <strong>Safety and Maintenance</strong>
@@ -84,7 +99,7 @@
             </div>
         </div>
 
-        <div class="col">
+        <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-people-fill"></i>  <strong>Meeting Materials</strong>
