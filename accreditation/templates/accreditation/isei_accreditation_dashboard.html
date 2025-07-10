@@ -12,7 +12,7 @@
                 <tr>
                     <th colspan="2" style="background-color: whitesmoke"></th>
                     <th colspan="1" class="orange-header">SelfStudy</th>
-                    <th colspan="3" class="blue-header">Accreditation</th>
+                    <th colspan="4" class="blue-header">Accreditation</th>
                     <th colspan="2" class="orange-header">AAPR</th>
                 </tr>
 <!-- Row two of Table Head-->
@@ -44,6 +44,7 @@
                             { % endif %} -->
                         </a>
                     </th>
+                    <th class="blue-header2">Visiting Team Report </th>
                     <th class="orange-header2 align-top">Add/Edit</th>
                     <th class="orange-header2">Progress <br><small>Last Update</small></th>
                 </tr>
@@ -117,6 +118,11 @@
                                 {% if accreditation.term_comment %}<br> {{ accreditation.term_comment }}
                                 {% endif %}
                              </small>
+                        </td>
+                        <td class="blue-column">
+                            {% if accreditation.visiting_team_report %}
+                                <a href="{{ accreditation.visiting_team_report }}" target="_blank">View Report</a>
+                            {% endif %}
                         </td>
 
                         <td class="orange-column">
