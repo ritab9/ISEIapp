@@ -259,14 +259,14 @@ class ClosingForm(forms.ModelForm):
 
         widgets = {
              'final_school_day': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
-            'no_mission_trips': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
-            'no_mission_trips_school': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'no_mission_trips': forms.NumberInput(attrs={'min': 1, 'max': 100, 'style': 'max-width: 30px;'}),
+            'no_mission_trips_school': forms.NumberInput(attrs={'min': 1, 'max': 100, 'style': 'max-width: 30px;'}),
             'mission_trip_locations': TextInput(attrs={'style': 'max-width: 300px;'}),
-            'student_lead_evangelistic_meetings': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'student_lead_evangelistic_meetings': forms.NumberInput(attrs={'min': 1, 'max': 100, 'style': 'max-width: 30px;'}),
             'evangelistic_meeting_locations': TextInput(attrs={'style': 'max-width: 300px;'}),
-            'student_evangelistic_meetings_baptism': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
-            'student_baptism_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
-            'student_baptism_non_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'student_evangelistic_meetings_baptism': forms.NumberInput(attrs={'min': 1, 'max': 100, 'style': 'max-width: 30px;'}),
+            'student_baptism_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 100, 'style': 'max-width: 30px;'}),
+            'student_baptism_non_sda_parent': forms.NumberInput(attrs={'min': 1, 'max': 100, 'style': 'max-width: 30px;'}),
         }
 
 from decimal import Decimal, InvalidOperation
