@@ -11,21 +11,25 @@
 
 <h5 class="mb-3"> Teacher Certification Status</h5>
 <!-- Percent of registered teachers -->
-    <div class="mb-3">
-        <p>Number of registered teachers: {{ number_of_teachers }}</p>
-        <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
-        <p> Percent of registered teachers certified:
-            {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
-                {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
-                {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
-                {% else %} <span style="color:green">{{ percent_certified }}%</span>
-            {% endif %}
-        </p>
-        <p>
-            <a href="{% url 'school_checklist_summary' schoolid %}">
-                Missing Requirements Summary
-            </a>
-        </p>
+    <div class="row mb-3">
+        <div class="col">
+            <p>Number of registered teachers: {{ number_of_teachers }}</p>
+            <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
+            <p> Percent of registered teachers certified:
+                {% if percent_certified < 50 %}<span style="color:red">{{ percent_certified}}%</span>
+                    {% elif percent_certified < 70 %} <span style="color:orange">{{ percent_certified}}%</span>
+                    {% elif percent_certified < 85 %} <span style="color:yellowgreen">{{ percent_certified}}%</span>
+                    {% else %} <span style="color:green">{{ percent_certified }}%</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col">
+            <p>
+                <a href="{% url 'school_checklist_summary' schoolid %}">
+                    Missing Teacher Certification Requirements Summary
+                </a>
+            </p>
+        </div>
     </div>
 
 <!-- Certified Teachers -->
