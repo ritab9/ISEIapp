@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from users.decorators import allowed_users
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .filters import *
 from .forms import *
 from users.utils import is_in_group
@@ -1304,3 +1304,101 @@ def create_certificate(request, certID=None):
 
     context = dict(certificate = certificate, highest_degree=highest_degree, endorsements=endorsements)
     return render(request, 'teachercert/create_certificate.html', context)
+
+
+
+#Count missing requirments for a given school
+
+from collections import defaultdict
+
+FIELDS_TO_CHECK = [
+    "sop", "sda_doctrine", "sda_history", "sda_health",
+    "sda_education", "psychology",
+    "assessment", "exceptional_child", "technology",
+    "sec_methods"
+]
+
+RECOMMENDED_FIELDS = ["dev_psychology", "sec_rw_methods"]
+
+def get_missing_checklist_counts(teachers):
+
+    checklists = StandardChecklist.objects.filter(teacher__in=teachers)
+    total = checklists.count()
+    if total == 0:
+        return [], 0
+
+    missing_counts = defaultdict(int)
+
+    for checklist in checklists:
+        for field in FIELDS_TO_CHECK:
+            value = getattr(checklist, field)
+            if isinstance(value, bool):
+                if not value:
+                    missing_counts[field] += 1
+            else:
+                if not value or value <= 0:
+                    missing_counts[field] += 1
+
+    result = []
+    for field in FIELDS_TO_CHECK:
+        count = missing_counts.get(field, 0)
+        percent = round((count / total) * 100, 1)
+        verbose_name = StandardChecklist._meta.get_field(field).verbose_name
+        result.append((verbose_name, count, percent))
+
+    result.sort(key=lambda x: x[1], reverse=True)
+    return result, total
+
+def school_checklist_summary(request, school_id):
+    school = get_object_or_404(School, id=school_id)
+    teachers = Teacher.objects.filter(school=school)
+    missing_data, total = get_missing_checklist_counts(teachers)
+
+    context = dict(
+        school=school, missing_data=missing_data, total=total,
+    )
+    return render(request, "teachercert/checklist_school_summary.html", context)
+
+def isei_checklist_summary(request):
+    selected_school_id = request.GET.get("school")
+    all_schools = School.objects.filter(active=True, test=False)
+
+    if selected_school_id:
+        schools = all_schools.filter(id=selected_school_id)
+    else:
+        schools = all_schools
+
+    school_summaries = []
+    overall_counts = defaultdict(int)
+    overall_total_teachers = 0
+
+    for school in schools:
+        teachers = Teacher.objects.filter(school=school)
+        missing_data, total = get_missing_checklist_counts(teachers)
+        school_summaries.append({
+            "school": school,
+            "missing_data": missing_data,
+            "total": total,
+        })
+
+        overall_total_teachers += total
+        for verbose_name, count, _ in missing_data:
+            overall_counts[verbose_name] += count
+
+    overall_data = []
+    for field in FIELDS_TO_CHECK:
+        verbose_name = StandardChecklist._meta.get_field(field).verbose_name
+        count = overall_counts.get(verbose_name, 0)
+        percent = round((count / overall_total_teachers) * 100, 1) if overall_total_teachers else 0
+        overall_data.append((verbose_name, count, percent))
+
+    overall_data.sort(key=lambda x: x[1], reverse=True)
+
+    context = dict(
+        school_summaries=school_summaries,
+        overall_data=overall_data,
+        overall_total=overall_total_teachers,
+        all_schools=all_schools,
+        selected_school_id=int(selected_school_id) if selected_school_id else None,
+    )
+    return render(request, "teachercert/checklist_isei_summary.html", context)

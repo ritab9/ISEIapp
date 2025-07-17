@@ -18,11 +18,20 @@
 
 <div class="row">
     <div class="card card-body">
-        <form method="get">
-                {{ school_filter.form}}
-            <button class="btn btn-ISEIblue3 btn-sm" id="id_filter_button" type="submit">Search</button> &nbsp;
-            <a href="{%  url 'isei_teachercert_dashboard' %}">Clear all filters</a>
-        </form>
+        <div class="row">
+            <div class="col">
+                <form method="get">
+                        {{ school_filter.form}}
+                    <button class="btn btn-ISEIblue3 btn-sm" id="id_filter_button" type="submit">Search</button> &nbsp;
+                    <a href="{%  url 'isei_teachercert_dashboard' %}">Clear all filters</a>
+                </form>
+            </div>
+            <div class="col">
+                <a href="{% url 'isei_checklist_summary' %}">
+                    View All Schools’ Checklist Summary
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 

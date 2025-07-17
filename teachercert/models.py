@@ -362,7 +362,7 @@ class TeacherCertificationApplication(models.Model):
     def resume_filename(self):
         return os.path.basename(self.resume_file.name)
 
-
+#this will eventually be removed
 class TeacherBasicRequirement(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete= models.CASCADE, blank=False, null=False)
     basic_requirement = models.ForeignKey(Requirement, on_delete=models.CASCADE, blank=False, null=False)
@@ -375,6 +375,8 @@ class TeacherBasicRequirement(models.Model):
     def __str__(self):
         return self.basic_requirement.name
 
+
+#Replaces the one above
 class StandardChecklist(models.Model):
     teacher=models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=False, null=False,)
     sda=models.BooleanField(default=True, verbose_name= "SDA Church Member")

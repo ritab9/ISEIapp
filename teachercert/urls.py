@@ -81,4 +81,7 @@ urlpatterns = [
     path('isei_manage_application/<str:appID>/',views.isei_manage_application, name = 'isei_manage_application'),
 
     path('standard_checklist/<str:teacherID>/', views.standard_checklist, name = 'standard_checklist'),
+
+    path("school/<int:school_id>/checklist-summary/", views.school_checklist_summary, name="school_checklist_summary"),
+    path("isei/checklist-summary/", views.isei_checklist_summary, name="isei_checklist_summary"),
 ]

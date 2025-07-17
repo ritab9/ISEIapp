@@ -21,6 +21,11 @@
                 {% else %} <span style="color:green">{{ percent_certified }}%</span>
             {% endif %}
         </p>
+        <p>
+            <a href="{% url 'school_checklist_summary' schoolid %}">
+                Missing Requirements Summary
+            </a>
+        </p>
     </div>
 
 <!-- Certified Teachers -->

@@ -1,0 +1,48 @@
+{%  extends 'teachercert_base.html' %}
+{% load static %}
+
+
+{% block title %}
+    Requirements Not Met
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="card card-body">
+        <h6 class="text-center">Missing Requirements for {{ school.name }}'s teachers</h6>
+        <p>Total teachers: {{ total }}</p>
+
+        <table class="table table-responsive table-bordered">
+          <thead>
+            <tr>
+              <th>Requirement</th>
+              <th>Teachers Missing</th>
+              <th>Percent Missing</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for field, count, percent in missing_data %}
+              <tr>
+                <td>{{ field }}</td>
+                <td>{{ count }}</td>
+                <td>{{ percent }}%</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="3">All requirements are met.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+
+
+
+
+    <script>
+
+
+    </script>
+
+{% endblock %}
