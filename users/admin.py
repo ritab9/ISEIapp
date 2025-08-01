@@ -164,7 +164,7 @@ class CollegeAttended(admin.ModelAdmin):
     list_editable = ('transcript_requested', 'transcript_received', 'transcript_processed')
     list_display_links = ('name', 'teacher')
     list_filter = ( 'transcript_requested', 'transcript_received', 'transcript_processed', 'name',)
-    search_fields = ['name']
+    search_fields = ['name',  'teacher__first_name', 'teacher__last_name']
 
 
     def get_queryset(self, request):
