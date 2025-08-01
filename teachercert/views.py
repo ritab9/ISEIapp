@@ -1361,44 +1361,52 @@ def school_checklist_summary(request, school_id):
 
 def isei_checklist_summary(request):
     selected_school_id = request.GET.get("school")
-    all_schools = School.objects.filter(active=True, test=False)
+    selected_region = request.GET.get("region")  # 'us', 'intl', or None
+    all_schools = School.objects.filter(active=True, test=False).select_related('street_address')
 
     if selected_school_id:
-        schools = all_schools.filter(id=selected_school_id)
-    else:
-        schools = all_schools
+        all_schools = all_schools.filter(id=selected_school_id)
 
-    school_summaries = []
-    overall_counts = defaultdict(int)
-    overall_total_teachers = 0
+    # Apply region filter
+    if selected_region == "us":
+        schools = all_schools.filter(street_address__country__code="US")
+    elif selected_region == "intl":
+        schools = all_schools.exclude(street_address__country__code="US")
+    else:
+        schools = all_schools  # all
+
+    summaries = []
+    counts = defaultdict(int)
+    total_teachers = 0
 
     for school in schools:
         teachers = Teacher.objects.filter(school=school)
         missing_data, total = get_missing_checklist_counts(teachers)
-        school_summaries.append({
+        summaries.append({
             "school": school,
             "missing_data": missing_data,
             "total": total,
         })
-
-        overall_total_teachers += total
+        total_teachers += total
         for verbose_name, count, _ in missing_data:
-            overall_counts[verbose_name] += count
+            counts[verbose_name] += count
 
     overall_data = []
     for field in FIELDS_TO_CHECK:
         verbose_name = StandardChecklist._meta.get_field(field).verbose_name
-        count = overall_counts.get(verbose_name, 0)
-        percent = round((count / overall_total_teachers) * 100, 1) if overall_total_teachers else 0
+        count = counts.get(verbose_name, 0)
+        percent = round((count / total_teachers) * 100, 1) if total_teachers else 0
         overall_data.append((verbose_name, count, percent))
 
     overall_data.sort(key=lambda x: x[1], reverse=True)
 
     context = dict(
-        school_summaries=school_summaries,
+        school_summaries=summaries,
         overall_data=overall_data,
-        overall_total=overall_total_teachers,
-        all_schools=all_schools,
+        overall_total=total_teachers,
+        schools=schools,
         selected_school_id=int(selected_school_id) if selected_school_id else None,
+        selected_region=selected_region,
     )
+
     return render(request, "teachercert/checklist_isei_summary.html", context)

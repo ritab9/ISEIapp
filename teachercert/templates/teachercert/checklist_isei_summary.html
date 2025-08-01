@@ -12,20 +12,39 @@
         <h6 class="text-center">Teacher Certification Requirements not met summaries</h6>
 
         <form method="get" class="mb-3">
-          <label for="school-select">Filter by School:</label>
-          <select name="school" id="school-select" class="form-select" onchange="this.form.submit()">
-            <option value="">All Schools</option>
-            {% for school in all_schools %}
-              <option value="{{ school.id }}" {% if selected_school_id == school.id %}selected{% endif %}>
-                {{ school.name }}
-              </option>
-            {% endfor %}
-          </select>
+            <div class="col-md-6">
+                <label for="region-select">Filter by Region:</label>
+                <select name="region" id="region-select" class="form-select" onchange="this.form.submit()">
+                  <option value="" {% if not selected_region %}selected{% endif %}>All Regions</option>
+                  <option value="us" {% if selected_region == "us" %}selected{% endif %}>U.S. Schools</option>
+                  <option value="intl" {% if selected_region == "intl" %}selected{% endif %}>International Schools</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="school-select">Filter by School:</label>
+              <select name="school" id="school-select" class="form-select" onchange="this.form.submit()">
+                <option value="">All Schools</option>
+                {% for school in schools %}
+                  <option value="{{ school.id }}" {% if selected_school_id == school.id %}selected{% endif %}>
+                    {{ school.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
         </form>
 
         {% if not selected_school_id %}
-            <h6>ISEI-Wide Summary</h6>
-                <p>Total teachers across all schools: {{ overall_total }}</p>
+            <h6>
+                {% if selected_region == "us" %}
+                  U.S. Schools Summary
+                {% elif selected_region == "intl" %}
+                  International Schools Summary
+                {% else %}
+                  ISEI-Wide Summary
+                {% endif %}
+            </h6>
+            <p>Total teachers across selected schools: {{ overall_total }}</p>
 
                 <table class="table table-responsive table-bordered">
                   <thead>
