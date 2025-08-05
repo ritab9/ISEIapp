@@ -362,6 +362,31 @@
         }
     });
 
+    //prompt the user if they try to leave, refresh, or navigate away
+         let formChanged = false;
+          let formSubmitting = false;
+
+          // Detect changes in any form input
+          document.querySelectorAll('form input, form select, form textarea').forEach(element => {
+            element.addEventListener('change', () => {
+              formChanged = true;
+            });
+          });
+
+          // Allow safe exit if form is submitted
+          document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+              formSubmitting = true;
+            });
+          });
+
+          // Warn only if changes were made and form is not being submitted
+          window.addEventListener('beforeunload', function (e) {
+            if (formChanged && !formSubmitting) {
+              e.preventDefault(); // Required for some browsers
+              e.returnValue = ''; // Triggers the browser's built-in confirmation
+            }
+          });
 
 </script>
 

@@ -68,13 +68,14 @@ def student_report(request,arID):
         if request.method == 'POST':
 
             formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
-            all_forms_valid = True
             formset_instances = []
-
+            all_forms_valid = True
 
             for form in formset:
-
                 if form.has_changed():
+                    # ✅ Skip accidental empty form submissions if 'name' is blank
+                    if form.instance.pk is None and not form.data.get('name'):
+                        continue  # Skip this form entirely
 
                     if 'registration_date' in form.data:
                         date_string = form.data['registration_date']
@@ -84,16 +85,14 @@ def student_report(request,arID):
                         form.data['registration_date'] = registration_date.isoformat()
 
                     if form.is_valid():
-
                         if form.instance.pk is not None:
-                            form.save()
+                            form.save()  # ✅ Save existing valid forms immediately
                         else:
-                            instance=form.save(commit=False)
+                            instance = form.save(commit=False)
                             instance.annual_report = annual_report
-                            formset_instances.append(instance)
+                            formset_instances.append(instance)  # Save new valid forms in bulk later
                     else:
-                        all_forms_valid = False
-
+                        all_forms_valid = False  # ❌ Block redirect, but do not block saving others
 
             if formset_instances:
                 for instance in formset_instances:
@@ -156,8 +155,6 @@ def student_report(request,arID):
                                .order_by(status_order,'grade_level', 'name'))
 
             formset = StudentFormSet(queryset=students_qs)
-
-
 
     except AnnualReport.DoesNotExist:
         messages.error(request, f"AnnualReport with id {arID} doesn't exist.")
