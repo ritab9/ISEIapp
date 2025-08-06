@@ -74,8 +74,8 @@ def student_report(request,arID):
             for form in formset:
                 if form.has_changed():
                     # ✅ Skip accidental empty form submissions if 'name' is blank
-                    if form.instance.pk is None and not form.data.get('name'):
-                        continue  # Skip this form entirely
+                    #if form.instance.pk is None and not form.data.get('name'):
+                    #    continue  # Skip this form entirely
 
                     if 'registration_date' in form.data:
                         date_string = form.data['registration_date']
