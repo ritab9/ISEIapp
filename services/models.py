@@ -13,7 +13,7 @@ class ResourceType(models.Model):
 
 class Resource(models.Model):
     name = models.CharField(max_length=200)
-    link = models.URLField(max_length=1000)
+    link = models.URLField(max_length=1000, blank=True, null=True)
     type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
