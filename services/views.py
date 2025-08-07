@@ -120,7 +120,7 @@ def resources(request):
     admin_evaluation_resources = Resource.objects.filter(type__name='Admin Evaluation')
     safety_resources = Resource.objects.filter(type__name='Safety & Maintenance')
     meeting_materials =Resource.objects.filter(type__name='Meeting Materials')
-    registrations =Resource.objects.filter(type__name='Registration')
+    registrations =Resource.objects.filter(type__name='Registration').order_by('name')
 
 
     context=dict(teacher_evaluation_resources = teacher_evaluation_resources,

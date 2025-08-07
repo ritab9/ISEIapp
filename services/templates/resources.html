@@ -39,7 +39,9 @@
                 <div class="card-body">
                     <ul>
                         {% for resource in registrations %}
-                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                            <li{% if forloop.counter|divisibleby:2 %} class="ml-3" style="list-style-type: circle "{% endif %}>
+                                <a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
