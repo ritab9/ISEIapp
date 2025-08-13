@@ -1328,23 +1328,28 @@ def get_missing_checklist_counts(teachers):
         return [], 0
 
     missing_counts = defaultdict(int)
+    missing_teachers = defaultdict(list)
 
     for checklist in checklists:
+        teacher_name = checklist.teacher.name()
         for field in FIELDS_TO_CHECK:
             value = getattr(checklist, field)
+
             if isinstance(value, bool):
                 if not value:
                     missing_counts[field] += 1
+                    missing_teachers[field].append(teacher_name)
             else:
                 if not value or value <= 0:
                     missing_counts[field] += 1
+                    missing_teachers[field].append(teacher_name)
 
     result = []
     for field in FIELDS_TO_CHECK:
         count = missing_counts.get(field, 0)
         percent = round((count / total) * 100, 1)
         verbose_name = StandardChecklist._meta.get_field(field).verbose_name
-        result.append((verbose_name, count, percent))
+        result.append((verbose_name, count, percent,  missing_teachers.get(field, [])))
 
     result.sort(key=lambda x: x[1], reverse=True)
     return result, total
@@ -1388,7 +1393,7 @@ def isei_checklist_summary(request):
             "total": total,
         })
         total_teachers += total
-        for verbose_name, count, _ in missing_data:
+        for verbose_name, count, _, _ in missing_data:
             counts[verbose_name] += count
 
     overall_data = []

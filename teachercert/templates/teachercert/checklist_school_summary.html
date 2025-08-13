@@ -19,14 +19,25 @@
               <th>Requirement</th>
               <th>Teachers Missing</th>
               <th>Percent Missing</th>
+                <th>
+                    <a href="#" id="toggleTeacherNames" class="clickable">Show/Hide Teacher Names</a>
+                </th>
             </tr>
           </thead>
           <tbody>
-            {% for field, count, percent in missing_data %}
+            {% for field, count, percent, teacher_names in missing_data %}
               <tr>
                 <td>{{ field }}</td>
                 <td>{{ count }}</td>
                 <td>{{ percent }}%</td>
+                <td class="teacher-names hidden">
+                        <ul>
+                        {% for teacher in teacher_names %}
+                          <li>{{ teacher }}</li>
+                        {% endfor %}
+                      </ul>
+                </td>
+
               </tr>
             {% empty %}
               <tr>
@@ -37,11 +48,14 @@
         </table>
     </div>
 
-
-
-
     <script>
 
+    document.getElementById('toggleTeacherNames').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.teacher-names').forEach(function(el) {
+          el.classList.toggle('hidden');
+        });
+      });
 
     </script>
 
