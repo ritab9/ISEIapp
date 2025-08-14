@@ -69,7 +69,7 @@ def register_teacher_from_employee_report(request, personnelID):
 
     # Check if username already exists
     if User.objects.filter(username=username).exists():
-        messages.error(request, "A user with this username already exists. Please contact ISEI.")
+        messages.error(request, "A user with this username already exists. This might be a returning teacher, and their account needs to be reactivated. Please contact ISEI, and we will sort this out.")
         return redirect('employee_report', personnel.annual_report.id)  # Replace with your actual redirect
 
     # Generate a random password

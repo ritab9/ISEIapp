@@ -864,6 +864,12 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
             try:
                 with transaction.atomic():
                     personnel.save()
+
+                    if personnel.status == 'NE':
+                        if personnel.teacher:
+                            personnel.teacher.user.is_active = False
+                            personnel.teacher.user.save()
+
                     p_form.save_m2m()
 
                     subjects_teaching = p_form.cleaned_data.get('subjects_teaching')
