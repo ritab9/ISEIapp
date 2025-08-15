@@ -880,9 +880,11 @@ def employee_add_edit(request, arID, personnelID=None, positionCode=None):
         p_form = PersonnelForm(request.POST, instance=personnel_instance, schoolID=school)
         pd_formset = PersonnelDegreeFormset(request.POST, instance=personnel_instance, prefix='pd_formset')
 
+
         if 'delete' in request.POST:
             personnel_instance.delete()
             return redirect('employee_report', arID=arID)
+
 
         if p_form.is_valid() and pd_formset.is_valid():
 
