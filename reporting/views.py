@@ -33,6 +33,7 @@ from django.db import IntegrityError
 from django.utils.dateparse import parse_date
 from pandas import ExcelWriter
 
+from emailing.functions import send_simple_email
 
 
 #individual school reports
@@ -88,7 +89,15 @@ def student_report(request,arID):
 
                     if form.is_valid():
                         if form.instance.pk is not None:
-                            form.save()  # ✅ Save existing valid forms immediately
+                            instance = form.save()  # ✅ Save existing valid forms immediately
+                            if is_tn_school:
+                                if instance.status == 'withdrawn' and instance.us_state == 'TN':
+                                    send_simple_email(
+                                        "TN Student withdrawn",
+                                        f"{instance.name or 'Unknown Student'} from {instance.annual_report.school.name or 'Unknown School'} "
+                                        f"has been withdrawn on {instance.withdraw_date or 'Unknown Date'}\n"
+                                        f"The student is from {instance.TN_county or 'Unknown County'} "
+                                    )
                         else:
                             instance = form.save(commit=False)
                             instance.annual_report = annual_report

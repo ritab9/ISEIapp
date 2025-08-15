@@ -577,7 +577,10 @@ class Opening(models.Model):
 
     @property
     def opening_enrollment(self):
-        return self.grade_count.total_count()
+        if self.grade_count:
+            return self.grade_count.total_count()
+        else:
+            return None
 
     @property
     def retention_percentage(self):
@@ -590,17 +593,23 @@ class Opening(models.Model):
 
     @property
     def girl_percentage(self):
-        total = self.opening_enrollment
-        if total == 0:
+        if self.opening_enrollment and self.girl_count:
+            total = self.opening_enrollment
+            if total == 0:
+                return None
+            return round((self.girl_count or 0) / total * 100, 1)
+        else:
             return None
-        return round((self.girl_count or 0) / total * 100, 1)
 
     @property
     def boy_percentage(self):
-        total = self.opening_enrollment
-        if total == 0:
+        if self.opening_enrollment and self.boy_count:
+            total = self.opening_enrollment
+            if total == 0:
+                return None
+            return round((self.boy_count or 0) / total * 100, 1)
+        else:
             return None
-        return round((self.boy_count or 0) / total * 100, 1)
 
     def __str__(self):
         return str(self.annual_report)

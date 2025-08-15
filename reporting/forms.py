@@ -75,6 +75,10 @@ class StudentForm(forms.ModelForm):
         if gender == 'U':
             self.add_error('gender', ValidationError("Select Gender."))
 
+        if cleaned_data.get('status') == 'withdrawn':
+            if not cleaned_data.get('withdraw_date'):
+                self.add_error('withdraw_date', ValidationError("Select Withdraw Date."))
+
 
         if self.is_us_school:
             country = cleaned_data.get('country')

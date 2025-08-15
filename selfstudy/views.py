@@ -943,8 +943,11 @@ def profile_student(request, selfstudy_id, readonly=False):
 
             international_student_count = Student.objects.filter(annual_report=annual_student_report, status__in=['enrolled']).exclude(
                 country=school_country).count()
-            if opening_enrollment > 0:
-                percent_international = round( international_student_count * 100 / opening_enrollment, 1)
+            if opening_enrollment:
+                if opening_enrollment > 0:
+                    percent_international = round( international_student_count * 100 / opening_enrollment, 1)
+                else:
+                    percent_international = 0
             else:
                 percent_international = 0
 
@@ -958,9 +961,13 @@ def profile_student(request, selfstudy_id, readonly=False):
             #withdrawn_count = closing.withdraw_count if closing else None
 
             withdrawn_percentage = closing.withdrawn_percentage if closing else None
-            if opening_enrollment > 0:
-                not_returned_percentage = round(100 - opening.retention_percentage,1)
-                retention = round(opening.retention_percentage - withdrawn_percentage if withdrawn_percentage else opening.retention_percentage, 1)
+            if opening_enrollment:
+                if opening_enrollment > 0:
+                    not_returned_percentage = round(100 - opening.retention_percentage,1)
+                    retention = round(opening.retention_percentage - withdrawn_percentage if withdrawn_percentage else opening.retention_percentage, 1)
+                else:
+                    not_returned_percentage = None
+                    retention = None
             else:
                 not_returned_percentage = None
                 retention = None

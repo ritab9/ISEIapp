@@ -530,7 +530,7 @@ def update_academic_class(request, pk):
 @allowed_users(allowed_roles=['staff', 'principal', 'registrar','teacher'])
 def CEUreports(request):
     if request.user.groups.filter(name='staff').exists():  # ISEI staff has access to all reports
-        ceu_reports = CEUReport.objects.filter(teacher__user__is_active=True)
+        ceu_reports = CEUReport.objects.filter(teacher__user__is_active=True, teacher__school__test=False)
         is_staff = True
     elif request.user.groups.filter(name='principal').exists():
         principal = request.user.teacher
