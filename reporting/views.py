@@ -52,6 +52,10 @@ def student_report(request,arID):
         annual_report = AnnualReport.objects.select_related('school__street_address__country').get(id=arID)
         school = annual_report.school
 
+        school_year_str = annual_report.school_year.name
+        start_year = int(school_year_str.split('-')[0])
+        sept_10 = date(start_year, 9, 10)
+
         # Determine if the school is in US and in TN
         is_us_school = school.street_address.country.code == "US"
         is_tn_school = is_us_school and school.street_address.state_us == "TN"
@@ -80,12 +84,15 @@ def student_report(request,arID):
                     if form.instance.pk is None and not student_name:
                         continue  # Skip this form entirely
 
-                    if 'registration_date' in form.data:
-                        date_string = form.data['registration_date']
-                        registration_date = parse_date(date_string)
-                        if registration_date is None:
-                            raise ValueError(f"Could not parse date: {date_string}")
-                        form.data['registration_date'] = registration_date.isoformat()
+                    #if 'registration_date' in form.data:
+                    #    print('registration_date', form.data['registration_date'])
+                    #    date_string = form.data['registration_date']
+                    #    registration_date = parse_date(date_string)
+                    #    if registration_date is None:
+                    #        raise ValueError(f"Could not parse date: {date_string}")
+                    #    form.data['registration_date'] = registration_date.isoformat()
+                    #else:
+                    #    registration_date = None
 
                     if form.is_valid():
                         if form.instance.pk is not None:
@@ -94,7 +101,7 @@ def student_report(request,arID):
                                 if instance.status == 'withdrawn' and instance.us_state == 'TN':
                                     send_simple_email(
                                         "TN Student withdrawn",
-                                        f"{instance.name or 'Unknown Student'} from {instance.annual_report.school.name or 'Unknown School'} "
+                                        f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
                                         f"has been withdrawn on {instance.withdraw_date or 'Unknown Date'}\n"
                                         f"The student is from {instance.TN_county or 'Unknown County'} "
                                     )
@@ -102,6 +109,18 @@ def student_report(request,arID):
                             instance = form.save(commit=False)
                             instance.annual_report = annual_report
                             formset_instances.append(instance)  # Save new valid forms in bulk later
+
+                            if is_tn_school:
+                                if instance.us_state == 'TN':
+                                    registration_date=instance.registration_date
+                                    if registration_date:
+                                        if registration_date > sept_10:
+                                            send_simple_email(
+                                                "New TN Student registered",
+                                                f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
+                                                f"has been registered on {registration_date or 'Unknown Date'}\n"
+                                                f"The student is from {instance.TN_county or 'Unknown County'} "
+                                            )
                     else:
                         all_forms_valid = False  # ❌ Block redirect, but do not block saving others
 
