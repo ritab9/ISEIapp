@@ -55,7 +55,7 @@ class StudentForm(forms.ModelForm):
             'baptized': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'parent_sda': forms.Select(attrs={'style': 'max-width: 100px;'}),
             'status': forms.Select(attrs={'style': 'max-width: 100px;'}),  # forms.Select for choices field
-            'grade_level': forms.Select(attrs={'style': 'max-width: 50px;'}),
+            'grade_level': forms.Select(attrs={'style': 'max-width: 75px;'}),
             'registration_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
             'withdraw_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
             'location': forms.Select(attrs={'style': 'max-width: 100px;'}),  # forms.Select for choices field
