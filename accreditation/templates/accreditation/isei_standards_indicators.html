@@ -5,39 +5,43 @@
 
 {% block content %}
 
-    <div class="card card-body">
+    <div class="container my-4">
+        <div class="card card-body mx-auto" style="max-width: 1000px;">
 
-    <h5>ISEI-EA Standards</h5>
+            <h5>ISEI-EA Accreditation Standards</h5>
+                <hr>
+                    {% for standard in standards %}
+                        <h6 class="page-break-before">{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
+                        <hr>
 
-        <hr>
+                        {% for substandard in standard.substandards.all %}
+                            <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
 
-    {% for standard in standards %}
-        <h6>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
-        <hr>
+                            {% for indicator in substandard.filtered_indicators %}
+                                <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
+                                    {% if indicator.school_type.name != "All School Types" %}
+                                        <!--span class="small">({ { indicator.school_type.code }})</span-->
+                                    {% endif %}
+                                </p>
+                                <p class="mr-5 text-muted">{{ indicator.description }}</p>
+                            {% endfor %}
+                        {% endfor %}
 
-        {% for substandard in standard.substandards.all %}
-            <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
+                        {% for indicator in standard.filtered_indicators %}
+                            <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
+                                    {% if indicator.school_type.name != "All School Types" %}
+                                        <!--span class="small">({ { indicator.school_type.code }})</span-->
+                                    {% endif %}
+                            </p>
+                            <p class="mr-5 col text-muted">{{ indicator.description }}</p>
+                        {% endfor %}
 
-            {% for indicator in substandard.indicator_set.all %}
+                        <hr>
+                    {% endfor %}
 
-                <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
-                    {% if indicator.school_type.name != "All School Types" %}
-                        ({{ indicator.school_type }})
-                    {% endif %}</p>
-            {% endfor %}
-        {% endfor %}
 
-        {% for indicator in standard.indicator_set.all %}
-            <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
-                    {% if indicator.school_type.name != "All School Types" %}
-                        ({{ indicator.school_type }})
-                    {% endif %}</p>
-        {% endfor %}
-
-        <hr>
-    {% endfor %}
-
-    <p class="text-center"> As of April, 2025</p>
+            <p class="text-center"> As of April, 2025</p>
+        </div>
     </div>
 
 {% endblock %}

@@ -3,24 +3,50 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from django.db.models import Prefetch
 
 from selfstudy.models import SelfStudy
 from users.decorators import allowed_users
 from django.contrib import messages
 
-from .models import Accreditation, Standard, InfoPage
+from .models import Accreditation, Standard, InfoPage, Indicator
 from .forms import *
 from users.models import SchoolType
 from emailing.functions import send_simple_email
 
 #ISEI Views
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff'])
-def isei_standards_indicators(request):
-    standards = Standard.objects.top_level().prefetch_related('substandards', 'indicator_set')
+def isei_standards_indicators(request, school_id=None):
 
-    context=dict(standards=standards)
+    if school_id:
+        school = get_object_or_404(School, pk=school_id)
+        indicators_qs = Indicator.objects.filter(active=True, school_type__in=school.school_type.all())
+    else:
+        school=None
+        indicators_qs = Indicator.objects.filter(active=True)
+
+
+    indicator_prefetch = Prefetch(
+        'indicator_set',
+        queryset=indicators_qs,
+        to_attr='filtered_indicators'
+    )
+
+    standards = (
+        Standard.objects.top_level()
+        .prefetch_related(
+            indicator_prefetch,
+            Prefetch(
+                'substandards',
+                queryset=Standard.objects.prefetch_related(indicator_prefetch)
+            )
+        )
+    )
+
+
+    context = dict(standards=standards, school=school)
     return render(request, 'accreditation/isei_standards_indicators.html', context)
+
 
 
 @login_required(login_url='login')

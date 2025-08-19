@@ -112,7 +112,7 @@ def finalize_order(request, order_id):
 #resources page
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff', 'principal', 'registrar', 'test_ordering'])
-def resources(request):
+def resources(request, school_id=None):
 
     accreditation_resources= Resource.objects.filter(type__name='Accreditation')
     document_resources= Resource.objects.filter(type__name='Document')
@@ -129,7 +129,8 @@ def resources(request):
                  document_resources = document_resources,
                  safety_resources = safety_resources,
                  meeting_materials=meeting_materials,
-                 registrations=registrations)
+                 registrations=registrations,
+                 school_id=school_id)
 
     return render(request, 'resources.html', context)
 

@@ -57,6 +57,17 @@
                 </div>
                 <div class="card-body">
                     <ul>
+                        <li>
+                            {% if school_id %}
+                              <a href="{% url 'isei_standards_indicators' school_id %}">
+                                  ISEI Accreditation Standards & Indicators
+                              </a>
+                            {% else %}
+                              <a href="{% url 'isei_standards_indicators' %}">
+                                  ISEI Accreditation Standards & Indicators
+                              </a>
+                            {% endif %}
+                        </li>
                         {% for resource in accreditation_resources %}
                             <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
                         {% endfor %}

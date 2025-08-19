@@ -186,3 +186,16 @@ class Level(models.Model):
     def __str__(self):
         return self.get_level_display()
 
+
+class RequiredEvidenceCategory(models.Model):
+    name = models.CharField(max_length=255)
+    def __str__(self):
+        return self.name
+
+class RequiredEvidence(models.Model):
+    category = models.ForeignKey(RequiredEvidenceCategory, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
