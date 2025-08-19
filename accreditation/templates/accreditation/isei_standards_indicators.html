@@ -6,6 +6,13 @@
 {% block content %}
 
     <div class="container my-4">
+        {% if not school %}
+            <button type="button" class="btn btn-sm btn-outline-secondary mb-2"
+                    onclick="toggleSchoolTypes()">
+                Toggle School Type
+            </button>
+        {% endif %}
+
         <div class="card card-body mx-auto" style="max-width: 1000px;">
 
             <h5>ISEI-EA Accreditation Standards</h5>
@@ -19,8 +26,8 @@
 
                             {% for indicator in substandard.filtered_indicators %}
                                 <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
-                                    {% if indicator.school_type.name != "All School Types" %}
-                                        <!--span class="small">({ { indicator.school_type.code }})</span-->
+                                    {% if not school %}
+                                        <span class="school-type hidden small">({{ indicator.school_type }})</span>
                                     {% endif %}
                                 </p>
                                 <p class="mr-5 text-muted">{{ indicator.description }}</p>
@@ -29,8 +36,8 @@
 
                         {% for indicator in standard.filtered_indicators %}
                             <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
-                                    {% if indicator.school_type.name != "All School Types" %}
-                                        <!--span class="small">({ { indicator.school_type.code }})</span-->
+                                    {% if not school %}
+                                        <span class="school-type hidden small">({{ indicator.school_type }})</span>
                                     {% endif %}
                             </p>
                             <p class="mr-5 col text-muted">{{ indicator.description }}</p>
@@ -43,5 +50,15 @@
             <p class="text-center"> As of April, 2025</p>
         </div>
     </div>
+
+    <script>
+        function toggleSchoolTypes() {
+            document.querySelectorAll('.school-type').forEach(el => {
+                el.classList.toggle('hidden');
+            });
+        }
+
+    </script>
+
 
 {% endblock %}

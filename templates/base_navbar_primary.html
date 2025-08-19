@@ -9,12 +9,14 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
+            {% with school_id=request.user.profile.school.id user=request.user %}
 
             {% block first_line_navbar %}
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="nav navbar-nav">
                     
-                        {% if request.user|in_group:"staff" %}
+                        {% if user|in_group:"staff" %}
                             {% block isei_staff_nav %}
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'isei_dashboard' %}"> Dashboard </a>
@@ -33,53 +35,53 @@
                             </li>
                             {% endblock %}
                             
-                        {% elif request.user|in_group:"principal,registrar"%}
+                        {% elif user|in_group:"principal,registrar"%}
                             {% block principal_nav %}
                              <li class="nav-item ">
-                                <a class="nav-link" href="{% url 'school_dashboard' request.user.profile.school.id %}"> Dashboard </a>
+                                <a class="nav-link" href="{% url 'school_dashboard' school_id %}"> Dashboard </a>
                              </li>
                              <li class="nav-item ">
-                                <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Accreditation </a>
+                                <a class="nav-link" href="{% url 'school_accreditation_dashboard' school_id %}"> Accreditation </a>
                              </li>   
                              <li class="nav-item ">
-                                 <a class="nav-link" href="{% url 'principal_teachercert' request.user.profile.school.id %}" > Teacher Certification </a>
+                                 <a class="nav-link" href="{% url 'principal_teachercert' school_id %}" > Teacher Certification </a>
                              </li>
                             <li class="nav-item ">
-                                 <a class="nav-link" href="{% url 'test_order_dashboard' request.user.profile.school.id %}" > Test Ordering </a>
+                                 <a class="nav-link" href="{% url 'test_order_dashboard' school_id %}" > Test Ordering </a>
                              </li>
                             <li class="nav-item ">
-                                <a class="nav-link" href="{% url 'resources' %}"> Resources </a>
+                                <a class="nav-link" href="{% url 'resources' school_id %}"> Resources </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link p-3" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                                <a class="nav-link p-3" href="{% url 'contactisei' user.id %}">Contact ISEI</a>
                             </li>
                             {% endblock %}
                     
                         {% else %} 
                     
-                            {% if request.user|in_group:"teacher" %}
+                            {% if user|in_group:"teacher" %}
                                 {% block teacher_nav %}
                                     <li class="nav-item" >
-                                        <a class="nav-link" href="{% url 'teacher_dashboard' request.user.id %}">Certification </a>
+                                        <a class="nav-link" href="{% url 'teacher_dashboard' user.id %}">Certification </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'contactisei' request.user.id %}">Contact ISEI</a>
+                                        <a class="nav-link" href="{% url 'contactisei' user.id %}">Contact ISEI</a>
                                     </li>
                                 {% endblock %}
                             {% endif %}    
                             
-                            {% if request.user|in_group:"coordinating_team" %}
+                            {% if user|in_group:"coordinating_team" %}
                                 {% block coordinating_nav %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Accreditation </a>
+                                        <a class="nav-link" href="{% url 'school_accreditation_dashboard' school_id %}"> Accreditation </a>
                                     </li>
                                 {% endblock %}
                             {% endif %}   
                             
-                            {% if request.user|in_group:"test_ordering" %}
+                            {% if user|in_group:"test_ordering" %}
                                 {% block test_ordering_nav %}
                                 <li class="nav-item ">
-                                     <a class="nav-link" href="{% url 'test_order_dashboard' request.user.profile.school.id %}" > Test Ordering </a>
+                                     <a class="nav-link" href="{% url 'test_order_dashboard' school_id %}"> Test Ordering </a>
                                  </li>
                                 {% endblock %}
                             {% endif %}
@@ -89,11 +91,11 @@
                 </div>
             {% endblock first_line_navbar %}
         
-<!-- Username, school_year and Logout -->
-            {% if user.is_authenticated and user.is_active%}
+    <!-- Username, school_year and Logout -->
+             {% if user.is_authenticated and user.is_active%}
                 <span class ="name-msg">
                   {{ request.user.profile.school }}<br>
-                    {% if request.user|in_group:"principal,registrar,staff" and dashboard == True%}
+                    {% if user|in_group:"principal,registrar,staff" and dashboard == True%}
                         <form method="post" id="schoolYearForm" action="{% url 'change_school_year' %}">
                             {% csrf_token %}
                             <span class="span80">{{ navbar_schoolyear_form }}</span>
@@ -102,10 +104,12 @@
                         {{ current_school_year.name }}
                     {% endif %}
               </span>
-              <span class ="name-msg"> {{request.user.first_name}} {{request.user.last_name}}<br>
+              <span class ="name-msg"> {{user.first_name}} {{user.last_name}}<br>
                   <a href="{% url 'logout' %}" style =" color:#FFCE00">Logout</a>
               </span>
             {% endif %}
+        
+            {% endwith %}
         </div>
     </nav>
 </div>
