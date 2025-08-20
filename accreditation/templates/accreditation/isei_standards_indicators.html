@@ -63,7 +63,7 @@
                                         <span class="school-type hidden small">({{ indicator.school_type }})</span>
                                     {% endif %}
                             </p>
-                            <p class="mr-5 col text-muted">{{ indicator.met_description }}</p>
+                            <p class="mr-5 col text-muted">{{ indicator.met_description|safe }}</p>
                         {% endfor %}
 
                     {% endfor %}
