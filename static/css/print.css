@@ -1,33 +1,52 @@
-
-/* General Print Styling         */
-
+/* =========================
+   Print Styles
+========================= */
 @media print {
-    .noprint, .floating-box-background, .floating-box, button, a {
-        display: none !important;
-    }
-    body {
-        font-size: 10px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    table td, table th {
-        font-size: 10px;
-    }
+  .cover-page, .page {
+    box-shadow: none;
+    border: none;
+    margin: 0;
+  }
 
-    /* Page break before an element */
-    .page-break-before {
-        page-break-before: always;
-    }
+  body {
+    font-size: 12px;
+  }
 
-    /* Page break after an element */
-    .page-break-after {
-        page-break-after: always;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    /* Avoid page break inside an element */
-    .no-page-break {
-        page-break-inside: avoid;
-    }
+  table td, table th {
+    font-size: 10px;
+  }
+
+  .noprint, .floating-box-background, .floating-box, button, a {
+    display: none !important;
+  }
+
+  /* Page breaks */
+  .page-break-before { page-break-before: always; }
+  .page-break-after { page-break-after: always; }
+  .no-page-break { page-break-inside: avoid; }
+
+   .cover-page .vertical-double-line {
+    display: block !important;       /* make sure flex/block renders */
+    position: absolute;
+  }
+
+  /* Ensure Vertical Lines Print */
+  .cover-page .vertical-double-line .line-light {
+    display: block !important;
+    background-color: #5a8fcf !important; /* lighter line */
+    width: 2px !important;
+    height: 100% !important;
+  }
+
+  .cover-page .vertical-double-line .line-dark {
+    display: block !important;
+    background-color: #1a3d5d !important; /* darker line */
+    width: 2px !important;
+    height: 100% !important;
+  }
 }

@@ -1,0 +1,109 @@
+/* =========================
+   General Page Setup
+========================= */
+@page {
+  size: letter;       /* Letter paper */
+  margin: 0.5in;      /* printer margin */
+}
+
+/* =========================
+   Cover Page & Standard Pages
+========================= */
+.cover-page, .page {
+  width: 7.5in;          /* fixed width matching printable area */
+  min-height: 10.5in;    /* height minus top/bottom margins */
+  margin: 1rem auto;     /* center horizontally with small spacing on screen */
+  padding: 0.25in;
+  box-sizing: border-box;
+  background: #fff;
+  page-break-after: always;
+  position: relative;
+}
+
+/* =========================
+   Cover Page Specific
+========================= */
+
+/* Vertical text */
+.cover-page .vertical-text {
+  position: absolute;
+  top: 50%;
+  left: 0.7in; /* move slightly more right */
+  transform: rotate(-90deg) translate(-50%, 0);
+  transform-origin: left top;
+  font-size: 35px;
+  font-style: italic;
+  font-weight: bold;
+  color: #5a8fcf;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+
+/* Lighter line */
+.cover-page .vertical-line-light {
+  position: absolute;
+  top: 1in;
+  bottom: 1in;
+  left: 1.25in; /* distance from left */
+  width: 2px;
+  background-color: #5a8fcf;
+}
+
+/* Darker line next to it */
+.cover-page .vertical-line-dark {
+  position: absolute;
+  top: 1in;
+  bottom: 1in;
+  left: 1.21in; /* tiny 0.05in gap */
+  width: 2px;
+  background-color: #1a3d5d;
+}
+
+
+.cover-page .logo {
+  position: absolute;
+  top: 1.2in;
+  left: 1.27in;
+  max-width: 200px;
+}
+
+.cover-page .title {
+  text-align: center;
+  font-size: 42px;
+  font-weight: bold;
+  color: #113a67;
+  margin-top: 2.5in;
+  line-height: 1.3;
+}
+
+.cover-page .subtitle {
+  text-align: center;
+  font-size: 22px;
+  color: #113a67;
+  margin-top: 0.2in;
+}
+
+.cover-page .version {
+  text-align: right;
+  margin-right: 1in;
+  font-size: 14px;
+  color: #113a67;
+  margin-top: 0.3in;
+}
+
+.cover-page .footer {
+  position: absolute;
+  bottom: 1in;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: #113a67;
+}
+
+/* =========================
+   Standard Pages
+========================= */
+.page h6 {
+  margin-top: 0.5in;
+}

@@ -1,4 +1,5 @@
 {% extends 'accreditation_base.html' %}
+{% load static %}
 
 {% block title %} ISEI Standards {% endblock title %}
 
@@ -12,11 +13,33 @@
                 Toggle School Type
             </button>
         {% endif %}
+    </div>
 
-        <div class="card card-body mx-auto" style="max-width: 1000px;">
+         <!-- Cover Page -->
 
-            <h5>ISEI-EA Accreditation Standards</h5>
-                <hr>
+    <div class="card card-body cover-page mx-auto">
+        <img src="{% static 'appfiles/ISEIcolored.png' %}" alt="ISEI Logo" class="logo">
+        <div class="vertical-text">ISEI EDUCATION ASSOCIATION</div>
+            <!-- Double vertical lines with tiny space -->
+            <div class="vertical-line-light"></div>
+            <div class="vertical-line-dark"></div>
+
+        <div class="title">
+            Accreditation<br>
+            Standards<br> &amp;<br>
+            Indicators
+        </div>
+        <div class="version">Version 2.1</div>
+
+        <div class="footer">
+            P.O. Box 491 • Collegedale, TN 37315
+        </div>
+    </div>
+
+
+
+        <div class=" page card card-body mx-auto" style="max-width: 1000px;">
+
                     {% for standard in standards %}
                         <h6 class="page-break-before">{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
                         <hr>
@@ -30,7 +53,7 @@
                                         <span class="school-type hidden small">({{ indicator.school_type }})</span>
                                     {% endif %}
                                 </p>
-                                <p class="mr-5 text-muted">{{ indicator.description }}</p>
+                                <p class="mr-5 text-muted">{{ indicator.met_description }}</p>
                             {% endfor %}
                         {% endfor %}
 
@@ -40,16 +63,14 @@
                                         <span class="school-type hidden small">({{ indicator.school_type }})</span>
                                     {% endif %}
                             </p>
-                            <p class="mr-5 col text-muted">{{ indicator.description }}</p>
+                            <p class="mr-5 col text-muted">{{ indicator.met_description }}</p>
                         {% endfor %}
 
-                        <hr>
                     {% endfor %}
 
 
-            <p class="text-center"> As of April, 2025</p>
+            <!--p class="text-center"> As of April, 2025</p -->
         </div>
-    </div>
 
     <script>
         function toggleSchoolTypes() {
