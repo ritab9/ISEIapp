@@ -50,7 +50,7 @@
                             {% for indicator in substandard.filtered_indicators %}
                                 <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
                                     {% if not school %}
-                                        <span class="school-type hidden small">({{ indicator.school_type }})</span>
+                                        <span class="school-type small">({{ indicator.school_type }})</span>
                                     {% endif %}
                                 </p>
                                 <p class="mr-5 text-muted">{{ indicator.met_description }}</p>
@@ -60,7 +60,7 @@
                         {% for indicator in standard.filtered_indicators %}
                             <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
                                     {% if not school %}
-                                        <span class="school-type hidden small">({{ indicator.school_type }})</span>
+                                        <span class="school-type small">({{ indicator.school_type }})</span>
                                     {% endif %}
                             </p>
                             <p class="mr-5 col text-muted">{{ indicator.met_description|safe }}</p>
