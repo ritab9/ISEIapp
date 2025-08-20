@@ -8,6 +8,11 @@
 
 <!-- Orders by school -->
     <div class="card card-body">
+        <!--form method="get" class="mb-3">
+          { { filter.form.as_p }}
+          <button type="submit" class="btn btn-sm btn-ISEIblue2">Filter</button>
+        </form-->
+
         <table class="table table-sm">
         <tr>
             <th>School</th>
@@ -16,7 +21,7 @@
             <th>Answer Sheets</th>
             <th>Direction Booklets</th>
             <th>~ Sub Total</th>
-            <th>Complete</th>
+            <th></th>
         </tr>
         <tr><th># of Students</th><th>Testing Dates</th>
             <th>Count / Level</th>
@@ -26,7 +31,11 @@
         </tr>
         {% for order in test_orders %}
         <tr>
-            <td>{{ order.school }}<br>
+            <td><a href="{% url 'test_order' order.school.id order.id %}" class="clickable">
+                     {{ order.school }}
+                </a>
+
+                <br>
                 {{ order.no_students_testing }} students
             </td>
             <td>{{ order.order_date }}<br>
@@ -65,7 +74,8 @@
 
             <td>${{ order.sub_total }}</td>
             <!-- and so on for other fields -->
-            <td><a href="{% url 'finalize_order' order.id %}">Complete Order</a></td>
+             <td class="d-flex justify-content-end"><a class="btn btn-sm btn-ISEIblue2 justify-content-end" href="{% url 'finalize_order' order.id %}">Order Processed</a>
+            </td>
         </tr>
         {% endfor %}
 </table>

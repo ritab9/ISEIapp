@@ -4,9 +4,9 @@ from users.decorators import allowed_users
 from django.db.models import Sum
 from django.db.models import Q
 
-
 from .forms import *
 from .models import *
+from .filters import *
 
 #IOWA Test orders
 
@@ -87,7 +87,9 @@ def test_order(request, schoolID, orderID=None):
 @allowed_users(allowed_roles=['staff'])
 def isei_test_order(request):
 
-    test_orders = TestOrder.objects.filter(finalized=False).exclude(school__abbreviation='SS')
+    test_orders = TestOrder.objects.exclude(school__abbreviation='SS').filter(finalized=False)
+    f = TestOrderFilter(request.GET, queryset=test_orders)
+
 
     test_booklets_counts = ReusableTestBookletOrdered.objects.filter(order__in=test_orders).values('level').annotate(
         total=Sum('count')).order_by('level')
@@ -96,7 +98,7 @@ def isei_test_order(request):
     direction_booklets_counts = DirectionBookletOrdered.objects.filter(order__in=test_orders).values('level').annotate(
         total=Sum('count')).order_by('level')
 
-    context=dict(test_orders=test_orders,
+    context=dict(test_orders=test_orders,  filter=f,
                  test_booklets_counts=test_booklets_counts, answer_sheets_counts=answer_sheets_counts,direction_booklets_counts=direction_booklets_counts)
     return render(request, 'isei_test_order.html', context)
 
