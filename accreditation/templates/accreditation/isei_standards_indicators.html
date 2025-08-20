@@ -41,9 +41,9 @@
         <div class=" page card card-body mx-auto" style="max-width: 1000px;">
 
                     {% for standard in standards %}
-                        <h6 class="page-break-before">{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
+                        <hr class="page-break-before">
+                        <h6>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
                         <hr>
-
                         {% for substandard in standard.substandards.all %}
                             <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
 

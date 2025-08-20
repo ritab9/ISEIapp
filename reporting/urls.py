@@ -28,6 +28,8 @@ urlpatterns = [
 
     path('day190_report_display/<int:arID>/', views.day190_report_display, name='day190_report_display'),
     path('employee_report_display/<int:arID>/', views.employee_report, name='employee_report_display'),
+    path('employee_report/<int:arID>/export/', views.export_employee_report, name='employee_report_export'),
+
     path('inservice_report_display/<int:arID>/', views.inservice_report_display, name='inservice_report_display'),
     path('opening_report_display/<int:arID>/', views.opening_report_display, name='opening_report_display'),
     path('closing_report_display/<int:arID>/', views.closing_report_display, name='closing_report_display'),

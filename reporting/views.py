@@ -5,6 +5,11 @@ from django.http import HttpResponse, JsonResponse
 from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.urls import reverse
 
+import openpyxl
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font, Alignment
+from datetime import date
+
 from django.forms import modelformset_factory
 from django.db.models import Sum, Q, Count, Prefetch, Max, Case, When, Value, IntegerField
 from .forms import *
@@ -29,9 +34,6 @@ from users.models import OtherAgencyAccreditationInfo
 from .functions import update_student_country_occurences
 from teachercert.myfunctions import newest_certificate
 from django.db import IntegrityError
-
-from django.utils.dateparse import parse_date
-from pandas import ExcelWriter
 
 from emailing.functions import send_simple_email
 
@@ -1022,9 +1024,93 @@ def import_employee_prev_year(request, arID):
 
     return redirect('employee_report', arID)  # Update this with where you want to redirect after successLEt me
 
-#@login_required(login_url='login')
-#def employee_report_display(request, arID):
-#    return render(request, 'employee_report_display.html')
+
+@login_required(login_url='login')
+def export_employee_report(request, arID, show_all=False):
+    if show_all:
+        all_personnel = Personnel.objects.filter(annual_report__id=arID).select_related(
+            'teacher', 'annual_report').prefetch_related(
+            'positions', 'degrees', 'subjects_teaching', 'subjects_taught')
+    else:
+        all_personnel = Personnel.objects.filter(annual_report__id=arID).exclude(
+            status=StaffStatus.NO_LONGER_EMPLOYED).select_related(
+            'teacher', 'annual_report').prefetch_related(
+            'positions', 'degrees', 'subjects_teaching', 'subjects_taught')
+
+    annual_report = get_object_or_404(AnnualReport, id=arID)
+
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"{annual_report.school.abbreviation} Employee Report"
+
+    # Header row
+    headers = [
+        "Name", "Status", "Positions", "Degrees",
+        "Years Experience (Total)", "Years at School", "Email Address", "Phone Number",
+        "Certification Type", "Renewal Date", "Endorsements",
+        "Teaching Now", "All Taught", "SDA"
+    ]
+
+    for col_num, column_title in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = column_title
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal="center")
+
+    row_num = 2
+    for p in all_personnel:
+        # Get newest certification info
+        cert_type = ""
+        renewal_date = ""
+        endorsements_list = []
+        if p.teacher:
+            newest_cert = newest_certificate(p.teacher)
+            if newest_cert:
+                cert_type = newest_cert.certification_type.name
+                renewal_date = newest_cert.renewal_date
+                endorsements_list = [e.endorsement.name for e in newest_cert.tendorsement_set.all()]
+
+        ws.cell(row=row_num, column=1, value=f"{p.first_name} {p.last_name}")
+        ws.cell(row=row_num, column=2, value=p.get_status_display())
+        ws.cell(row=row_num, column=3, value=", ".join([str(pos) for pos in p.positions.all()]))
+        ws.cell(row=row_num, column=4,
+                value=", ".join([f"{deg.degree} - {deg.area_of_study}" for deg in p.personneldegree_set.all()]))
+
+        total_experience = ", ".join(filter(None, [
+            f"Admin: {p.years_administrative_experience}" if p.years_administrative_experience else "",
+            f"Teaching: {p.years_teaching_experience}" if p.years_teaching_experience else "",
+            f"Work: {p.years_work_experience}" if p.years_work_experience else "",
+        ]))
+        ws.cell(row=row_num, column=5, value=total_experience)
+
+        ws.cell(row=row_num, column=6, value=p.years_at_this_school or "")
+        ws.cell(row=row_num, column=7, value=p.email_address or "")
+        ws.cell(row=row_num, column=8, value=p.phone_number or "")
+        ws.cell(row=row_num, column=9, value=cert_type)
+        ws.cell(row=row_num, column=10, value=renewal_date)
+        ws.cell(row=row_num, column=11, value=", ".join(endorsements_list))
+        ws.cell(row=row_num, column=12, value=", ".join([str(s) for s in p.subjects_teaching.all()]))
+        ws.cell(row=row_num, column=13, value=", ".join([str(s) for s in p.subjects_taught.all()]))
+        ws.cell(row=row_num, column=14, value="Yes" if p.sda else "No")
+        row_num += 1
+
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max_length + 5
+
+    # Create response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = f"Employee_Report_{annual_report.school.abbreviation}_{date.today()}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+
+    wb.save(response)
+    return response
 
 @login_required
 def get_teacher_email(request):
