@@ -1278,7 +1278,11 @@ def opening_report(request, arID):
     grade_count_fields=None
 
     with transaction.atomic():
-        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time", registration_date__lte=annual_report_student.submit_date)
+        due_date = annual_report_student.due_date()
+        if isinstance(due_date, str):
+            due_date = date.fromisoformat(due_date)
+
+        part_time_students = Student.objects.filter(annual_report=annual_report_student, status="part-time", registration_date__lte=due_date)
         if part_time_students.exists():
             part_time_grade_counts = calculate_grade_counts(part_time_students, allowed_grade_range)
 
@@ -1296,14 +1300,13 @@ def opening_report(request, arID):
                                   PartTimeGradeCount._meta.fields if field.name != 'id']
 
         #students= Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
-        students= Student.objects.filter(Q(status="enrolled"), annual_report=annual_report_student, registration_date__lte=annual_report_student.submit_date)
-
+        students= Student.objects.filter(Q(status="enrolled"), annual_report=annual_report_student, registration_date__lte=due_date)
         if not students.exists():
             #students = Student.objects.filter(Q(status="enrolled") | Q(status="withdrawn"), annual_report=annual_report_student,
             #                                  registration_date__lte=annual_report_student.submit_date + timedelta(weeks=3))
             students = Student.objects.filter(Q(status="enrolled"),
                                               annual_report=annual_report_student,
-                                              registration_date__lte=annual_report_student.submit_date + timedelta(
+                                              registration_date__lte=due_date + timedelta(
                                                   weeks=3))
 
         if students.exists():
