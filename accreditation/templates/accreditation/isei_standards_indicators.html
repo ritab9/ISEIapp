@@ -3,6 +3,10 @@
 
 {% block title %} ISEI Standards {% endblock title %}
 
+{% if guest %}
+    {% block header %}{% endblock %}
+    {% block secondary_navbar %}{% endblock %}
+{% endif %}
 
 {% block content %}
 

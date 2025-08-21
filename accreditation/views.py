@@ -15,8 +15,13 @@ from users.models import SchoolType
 from emailing.functions import send_simple_email
 
 #ISEI Views
-@login_required(login_url='login')
+
 def isei_standards_indicators(request, school_id=None):
+
+    if request.user.is_authenticated:
+        guest=False
+    else:
+        guest=True
 
     if school_id:
         school = get_object_or_404(School, pk=school_id)
@@ -44,7 +49,7 @@ def isei_standards_indicators(request, school_id=None):
     )
 
 
-    context = dict(standards=standards, school=school)
+    context = dict(standards=standards, school=school, guest=guest)
     return render(request, 'accreditation/isei_standards_indicators.html', context)
 
 
