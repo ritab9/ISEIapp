@@ -365,6 +365,7 @@ class Day190(models.Model):
     inservice_days = models.PositiveIntegerField(verbose_name="In-service and Discretionary Days", default=0)
     file = models.FileField(upload_to='School_calendars/%Y', storage=MediaStorage(), null=True, blank=True, verbose_name="School Calendar/%Y")
     calendar_link = models.URLField(null=True, blank=True, verbose_name="School Calendar Link")
+    comment = models.TextField(verbose_name="Comment", null=True, blank=True)
 
     def __str__(self):
         return str(self.annual_report)
