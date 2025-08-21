@@ -13,6 +13,14 @@
                 Click to Hide/Show School Type for each Indicator
             </button>
         {% endif %}
+
+        <button type="button" onclick="window.print()" class="btn btn-sm btn-ISEIblue4 mb-2">
+          Print to PDF
+        </button>
+
+        <!--a href="{ % url 'isei_standards_indicator' %}" class="btn btn-sm btn-success">
+          Download PDF
+        </a-->
     </div>
 
          <!-- Cover Page -->
@@ -48,22 +56,26 @@
                             <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
 
                             {% for indicator in substandard.filtered_indicators %}
-                                <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
-                                    {% if not school %}
-                                        <span class="school-type small">({{ indicator.school_type }})</span>
-                                    {% endif %}
-                                </p>
-                                <p class="mr-5 text-muted">{{ indicator.met_description }}</p>
+                                <div class="keep-together">
+                                    <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
+                                        {% if not school %}
+                                            <span class="school-type small">({{ indicator.school_type }})</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="mr-5 text-muted">{{ indicator.met_description }}</p>
+                                </div>
                             {% endfor %}
                         {% endfor %}
 
                         {% for indicator in standard.filtered_indicators %}
-                            <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
-                                    {% if not school %}
-                                        <span class="school-type small">({{ indicator.school_type }})</span>
-                                    {% endif %}
-                            </p>
-                            <p class="mr-5 col text-muted">{{ indicator.met_description|safe }}</p>
+                            <div class="keep-together">
+                                <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
+                                        {% if not school %}
+                                            <span class="school-type small">({{ indicator.school_type }})</span>
+                                        {% endif %}
+                                </p>
+                                <p class="mr-5 col text-muted">{{ indicator.met_description|safe }}</p>
+                            </div>
                         {% endfor %}
 
                     {% endfor %}
