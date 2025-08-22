@@ -6,6 +6,20 @@
 
 {% block content %}
 
+    <div class="card card-body">
+        <div class="col-auto">
+            Select School to Add Test Order for:
+        </div>
+        <div class="col-auto">
+            <select id="schoolDropdown" class="form-select">
+                <option value="">-- Select a school --</option>
+                {% for school in schools %}
+                    <option value="{% url 'test_order' school.id %}">{{ school.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
 <!-- Orders by school -->
     <div class="card card-body">
         <!--form method="get" class="mb-3">
@@ -129,9 +143,12 @@
 {% block script %}
 
     <script>
-
-
-
+        document.getElementById('schoolDropdown').addEventListener('change', function () {
+            const url = this.value;
+            if (url) {
+                window.location.href = url;
+            }
+        });
     </script>
 
 {% endblock script %}

@@ -98,7 +98,9 @@ def isei_test_order(request):
     direction_booklets_counts = DirectionBookletOrdered.objects.filter(order__in=test_orders).values('level').annotate(
         total=Sum('count')).order_by('level')
 
-    context=dict(test_orders=test_orders,  filter=f,
+    schools=School.objects.filter(test=False, active=True)
+
+    context=dict(test_orders=test_orders,  filter=f, schools=schools,
                  test_booklets_counts=test_booklets_counts, answer_sheets_counts=answer_sheets_counts,direction_booklets_counts=direction_booklets_counts)
     return render(request, 'isei_test_order.html', context)
 
