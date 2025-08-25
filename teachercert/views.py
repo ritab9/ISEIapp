@@ -347,7 +347,11 @@ def createCEU(request, recId):
                     email_CEUReport_submitted(ceu_report.teacher, principal_emails, ceu_report.school_year.name)
 
                     return redirect('myCEUdashboard', pk=ceu_report.teacher.user.id)  # go back to CEUdashboard
-
+                else:
+                    report_form.add_error(
+                        'date_submitted',
+                        "You must enter a submission date before submitting this report."
+                    )
 
 
     context = dict(ceu_instance=ceu_instance, ceu_report=ceu_report,

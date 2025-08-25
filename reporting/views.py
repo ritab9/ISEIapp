@@ -230,13 +230,20 @@ def import_students_prev_year(request, arID):
         student.annual_report = report
         if student.age:
             student.age += 1
-        # Handle grade level (assuming it's not None, add error handling as needed)
-        student.grade_level = student.grade_level + 1 if student.grade_level < 13 else 13
-        # Registration date. Make sure to handle None case if needed
-        if student.grade_level < 13:
-            student.registration_date = student.registration_date + timedelta(days=365)
+        # Handle grade level (assuming it's not None, add error handling as needed) - # --- bump grade level ---
+        #13 is Graduated, 14, 15, 16 are GI-GIII for Kibidula Agriculture School
+        if student.grade_level in range(1, 12):
+            student.grade_level += 1
+        elif student.grade_level in (12, 16):
+            student.grade_level = 13
+        elif student.grade_level in (14, 15):
+            student.grade_level += 1
+
+        # Registration date. Make sure to handle None case if needed. # --- handle registration date or status ---
+        if student.grade_level == 13:
+            student.status = "graduated"
         else:
-            student.status="graduated"
+            student.registration_date += timedelta(days=365)
         student.save()
         imported_count += 1  # increment the count of imported students
 

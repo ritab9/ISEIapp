@@ -128,7 +128,8 @@
 <form action="" method="POST" id="submit_report" enctype="multipart/form-data">
      {% csrf_token %}
     <div class="card card-body">
-    {{ report_form.mon_field_errors }}
+    <div class="card card-body">
+    {{ report_form.non_field_errors }}
         <div class="row">
            <div class="col-sm-6">
             <!-- update summary-->
@@ -168,7 +169,9 @@
                     <br><br>
                     <!-- submit report-->
                     <p id="school_year2">{{report_form.school_year}}</p>
-                    <h6>{{ report_form.date_submitted|as_crispy_field }}</h6><p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
+                    <h6>{{ report_form.date_submitted|as_crispy_field }}
+                    </h6>
+                    <p>Submit by August 15 each year, after you have added ALL activities for the previous school year.</p> <br>
                     <input class = "btn btn-sm btn-danger" type="submit" value="Submit" name = "submit_report">
                     {{ report_form.non_field_errors }}
                 </div>
