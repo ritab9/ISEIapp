@@ -92,6 +92,10 @@ def student_report(request, arID):
                     if not form.has_changed() and not form.instance.pk:
                         continue
 
+                    # Skip new forms with no name
+                    if form.instance.pk is None and not form.data.get(form.add_prefix('name')):
+                        continue
+
                     # Force validation on existing instances even if unchanged
                     if not form.is_valid():
                         all_forms_valid = False
