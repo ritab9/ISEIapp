@@ -69,8 +69,8 @@ class StudentForm(forms.ModelForm):
 
         registration_date = cleaned_data.get("registration_date")
 
-        if self.instance.pk and not registration_date:
-            self.add_error("registration_date", ValidationError("Use Global Registration Date"))
+        #if self.instance.pk and not registration_date:
+        #    self.add_error("registration_date", ValidationError())
 
         age = cleaned_data.get("age")
         birth_date = cleaned_data.get("birth_date")
