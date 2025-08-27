@@ -329,7 +329,7 @@ class Student(models.Model):
     ]
     grade_level =  models.IntegerField(choices=GRADE_LEVEL_CHOICES)
 
-    registration_date = models.DateField()
+    registration_date = models.DateField(null=True)
     withdraw_date = models.DateField(null=True, blank=True)
 
     LOCATION_CHOICES = [

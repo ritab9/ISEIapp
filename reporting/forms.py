@@ -36,6 +36,9 @@ class StudentForm(forms.ModelForm):
         # Modify parent_sda choices to include only 'Y', 'N', and 'U'
         self.fields['parent_sda'].choices = [('Y', 'Yes, SDA'),('N', 'No'), ('U', '-'),]
 
+        # Force registration_date to be required
+        self.fields['registration_date'].required = True
+
     class Meta:
         model = Student
         #exclude = ('annual_report', 'id', 'age_at_registration')
@@ -63,6 +66,11 @@ class StudentForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        registration_date = cleaned_data.get("registration_date")
+
+        if self.instance.pk and not registration_date:
+            self.add_error("registration_date", ValidationError("Use Global Registration Date"))
 
         age = cleaned_data.get("age")
         birth_date = cleaned_data.get("birth_date")

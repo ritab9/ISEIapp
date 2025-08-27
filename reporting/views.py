@@ -79,7 +79,10 @@ def student_report(request,arID):
             all_forms_valid = True
 
             for form in formset:
-                if form.has_changed():
+                if not form.has_changed():
+                    if form.instance.pk and not form.instance.registration_date:
+                        form.full_clean()  # triggers clean()
+                if form.has_changed() or (form.instance.pk and not form.instance.registration_date):
                     field_name = form.add_prefix('name')
                     student_name = form.data.get(field_name)
                     # ✅ Skip accidental empty form submissions if 'name' is blank
@@ -243,7 +246,7 @@ def import_students_prev_year(request, arID):
         if student.grade_level == 13:
             student.status = "graduated"
         else:
-            student.registration_date += timedelta(days=365)
+            student.registration_date = None
         student.save()
         imported_count += 1  # increment the count of imported students
 

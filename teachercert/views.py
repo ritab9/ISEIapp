@@ -1129,14 +1129,14 @@ def isei_manage_application(request, appID):
 
 #in works
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff', 'principal'])
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
 def bulk_ceu_entry(request):
     is_isei = request.user.groups.filter(name='staff').exists()
-    is_principal = request.user.groups.filter(name='principal').exists()
+    is_principal_or_registrar = request.user.groups.filter( name__in=['principal', 'registrar']).exists()
 
-    if is_principal:
+    if is_principal_or_registrar:
         teachers = Teacher.objects.filter(user__is_active=True, school=request.user.profile.school)
-    else:
+    elif is_isei:
         teachers = Teacher.objects.filter(user__is_active=True)  # Show all active teachers for ISEI
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -1358,6 +1358,9 @@ def get_missing_checklist_counts(teachers):
     result.sort(key=lambda x: x[1], reverse=True)
     return result, total
 
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff', 'principal','registrar'])
 def school_checklist_summary(request, school_id):
     school = get_object_or_404(School, id=school_id)
     teachers = Teacher.objects.filter(school=school)
@@ -1389,7 +1392,7 @@ def isei_checklist_summary(request):
     total_teachers = 0
 
     for school in schools:
-        teachers = Teacher.objects.filter(school=school)
+        teachers = Teacher.objects.filter(school=school, user__active=True)
         missing_data, total = get_missing_checklist_counts(teachers)
         summaries.append({
             "school": school,

@@ -53,14 +53,14 @@
                         <div class="col">
                             {{ application_form.cert_level }}
                         </div>
-                        <div class="col">
-
-                            <button type="button" class="btn btn-sm btn-ISEIblue1" 12
-                                    title=" The Designated Teaching Certificate is issued to an experienced individual who has demonstrated expertise in one or more specific areas and who by experience and training can provide a valuable contribution to the educational program.">
+                        <!-- div class="col">
+                            <button type="button" class="btn btn-sm btn-ISEIblue1"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="The Designated Teaching Certificate is issued to an experienced individual who has demonstrated expertise in one or more specific areas and who by experience and training can provide a valuable contribution to the educational program.">
                                 <i class="fas fa-info"></i> &nbsp; Designated
                             </button>
-
-                         </div>
+                         </div-->
                      </div>
                 </div>
                 {{ application_form.endors_level|as_crispy_field }}
@@ -257,7 +257,6 @@
         x.style.display = "none";
       };
     });
-
 
 
 </script>
