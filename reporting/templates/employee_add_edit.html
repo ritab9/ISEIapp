@@ -7,9 +7,31 @@
 
 {% block content %}
     <div class="card card-body">
-        <h6>Add/Update Personnel Info</h6>
+
         <form method="POST" id="personnel-form">
             {% csrf_token %}
+
+            <div class="row mb-5">
+                <div class="col-auto">
+                    <h6>Add/Update Personnel Info</h6>
+                </div>
+
+                <div class="col-auto d-flex justify-content-center">
+                    <button class="btn btn-sm btn-ISEIblue2"  type="submit" name="submit">Save</button>
+               </div>
+                <div class="col-auto d-flex justify-content-center">
+                    <button class="btn btn-sm btn-ISEIblue4"  type="submit" name="add">Save and Add New Personnel</button>
+               </div>
+                <div class="col-auto d-flex justify-content-center">
+                   <a class="btn btn-sm btn-danger" href="{% url 'employee_report' arID %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a>
+               </div>
+                <div class="col-auto d-flex justify-content-center">
+                    <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#deleteModal">
+                      Delete
+                    </button>
+                </div>
+            </div>
+
 
              <p style = "text-align: center" class="">*Click on categories to open lists</p>
             <div class="row justify-content-around">
