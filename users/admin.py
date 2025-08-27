@@ -40,7 +40,7 @@ class AddressAdmin(admin.ModelAdmin):
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
     inlines = [AccreditationInfoInline]
-    list_display = ('name', 'abbreviation', 'grade_levels', 'get_school_types','current_school_year','initial_accreditation_date','worthy_student_report_needed')
+    list_display = ('name', 'id', 'abbreviation', 'grade_levels', 'get_school_types','current_school_year','initial_accreditation_date','worthy_student_report_needed')
     list_editable = ('current_school_year','initial_accreditation_date', 'worthy_student_report_needed')
 
     # This enables the little "+" button to add Address directly
@@ -144,7 +144,7 @@ class TeacherAddressInLine(admin.StackedInline):
 @admin.register(Teacher)
 class Teacher(admin.ModelAdmin):
     inlines = [TeacherAddressInLine, CollegeAttendedInLine, SchoolOfEmploymentInLine,]
-    list_display = ('name', 'school','joined_at')
+    list_display = ('name', 'school','joined_at', 'id')
     list_editable = ('school',)
     list_display_links = ('name',)
     list_filter =('school',)

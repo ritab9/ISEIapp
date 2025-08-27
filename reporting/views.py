@@ -45,9 +45,323 @@ def report_dashboard(request, schoolID, school_yearID):
     return render(request, 'report_dashboard.html')
 
 #Student Report Views
-@login_required(login_url='login')
-def student_report(request,arID):
 
+
+@login_required(login_url='login')
+def student_report(request, arID):
+    redirect_to_school_dashboard = False
+    show_all = None
+    annual_report = None
+    formset = None
+    saved_count = 0
+
+    try:
+        annual_report = AnnualReport.objects.select_related('school__street_address__country').get(id=arID)
+        school = annual_report.school
+
+        school_year_str = annual_report.school_year.name
+        start_year = int(school_year_str.split('-')[0])
+        sept_10 = date(start_year, 9, 10)
+
+        is_us_school = school.street_address.country.code == "US"
+        is_tn_school = is_us_school and school.street_address.state_us == "TN"
+
+        exclude_fields = ['annual_report', 'id', 'age_at_registration']
+        if not is_us_school or not is_tn_school:
+            exclude_fields.append('TN_county')
+        if not is_us_school:
+            exclude_fields.append('us_state')
+
+        StudentFormSet = my_formset_factory(
+            Student, form=StudentForm,
+            extra=1, can_delete=True,
+            exclude=exclude_fields,
+            is_us_school=is_us_school,
+            is_tn_school=is_tn_school,
+            school=school
+        )
+
+        if request.method == 'POST':
+            formset = StudentFormSet(request.POST, queryset=Student.objects.filter(annual_report=annual_report))
+            all_forms_valid = True
+
+            with transaction.atomic():
+
+                for form in formset:
+                    # Skip completely blank new forms
+                    if not form.has_changed() and not form.instance.pk:
+                        continue
+
+                    # Force validation on existing instances even if unchanged
+                    if not form.is_valid():
+                        all_forms_valid = False
+                        continue
+
+                    instance = form.save(commit=False)
+
+                    # Skip duplicates for new instances
+                    if instance.pk is None:
+                        exists = Student.objects.filter(
+                            name=instance.name,
+                            registration_date=instance.registration_date,
+                            annual_report=annual_report
+                        ).exists()
+                        if exists:
+                            continue
+                        instance.annual_report = annual_report
+
+
+                    # Calculate age at registration
+                    if instance.birth_date and instance.registration_date:
+                        instance.age_at_registration = (
+                            instance.registration_date.year - instance.birth_date.year -
+                            ((instance.registration_date.month, instance.registration_date.day) <
+                             (instance.birth_date.month, instance.birth_date.day))
+                        )
+                    elif instance.age:
+                        instance.age_at_registration = instance.age
+
+                    instance.save()
+                    saved_count += 1
+
+                    # TN notifications
+                    if is_tn_school:
+                        if instance.status == 'withdrawn' and instance.us_state == 'TN':
+                            send_simple_email(
+                                "TN Student withdrawn",
+                                f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
+                                f"has been withdrawn on {instance.withdraw_date or 'Unknown Date'}\n"
+                                f"The student is from {instance.TN_county or 'Unknown County'} "
+                            )
+                        elif instance.us_state == 'TN' and instance.registration_date and instance.registration_date > sept_10:
+                            send_simple_email(
+                                "New TN Student registered",
+                                f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
+                                f"has been registered on {instance.registration_date}\n"
+                                f"The student is from {instance.TN_county or 'Unknown County'} "
+                            )
+
+
+                # Handle deletions
+                if hasattr(formset, 'deleted_forms'):
+                    for form in formset.deleted_forms:
+                        if form.instance.pk:
+                            form.instance.delete()
+
+            # Update report dates if all forms valid
+            if all_forms_valid:
+                redirect_to_school_dashboard = True
+                if 'submit' in request.POST:
+                    if not annual_report.submit_date:
+                        annual_report.submit_date = date.today()
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
+                elif 'save' in request.POST:
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
+            else:
+                redirect_to_school_dashboard = False
+                if saved_count:
+                    messages.success(request, f"{saved_count} student(s) saved successfully.")
+                messages.error(request, 'Some forms are invalid. Please correct the errors below.')
+
+        else:
+            # GET request
+            status_order = Case(
+                When(status='enrolled', then=Value(1)),
+                When(status='part-time', then=Value(2)),
+                When(status='withdrawn', then=Value(3)),
+                When(status='graduated', then=Value(4)),
+                When(status='did_not_return', then=Value(5)),
+                default=Value(6),
+                output_field=IntegerField()
+            )
+
+            show_all = request.GET.get("show") == "all"
+            if not show_all:
+                students_qs = Student.objects.filter(
+                    annual_report=annual_report,
+                    status__in=['enrolled', 'withdrawn', 'part-time']
+                ).select_related('country', 'TN_county').order_by(status_order, 'grade_level', 'name')
+            else:
+                students_qs = Student.objects.filter(
+                    annual_report=annual_report
+                ).select_related('country', 'TN_county').order_by(status_order, 'grade_level', 'name')
+
+            formset = StudentFormSet(queryset=students_qs)
+
+    except AnnualReport.DoesNotExist:
+        messages.error(request, f"AnnualReport with id {arID} doesn't exist.")
+    except OperationalError as e:
+        messages.error(request, f"Database connection error: {str(e)}. Please try again later.")
+    except ValidationError as e:
+        messages.error(request, f"Validation error: {str(e)}")
+    except Exception as e:
+        messages.error(request, f"An error occurred while processing your request: {str(e)}")
+
+    finally:
+        if not redirect_to_school_dashboard:
+            if saved_count:
+                messages.success(request, f"{saved_count} student(s) saved successfully.")
+            return render(request, 'student_report.html', {
+                'formset': formset,
+                'annual_report': annual_report,
+                'show_all': show_all
+            })
+        else:
+            if saved_count:
+                messages.success(request, f"{saved_count} student(s) saved successfully.")
+            return redirect('school_dashboard', school.id)
+
+
+
+''' This saves only if all are complete... works, but would lose data
+@login_required(login_url='login')
+def student_report(request, arID):
+    show_all = None
+    try:
+        annual_report = AnnualReport.objects.select_related('school__street_address__country').get(id=arID)
+        school = annual_report.school
+
+        school_year_str = annual_report.school_year.name
+        start_year = int(school_year_str.split('-')[0])
+        sept_10 = date(start_year, 9, 10)
+
+        # Determine if the school is in US and TN
+        is_us_school = school.street_address.country.code == "US"
+        is_tn_school = is_us_school and school.street_address.state_us == "TN"
+
+        exclude_fields = ['annual_report', 'id', 'age_at_registration']
+        if not is_us_school or not is_tn_school:
+            exclude_fields.append('TN_county')
+        if not is_us_school:
+            exclude_fields.append('us_state')
+
+        StudentFormSet = my_formset_factory(
+            Student, form=StudentForm,
+            extra=1, can_delete=True, exclude=exclude_fields,
+            is_us_school=is_us_school, is_tn_school=is_tn_school,
+            school=school,
+        )
+
+        if request.method == 'POST':
+            formset = StudentFormSet(
+                request.POST,
+                queryset=Student.objects.filter(annual_report=annual_report)
+            )
+
+            # Validate entire formset first
+            if formset.is_valid():
+                # Save valid forms
+                instances = formset.save(commit=False)
+                for instance in instances:
+                    instance.annual_report = annual_report
+
+                    # Calculate age_at_registration
+                    if instance.birth_date and instance.registration_date:
+                        instance.age_at_registration = (
+                            instance.registration_date.year - instance.birth_date.year -
+                            ((instance.registration_date.month, instance.registration_date.day) <
+                             (instance.birth_date.month, instance.birth_date.day))
+                        )
+                    elif instance.age:
+                        instance.age_at_registration = instance.age
+
+                    instance.save()
+                    update_student_country_occurences(annual_report)
+
+                    # TN notifications
+                    if is_tn_school:
+                        if instance.status == 'withdrawn' and instance.us_state == 'TN':
+                            send_simple_email(
+                                "TN Student withdrawn",
+                                f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
+                                f"has been withdrawn on {instance.withdraw_date or 'Unknown Date'}\n"
+                                f"The student is from {instance.TN_county or 'Unknown County'}"
+                            )
+                        elif instance.us_state == 'TN' and instance.registration_date and instance.registration_date > sept_10:
+                            send_simple_email(
+                                "New TN Student registered",
+                                f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
+                                f"has been registered on {instance.registration_date or 'Unknown Date'}\n"
+                                f"The student is from {instance.TN_county or 'Unknown County'}"
+                            )
+
+                # Handle deletions
+                for form in formset.deleted_forms:
+                    if form.instance.pk:
+                        form.instance.delete()
+
+                # Only redirect if all forms are valid
+                if 'submit' in request.POST:
+                    if not annual_report.submit_date:
+                        annual_report.submit_date = date.today()
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
+                    return redirect('school_dashboard', school.id)
+
+                elif 'save' in request.POST:
+                    annual_report.last_update_date = date.today()
+                    annual_report.save()
+                    return HttpResponsePermanentRedirect(reverse('school_dashboard', args=[school.id]))
+
+            else:
+                # ❌ Some forms are invalid → stay on page with errors
+                messages.error(request, 'Some forms are invalid. Please check your inputs.')
+                # The bound formset preserves all input and errors
+
+        else:
+            # GET request → display formset
+            status_order = Case(
+                When(status='enrolled', then=Value(1)),
+                When(status='part-time', then=Value(2)),
+                When(status='withdrawn', then=Value(3)),
+                When(status='graduated', then=Value(4)),
+                When(status='did_not_return', then=Value(5)),
+                default=Value(6),
+                output_field=IntegerField(),
+            )
+
+            show_all = request.GET.get("show") == "all"
+            if not show_all:
+                students_qs = (
+                    Student.objects.filter(
+                        annual_report=annual_report,
+                        status__in=['enrolled', 'withdrawn', 'part-time']
+                    )
+                    .select_related('country', 'TN_county')
+                    .order_by(status_order, 'grade_level', 'name')
+                )
+            else:
+                students_qs = (
+                    Student.objects.filter(annual_report=annual_report)
+                    .select_related('country', 'TN_county')
+                    .order_by(status_order, 'grade_level', 'name')
+                )
+
+            formset = StudentFormSet(queryset=students_qs)
+
+    except AnnualReport.DoesNotExist:
+        messages.error(request, f"AnnualReport with id {arID} doesn't exist.")
+    except OperationalError as e:
+        messages.error(request, f"Database connection error: {str(e)}. Please try again later.")
+    except ValidationError as e:
+        messages.error(request, f"Validation error: {str(e)}")
+    except Exception as e:
+        messages.error(request, f"An error occurred while processing your request: {str(e)}")
+
+    return render(
+        request,
+        'student_report.html',
+        {'formset': formset, 'annual_report': annual_report, 'show_all': show_all}
+    )
+'''
+
+
+
+'''   
+This saves individually, but has issues with errors and duplicates     
+def student_report(request,arID):
     redirect_to_school_dashboard = False
     show_all=None
     try:
@@ -82,7 +396,9 @@ def student_report(request,arID):
                 if not form.has_changed():
                     if form.instance.pk and not form.instance.registration_date:
                         form.full_clean()  # triggers clean()
-                if form.has_changed() or (form.instance.pk and not form.instance.registration_date):
+
+
+                if form.has_changed():
                     field_name = form.add_prefix('name')
                     student_name = form.data.get(field_name)
                     # ✅ Skip accidental empty form submissions if 'name' is blank
@@ -204,6 +520,7 @@ def student_report(request,arID):
             return render(request, 'student_report.html', {'formset': formset, 'annual_report': annual_report, 'show_all': show_all})
         else:
             return redirect('school_dashboard', school.id)
+'''
 
 @login_required(login_url='login')
 def import_students_prev_year(request, arID):

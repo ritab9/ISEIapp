@@ -138,7 +138,7 @@ class VacationsForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'style': 'max-width: 300px;'}),
             'start_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
-            'weekdays': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'weekdays': forms.NumberInput(attrs={'min': 1, 'max': 90, 'style': 'max-width: 30px;'}),
         }
 
 class InserviceDiscretionaryDaysForm(forms.ModelForm):

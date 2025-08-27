@@ -27,9 +27,7 @@
                  <div class="col col-auto">
                     <a class="btn btn-sm btn-ISEIyellow mt-4" href="{% url 'import_students_prev_year' annual_report.id %}">Import Students from {{ annual_report.school_year.get_previous_school_year }}</a>
                     {% for message in messages %}
-                           {% for message in messages %}
-                                <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-                            {% endfor %}
+                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
                      {% endfor %}
                  </div>
                 <div class="col col-auto">
@@ -106,6 +104,7 @@
                     </thead>
                     <tbody id="formset">
                         {% for form in formset %}
+                                {{ form.id }}
                                 <tr class="form">
                                     <td></td>
                                     {% for field in form %}
