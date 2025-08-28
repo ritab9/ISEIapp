@@ -388,7 +388,7 @@ def updateCEUinstance(request, pk):
                 form.save()  # save
                 # ToDo Should I set isei_reviewed='n' here???
                 CEUInstance.objects.filter(id=pk).update(principal_reviewed='n', )  # principal reviewed set to no
-                ceu_report = CEUReport.objects.get(ceu_instance=ceu_instance)
+                ceu_report = CEUReport.objects.get(ceuinstance=ceu_instance)
                 principal_emails = get_principals_emails(ceu_report.teacher)
                 email_CEUReport_submitted(ceu_report.teacher, principal_emails, ceu_report.school_year.name)
 
