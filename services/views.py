@@ -135,6 +135,7 @@ def resources(request, school_id=None):
                  safety_resources = safety_resources,
                  meeting_materials=meeting_materials,
                  registrations=registrations,
+                 services=services,
                  school_id=school_id)
 
     return render(request, 'resources.html', context)
