@@ -30,11 +30,11 @@
                 </div>
             </div>
         </div>
-
+<!-- Events -->
         <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
-                    <i class="bi bi-pencil-square"></i>  <strong>Event Registrations</strong>
+                    <i class="bi bi-pencil-square"></i>  <strong>Events</strong>
                 </div>
                 <div class="card-body">
                     <ul>
@@ -50,6 +50,7 @@
             </div>
         </div>
 
+<!-- Accreditation Documents -->
         <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
@@ -76,6 +77,30 @@
             </div>
         </div>
 
+<!-- Services -->
+        <div class="col mb-2">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <i class="bi bi-easel"></i>  <strong>Services</strong>
+                </div>
+                <div class="card-body">
+                    <ul class="nav-item ">
+                        <li><a class="nav-link" href="{% url 'test_order_dashboard' school_id %}" > IOWA Test Ordering </a></li>
+                     </ul>
+                    <ul>
+                        {% for resource in services %}
+                            {% if resource.link %}
+                                <li{% if forloop.counter|divisibleby:2 %} class="ml-3" style="list-style-type: circle "{% endif %}>
+                                    <a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!-- Evaluation Forms -->
         <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
@@ -97,10 +122,10 @@
                 </div>
             </div>
         </div>
-    <!--/div>
-    <div class="row row-cols-1 row-cols-md-3 g-3 mt-2"-->
+
         <div class="col mb-2">
-            <div class="card h-100 shadow-sm">
+<!-- Safety and Maintenance -->
+            <div class="card h-50 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-hammer"></i>  <strong>Safety and Maintenance</strong>
                 </div>
@@ -112,10 +137,9 @@
                     </ul>
                 </div>
             </div>
-        </div>
 
-        <div class="col mb-2">
-            <div class="card h-100 shadow-sm">
+<!-- Meeting Materials -->
+            <div class="card h-50 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-people-fill"></i>  <strong>Meeting Materials</strong>
                 </div>

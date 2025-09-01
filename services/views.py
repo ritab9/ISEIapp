@@ -125,6 +125,7 @@ def resources(request, school_id=None):
     safety_resources = Resource.objects.filter(type__name='Safety & Maintenance')
     meeting_materials =Resource.objects.filter(type__name='Meeting Materials')
     registrations =Resource.objects.filter(type__name='Registration').order_by('name')
+    services = Resource.objects.filter(type__name='Service').order_by('name')
 
 
     context=dict(teacher_evaluation_resources = teacher_evaluation_resources,

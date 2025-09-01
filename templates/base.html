@@ -90,15 +90,18 @@
      
      {# The Footer #}
      {% block footer %}
-        <footer class="footer noprint">
-            <div class="row card mt-3">
-                <div class="mr-3 ml-3 text-center">
-                    <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || info@iseiea.org
-                    <p><small>&copy; 2021 <i>ISEI</i> Education Association</small></p>
-                </div>
+        <footer class="footer noprint py-2 mt-4 bg-ISEIblue4">
+            <div class="container text-center">
+                <p class="mb-1">
+                    <i>ISEI</i> Education Association || P.O. Box 946, Dayton, TN 37321, USA || 
+                    <a href="mailto:info@iseiea.org" class="text-white text-decoration-underline">info@iseiea.org</a>
+                </p>
+                <small>&copy; 2021 <i>ISEI</i> Education Association</small>
             </div>
         </footer>
-     {% endblock footer %}
+        {% endblock footer %}
+
+
 
 {# Script to mark active link #} 
      {% block active_link %}
