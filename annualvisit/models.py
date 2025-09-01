@@ -15,9 +15,9 @@ class AnnualVisit(models.Model):
         date_display = self.visit_date if self.visit_date else "Unscheduled"
         return f"Annual Visit - {self.school.name} ({date_display}) by {rep_name}"
 
-class SchoolDocuments(models.Model):
+class SchoolDocument(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="school_documents")
     link = models.URLField(blank=True, null=True, help_text="Google Drive folder link")
 
     def __str__(self):
-        return f"Documents - {self.school.name} ({self.school_year.name})"
+        return f"Documents - {self.school.name}"

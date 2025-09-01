@@ -9,8 +9,8 @@ class AnnualVisitAdmin(admin.ModelAdmin):
     search_fields = ("school__name", "representative")
 
 
-@admin.register(SchoolDocuments)
-class SchoolDocumentsAdmin(admin.ModelAdmin):
+@admin.register(SchoolDocument)
+class SchoolDocumentAdmin(admin.ModelAdmin):
     list_display = ("school", "link")
     search_fields = ("school__name",)
     list_editable = ("link",)  # Makes the link field editable directly in the list
