@@ -556,7 +556,7 @@ def import_students_prev_year(request, arID):
             student.age += 1
         # Handle grade level (assuming it's not None, add error handling as needed) - # --- bump grade level ---
         #13 is Graduated, 14, 15, 16 are GI-GIII for Kibidula Agriculture School
-        if student.grade_level in range(1, 12):
+        if student.grade_level in range(-2, 12):
             student.grade_level += 1
         elif student.grade_level in (12, 16):
             student.grade_level = 13
@@ -577,8 +577,8 @@ def import_students_prev_year(request, arID):
 
 @login_required(login_url='login')
 def student_report_display(request, arID):
-
     annual_report = AnnualReport.objects.get(id=arID)
+
     status_order = Case(
         When(status='enrolled', then=Value(1)),
         When(status='part-time', then=Value(2)),
@@ -588,45 +588,50 @@ def student_report_display(request, arID):
         default=Value(6),
         output_field=IntegerField()
     )
-    students = Student.objects.filter(annual_report=annual_report).select_related('annual_report', 'country',
-                                                                                 'TN_county').order_by(status_order,'grade_level', 'name')
-    #students = Student.objects.filter(annual_report=annual_report, status__in=['enrolled','part-time','withdrawn']).select_related('annual_report', 'country',
-                                                                                      #'TN_county').order_by('grade_level', 'name')
 
-    #status = 'enrolled'
-    filter_form = StudentFilterForm(request.GET or None, annual_report=annual_report)
-    #initial = {'status': status}
-
+    # ✅ If user submitted filters, start from ALL students
     if request.GET:
+        students = Student.objects.filter(annual_report=annual_report).select_related(
+            'annual_report', 'country', 'TN_county'
+        ).order_by(status_order, 'grade_level', 'name')
+
+        filter_form = StudentFilterForm(request.GET, annual_report=annual_report)
+
         if filter_form.is_valid():
-            if 'grade_level' in filter_form.cleaned_data and filter_form.cleaned_data['grade_level']:
-                students = students.filter(grade_level=filter_form.cleaned_data['grade_level'])
+            cd = filter_form.cleaned_data
 
-            if 'status' in filter_form.cleaned_data and filter_form.cleaned_data['status']:
-                students = students.filter(status=filter_form.cleaned_data['status'])
+            if cd.get('grade_level'):
+                students = students.filter(grade_level=cd['grade_level'])
+            if cd.get('status'):
+                students = students.filter(status=cd['status'])
+            if cd.get('location'):
+                students = students.filter(location=cd['location'])
+            if cd.get('gender'):
+                students = students.filter(gender=cd['gender'])
+            if cd.get('country'):
+                students = students.filter(country=cd['country'])
+            if cd.get('us_state'):
+                students = students.filter(us_state=cd['us_state'])
+            if cd.get('TN_county'):
+                students = students.filter(TN_county=cd['TN_county'])
 
-            if 'location' in filter_form.cleaned_data and filter_form.cleaned_data['location']:
-                students = students.filter(location=filter_form.cleaned_data['location'])
+    else:
+        # ✅ First page load → show only "enrolled" and set initial
+        students = Student.objects.filter(
+            annual_report=annual_report, status='enrolled'
+        ).select_related('annual_report', 'country', 'TN_county').order_by(
+            status_order, 'grade_level', 'name'
+        )
+        filter_form = StudentFilterForm(initial={'status': 'enrolled'}, annual_report=annual_report)
 
-            if 'gender' in filter_form.cleaned_data and filter_form.cleaned_data['gender']:
-                students = students.filter(gender=filter_form.cleaned_data['gender'])
-
-            if 'country' in filter_form.cleaned_data and filter_form.cleaned_data['country']:
-                students = students.filter(country=filter_form.cleaned_data['country'])
-
-            if 'us_state' in filter_form.cleaned_data and filter_form.cleaned_data['us_state']:
-                students = students.filter(us_state=filter_form.cleaned_data['us_state'])
-
-            if 'TN_county' in filter_form.cleaned_data and filter_form.cleaned_data['TN_county']:
-                students = students.filter(TN_county=filter_form.cleaned_data['TN_county'])
-
-    #students=students.filter(status=status)
     context = {
         'annual_report': annual_report,
         'students': students,
         'filter_form': filter_form,
     }
     return render(request, 'student_report_display.html', context)
+
+
 
 
 class StudentExcelDownload(View):
@@ -1983,7 +1988,7 @@ def isei_reporting_dashboard(request):
     #opening_report = AnnualReport.objects.filter(school_year=current_school_year, report_type="OR")
 
     report_types = ReportType.objects.all()
-    schools = School.objects.filter(member=True, active = True)
+    schools = School.objects.filter(member=True, active = True, test=False)
 
     # Prefetch the AnnualReports for the selected school year for each school
     schools = schools.prefetch_related(

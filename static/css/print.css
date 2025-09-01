@@ -21,7 +21,7 @@
     font-size: 10px;
   }
 
-  .noprint, .floating-box-background, .floating-box, button, a {
+  .noprint, .floating-box-background, .floating-box, button {
     display: none !important;
   }
 
