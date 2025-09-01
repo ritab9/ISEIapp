@@ -31,13 +31,23 @@
 
                          
    {% if apr %}
-          <a class="nav-link {% if active_link == 'apr' %}active{% endif %}" 
-             href="{% url 'apr_progress_report' apr.id %}">
-              AAPR Progress {{ apr.accreditation.school }}
-        </a>
+       <li class="nav-item">
+            <a class="nav-link {% if active_link == 'apr' %}active{% endif %}" 
+                 href="{% url 'apr_progress_report' apr.id %}">
+                  AAPR Progress {{ apr.accreditation.school }}
+            </a>
+       </li>
    {% endif %}
 
-    
+     {% if request.user %}
+        <li class="nav-item ">
+            <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Accreditation</a>
+         </li>
+         <li class="nav-item ">
+            <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Annual Visit </a>
+         </li>
+     {% endif %}
+
     
 
 

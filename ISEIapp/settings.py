@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'accreditation',
      #'selfstudy',
     'selfstudy.apps.SelfstudyConfig',
+    'annualvisit',
 
     'crispy_forms',
     'storages',

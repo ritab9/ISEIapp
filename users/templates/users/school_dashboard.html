@@ -177,7 +177,7 @@
 
                             {% if apr %}
                                 <tr class="table-bordered">
-                                    <td><strong>Annual Accreditation Progress Report</strong> <br>
+                                    <td><strong>AAPR</strong> <br>
                                         <a class="error report_edit" href="{% url 'apr_progress_report' apr.id %}">Edit</a>
                                     </td>
                                     <td>May 1st</td><td>{{ apr.submitted_at|default_if_none:"" }}</td>
@@ -195,7 +195,7 @@
     <!-- Safety form link-->
         <div class="card-body card">
             <h6><a href="{{ safety_form_link }}" target="_blank" rel="noopener noreferrer">Safety &amp; Maintenance Inspection Form</a></h6>
-            *To be completed each year before/at the start of the school year*
+            *To be completed each school year*
         </div>
 
         <div class="card-body card">

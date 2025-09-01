@@ -86,8 +86,7 @@
                 <div class="card-body">
                     <ul class="nav-item ">
                         <li><a class="nav-link" href="{% url 'test_order_dashboard' school_id %}" > IOWA Test Ordering </a></li>
-                     </ul>
-                    <ul>
+
                         {% for resource in services %}
                             {% if resource.link %}
                                 <li{% if forloop.counter|divisibleby:2 %} class="ml-3" style="list-style-type: circle "{% endif %}>
