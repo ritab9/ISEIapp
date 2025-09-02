@@ -68,6 +68,9 @@
     
 <!-- Teacher Links -->    
     {% if request.user|in_group:"teacher" and not request.user|in_group:"principal, registrar, staff"%}
+            <li class="nav-item" >
+                <a class="nav-link" href="{% url 'teacher_dashboard' user.id %}">Certification </a>
+            </li>
         {% if request.user|application_submitted_tag %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'myCEUdashboard' request.user.id %}">CEU Reporting</a>
