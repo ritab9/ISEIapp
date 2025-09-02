@@ -55,8 +55,8 @@
                     <td>
                         <a class="nav-link" href="{% url 'school_annual_visit' visit.school.id %}">{{ visit.school.name }}</a>
                     </td>
-                    <td>{{ visit.visit_date|default:"Unscheduled" }}</td>
-                    <td>{{ visit.representative|default:"TBD" }}</td>
+                    <td>{{ visit.visit_date|default:"" }}</td>
+                    <td>{{ visit.representative|default:"" }}</td>
                     <td>
                         {% if visit.document_link %}
                             <a href="{{ visit.document_link }}" target="_blank" class="">

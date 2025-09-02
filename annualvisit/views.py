@@ -17,6 +17,9 @@ from .models import *
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
 def school_annual_visit(request, school_id=None):
+
+    current_year=SchoolYear.objects.filter(current_school_year=True).first()
+
     if school_id:
         school=School.objects.get(pk=school_id)
     else:
@@ -29,7 +32,7 @@ def school_annual_visit(request, school_id=None):
 
     visits = AnnualVisit.objects.filter(school=school).order_by("-school_year__name", "-visit_date")
 
-    context = dict(school=school, documents=documents, documents_to_upload=documents_to_upload, visits=visits)
+    context = dict(school=school, documents=documents, documents_to_upload=documents_to_upload, visits=visits, current_year=current_year)
     return render(request, "annualvisit/school_annual_visit.html", context)
 
 
