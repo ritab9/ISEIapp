@@ -1,0 +1,81 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="card card-body container mt-4">
+
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <a href="{% url 'manage_annual_visits' %}" class="btn btn-sm btn-outline-ISEIblue">
+            <i class="bi bi-pencil-square"></i> Add/Manage Annual Visit Information
+        </a>
+
+        <a href="{{ documents_to_upload.link }}" target="_blank" class="btn btn-sm btn-outline-ISEIblue">
+            <i class="bi bi-list"></i> Required Evidence List
+        </a>
+    </div>
+
+
+    <h6 class="text-center mb-4">
+        Annual Visits {{ current_year}}
+    </h6>
+
+
+    <!-- Annual Visits -->
+    {% if visits %}
+        <table class="table table-striped">
+            <thead class="">
+                <tr class="">
+                    <th class="text-left">
+                        <a href="?order_by=school__name" class="clickable">
+                            School {% if current_order == 'school__name' %}▲{% endif %}
+                        </a>
+                    </th>
+                    <th class="text-left">
+                        <a href="?order_by=visit_date" class="clickable">
+                            Visit Date {% if current_order == 'visit_date' %}▲{% endif %}
+                        </a>
+                    </th>
+                    <th class="text-left">
+                        <a href="?order_by=representative" class="clickable">
+                            Representative {% if current_order == 'representative' %}▲{% endif %}
+                        </a>
+                    </th>
+                    <th class="text-left">Documents</th>
+                    <th class="text-left">Notes</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in visits %}
+                <tr>
+                    <td>
+                        <a class="nav-link" href="{% url 'school_annual_visit' visit.school.id %}">{{ visit.school.name }}</a>
+                    </td>
+                    <td>{{ visit.visit_date|default:"Unscheduled" }}</td>
+                    <td>{{ visit.representative|default:"TBD" }}</td>
+                    <td>
+                        {% if visit.document_link %}
+                            <a href="{{ visit.document_link }}" target="_blank" class="">
+                                <i class="bi bi-folder"></i> Evidence Docs
+                            </a>
+                        {% else %}
+                            <span class="text-muted">No link</span>
+                        {% endif %}
+                    </td>
+                    <td> {% if visit.notes %}
+                            {{ visit.notes }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No annual visits recorded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

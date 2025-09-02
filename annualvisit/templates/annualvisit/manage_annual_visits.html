@@ -1,0 +1,61 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+{% block title %}Manage Annual Visits{% endblock %}
+
+{% block content %}
+    <div class="card card-body container mt-4">
+
+        <h6 class="mb-4">Annual Visits – {{ current_year.name }}</h6>
+
+        {% if error %}
+            <div class="alert alert-warning">{{ error }}</div>
+        {% else %}
+        <form method="post">
+            {% csrf_token %}
+                {{ formset.management_form }}
+
+            <table class="table table-bordered align-middle">
+                <thead>
+                    <tr>
+                        <th>School</th>
+                        <th>Evidence Docs</th>
+                        <th>Date</th>
+                        <th>Representative</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        {{ form.id }}
+                    <tr>
+                        <td>{{ form.instance.school.name }}</td>
+                        <td>
+                            {% if form.instance.school.school_documents.first %}
+                                <a href="{{ form.instance.school.school_documents.first.link }}" target="_blank">
+                                    📂 Documents
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No docs</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ form.visit_date }}</td>
+                        <td>{{ form.representative }}</td>
+                        <td>{{ form.notes }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-ISEIblue">Save All</button>
+        </form>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        //Auto Expand Text Area
+        {% include "includes/script_auto_expand_textarea.html" %}
+
+    </script>
+{% endblock %}

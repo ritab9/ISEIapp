@@ -1,0 +1,62 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+{% block title %}School Annual Visits{% endblock title %}
+
+{% block content %}
+<div class="card card-body container mt-4">
+    <h6>{{ school.name }} - Annual Visits</h6>
+
+    <div class="row">
+        <div class = "col-auto">
+            <a href="{{ documents_to_upload.link }}" target="_blank" class="btn btn-sm btn-outline-ISEIblue mb-3">
+                    <i class="bi bi-list"></i> Required Evidence List
+            </a>
+        </div>
+        <div class="col-auto">
+            <!-- School Documents -->
+            {% if documents %}
+                <a href="{{ documents.link }}" target="_blank" class="btn btn-sm btn-ISEIblue mb-3">
+                    <i class="bi bi-folder"></i> Upload/View School Documents
+                </a>
+            {% else %}
+                <p>No Google Drive folder assigned yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <p class="text-muted mt-2">
+                Inside the Google Drive folder, please create a folder for the current school year to upload documents for upcoming visit.
+                If documents from previous years have not changed, you may move them into the new folder rather than uploading them again.
+            </p>
+        </div>
+    </div>
+
+    <!-- Annual Visits -->
+    <h6 class="mt-4">Annual Visits</h6>
+    {% if visits %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>School Year</th>
+                    <th>Visit Date</th>
+                    <th>Representative</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in visits %}
+                    <tr>
+                        <td>{{ visit.school_year.name }}</td>
+                        <td>{% if visit.visit_date %}{{ visit.visit_date }}{% else %}Unscheduled{% endif %}</td>
+                        <td>{{ visit.representative|default:"TBD" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No annual visits recorded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

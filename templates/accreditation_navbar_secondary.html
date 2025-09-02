@@ -3,22 +3,7 @@
 {% load group_tags %}
 
 
-    {% if request.user|in_group:"staff" %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'isei_accreditation_dashboard' %}">Accreditation</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'add_accreditation' %}">Add New Accreditation</a>
-      </li>
-      <li class="nav-item">  
-        <a class="nav-link" href="{% url 'accreditation_application_list' %}">Accreditation Applications</a>
-      </li>  
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'isei_standards_indicators' %}">ISEI Standards</a>
-      </li>
-        
-    {% endif %}
-
+    
 
   {% if selfstudy %}
       <li class="nav-item">
@@ -39,12 +24,27 @@
        </li>
    {% endif %}
 
-     {% if request.user %}
+    {% if request.user|in_group:"staff" %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'isei_accreditation_dashboard' %}">Accreditation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'add_accreditation' %}">Add New Accreditation</a>
+      </li>
+      <li class="nav-item">  
+        <a class="nav-link" href="{% url 'accreditation_application_list' %}">Accreditation Applications</a>
+      </li> 
+      <li class="nav-item ">
+            <a class="nav-link" href="{% url 'isei_annual_visit' %}">Annual Visits</a>   
+      </li>  
+      
+        
+    {% else %}
         <li class="nav-item ">
             <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Accreditation</a>
          </li>
          <li class="nav-item ">
-            <a class="nav-link" href="{% url 'school_accreditation_dashboard' request.user.profile.school.id %}"> Annual Visit </a>
+            <a class="nav-link" href="{% url 'school_annual_visit' %}">Annual Visits</a>   
          </li>
      {% endif %}
 

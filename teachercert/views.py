@@ -1189,7 +1189,7 @@ def bulk_ceu_entry(request):
                         defaults={
                             'description': description,
                             'evidence': evidence,
-                            'approved_ceu': individual_ceu,
+                            'approved_ceu': individual_ceu if is_isei else None,
                             'amount':individual_ceu,
                             'units': 'c',
                             'file': saved_file_path,

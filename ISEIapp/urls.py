@@ -31,6 +31,7 @@ urlpatterns = [
     path('', include('accreditation.urls')),
     path('', include('apr.urls')),
     path('', include('selfstudy.urls')),
+    path('', include('annualvisit.urls')),
 
     # path('paypal/', include('paypal.standard.ipn.urls')),
     # path('captcha/', include('captcha.urls')),

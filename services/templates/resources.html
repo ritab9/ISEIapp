@@ -1,6 +1,7 @@
 {% extends 'reporting_base.html' %}
 
 {% load static %}
+{% load group_tags %}
 {% block title %} Resources {% endblock title %}
 
 
@@ -85,7 +86,11 @@
                 </div>
                 <div class="card-body">
                     <ul class="nav-item ">
-                        <li><a class="nav-link" href="{% url 'test_order_dashboard' school_id %}" > IOWA Test Ordering </a></li>
+                        {% if school_id %}
+                            <li><a class="nav-link" href="{% url 'test_order_dashboard' school_id %}" > IOWA Test Ordering </a></li>
+                        {% elif request.user|in_group:"staff" %}
+                            <li><a href="{% url 'isei_test_order' %}">IOWA Test Order</a></li>
+                        {% endif %}
 
                         {% for resource in services %}
                             {% if resource.link %}
