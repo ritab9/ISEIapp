@@ -1152,7 +1152,7 @@ def bulk_ceu_entry(request):
     if request.method == 'POST':
         form = BulkCEUForm(request.POST, request.FILES)
         if form.is_valid():
-            school = form.cleaned_data.get('school') if not is_principal else request.user.profile.school
+            school = form.cleaned_data.get('school') if not is_principal_or_registrar else request.user.profile.school
             school_year = form.cleaned_data['school_year']
             ceu_type = form.cleaned_data['ceu_type']
             description = form.cleaned_data['description']
@@ -1192,7 +1192,7 @@ def bulk_ceu_entry(request):
                             'units': 'c',
                             'file': saved_file_path,
                             'isei_reviewed': 'a' if is_isei else 'n',
-                            'principal_reviewed': 'a' if is_principal else 'n',
+                            'principal_reviewed': 'a' if is_principal_or_registrar else 'n',
                         }
                     )
                     #if created:
@@ -1201,7 +1201,7 @@ def bulk_ceu_entry(request):
     else:
         form = BulkCEUForm(teachers=teachers)
 
-    context = dict(form=form, teachers=teachers, is_principal=is_principal)
+    context = dict(form=form, teachers=teachers, is_principal=is_principal_or_registrar)
 
     return render(request, 'teachercert/bulk_ceu_entry.html', context)
 
