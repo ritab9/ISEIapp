@@ -34,9 +34,13 @@ class CEUInstanceForm(ModelForm):
                 self.fields['ceu_type'].queryset = CEUType.objects.filter(ceu_category_id=ceu_category_id).order_by(
                     'description')
             except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty queryset
+                pass  # invalid input from client
         elif self.instance.pk:
-            self.fields['ceu_type'].queryset = self.instance.ceu_category.ceutype_set.all()
+            if self.instance.ceu_category:
+                self.fields['ceu_type'].queryset = CEUType.objects.filter(
+                    ceu_category=self.instance.ceu_category).order_by('description')
+            elif self.instance.ceu_type:
+                self.fields['ceu_type'].queryset = CEUType.objects.filter(pk=self.instance.ceu_type.pk)
 
     class Meta:
         model = CEUInstance

@@ -1161,6 +1161,8 @@ def bulk_ceu_entry(request):
             date_completed = form.cleaned_data['date_completed']
             file = form.cleaned_data['file']
 
+            ceu_category = ceu_type.ceu_category
+
             if school:
                 teachers =Teacher.objects.filter(school=school, user__is_active=True)
 
@@ -1183,7 +1185,7 @@ def bulk_ceu_entry(request):
                     )
 
                     ceu_instance, created = CEUInstance.objects.get_or_create(
-                        ceu_report=ceu_report, ceu_type=ceu_type, date_completed=date_completed,
+                        ceu_report=ceu_report, ceu_category=ceu_category, ceu_type=ceu_type, date_completed=date_completed,
                         defaults={
                             'description': description,
                             'evidence': evidence,
