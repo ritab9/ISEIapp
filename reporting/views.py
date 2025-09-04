@@ -2077,7 +2077,7 @@ def download_TN_reports(request, schoolyearID):
 
     # Prepare Excel file
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = f'attachment; filename=Annual_Reports_SR_{school_year.name}.xlsx'
+    response['Content-Disposition'] = f'attachment; filename=Annual_Reports_TN_{school_year.name}.xlsx'
 
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         # Write the school data to excel file
@@ -2182,7 +2182,7 @@ def download_NCPSA_directory(request, schoolyearID):
 
     # Prepare Excel file
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = f'attachment; filename=Annual_Reports_SR_{school_year.name}.xlsx'
+    response['Content-Disposition'] = f'attachment; filename=Annual_Reports_NCPSA_{school_year.name}.xlsx'
 
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         # Write the school data to excel file
