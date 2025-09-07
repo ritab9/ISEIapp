@@ -310,8 +310,8 @@
                             <td>{{ class.name }}</td>
                             <td>{{ class.credits }}</td>
                             <td>{{ class.date_completed }}</td>
-                            <td>{{ transcript_requested|yesno:"Yes,No" }}/
-                                {{ transcript_received|yesno:"Yes,No" }}
+                            <td>{{ class.transcript_requested|yesno:"Yes,No" }}/
+                                {{ class.transcript_received|yesno:"Yes,No" }}
                             </td>
                         </tr>
                     {% endfor %}
