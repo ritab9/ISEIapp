@@ -129,7 +129,7 @@ def student_report(request, arID):
                     saved_count += 1
 
                     # TN notifications
-                    if is_tn_school:
+                    if is_tn_school and form.has_changed():
                         if instance.status == 'withdrawn' and instance.us_state == 'TN':
                             send_simple_email(
                                 "TN Student withdrawn",
@@ -2128,6 +2128,7 @@ def download_NCPSA_directory(request, schoolyearID):
     annual_opening_reports = AnnualReport.objects.filter(
         school_year=school_year,
         report_type__code="OR",
+        school__active= True, school__test=False,
     )
 
     # Prepare data for DataFrame
