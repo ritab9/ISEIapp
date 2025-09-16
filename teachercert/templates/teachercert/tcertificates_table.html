@@ -36,8 +36,10 @@ Not to be used independently
                         <td>{{ c.issue_date }}</td>
                         <td>{{ c.renewal_date }}</td>
 
-                        {% if c.expired %}
-                            <td class="spanred"> Expired Certificate</td> <td> </td>
+                        {% if c.archived %}
+                            <td colspan="2" class="info"> Archived (old) Certificate</td>
+                        {% elif c.expired %}
+                            <td colspan="2" class="spanred"> Expired Certificate</td>
                         {% else %}
                         <td>
                           {% for p in c.teacher.ceureport_set.all %}

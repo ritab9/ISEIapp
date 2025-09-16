@@ -989,6 +989,9 @@ def isei_teachercert(request):
     tcertificates_filter = TCertificateFilter(request.GET, queryset=tcertificates)
     tcertificates = tcertificates_filter.qs
 
+    if 'archived' not in request.GET:
+        tcertificates = tcertificates.filter(archived=False)
+
     if request.POST.get('sendemail'):
         subject = request.POST.get('subject')
         message = request.POST.get('message')

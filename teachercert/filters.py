@@ -71,6 +71,13 @@ class TCertificateFilter(django_filters.FilterSet):
     )
     archived = ChoiceFilter(field_name="archived", choices=CHOICES, label='Current/Archived')
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        # If no archived filter is set, default to Current (False)
+        if not data or 'archived' not in data:
+            data = data.copy() if data else {}
+            data['archived'] = False
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+
 
 class TeacherCertificationApplicationFilter(django_filters.FilterSet):
     school = ModelChoiceFilter(field_name="teacher__user__profile__school__name", label='School', queryset=users.models.School.objects.filter(active=True) )
