@@ -12,49 +12,219 @@
 
         <h6>Checklist for: {{ teacher }} ({{ teacher.user.profile.school }}) </h6>
         <div class="row mt-4">
-        <div class="col-sm-auto">
-            <div class="fieldWrapper">{{ checklist_form.sda }} {{ checklist_form.sda.label_tag }}{{ checklist_form.sda.errors }}</div>
-            <div class="fieldWrapper">
-                {% if teacher.background_check %} Clean Background check {% else %} Unknown Background check status {% endif %}</div>
-            <div class="fieldWrapper">{{ checklist_form.ba_degree }} {{ checklist_form.ba_degree.label_tag }}{{ checklist_form.ba_degree.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.no_Ds }} {{ checklist_form.no_Ds.label_tag }}{{ checklist_form.no_Ds.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.experience }} {{ checklist_form.experience.label_tag }}{{ checklist_form.experience.errors }}</div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="fieldWrapper">{{ checklist_form.sop }} {{ checklist_form.sop.label_tag }}{{ checklist_form.sop.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.sda_doctrine }} {{ checklist_form.sda_doctrine.label_tag }}{{ checklist_form.sda_doctrine.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.sda_history }} {{ checklist_form.sda_history.label_tag }}{{ checklist_form.sda_history.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.sda_health }} {{ checklist_form.sda_health.label_tag }}{{ checklist_form.sda_health.errors }}</div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="fieldWrapper">{{ checklist_form.sda_education }} {{ checklist_form.sda_education.label_tag }}{{ checklist_form.sda_education.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.dev_psychology }} {{ checklist_form.dev_psychology.label_tag }}{{ checklist_form.dev_psychology.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.psychology }} {{ checklist_form.psychology.label_tag }}{{ checklist_form.psychology.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.assessment }} {{ checklist_form.assessment.label_tag }}{{ checklist_form.assessment.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.exceptional_child }} {{ checklist_form.exceptional_child.label_tag }}{{ checklist_form.exceptional_child.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.technology}} {{ checklist_form.technology.label_tag }}{{ checklist_form.technology.errors }}</div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="fieldWrapper">{{ checklist_form.sec_methods}} {{ checklist_form.sec_methods.label_tag }}{{ checklist_form.sec_methods.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.sec_rw_methods}} {{ checklist_form.sec_rw_methods.label_tag }}{{ checklist_form.sec_rw_methods.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.credits18}} {{ checklist_form.credits18.label_tag }}{{ checklist_form.credits18.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.credits12}} {{ checklist_form.credits12.label_tag }}{{ checklist_form.credits12.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.other_ed_credit}} {{ checklist_form.other_ed_credit.label_tag }}{{ checklist_form.other_ed_credit.errors }}</div>
-            <div class="mt-5">Total Professional Education Credits: {{ checklist_form.instance.education_credits }}</div>
-        </div>
-        <div class="col-sm-auto">
-            <div class="fieldWrapper">{{ checklist_form.em_science}} {{ checklist_form.em_science.label_tag }}{{ checklist_form.em_science.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.em_math}} {{ checklist_form.em_math.label_tag }}{{ checklist_form.em_math.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.em_reading}} {{ checklist_form.em_reading.label_tag }}{{ checklist_form.em_reading.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.em_language}} {{ checklist_form.em_language.label_tag }}{{ checklist_form.em_language.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.em_religion}} {{ checklist_form.em_religion.label_tag }}{{ checklist_form.em_religion.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.em_social}} {{ checklist_form.em_social.label_tag }}{{ checklist_form.em_social.errors }}</div>
-            <div class="fieldWrapper">{{ checklist_form.em_health}} {{ checklist_form.em_health.label_tag }}{{ checklist_form.em_health.errors }}</div>
-        </div>
-        </div>
-        <input class="btn-ISEIblue3" type="submit" value="Save" name = "save">
+            <div class="col-sm-auto">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Requirement</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ checklist_form.sda.label_tag }}</td>
+                            <td>{{ checklist_form.sda }} {{ checklist_form.sda.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                {% if teacher.background_check %}
+                                    Clean Background check
+                                {% else %}
+                                    Unknown Background check status
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.ba_degree.label_tag }}</td>
+                            <td>{{ checklist_form.ba_degree }} {{ checklist_form.ba_degree.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.no_Ds.label_tag }}</td>
+                            <td>{{ checklist_form.no_Ds }} {{ checklist_form.no_Ds.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.experience.label_tag }}</td>
+                            <td>{{ checklist_form.experience }} {{ checklist_form.experience.errors }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-sm-auto">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                        <th>Class</th><th>Academic</th><th>CEU</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ checklist_form.sop.label_tag }}</td>
+                            <td>{{ checklist_form.sop }} {{ checklist_form.sop.errors }}</td>
+                            <td>{{ checklist_form.sop_ceu }} {{ checklist_form.sop_ceu.errors }}</td>
+                        </tr>
+                       <tr>
+                           <td>{{ checklist_form.sda_doctrine.label_tag }}</td>
+                           <td>{{ checklist_form.sda_doctrine }}{{ checklist_form.sda_doctrine.errors }}</td>
+                           <td>{{ checklist_form.sda_doctrine_ceu }}{{ checklist_form.sda_doctrine_ceu.errors_ceu }}</td>
+                       </tr>
+                        <tr>
+                            <td>{{ checklist_form.sda_history.label_tag }}</td>
+                            <td>{{ checklist_form.sda_history }} {{ checklist_form.sda_history.errors }}</td>
+                            <td>{{ checklist_form.sda_history_ceu }} {{ checklist_form.sda_history_ceu.errors_ceu }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.sda_health.label_tag }}</td>
+                            <td>{{ checklist_form.sda_health }} {{ checklist_form.sda_health.errors }}</td>
+                            <td>{{ checklist_form.sda_health_ceu }} {{ checklist_form.sda_health_ceu.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.faith_integration.label_tag }}
+                                <i tabindex="0" class="fas fa-info-circle span80" role="button" data-toggle="popover" data-trigger="focus" data-placement="right"
+                                   data-content="Only required if above classes are met by CEUs"></i>
+
+                            </td>
+                            <td>{{ checklist_form.faith_integration }} {{ checklist_form.faith_integration.errors }}</td>
+                            <td>{{ checklist_form.faith_integration_ceu }} {{ checklist_form.faith_integration_ceu.errors }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-auto">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Credits</th>
+                            <th>CEU</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ checklist_form.sda_education.label_tag }}</td>
+                            <td>{{ checklist_form.sda_education }} {{ checklist_form.sda_education.errors }}</td>
+                            <td>{{ checklist_form.sda_education_ceu }} {{ checklist_form.sda_education_ceu.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.dev_psychology.label_tag }}</td>
+                            <td>{{ checklist_form.dev_psychology }} {{ checklist_form.dev_psychology.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.psychology.label_tag }}</td>
+                            <td>{{ checklist_form.psychology }} {{ checklist_form.psychology.errors }}</td>
+                            <td>{{ checklist_form.psychology_ceu }} {{ checklist_form.psychology_ceu.errors }}</td>
+
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.assessment.label_tag }}</td>
+                            <td>{{ checklist_form.assessment }} {{ checklist_form.assessment.errors }}</td>
+                            <td>{{ checklist_form.assessment_ceu }} {{ checklist_form.assessment_ceu.errors }}</td>
+
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.exceptional_child.label_tag }}</td>
+                            <td>{{ checklist_form.exceptional_child }} {{ checklist_form.exceptional_child.errors }}</td>
+                            <td>{{ checklist_form.exceptional_child_ceu }} {{ checklist_form.exceptional_child_ceu.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.technology.label_tag }}</td>
+                            <td>{{ checklist_form.technology }} {{ checklist_form.technology.errors }}</td>
+                            <td>{{ checklist_form.technology_ceu }} {{ checklist_form.technology_ceu.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.sec_methods.label_tag }}</td>
+                            <td>{{ checklist_form.sec_methods }} {{ checklist_form.sec_methods.errors }}</td>
+                            <td>{{ checklist_form.sec_methods_ceu }} {{ checklist_form.sec_methods_ceu.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.sec_rw_methods.label_tag }}</td>
+                            <td>{{ checklist_form.sec_rw_methods }} {{ checklist_form.sec_rw_methods.errors }}</td>
+                            <td>{{ checklist_form.sec_rw_methods_ceu }} {{ checklist_form.sec_rw_methods_ceu.errors }}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-auto">
+                <table class="table table-bordered table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ checklist_form.em_science.label_tag }}</td>
+                            <td>{{ checklist_form.em_science }} {{ checklist_form.em_science.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.em_math.label_tag }}</td>
+                            <td>{{ checklist_form.em_math }} {{ checklist_form.em_math.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.em_reading.label_tag }}</td>
+                            <td>{{ checklist_form.em_reading }} {{ checklist_form.em_reading.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.em_language.label_tag }}</td>
+                            <td>{{ checklist_form.em_language }} {{ checklist_form.em_language.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.em_religion.label_tag }}</td>
+                            <td>{{ checklist_form.em_religion }} {{ checklist_form.em_religion.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.em_social.label_tag }}</td>
+                            <td>{{ checklist_form.em_social }} {{ checklist_form.em_social.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.em_health.label_tag }}</td>
+                            <td>{{ checklist_form.em_health }} {{ checklist_form.em_health.errors }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="col-sm-auto">
+                <table class="table table-bordered table-striped table-sm">
+
+                    <tbody>
+                        <tr>
+                            <td>{{ checklist_form.credits18.label_tag }}</td>
+                            <td>{{ checklist_form.credits18 }} {{ checklist_form.credits18.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.credits12.label_tag }}</td>
+                            <td>{{ checklist_form.credits12 }} {{ checklist_form.credits12.errors }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ checklist_form.other_ed_credit.label_tag }}</td>
+                            <td>{{ checklist_form.other_ed_credit }} {{ checklist_form.other_ed_credit.errors }}</td>
+                        </tr>
+                        <tr class="table-secondary fw-bold">
+                            <td>Total Professional Education Credits</td>
+                            <td>{{ checklist_form.instance.education_credits }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input class="btn-ISEIblue3" type="submit" value="Save" name = "save">
+            </div>
+
+            </div>
+
         <!-- <input class="btn-ISEIblue3" type="submit" value="Save + Close" name = "save_and_close"> -->
     </form>
 </div>
 
-{% endblock  %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+              var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="popover"]'))
+              var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {
+                  trigger: 'hover'
+                })
+              })
+            });
+</script>
+
+{% endblock %}

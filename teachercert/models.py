@@ -386,22 +386,44 @@ class StandardChecklist(models.Model):
     experience = models.BooleanField(verbose_name="3-years teaching experience", blank= True, null=True)
 
     sop = models.BooleanField(verbose_name="Spirit of Prophecy", default=False)
+    sop_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     sda_doctrine= models.BooleanField(verbose_name="SDA Doctrines", default=False)
+    sda_doctrine_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     sda_history= models.BooleanField(verbose_name="SDA Church History", default=False)
+    sda_history_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     sda_health = models.BooleanField(verbose_name="SDA Health Principles", default=False)
+    sda_health_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
+    faith_integration = models.BooleanField(verbose_name="Faith Integration", default=False)
+    faith_integration_ceu=models.BooleanField(verbose_name="CEU", default=False)
 
     sda_education = models.PositiveSmallIntegerField(verbose_name="Principles and Philosophy of SDA Education",blank=True, null=True)
+    sda_education_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     psychology = models.PositiveSmallIntegerField(verbose_name="Educational Psychology",blank=True, null=True)
+    psychology_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     dev_psychology =models.PositiveSmallIntegerField(verbose_name="Developmental Psychology (recommended)", blank=True, null=True)
+
     assessment = models.PositiveSmallIntegerField(verbose_name="Educational Assessment",blank=True, null=True)
+    assessment_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     exceptional_child = models.PositiveSmallIntegerField(verbose_name="Exceptional Child in the Classroom",blank=True, null=True)
+    exceptional_child_ceu=models.BooleanField(verbose_name="CEU", default=False)
+
     technology = models.PositiveSmallIntegerField(verbose_name="Technology in Teaching & Learning",blank=True, null=True)
+    technology_ceu=models.BooleanField(verbose_name="CEU", default=False)
 
     sec_methods = models.PositiveSmallIntegerField(verbose_name="Secondary Curriculum and Methods", blank=True, null=True)
+    sec_methods_ceu=models.BooleanField(verbose_name="CEU", default=False)
     sec_rw_methods = models.PositiveSmallIntegerField(verbose_name="Secondary Reading and Writing Methods (recommended)", blank=True, null=True)
+    sec_rw_methods_ceu=models.BooleanField(verbose_name="CEU", default=False)
 
-    credits18 = models.CharField(verbose_name="18 credit subjects", blank=True, null=True, max_length=100)
-    credits12 = models.CharField(verbose_name="12 credit subjects", blank=True, null=True, max_length = 100)
+    credits18 = models.CharField(verbose_name="18+ credit subjects", blank=True, null=True, max_length=100)
+    credits12 = models.CharField(verbose_name="12+ credit subjects", blank=True, null=True, max_length = 100)
 
     em_science = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Science",blank=True, null=True)
     em_math = models.PositiveSmallIntegerField(verbose_name="Elementary Methods in Mathematics",blank=True, null=True)

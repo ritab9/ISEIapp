@@ -20,39 +20,41 @@ Not to be used independently
     </div>
     <div class="col-sm-auto">
         <b>Religion Courses:</b>
-        {% if checklist.sop %}<div class="spangreen"> Spirit of Prophecy </div>
+        {% if checklist.sop or checklist.sop_ceu%}<div class="spangreen"> Spirit of Prophecy </div>
         {% else %} <div class="spanred"> Spirit of Prophecy </div> {% endif %}
-        {% if checklist.sda_doctrine  %}<div class="spangreen"> SDA Doctrine </div>
+        {% if checklist.sda_doctrine or checklist.sda_doctrine_ceu %}<div class="spangreen"> SDA Doctrine </div>
         {% else %} <div class="spanred"> SDA Doctrine </div> {% endif %}
-        {% if checklist.sda_history  %}<div class="spangreen"> SDA Church History </div>
+        {% if checklist.sda_history or checklist.sda_history_ceu %}<div class="spangreen"> SDA Church History </div>
         {% else %} <div class="spanred"> SDA Church History </div> {% endif %}
-        {% if checklist.sda_health  %}<div class="spangreen"> SDA Health Principles </div>
+        {% if checklist.sda_health or checklist.sda_health_ceu  %}<div class="spangreen"> SDA Health Principles </div>
         {% else %} <div class="spanred">  SDA Health Principles  </div> {% endif %}
     </div>
     <div class="col-sm-auto">
         <b>Professional Education Courses:</b>
-        {% if checklist.sda_education %}<div class="spangreen"> Philosophy of SDA Education: {{ checklist.sda_education }} credits  </div>
+        {% if checklist.sda_education or checklist.sda_education_ceu %}<div class="spangreen"> Philosophy of SDA Education: {{ checklist.sda_education }} credits  </div>
         {% else %} <div class="spanred"> Philosophy of SDA Education </div> {% endif %}
-        {% if checklist.dev_psychology %}<div class="spangreen"> Developmental Psychology: {{ checklist.dev_psychology }} credits  </div>
+        {% if checklist.dev_psychology  %}<div class="spangreen"> Developmental Psychology: {{ checklist.dev_psychology }} credits  </div>
         {% else %} <div> Developmental Psychology (recommended) </div> {% endif %}
-        {% if checklist.psychology %}<div class="spangreen"> Educational Psychology: {{ checklist.psychology }} credits  </div>
+        {% if checklist.psychology or checklist.psychology_ceu %}<div class="spangreen"> Educational Psychology: {{ checklist.psychology }} credits  </div>
         {% else %} <div class="spanred"> Educational Psychology </div> {% endif %}
-        {% if checklist.assessment %}<div class="spangreen"> Educational Assessment: {{ checklist.assessment }} credits  </div>
+        {% if checklist.assessment or checklist.assessment_ceu %}<div class="spangreen"> Educational Assessment: {{ checklist.assessment }} credits  </div>
         {% else %} <div class="spanred"> Educational Assessment </div> {% endif %}
-        {% if checklist.exceptional_child %}<div class="spangreen">Exceptional Child in the Classroom: {{ checklist.exceptional_child }} credits  </div>
+        {% if checklist.exceptional_child or checklist.exceptional_child_ceu %}<div class="spangreen">Exceptional Child in the Classroom: {{ checklist.exceptional_child }} credits  </div>
         {% else %} <div class="spanred"> Exceptional Child in the Classroom </div> {% endif %}
-        {% if checklist.technology %}<div class="spangreen"> Technology in Teaching and Learning: {{ checklist.technology }} credits  </div>
+        {% if checklist.technology or checklist.technology_ceu %}<div class="spangreen"> Technology in Teaching and Learning: {{ checklist.technology }} credits  </div>
         {% else %} <div class="spanred"> Technology in Teaching and Learning </div> {% endif %}
     </div>
     <div class="col-sm-auto">
         <b>For Secondary/Subject endorsement:</b>
-        {% if checklist.sec_methods %}<div class="spangreen"> Secondary Curriculum and Methods: {{ checklist.sec_methods }} credits  </div>
+        {% if checklist.sec_methods or checklist.sec_methods_ceu %}<div class="spangreen"> Secondary Curriculum and Methods: {{ checklist.sec_methods }} credits  </div>
         {% else %} <div class="spanred"> Secondary Curriculum and Methods: </div> {% endif %}
-        {% if checklist.sec_rw_methods %}<div class="spangreen"> Secondary Reading and Writing Methods: {{ checklist.sec_rw_methods }} credits  </div>
+        {% if checklist.sec_rw_methods or checklist.sec_rw_methods_ceu %}<div class="spangreen"> Secondary Reading and Writing Methods: {{ checklist.sec_rw_methods }} credits  </div>
         {% else %} <div>  Secondary Reading and Writing Methods (recommended) </div> {% endif %}
 
-        <div class="fieldWrapper">18 Credit Subjects: {{ checklist.credits18}}</div>
-        <div class="fieldWrapper">12 Credit Subjects: {{ checklist.credits12}}</div>
+        <div class="fieldWrapper">18+ Credit Subjects: <span class="font-weight-bold info">{{ checklist.credits18}}</span></div>
+        {% if checklist.credits12 %}
+            <div class="fieldWrapper">12+ Credit Subjects: <span class="font-weight-bold info">{{ checklist.credits12}}</span></div>
+        {% endif %}
 
         <div class="fieldWrapper">Other Education Credits: {{ checklist.other_ed_credit}}</div>
         <div class="mt-5"><b>Total Professional Education Credits: {{ checklist.education_credits }}</b></div>
