@@ -1368,7 +1368,7 @@ def get_missing_checklist_counts(teachers):
 @allowed_users(allowed_roles=['staff', 'principal','registrar'])
 def school_checklist_summary(request, school_id):
     school = get_object_or_404(School, id=school_id)
-    teachers = Teacher.objects.filter(school=school)
+    teachers = Teacher.objects.filter(school=school, user__is_active=True)
     missing_data, total = get_missing_checklist_counts(teachers)
 
     context = dict(
@@ -1397,7 +1397,7 @@ def isei_checklist_summary(request):
     total_teachers = 0
 
     for school in schools:
-        teachers = Teacher.objects.filter(school=school, user__active=True)
+        teachers = Teacher.objects.filter(school=school, user__is_active=True)
         missing_data, total = get_missing_checklist_counts(teachers)
         summaries.append({
             "school": school,
