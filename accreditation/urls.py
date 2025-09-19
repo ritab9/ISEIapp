@@ -12,7 +12,10 @@ urlpatterns = [
     path('accreditation_applications_list/', views.accreditation_application_list, name='accreditation_application_list'),
 
     path('school_accreditation_dashboard/<int:school_id>/', views.school_accreditation_dashboard, name='school_accreditation_dashboard'),
+
     path('isei_standards_indicators/', views.isei_standards_indicators, name='isei_standards_indicators'),
     path('isei_standards_indicators/<int:school_id>/', views.isei_standards_indicators, name='isei_standards_indicators'),
+
+    path("required-evidence/", views.required_evidence_list, name="required_evidence_list"),
 
 ]

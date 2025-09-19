@@ -59,3 +59,13 @@ class AccreditationApplicationAdmin(admin.ModelAdmin):
     list_display = ('school', 'anticipated_accreditation', 'date', 'ss_orientation_date')
     list_filter = ('anticipated_accreditation', 'date')
     search_fields = ('school__name',)
+
+
+class RequiredEvidenceInLine(admin.StackedInline):
+    model = RequiredEvidence
+    extra = 1
+
+class RequiredEvidenceCategoryAdmin(admin.ModelAdmin):
+    inlines = [RequiredEvidenceInLine]
+
+admin.site.register(RequiredEvidenceCategory, RequiredEvidenceCategoryAdmin)

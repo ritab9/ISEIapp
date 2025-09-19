@@ -9,7 +9,7 @@ from selfstudy.models import SelfStudy
 from users.decorators import allowed_users
 from django.contrib import messages
 
-from .models import Accreditation, Standard, InfoPage, Indicator
+from .models import *
 from .forms import *
 from users.models import SchoolType
 from emailing.functions import send_simple_email
@@ -304,3 +304,14 @@ def accreditation_application_list(request):
     applications = AccreditationApplication.objects.all().order_by('-date')
     context=dict(applications = applications)
     return render (request, 'accreditation/accreditation_application_list.html', context)
+
+
+def required_evidence_list(request):
+    categories = RequiredEvidenceCategory.objects.prefetch_related("requiredevidence_set").all()
+
+    context = dict(
+        categories=categories,
+        guest=request.GET.get("guest"),  # mimic your template conditions
+        school=None,  # mimic your standards template (can pass actual school later if needed)
+    )
+    return render(request, "accreditation/required_evidence_list.html", context)

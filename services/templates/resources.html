@@ -70,6 +70,11 @@
                               </a>
                             {% endif %}
                         </li>
+                        <li>
+                            <a href="{% url 'required_evidence_list' %}" target="_blank" rel="noopener noreferrer">
+                                Site-Visit Required Evidence List
+                            </a>
+                        </li>
                         {% for resource in accreditation_resources %}
                             <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
                         {% endfor %}

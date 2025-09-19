@@ -1,0 +1,48 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+{% block title %}ISEI Required Evidence{% endblock title %}
+
+{% if guest %}
+    {% block header %}{% endblock %}
+    {% block secondary_navbar %}{% endblock %}
+{% endif %}
+
+{% block content %}
+
+    <div class="containe mt-3">
+        <button type="button" onclick="window.print()" class="btn btn-sm btn-ISEIblue4 mb-2">
+            Print to PDF
+        </button>
+    </div>
+
+    <div class="page card card-body small" style="max-width: 1000px;">
+          <h7 class="text-end fst-italic text-right">ISEI Education Association</h7>
+            <h7 class="fw-bold text-uppercase text-right">
+                Required Evidence for Accreditation Site Visits
+            </h7>
+            <hr>
+
+            <p>
+                The following documents are to be made available to ISEI personnel and the
+                Accreditation Visiting Team assigned to your school. These documents are to be
+                digitally uploaded to a Google Drive folder from your school accreditation webpage
+                by the same date the SelfStudy is due.
+            </p>
+
+
+        {% for category in categories %}
+            {{ category.name }}
+            <ul class="">
+                {% for ev in category.requiredevidence_set.all %}
+                    <li class="">
+                        {{ ev.name }}
+                    </li>
+                {% empty %}
+                    <li class="text-muted">No required evidence listed.</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+
+{% endblock content %}
