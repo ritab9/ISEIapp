@@ -18,4 +18,6 @@ urlpatterns = [
 
     path("required-evidence/", views.required_evidence_list, name="required_evidence_list"),
 
+    path("my-accreditations/<int:user_id>", views.my_accreditations, name="my_accreditations"),
+
 ]

@@ -1,0 +1,111 @@
+{% extends 'accreditation_base.html' %}
+{% load static %}
+
+{% block title %} My Accreditations {% endblock title %}
+
+
+{% block content %}
+    <div class="container mt-4 card card-body">
+      <h6>My Accreditation Teams</h6>
+
+        {% if accreditations %}
+            <div class="card card-body">
+                <table class="table table-striped table-bordered">
+                    <thead class="thead table-bordered sticky_head">
+                     <tr>
+                            <th class="orange-header2">SelfStudy</th>
+                            <th class="orange-header2">Evidence Documents</th>
+                            <th class="blue-header2">Visit dates </th>
+                            <th class="blue-header2">Term </th>
+                            <th class="blue-header2">Visiting Team Report </th>
+                            <th class="orange-header2">AAPR (<small>Last Update</small>)</th>
+                        </tr>
+                    </thead>
+                        <tbody class="accreditation-rows">
+                            {% for accreditation in accreditations %}
+                            <tr>
+                                <td class="orange-column">
+                                    {% if category == "scheduled" %}
+                                        {% if accreditation.selfstudy %}
+                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SelfStudy</a>
+                                        <!-- { % else %}
+                                            <a href="{ % url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SelfStudy</a-->
+                                        {% endif %}
+                                        <p class="small">Due: <strong>{{ accreditation.selfstudy_due_date }}</strong></p>
+                                    {% else %}
+                                        {% if accreditation.selfstudy %}
+                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a>
+                                        {% elif accreditation.previous_self_study_link %}
+                                            <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
+                                        {% else %}N/A
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td class="orange-column">
+                                    {% if accreditation.evidence_documents_link %}
+                                        <a href="{{ accreditation.evidence_documents_link }}" target="_blank">Evidence Documents</a>
+                                    {% endif %}
+                                </td>
+                                <td class="blue-column small">
+                                    {{ accreditation.visit_date_range|default_if_none:"" }}
+                                </td>
+                                <td class="blue-column">
+                                    <small>
+                                    {% if not accreditation.coa_approval_date %}
+                                            <b class="error">Recommended</b> term:
+                                    {% endif %}
+                                    {{ accreditation.term|default_if_none:"" }}
+                                        <i tabindex="0" class="fas fa-info-circle small" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ accreditation.term.description }}"></i>
+                                        <br>
+                                    </small>{{ accreditation.term_start_date|default_if_none:"" }}-{{ accreditation.term_end_date|default_if_none:"" }}
+                                </td>
+
+                                <td class="blue-column">
+                                    {% if accreditation.visiting_team_report %}
+                                        <a href="{{ accreditation.visiting_team_report }}" target="_blank">View Report</a>
+                                    {% endif %}
+                                </td>
+
+                                 <td class="orange-column">
+                                    {% if accreditation.apr %}
+                                        <a href="{% url 'apr_progress_report' accreditation.apr.id %}">AAPR Progress</a>
+                                        <div class="small">{{ accreditation.apr.updated_at|default_if_none:"" }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10">No {{ category|title }} accreditations found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+      {% if accreditations %}
+        <ul class="list-group">
+          {% for accred in accreditations %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <a href="{% url 'school_accreditation_dashboard' accred.school.id %}" class="">
+                {{ accred.school }} - {{ accred.visit_date_range }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>You are not currently a member of any accreditation visiting team.</p>
+      {% endif %}
+    </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}

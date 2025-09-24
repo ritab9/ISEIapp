@@ -2,7 +2,7 @@ from datetime import timedelta
 from django.utils import timezone as dj_timezone
 
 from django.db import models
-from users.models import School, SchoolType
+from users.models import School, SchoolType, User
 from teachercert.models import SchoolYear
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -60,6 +60,9 @@ class Accreditation(models.Model):
     visit_start_date = models.DateField(null=True, blank=True)
     visit_end_date = models.DateField(null=True, blank=True)
     school_year=models.ForeignKey(SchoolYear, on_delete=models.CASCADE, null=True, blank=True)
+
+    visiting_team = models.ManyToManyField(User, through="AccreditationVisitingTeam",related_name="accreditation_team")
+
     term = models.ForeignKey(AccreditationTerm, on_delete=models.CASCADE, null=True, blank=True)
     term_start_date = models.DateField(null=True, blank=True)
     term_end_date = models.DateField(null=True, blank=True)
@@ -108,6 +111,21 @@ class Accreditation(models.Model):
             ).exclude(pk=self.pk).update(status=Accreditation.AccreditationStatus.PAST)
 
         super().save(*args, **kwargs)
+
+class AccreditationVisitingTeam(models.Model):
+    accreditation = models.ForeignKey(Accreditation,on_delete=models.CASCADE, related_name="visiting_team_membership")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="visiting_team_membership" )
+
+    role = models.CharField(max_length=100, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+
+    active=models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ("accreditation", "user")
+
+    def __str__(self):
+        return f"{self.user} on {self.accreditation}"
 
 #Standards Models (to be used for SelfStudy)
 class StandardManager(models.Manager):

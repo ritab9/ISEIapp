@@ -1,12 +1,17 @@
 from django.contrib import admin
 from .models import *
 
+class AccreditationVisitingTeamInline(admin.TabularInline):
+    model = AccreditationVisitingTeam
+    extra = 1  # how many empty rows to show
+    autocomplete_fields = ["user"]
 
 class AccreditationAdmin(admin.ModelAdmin):
     list_display = ['school', 'status', 'term', 'term_start_date', 'term_end_date', 'evidence_documents_link']
     list_filter = ['term_start_date', 'term_end_date', 'status']
     list_editable = ['status', 'evidence_documents_link']
     search_fields = ['school__name', ]
+    inlines = [AccreditationVisitingTeamInline]
 
 admin.site.register(Accreditation, AccreditationAdmin)
 

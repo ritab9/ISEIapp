@@ -315,3 +315,16 @@ def required_evidence_list(request):
         school=None,  # mimic your standards template (can pass actual school later if needed)
     )
     return render(request, "accreditation/required_evidence_list.html", context)
+
+@login_required(login_url='login')
+def my_accreditations(request, user_id):
+    user = User.objects.get(pk=user_id)
+    accreditations = Accreditation.objects.filter(
+        visiting_team_membership__user=request.user,  # join via the through model
+        visiting_team_membership__active=True
+    ).distinct()
+
+    context = dict(
+        accreditations=accreditations
+    )
+    return render(request, "accreditation/my_accreditations.html", context)

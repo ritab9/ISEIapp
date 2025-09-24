@@ -26,7 +26,7 @@
                     <tr>
                         <td>{{ team.name }}</td>
                         <td>
-                            {% for member in team.selfstudy_teammember_set.all %}
+                            {% for member in team.ss_team.all %}
                                 {{ member.user.get_full_name }}{% if not forloop.last %}, {% endif %}
                             {% empty %}
                                 -
@@ -35,7 +35,7 @@
                         {% if privileges and not has_submission_date%}
                             <td class="noprint">
                             <a href="{% url 'add_coordinating_team_members' selfstudy_id=selfstudy.id team_id=team.id %}">
-                                {% if team.selfstudy_teammember_set.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
+                                {% if team.ss_team.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
                             </a>
                         {% endif %}
                     </tr>
