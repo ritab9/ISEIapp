@@ -73,6 +73,7 @@
                         <td class="orange-column">
                             {% if category == "scheduled" %}
                                 {% if accreditation.selfstudy %}
+                                    <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Report</a>
                                     <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SS</a>
                                 {% elif accreditation.previous_self_study_link %}
                                     <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
@@ -83,7 +84,8 @@
 
                             {% else %}
                                 {% if accreditation.selfstudy %}
-                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SS</a>
+                                    <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Report</a>
+                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}" class="error">Edit SS</a>
                                 {% elif accreditation.previous_self_study_link %}
                                     <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
                                 {% else %} N/A

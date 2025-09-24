@@ -20,13 +20,13 @@ class SelfStudy_TeamMemberForm(forms.Form):
         self.fields['users'].queryset = school.get_active_users()
 
         # Pre-check users who are already part of the given team
-        initial_users = team.selfstudy_teammember_set.values_list('user', flat=True)
+        initial_users = team.ss_team.values_list('user', flat=True)
         self.initial['users'] = User.objects.filter(id__in=initial_users)
 
     def save(self, team):
         """Save the selected users to the team."""
         selected_users = self.cleaned_data['users']
-        current_members = team.selfstudy_teammember_set.all()
+        current_members = team.ss_team.all()
 
         # Add new users
         for user in selected_users:

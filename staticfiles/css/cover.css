@@ -9,7 +9,7 @@
 /* =========================
    Cover Page & Standard Pages
 ========================= */
-.cover-page, .page {
+.report-page, .page {
   width: 7.5in;          /* fixed width matching printable area */
   min-height: 10.5in;    /* height minus top/bottom margins */
   margin: 1rem auto;     /* center horizontally with small spacing on screen */
@@ -25,7 +25,7 @@
 ========================= */
 
 /* Vertical text */
-.cover-page .vertical-text {
+.report-page .vertical-text {
   position: absolute;
   top: 50%;
   left: 0.7in; /* move slightly more right */
@@ -41,7 +41,7 @@
 
 
 /* Lighter line */
-.cover-page .vertical-line-light {
+.report-page .vertical-line-light {
   position: absolute;
   top: 1in;
   bottom: 1in;
@@ -51,7 +51,7 @@
 }
 
 /* Darker line next to it */
-.cover-page .vertical-line-dark {
+.report-page .vertical-line-dark {
   position: absolute;
   top: 1in;
   bottom: 1in;
@@ -61,14 +61,14 @@
 }
 
 
-.cover-page .logo {
+.report-page .logo {
   position: absolute;
   top: 1.2in;
   left: 1.27in;
   max-width: 200px;
 }
 
-.cover-page .title {
+.report-page .title {
   text-align: center;
   font-size: 42px;
   font-weight: bold;
@@ -77,14 +77,14 @@
   line-height: 1.3;
 }
 
-.cover-page .subtitle {
+.report-page .subtitle {
   text-align: center;
   font-size: 22px;
   color: #113a67;
   margin-top: 0.2in;
 }
 
-.cover-page .version {
+.report-page .version {
   text-align: right;
   margin-right: 1in;
   font-size: 14px;
@@ -92,7 +92,7 @@
   margin-top: 0.3in;
 }
 
-.cover-page .footer {
+.report-page .footer {
   position: absolute;
   bottom: 1in;
   width: 100%;

@@ -123,7 +123,7 @@ class SelfStudy_Team(models.Model):
 class SelfStudy_TeamMember(models.Model):
     """A member of any team."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    team = models.ForeignKey(SelfStudy_Team, on_delete=models.CASCADE)
+    team = models.ForeignKey(SelfStudy_Team, on_delete=models.CASCADE, related_name="ss_team")
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.team.name}"

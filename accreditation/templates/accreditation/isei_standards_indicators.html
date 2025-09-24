@@ -9,44 +9,24 @@
 {% endif %}
 
 {% block content %}
-
-    <div class="container my-4">
-        {% if not school %}
-            <button type="button" class="btn btn-sm btn-outline-secondary mb-2"
-                    onclick="toggleSchoolTypes()">
-                Click to Hide/Show School Type for each Indicator
-            </button>
-        {% endif %}
-
-        <button type="button" onclick="window.print()" class="btn btn-sm btn-ISEIblue4 mb-2">
-          Print to PDF
-        </button>
-
-        <!--a href="{ % url 'isei_standards_indicator' %}" class="btn btn-sm btn-success">
-          Download PDF
-        </a-->
-    </div>
-
-         <!-- Cover Page -->
-
-    <div class="card card-body cover-page mx-auto">
-        <img src="{% static 'appfiles/ISEIcolored.png' %}" alt="ISEI Logo" class="logo">
-        <div class="vertical-text">ISEI EDUCATION ASSOCIATION</div>
-            <!-- Double vertical lines with tiny space -->
+        <div class="report-page">
+            <img src="{% static 'appfiles/ISEIcolored.png' %}" alt="ISEI Logo" class="logo ml-4">
+            <div class="vertical-text">ISEI EDUCATION ASSOCIATION</div>
             <div class="vertical-line-light"></div>
             <div class="vertical-line-dark"></div>
 
-        <div class="title">
-            Accreditation<br>
-            Standards<br> &amp;<br>
-            Indicators
-        </div>
-        <div class="version">Version 2.1</div>
+            <div class="title">
+                Accreditation<br>
+                Standards<br> &amp;<br>
+                Indicators
+            </div>
 
-        <div class="footer">
-            P.O. Box 946 • Dayton, TN 37321, USA
+            <div class="version">Version 2.1</div>
+
+            <div class="footer">
+                P.O. Box 946 • Dayton, TN 37321, USA
+            </div>
         </div>
-    </div>
 
 
 

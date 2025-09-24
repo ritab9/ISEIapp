@@ -3,32 +3,40 @@
 ========================= */
 @page {
   size: letter;       /* Letter paper */
-  margin: 0.5in;      /* printer margin */
+  margin: 0.5in;      /* printer margins */
+  @bottom-center {
+    content: counter(page); /* Page numbers at the bottom */
+  }
 }
 
-/* =========================
-   Cover Page & Standard Pages
-========================= */
-.cover-page, .page {
-  width: 7.5in;          /* fixed width matching printable area */
-  min-height: 10.5in;    /* height minus top/bottom margins */
-  margin: 1rem auto;     /* center horizontally with small spacing on screen */
+.report-page {
+  position: relative;
+  width: 7.5in;
+  min-height: 10.5in;
+  margin: 0 auto;
   padding: 0.25in;
   box-sizing: border-box;
   background: #fff;
   page-break-after: always;
-  position: relative;
 }
 
 /* =========================
-   Cover Page Specific
+   Logo
 ========================= */
+.cover-page .logo {
+  position: absolute;
+  top: 1.2in;
+  left: 1.27in;
+  max-width: 200px;
+}
 
-/* Vertical text */
+/* =========================
+   Vertical Text
+========================= */
 .cover-page .vertical-text {
   position: absolute;
   top: 50%;
-  left: 0.7in; /* move slightly more right */
+  left: 0.8in; /* inside printable margin */
   transform: rotate(-90deg) translate(-50%, 0);
   transform-origin: left top;
   font-size: 35px;
@@ -39,35 +47,32 @@
   white-space: nowrap;
 }
 
-
-/* Lighter line */
-.cover-page .vertical-line-light {
+/* =========================
+   Double Vertical Lines
+========================= */
+.cover-page .vertical-line-light,
+.cpver-page .vertical-line-dark {
   position: absolute;
-  top: 1in;
-  bottom: 1in;
-  left: 1.25in; /* distance from left */
+  top: 1.5in;       /* inside printable area */
+  bottom: 1.5in;
   width: 2px;
+}
+
+.cover-page .vertical-line-light {
+  left: 1.4in;      /* right of vertical text */
   background-color: #5a8fcf;
 }
 
-/* Darker line next to it */
 .cover-page .vertical-line-dark {
-  position: absolute;
-  top: 1in;
-  bottom: 1in;
-  left: 1.21in; /* tiny 0.05in gap */
-  width: 2px;
+  left: 1.36in;     /* tiny gap for double-line effect */
   background-color: #1a3d5d;
 }
 
 
-.cover-page .logo {
-  position: absolute;
-  top: 1.2in;
-  left: 1.27in;
-  max-width: 200px;
-}
 
+/* =========================
+   Title, Version, Subtitle, Footer
+========================= */
 .cover-page .title {
   text-align: center;
   font-size: 42px;
@@ -84,7 +89,7 @@
   margin-top: 0.2in;
 }
 
-.cover-page .version {
+cover-page .version {
   text-align: right;
   margin-right: 1in;
   font-size: 14px;
@@ -101,3 +106,17 @@
   color: #113a67;
 }
 
+/* =========================
+   Print Adjustments
+========================= */
+@media print {
+  .cover-page .vertical-text {
+    font-size: 32px;
+  }
+  .cover-page .title {
+    font-size: 40px;
+  }
+  .cover-page .subtitle {
+    font-size: 20px;
+  }
+}

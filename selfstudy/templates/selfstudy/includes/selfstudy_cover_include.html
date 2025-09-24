@@ -1,0 +1,65 @@
+<!--selfstudy_cover_include.html-->
+{% load static %}
+
+    <div class="card card-body cover-page report-page mx-auto">
+
+         <!-- Optional submission form (screen only) -->
+        <div class="noprint" style="text-align:right; margin-top:20px;">
+            <form method="post">
+                {% csrf_token %}
+                {% if not selfstudy.submission_date %}
+                    <h6>Due date: {{ selfstudy.accreditation.selfstudy_due_date }}</h6>
+                    <p>Self Study is not yet submitted</p>
+                    {% if school_privileges %}
+                        <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="submit_selfstudy">Submit SelfStudy</button>
+                    {% endif %}
+                {% else %}
+                    <h6 class="success">Self Study was submitted on {{ selfstudy.submission_date }}.</h6>
+                    {% if isei_privileges %}
+                        <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="reopen_selfstudy">Reopen SelfStudy</button>
+                    {% else %}
+                        <h6>Please contact ISEI if you would like to make changes.</h6>
+                    {% endif %}
+                {% endif %}
+            </form>
+        </div>
+
+        <img src="{% static 'appfiles/ISEIcolored.png' %}" alt="ISEI Logo" class="logo ml-4">
+        <div class="vertical-text">ISEI EDUCATION ASSOCIATION</div>
+            <!-- Double vertical lines with tiny space -->
+            <div class="vertical-line-light"></div>
+            <div class="vertical-line-dark"></div>
+
+          <!-- Wrapper to center content vertically -->
+        <div class="cover-content-wrapper" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+
+            <!-- Main centered content -->
+            <div class="cover-content">
+                <!-- School Name -->
+                <h5 class="school-name" style="font-size:48px; font-weight:bold;">
+                    {{ selfstudy.accreditation.school.name }}
+                </h5>
+
+                <!-- Report Title -->
+                <h4 class="report-title" style="font-size:36px; margin-top:10px;">
+                    Self-Study Report
+                </h4>
+
+                <!-- Subtitle -->
+                <h4 class="report-subtitle" style="font-size:28px; color:#003366; margin-top:5px;">
+                    for Accreditation
+                </h4>
+
+                <!-- Visit Dates -->
+                <h5 class="visit-dates" style="font-size:24px; margin-top:40px;">
+                    {{ selfstudy.accreditation.visit_date_range }}
+                </h5>
+            </div>
+
+        </div>
+
+        <footer class="footer">
+            P.O. Box 946 • Dayton, TN 37321, USA
+        </footer>
+    </div>
+

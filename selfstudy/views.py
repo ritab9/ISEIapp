@@ -147,7 +147,7 @@ def setup_selfstudy(request, accreditation_id):
 
     context = dict(selfstudy=selfstudy, standards=standards)
 
-    return render(request, 'selfstudy/selfstudy.html', context)
+    return render(request, 'selfstudy/selfstudy_cover.html', context)
 
 @login_required(login_url='login')
 def selfstudy(request, selfstudy_id):
@@ -177,7 +177,7 @@ def selfstudy(request, selfstudy_id):
 
         context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy",
                        school_privileges=school_privileges, isei_privileges=isei_privilages )
-        return render(request, 'selfstudy/selfstudy.html', context)
+        return render(request, 'selfstudy/selfstudy_cover.html', context)
 
     except SelfStudy.DoesNotExist:
         # If no SelfStudy is found, redirect to setup_selfstudy
@@ -1523,3 +1523,48 @@ def profile_philanthropy(request, selfstudy_id, readonly=False):
                    readonly=readonly)
 
     return render(request, 'selfstudy/profile_philanthropy.html', context)
+
+
+
+# Pdf version of SS
+
+@login_required(login_url='login')
+def selfstudy_report(request, selfstudy_id):
+
+    selfstudy = SelfStudy.objects.get(id=selfstudy_id)
+
+    # Pre-fetch all related data
+    selfstudy_data = SelfStudy.objects.prefetch_related(
+        'teams__ss_team__user',
+        'standard_evaluations__standard',
+        'indicator_evaluations__indicator',
+        'objectives',
+        'schoolprofile_set__personnel_data',  # Pre-fetch SelfStudyPersonnelData
+        'schoolprofile_set__personnel_data__position',  # Then the positions for each
+        'schoolprofile_set__activities',
+        'schoolprofile_set__fte_assignments__assignment',
+        'schoolprofile_set__enrollment_data',
+        'schoolprofile_set__achievement_data__grade_level_tests',
+        'schoolprofile_set__other_curriculum_data',
+        'schoolprofile_set__secondary_curriculum__category',
+        'schoolprofile_set__support_services',
+        'schoolprofile_set__philantrophy_program',
+        'schoolprofile_set__enrollment_data',
+        'accreditation__school',  # Pre-fetch the school from accreditation
+    ).get(id=selfstudy_id)
+
+    # Global keys (not tied to SS)
+    financial_additional_keys = FinancialAdditionalDataKey.objects.filter(active=True)
+    financial_two_year_keys = FinancialTwoYearDataKey.objects.filter(active=True)
+    fte_keys = FTEAssignmentKey.objects.filter(active=True)
+    action_plan_instructions = ActionPlanInstructions.objects.first()  # if you only ever have one
+
+    context = dict(
+        selfstudy=selfstudy, selfstudy_data = selfstudy_data,
+        financial_additional_keys=financial_additional_keys,
+        financial_two_year_keys=financial_two_year_keys,
+        fte_keys=fte_keys,
+        action_plan_instructions=action_plan_instructions,
+    )
+
+    return render(request, 'selfstudy/selfstudy_report.html', context)

@@ -62,6 +62,7 @@ urlpatterns = [
 
     path('add_coordinating_team_members/<int:selfstudy_id>/<int:team_id>/', views.add_coordinating_team_members, name='add_coordinating_team_members'),
 
+    path('selfstudy/<int:selfstudy_id>/report/', views.selfstudy_report, name='selfstudy_report'),
 
     #path('<int:selfstudy_id>/completion/', views.selfstudy_completion, name='completion'),  # Optional completion page
 ]

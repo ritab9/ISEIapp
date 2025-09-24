@@ -1,0 +1,53 @@
+<!--selfstudy_report-->
+{% extends 'selfstudy_base.html' %}
+
+{% load static %}
+
+{% block title %} SelfStudy Report{% endblock title %}
+
+
+
+    {% block vertical_menu_navbar %}
+        {% include "selfstudy/includes/vertical_menu_navbar_report.html" %}
+    {% endblock %}
+
+
+    {% block content %}
+\    <!-- Cover-->
+        <div id="cover">
+            {% include "selfstudy/includes/selfstudy_cover_include.html" %}
+        </div>
+
+    <!-- Team members -->
+        <div id ="ss_team">
+            {% include "selfstudy/includes/selfstudy_coordinatingteam_include.html" %}
+        </div>
+
+    {% endblock %}
+
+
+
+
+{% block script %}
+
+<script>
+
+     function toggleNavbar() {
+        const navbar = document.getElementById("vertical-navbar");
+        const content = document.getElementById("main-content");
+
+        if (navbar.style.display === "none") {
+          navbar.style.display = "block";
+          content.classList.remove("col-12");
+          content.classList.add("col-md-9", "col-lg-10");
+        } else {
+          navbar.style.display = "none";
+          content.classList.remove("col-md-9", "col-lg-10");
+          content.classList.add("col-12");
+        }
+      }
+
+</script>
+
+
+{% endblock %}

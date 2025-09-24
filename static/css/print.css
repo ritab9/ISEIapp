@@ -2,7 +2,7 @@
    Print Styles
 ========================= */
 @media print {
-  .cover-page, .page {
+  .report-page, .page {
     box-shadow: none;
     border: none;
     margin: 0;
@@ -36,20 +36,20 @@
   .page-break-after { page-break-after: always; }
   .no-page-break { page-break-inside: avoid; }
 
-   .cover-page .vertical-double-line {
+   .report-page .vertical-double-line {
     display: block !important;       /* make sure flex/block renders */
     position: absolute;
   }
 
   /* Ensure Vertical Lines Print */
-  .cover-page .vertical-double-line .line-light {
+  .report-page .vertical-double-line .line-light {
     display: block !important;
     background-color: #5a8fcf !important; /* lighter line */
     width: 2px !important;
     height: 100% !important;
   }
 
-  .cover-page .vertical-double-line .line-dark {
+  .report-page .vertical-double-line .line-dark {
     display: block !important;
     background-color: #1a3d5d !important; /* darker line */
     width: 2px !important;

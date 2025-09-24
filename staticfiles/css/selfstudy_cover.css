@@ -1,7 +1,7 @@
 /* selfstudy_cover.css*/
 /* Cover Page Styles */
 /* Card resembling a printed page */
-.cover-page .card {
+.report-page .card {
     width: 100%; /* Full width on screen */
     max-width: 21cm; /* A4 width for print */
     height: auto;
@@ -24,7 +24,7 @@
 
 @media print {
     /* Card for print */
-    .cover-page .card {
+    .report-page .card {
         width: 21cm; /* A4 width for printing */
         height: 29.7cm; /* A4 height for printing */
         padding: 100px;
@@ -73,7 +73,7 @@
     }
 
     /* Card content for screen */
-    .cover-page .card {
+    .report-page .card {
         padding: 50px;
         width: 100%; /* Full width on screen */
         max-width: 100%; /* No max-width for screen view */
