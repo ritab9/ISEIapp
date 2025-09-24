@@ -84,22 +84,9 @@
 
                 </table>
             </div>
-        </div>
+
         {% endif %}
 
-      {% if accreditations %}
-        <ul class="list-group">
-          {% for accred in accreditations %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <a href="{% url 'school_accreditation_dashboard' accred.school.id %}" class="">
-                {{ accred.school }} - {{ accred.visit_date_range }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>You are not currently a member of any accreditation visiting team.</p>
-      {% endif %}
     </div>
 
 
