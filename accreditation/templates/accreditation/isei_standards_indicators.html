@@ -36,6 +36,8 @@
                         <hr class="page-break-before">
                         <h6>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
                         <hr>
+                        <p class="text-ISEIblue4"> {{ standard.description }}</p>
+                        <hr>
                         {% for substandard in standard.substandards.all %}
                             <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
 
