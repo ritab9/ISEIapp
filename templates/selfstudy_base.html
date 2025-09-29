@@ -1,4 +1,4 @@
-{# base selfstudy templates #}
+{# selfstudy.base templates #}
 
 {% extends 'base.html' %}
 {% load static %}
@@ -22,18 +22,16 @@
    <!-- Vertical Navbar -->
       <div id="vertical-navbar" class="col-md-3 col-lg-2">
           {% block vertical_menu_navbar %}
-                {% include "selfstudy/includes/vertical_menu_navbar.html" %}
+                {% include "selfstudy/includes/vertical_menu_navbar.html" with profile_submenu=submenu %}
           {% endblock %}
       </div>  
 
 <!-- Main Content -->
     <div id="main-content" class="col-md-9 col-lg-10">
-      <div class="d-flex justify-content-center">
           {% block content %}
             <!-- Default selfstudy content placeholder -->
             {{ block.super }}
           {% endblock content %}
-      </div>
     </div>
 
   {% endwith %}

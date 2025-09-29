@@ -315,7 +315,7 @@ def selfstudy_actionplan_instructions(request, selfstudy_id):
     active_link = "actionplans"
 
     context=dict(actionplans=actionplans, active_link=active_link, accreditation_id=accreditation.id,
-                 selfstudy=selfstudy, standards=standards, instructions=instructions)
+                 selfstudy=selfstudy, standards=standards, instructions=instructions,  show_actionplan_submenu=True)
 
     return render(request, 'selfstudy/action_plan_instructions.html', context)
 
@@ -390,7 +390,8 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
 
     context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
                    selfstudy=selfstudy,standards=standards,
-                   active_link=action_plan.id, actionplans=actionplans, form_id=form_id)
+                   active_link=action_plan.id, actionplans=actionplans, form_id=form_id,
+                   show_actionplan_submenu=True,)
 
     return render(request, 'selfstudy/action_plan.html', context)
 
@@ -575,7 +576,8 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
     context= dict(selfstudy=selfstudy, standards = standards,
                    active_link="profile", active_sublink="general_info",
                     form=form, form_id=form_id,
-                    readonly=readonly)
+                    readonly=readonly,
+                  show_profile_submenu=True)
 
     return render(request, "selfstudy/profile.html", context )
 
@@ -605,7 +607,7 @@ def profile_history(request, selfstudy_id, readonly=False):
                    history_form = history_form,
                    active_sublink="history", active_link="profile",
                    form_id=form_id,
-                   readonly=readonly)
+                   readonly=readonly, show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_history.html', context)
 
@@ -658,7 +660,8 @@ def profile_financial(request, selfstudy_id, readonly=False):
     context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial", active_link="profile",
                     two_year_formset = two_year_formset, additional_formset = additional_formset,
                    form_id=form_id,
-                   readonly=readonly)
+                   readonly=readonly,
+                   show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_financial.html', context)
 
@@ -860,6 +863,7 @@ def profile_personnel(request, selfstudy_id, readonly=False):
         form_id=form_id,
          readonly=readonly,
         retention_data=retention_data,
+                    show_profile_submenu=True
     )
 
     return render(request, 'selfstudy/profile_personnel.html', context)
@@ -1142,7 +1146,8 @@ def profile_student(request, selfstudy_id, readonly=False):
                    percentage_non_sda_home=round(percentage_non_sda_home, 1),
                    percentage_baptized=round(percentage_baptized, 1),
                    projected_enrollment_form=form,
-                   readonly=readonly)
+                   readonly=readonly,
+                   show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_student.html', context)
 
@@ -1280,7 +1285,8 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
                    sessions=sessions, grouped_by_level=grouped_by_level, serialized_sessions=serialized_sessions,
                    school_years=school_years,
                    existing_keys=existing_keys,
-                   readonly=readonly)
+                   readonly=readonly,
+                   show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_student_achievement.html', context)
 
@@ -1384,7 +1390,8 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="curriculum", active_link="profile",
                    form_id=form_id, category_formsets=[], other_curriculum = other_curriculum,
                    teacher_names=teacher_names,
-                   readonly=readonly)
+                   readonly=readonly,
+                   show_profile_submenu=True)
 
     if request.method == 'POST':
         all_valid = True
@@ -1489,7 +1496,7 @@ def profile_support_services(request, selfstudy_id, readonly=False):
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="services", active_link="profile",
                    form_id=form_id, form=form,
-                   readonly=readonly)
+                   readonly=readonly, show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_support_services.html', context)
 
@@ -1520,7 +1527,7 @@ def profile_philanthropy(request, selfstudy_id, readonly=False):
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="philanthropy", active_link="profile",
                    form_id=form_id, form=form,
-                   readonly=readonly)
+                   readonly=readonly, show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_philanthropy.html', context)
 
@@ -1565,6 +1572,7 @@ def selfstudy_report(request, selfstudy_id):
         financial_two_year_keys=financial_two_year_keys,
         fte_keys=fte_keys,
         action_plan_instructions=action_plan_instructions,
+        show_actionplan_submenu=True,
     )
 
     return render(request, 'selfstudy/selfstudy_report.html', context)

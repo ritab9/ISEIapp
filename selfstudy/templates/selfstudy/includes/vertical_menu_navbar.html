@@ -1,3 +1,5 @@
+<!-- vertical_menu_navbar.html -->
+
 <div class="noprint" id="vertical-navbar">
           <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
           <!--h5 class="text-center">SelfStudy</h5 -->
@@ -29,8 +31,9 @@
                 </a>
               </div>
 
-            {% block profile_submenu %}
-            {% endblock profile_submenu %}
+            {% if show_profile_submenu %}
+                {% include 'selfstudy_profile_submenu.html' %}
+            {% endif %}
 
               <h6 class="text-center mt-2"><strong>Standards</strong></h6>
   <!-- Standard links -->
@@ -57,8 +60,9 @@
                   Action Plans
                 </a>
             </div>
-            {% block actionplan_submenu %}
-            {% endblock actionplan_submenu %}
+            {% if show_actionplan_submenu %}
+                {% include 'selfstudy_actionplan_submenu.html' %}
+            {% endif %}
 
           </nav>
         </div>
