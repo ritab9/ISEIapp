@@ -320,7 +320,7 @@ def required_evidence_list(request):
 def my_accreditations(request, user_id):
     user = User.objects.get(pk=user_id)
     accreditations = Accreditation.objects.filter(
-        visiting_team_membership__user=user,  # join via the through model
+        visiting_team_membership__user=request.user,  # join via the through model
         visiting_team_membership__active=True
     ).distinct()
 

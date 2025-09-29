@@ -50,7 +50,7 @@
         {% if request.user.visiting_team_membership.exists %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'my_accreditations' request.user.id %}">
-                My School Evaluation Teams
+                My Teams
               </a>
             </li>
         {% endif %}
