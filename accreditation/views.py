@@ -23,12 +23,20 @@ def isei_standards_indicators(request, school_id=None):
     else:
         guest=True
 
+    selected_school_type_ids = request.GET.getlist("school_type")
+
     if school_id:
         school = get_object_or_404(School, pk=school_id)
         indicators_qs = Indicator.objects.filter(active=True, school_type__in=school.school_type.all())
     else:
         school=None
-        indicators_qs = Indicator.objects.filter(active=True)
+        if selected_school_type_ids:
+            indicators_qs = Indicator.objects.filter(
+                active=True,
+                school_type_id__in=selected_school_type_ids
+            )
+        else:
+            indicators_qs = Indicator.objects.filter(active=True)
 
 
     indicator_prefetch = Prefetch(
@@ -49,7 +57,10 @@ def isei_standards_indicators(request, school_id=None):
     )
 
 
-    context = dict(standards=standards, school=school, guest=guest)
+    context = dict(standards=standards, school=school, guest=guest,
+                   school_types=SchoolType.objects.all().order_by('code'),
+                   selected_school_type_ids=selected_school_type_ids,
+                   )
     return render(request, 'accreditation/isei_standards_indicators.html', context)
 
 
