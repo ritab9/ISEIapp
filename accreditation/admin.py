@@ -39,7 +39,7 @@ class IndicatorScoreAdmin(admin.ModelAdmin):
 class IndicatorAdmin(admin.ModelAdmin):
     #inlines = [LevelInline]
     list_display = ( 'key_word','code', 'school_type', 'version', 'active')
-    list_editable = ('code','version', 'active')
+    list_editable = ('code','version', 'active', 'school_type')
     list_filter = ('standard', 'school_type',)
 
 class IndicatorInline(admin.StackedInline):
