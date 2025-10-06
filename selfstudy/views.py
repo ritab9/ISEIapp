@@ -288,6 +288,11 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
             for field in mission_form.fields.values():
                 field.disabled = True
 
+    if request.user.is_staff:
+        staff=True
+    else:
+        staff=False
+
 
     context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
                    formset = formset, standard_form=standard_form, mission_form=mission_form,
@@ -295,7 +300,8 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
                    grouped_data = grouped_data, substandards_exist=substandards_exist,
                    form_id=form_id,
                    score_options=score_options,
-                   readonly=readonly)
+                   readonly=readonly,
+                   staff=staff)
 
     return render(request, 'selfstudy/standard.html', context)
 

@@ -3,21 +3,35 @@
 ========================= */
 @page {
   size: letter;       /* Letter paper */
-  margin: 0.5in;      /* printer margin */
+  margin: 0in;      /* printer margin */
 }
 
 /* =========================
    Cover Page & Standard Pages
 ========================= */
 .report-page, .page {
-  width: 7.5in;          /* fixed width matching printable area */
-  min-height: 10.5in;    /* height minus top/bottom margins */
+  width: 8.5in;          /* fixed width matching printable area */
+  min-height: 11in;    /* height minus top/bottom margins */
   margin: 1rem auto;     /* center horizontally with small spacing on screen */
   padding: 0.25in;
   box-sizing: border-box;
   background: #fff;
   page-break-after: always;
   position: relative;
+}
+
+/* Add a left column space for the vertical elements */
+.report-page .cover-content-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 1.75in; /* start after the left margin column */
+  width: calc(100% - 1.75in);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 /* =========================

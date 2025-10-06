@@ -116,7 +116,9 @@
                                         <tr class="bg-ISEIblue1">
                                             <td style="white-space: nowrap;">
                                                 <strong>Indicator: {{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}</strong>
-                                                <br><span class="span80">({{ form.instance.indicator.code }})</span>
+                                                {% if staff %}
+                                                    <br><span class="span80">({{ form.instance.indicator.code }})</span>
+                                                {% endif %}
                                             </td>
                                             <td class="width: 100%">{{ form.instance.indicator.description }}</td>
                                         </tr>
