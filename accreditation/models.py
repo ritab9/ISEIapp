@@ -15,33 +15,6 @@ class InfoPage(models.Model):
     def __str__(self):
         return self.name
 
-class AccreditationApplication(models.Model):
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
-
-    lowest_grade = models.CharField(max_length=5)
-    current_highest_grade = models.CharField(max_length=5)
-    planned_highest_grade = models.CharField(max_length=5)
-
-    anticipated_accreditation = models.CharField(verbose_name=_('Anticipated School Year for Accreditation Site Visit'), max_length=10, blank=True)
-    signature = models.CharField(max_length=30)
-    date = models.DateField(default=dj_timezone.now)
-
-    ss_orientation_date = models.DateField(blank=True, null=True, verbose_name="SelfStudy Orientation Date")
-    site_visit_start_date=models.DateField(blank=True, null=True)
-    site_visit_end_date=models.DateField(blank=True, null=True)
-    def __str__(self):
-        return f"Accreditation Application: + {self.school}"
-
-    def visit_date_range(self):
-        """ Returns a formatted string for the visit date range, ensuring the month is not repeated if both dates are in the same month."""
-        if not self.site_visit_start_date or not self.site_visit_end_date:
-            return "-"
-        start_date = self.site_visit_start_date
-        end_date = self.site_visit_end_date
-        if start_date.strftime("%B") == end_date.strftime("%B"):
-            return f"{start_date.strftime('%B %d')}-{end_date.strftime('%d, %Y')}"
-        else:
-            return f"{start_date.strftime('%B %d')}-{end_date.strftime('%B %d, %Y')}"
 
 class AccreditationTerm(models.Model):
     code = models.CharField(max_length=10, unique=True)
@@ -98,9 +71,9 @@ class Accreditation(models.Model):
 
     def __str__(self):
         if self.term_end_date and self.term_start_date:
-            return f"Accreditation: School {self.school}, {self.visit_date_range()}"
+            return f"{self.school}, {self.visit_date_range()}"
         else:
-            return f"Accreditation: School {self.school} in Works"
+            return f"{self.school} in Works"
 
     def save(self, *args, **kwargs):
         # Ensure only one active accreditation per school
@@ -111,6 +84,41 @@ class Accreditation(models.Model):
             ).exclude(pk=self.pk).update(status=Accreditation.AccreditationStatus.PAST)
 
         super().save(*args, **kwargs)
+
+
+class AccreditationApplication(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE, null=True, blank=True)
+
+    lowest_grade = models.CharField(max_length=5)
+    current_highest_grade = models.CharField(max_length=5)
+    planned_highest_grade = models.CharField(max_length=5)
+
+    anticipated_accreditation = models.CharField(verbose_name=_('Anticipated School Year for Accreditation Site Visit'), max_length=10, blank=True)
+    signature = models.CharField(max_length=30)
+    date = models.DateField(default=dj_timezone.now)
+
+    isei_approval_date = models.DateField(null=True, blank=True)
+    isei_comment = models.TextField(null=True, blank=True)
+
+    #not used
+    ss_setup_date = models.DateField(null=True, blank=True, verbose_name="SelfStudy Setup Date")
+    ss_orientation_date = models.DateField(blank=True, null=True, verbose_name="SelfStudy Orientation Date")
+    site_visit_start_date=models.DateField(blank=True, null=True)
+    site_visit_end_date=models.DateField(blank=True, null=True)
+    def __str__(self):
+        return f"Accreditation Application:  {self.school}"
+
+    def visit_date_range(self):
+        """ Returns a formatted string for the visit date range, ensuring the month is not repeated if both dates are in the same month."""
+        if not self.site_visit_start_date or not self.site_visit_end_date:
+            return "-"
+        start_date = self.site_visit_start_date
+        end_date = self.site_visit_end_date
+        if start_date.strftime("%B") == end_date.strftime("%B"):
+            return f"{start_date.strftime('%B %d')}-{end_date.strftime('%d, %Y')}"
+        else:
+            return f"{start_date.strftime('%B %d')}-{end_date.strftime('%B %d, %Y')}"
 
 class AccreditationVisitingTeam(models.Model):
     accreditation = models.ForeignKey(Accreditation,on_delete=models.CASCADE, related_name="visiting_team_membership")

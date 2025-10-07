@@ -10,10 +10,21 @@
 
 <!-- School Info -->
       <div class="card card-body">
-          <div class="col-auto">
-                  {{ form.school.label_tag }}
-                  {{ form.school }}
-                  {{ form.school.errors }}
+          <div class="row">
+              <div class="col">
+                      {{ form.school.label_tag }}
+                      {{ form.school }}
+                      {{ form.school.errors }}
+              </div>
+              <div class="col">
+                  {% if accreditation.accreditationapplication %}
+                  <h7 class="clickable">
+                    <a href="{% url "accreditation_application_review" accreditation.accreditationapplication.id%}" target="_blank">Application for Accreditation </a>
+                  </h7>
+                  {% else %}
+                      <span class="error">There is no application attached to this accreditation.</span>
+                  {% endif %}
+              </div>
           </div>
       </div>
 

@@ -93,9 +93,8 @@ class AddressForm(forms.ModelForm):
 class AccreditationApplicationReviewForm(forms.ModelForm):
     class Meta:
         model = AccreditationApplication
-        fields = ['ss_orientation_date', 'site_visit_start_date', 'site_visit_end_date']
+        fields = ['isei_approval_date', 'isei_comment']
         widgets = {
-            'ss_orientation_date': forms.DateInput(attrs={'type': 'date'}),
-            'site_visit_start_date': forms.DateInput(attrs={'type': 'date'}),
-            'site_visit_end_date': forms.DateInput(attrs={'type': 'date'}),
+            'isei_approval_date': forms.DateInput(attrs={'type': 'date'}),
+            'isei_comment': forms.Textarea(attrs={'rows': 1 }),
         }

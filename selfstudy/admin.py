@@ -98,12 +98,12 @@ admin.site.register(SelfStudy, SelfStudyAdmin)
 
 
 class IndicatorEvaluationAdmin(admin.ModelAdmin):
-    list_display = ('selfstudy', 'standard', 'indicator', 'score', 'reference_documents', 'explanation')
+    list_display = ('selfstudy', 'standard', 'indicator', 'indicator_score', 'reference_documents', 'explanation')
     list_filter = ('selfstudy__accreditation__school__name', 'selfstudy__accreditation__school_year', 'standard',)  # You can filter by these fields
     search_fields = ('selfstudy__accreditation__school__name',)  # Search by school name or indicator name
 
     def get_score_display(self, obj):
-        return obj.get_score_display() or 'Not Scored'
+        return obj.indicator_score or 'Not Scored'
     get_score_display.short_description = 'Score'  # Change column name to 'Score'
 
 admin.site.register(IndicatorEvaluation, IndicatorEvaluationAdmin)

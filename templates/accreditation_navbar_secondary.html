@@ -7,7 +7,7 @@
 
   {% if selfstudy %}
       <li class="nav-item">
-          <a class="nav-link {% if active_link == 'selfstudy' %}active{% endif %}"
+          <a class="nav-link active"
            href="{% url 'selfstudy' selfstudy.id %}">
               SelfStudy {{ selfstudy.accreditation.school }} <small>({{ selfstudy.accreditation.visit_date_range|default_if_none:"" }})</small>
         </a>
@@ -28,9 +28,9 @@
       <li class="nav-item">
         <a class="nav-link" href="{% url 'isei_accreditation_dashboard' %}">Accreditation</a>
       </li>
-      <li class="nav-item">
+      <!--li class="nav-item">
         <a class="nav-link" href="{% url 'add_accreditation' %}">Add New Accreditation</a>
-      </li>
+      </li-->
       <li class="nav-item">  
         <a class="nav-link" href="{% url 'accreditation_application_list' %}">Accreditation Applications</a>
       </li> 

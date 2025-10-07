@@ -287,21 +287,19 @@ def accreditation_application_review(request, pk):
     application = get_object_or_404(AccreditationApplication, pk=pk)
     school=application.school
 
-    accreditation = Accreditation.objects.filter(school=school, status="scheduled").first()
+    accreditation = application.accreditation
+    if not accreditation:
+        accreditation = Accreditation.objects.filter(school=school, status="scheduled").first()
+
+    if not accreditation:
+        accreditation = Accreditation.objects.create(school=school, status=Accreditation.AccreditationStatus.SCHEDULED)
+        application.accreditation = accreditation
+        application.save()
 
     if request.method == 'POST':
         form = AccreditationApplicationReviewForm(request.POST, instance=application)
         if form.is_valid():
             application = form.save()
-            if not accreditation:
-                accreditation = Accreditation.objects.create(school=school, status="scheduled")
-
-            if not accreditation.visit_start_date:
-                accreditation.visit_start_date = application.site_visit_start_date
-            if not accreditation.visit_end_date:
-                accreditation.visit_end_date = application.site_visit_end_date
-            accreditation.save()
-
             return redirect('edit_accreditation', accreditation.id)
     else:
         form = AccreditationApplicationReviewForm(instance=application)
