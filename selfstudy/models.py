@@ -373,8 +373,8 @@ class IndicatorEvaluation(models.Model):
         ordering = ['selfstudy', 'standard', 'indicator']
 
     def __str__(self):
-        score_display = self.get_score_display() or 'Not Scored'
-        return f"Evaluation for {self.indicator} (Score: {score_display})"
+        score = self.indicator_score or 'Not Scored'
+        return f"Evaluation for {self.indicator} (Score: {score})"
 
 
 class MissionAndObjectives(models.Model):

@@ -129,7 +129,7 @@
                                                     <select name="{{ form.prefix }}-indicator_score" class="indicator-score-dropdown" data-index="{{ forloop.counter0 }}" {% if readonly %}disabled{% endif %}>
                                                         <option value="" selected>--- Select ---</option> <!-- Blank option -->
                                                         {% for score in score_options %}
-                                                            <option value="{{ score.score }}"
+                                                            <option value="{{ score.pk }}"
                                                                     data-comment="{{ score.comment|default_if_none:''|escape }}"
                                                                     {% if form.instance.indicator_score and form.instance.indicator_score.id == score.id %}selected{% endif %}>
                                                                 {{ score.get_score_display }}
