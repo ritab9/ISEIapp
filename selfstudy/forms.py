@@ -312,7 +312,7 @@ class SecondaryCurriculumCourseForm(forms.ModelForm):
 class OtherCurriculumDataForm(forms.ModelForm):
     class Meta:
         model = OtherCurriculumData
-        fields = '__all__'
+        exclude=['school_profile']
 
         widgets = {
             'dual_enrollment_location': forms.Textarea(attrs={
@@ -330,3 +330,8 @@ class OtherCurriculumDataForm(forms.ModelForm):
             'dual_enrollment_number': forms.NumberInput(attrs={
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 🔹 Explicitly make this optional
+        self.fields['dual_enrollment_number'].required = False

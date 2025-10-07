@@ -1168,7 +1168,7 @@ def get_grade_range_for_level(level_type):
 @login_required(login_url='login')
 def profile_student_achievement(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
-    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school_profile, _ = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_achievement"
@@ -1210,7 +1210,10 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
     level_types = school.get_school_type()
     if level_types:
         # Get the current school year from the accreditation model, # Extract the start year from the 'name' field, which is in the format "2024-2025"
-        current_school_year = selfstudy.accreditation.school_year
+        if selfstudy.accreditation.school_year:
+            current_school_year = selfstudy.accreditation.school_year
+        else:
+            current_school_year = school.current_school_year
         start_year = int(current_school_year.name.split('-')[0])
         # Generate the last 3 school year names (e.g., "2024-2025", "2023-2024", ...)
         school_year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(3)]
@@ -1382,7 +1385,7 @@ def manage_standardized_test_scores(request, school_id=None, school_year_name=No
 def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
-    school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
+    school_profile, _ = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_curriculum"
@@ -1393,6 +1396,7 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     other_curriculum, _ = OtherCurriculumData.objects.get_or_create(school_profile=school_profile)
 
     categories = CourseCategory.objects.all()
+
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="curriculum", active_link="profile",
                    form_id=form_id, category_formsets=[], other_curriculum = other_curriculum,
                    teacher_names=teacher_names,
@@ -1400,9 +1404,21 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
                    show_profile_submenu=True)
 
     if request.method == 'POST':
-        all_valid = True
-        formsets_by_category = []
+        something_saved = False
+        something_invalid = False
+        error_details = []  # Collect validation errors for display or debugging
+
         other_form = OtherCurriculumDataForm(request.POST, instance=other_curriculum)
+        if other_form.is_valid():
+            other=other_form.save(commit=False)
+            other.school_profile = school_profile
+            other.save()
+            something_saved=True
+        else:
+            something_invalid=True
+            # collect errors
+            for field, errors in other_form.errors.items():
+                error_details.append(f"OtherCurriculumDataForm → {field}: {', '.join(errors)}")
 
         # Loop through categories and process the formsets
         for category in categories:
@@ -1417,18 +1433,6 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
             formset = FormSet(request.POST, queryset=queryset, prefix=prefix)
 
             if formset.is_valid():
-                formsets_by_category.append((category, formset))
-            else:
-                all_valid = False
-
-            # Always append the formset (valid or invalid) to the context
-            context['category_formsets'].append((category, formset))
-
-        context['other_form'] = other_form
-
-        # If all formsets are valid, save the data
-        if all_valid:
-            for category, formset in formsets_by_category:
                 instances = formset.save(commit=False)
 
                 for obj in formset.deleted_objects:
@@ -1438,9 +1442,32 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
                     instance.school_profile = school_profile
                     instance.category = category
                     instance.save()
+                something_saved=True
+            else:
+                something_invalid=True
+                for subform in formset.forms:
+                    if subform.errors:
+                        for field, errors in subform.errors.items():
+                            error_details.append(f"{category.name} → {field}: {', '.join(errors)}")
 
-            other_form.save()
-            return redirect(request.path)  # Redirect to the same page or to a success page
+            # Always append the formset (valid or invalid) to the context
+            context['category_formsets'].append((category, formset))
+
+        context['other_form'] = other_form
+
+        # --- Feedback messages ---
+        if something_saved and not something_invalid:
+            messages.success(request, "All data saved successfully.")
+            return redirect(request.path)
+        elif something_saved and something_invalid:
+            messages.warning(request, "Some fields contain errors. Valid data was saved, but some items were not.")
+        elif not something_saved and something_invalid:
+            messages.error(request, "No data was saved. Please correct the errors below and try again.")
+
+        if error_details:
+            print("\nValidation errors:")
+            for err in error_details:
+                print("-", err)
 
     else:  # For GET request, render the initial formsets
         for category in categories:

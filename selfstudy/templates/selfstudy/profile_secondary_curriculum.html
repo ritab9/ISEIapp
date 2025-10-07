@@ -17,7 +17,7 @@
         {% if messages %}
                 <div class="messages noprint"><hr>
                     {% for message in messages %}
-                        <div class="{{ message.tags }}">
+                        <div class="error">
                             {{ message }}
                         </div>
                     {% endfor %}
@@ -49,7 +49,7 @@
                                     {% if formset.non_form_errors %}
                                         <ul class="form-errors">
                                             {% for error in formset.non_form_errors %}
-                                                <li>{{ error }}</li>
+                                                <li class="error">{{ error }}</li>
                                             {% endfor %}
                                         </ul>
                                     {% endif %}
@@ -69,7 +69,7 @@
                                             <tr class="formset-row">
                                                 {{ form.non_field_errors }} {{ form.id }}
                                                 {% for field in form.visible_fields %}
-                                                    <td>{{ field }}{{ field.errors }}</td>
+                                                    <td>{{ field }}<span class="error">{{ field.errors }}</span></td>
                                                 {% endfor %}
                                             </tr>
                                         {% endfor %}
