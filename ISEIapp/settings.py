@@ -239,6 +239,11 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": LOG_FILE,
         },
+        "console": {  # <— add this
+            "level": "ERROR",
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+        },
     },
     "loggers": {
         "django": {
