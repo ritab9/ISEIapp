@@ -273,7 +273,13 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-sm btn-ISEIblue4">Set Up Accreditation</button>
+                <button type="submit" class="btn btn-sm btn-ISEIblue4">
+                   {% if application.accreditation %}
+                       Manage Accreditation Info
+                    {% else %}
+                        Set Up Accreditation Info
+                    {% endif %}
+                </button>
             </form>
     </div>
 

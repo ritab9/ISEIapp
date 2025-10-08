@@ -227,3 +227,44 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+import logging
+import traceback
+
+# Ensure the log file path is inside your project
+LOG_FILE = os.path.join(BASE_DIR, "django_errors.log")
+
+# Custom logging handler to print full tracebacks
+class TracebackHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            # Get full traceback if exception exists
+            if record.exc_info:
+                exc_text = "".join(traceback.format_exception(*record.exc_info))
+            else:
+                exc_text = record.getMessage()
+            # Print to stdout (App Platform dashboard captures this)
+            print(f"[DJANGO ERROR] {exc_text}")
+            # Also write to file
+            with open(LOG_FILE, "a") as f:
+                f.write(f"{exc_text}\n")
+        except Exception:
+            self.handleError(record)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "traceback": {
+            "level": "ERROR",
+            "class": "__main__.TracebackHandler",  # uses the custom handler above
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["traceback"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+    },
+}
