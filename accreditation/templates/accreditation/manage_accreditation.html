@@ -56,15 +56,15 @@
             <div class="row">
             <!-- Self Study -->
                 <div class="col vertical-divider">
-                    {% if accreditation.selfstudy %}
-                        <div class="col-auto">
-                                <a href="{% url 'selfstudy' selfstudy_id=accreditation.selfstudy.id %}"> SelfStudy Document</a>
-                        </div>
-                    {%  elif accreditation %}
                     <div class="col-auto">
+                        {% if accreditation.selfstudy %}
+                            <a href="{% url 'selfstudy' selfstudy_id=accreditation.selfstudy.id %}"> SelfStudy Document</a>
+                        {% elif accreditation.school_year %}
                             <a href="{% url 'setup_selfstudy' accreditation_id=accreditation.id %}">Setup SelfStudy Document</a>
+                        {% else %}
+                             <span class="error">Chose a school year for accreditation BEFORE setting up SelfStudy</span>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
                 <div class="col">
                     {% if form.instance.evidence_documents_link %}

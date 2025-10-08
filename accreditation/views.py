@@ -237,8 +237,16 @@ def accreditation_application(request, school_id):
     school = get_object_or_404(School, id=school_id)
     info_page = InfoPage.objects.filter(slug="accreditation-application-intro").first()
 
-    in_progress_app = AccreditationApplication.objects.filter(school=school,
-                site_visit_start_date__isnull=True, site_visit_end_date__isnull=True).first()
+    # 1️⃣ Get all applications for the school
+    applications = AccreditationApplication.objects.filter(school=school)
+
+    # 3️⃣ Check for an application attached to a scheduled accreditation
+    scheduled_app = applications.filter(accreditation__status=Accreditation.AccreditationStatus.SCHEDULED).first()
+    if scheduled_app:
+        in_progress_app = scheduled_app.accreditation
+    else:
+        # 2️⃣ Check for an application not attached to any accreditation
+        in_progress_app = applications.filter(accreditation__isnull=True).first()
 
     address_form = AddressForm(request.POST or None, instance=school.street_address, prefix="main", is_required=True)
     postal_address_form = AddressForm(request.POST or None, instance=school.postal_address, prefix="postal", is_required=False)
