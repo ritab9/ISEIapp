@@ -242,9 +242,9 @@
                   </div>
 
                   <div class="col">
-                        <label for="{{ application.anticipated_accreditation.id_for_label }}" class="form-label text-muted small d-block">
+                        <label for="{{ application.school_year.id_for_label }}" class="form-label text-muted small d-block">
                             Anticipated School Year for Accreditation Site Visit</label>
-                        {{  application.anticipated_accreditation }}
+                        {{  application.school_year }}
 
                   </div>
               </div>
@@ -272,7 +272,35 @@
             <hr>
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+
+                <div class="mb-3">
+                    <label for="{{ form.isei_approval_date.id_for_label }}" class="form-label">
+                      Date
+                    </label>
+                    {{ form.isei_date }}
+                    {% if form.isei_date.errors %}
+                      <div class="text-danger small">
+                        {% for error in form.isei_date.errors %}
+                          {{ error }}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="{{ form.isei_comment.id_for_label }}" class="form-label">
+                      Comment (optional):
+                    </label>
+                    {{ form.isei_comment }}
+                    {% if form.isei_comment.errors %}
+                      <div class="text-danger small">
+                        {% for error in form.isei_comment.errors %}
+                          {{ error }}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+
                 <button type="submit" class="btn btn-sm btn-ISEIblue4">
                    {% if application.accreditation %}
                        Manage Accreditation Info

@@ -51,8 +51,7 @@ class SchoolInfoForApplicationForm(forms.ModelForm):
 class AccreditationApplicationForm(forms.ModelForm):
     class Meta:
         model = AccreditationApplication
-        exclude = ['school', 'ss_orientation_date', 'site_visit_start_date', 'site_visit_end_date',
-                   'accreditation', 'isei_approval_date', 'isei_comment', 'ss_setup_date']
+        exclude = ['school', 'accreditation', 'isei_approval_date', 'isei_comment']
 
         widgets = {
             'lowest_grade': forms.TextInput(attrs={'class': 'zip-code-input', 'maxlength': '5'}),
@@ -94,8 +93,8 @@ class AddressForm(forms.ModelForm):
 class AccreditationApplicationReviewForm(forms.ModelForm):
     class Meta:
         model = AccreditationApplication
-        fields = ['isei_approval_date', 'isei_comment']
+        fields = ['isei_date', 'isei_comment']
         widgets = {
-            'isei_approval_date': forms.DateInput(attrs={'type': 'date'}),
+            'isei_date': forms.DateInput(attrs={'type': 'date'}),
             'isei_comment': forms.Textarea(attrs={'rows': 1 }),
         }

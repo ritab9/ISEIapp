@@ -296,14 +296,20 @@ def accreditation_application_review(request, pk):
     application = get_object_or_404(AccreditationApplication, pk=pk)
     school=application.school
 
+
     accreditation = application.accreditation
     if not accreditation:
         accreditation = Accreditation.objects.filter(school=school, status="scheduled").first()
 
-    if not accreditation:
-        accreditation = Accreditation.objects.create(school=school, status=Accreditation.AccreditationStatus.SCHEDULED)
+        if not accreditation:
+            accreditation = Accreditation.objects.create(school=school, status=Accreditation.AccreditationStatus.SCHEDULED)
+
         application.accreditation = accreditation
         application.save()
+
+    if not accreditation.school_year:
+        accreditation.school_year = application.school_year
+        accreditation.save()
 
     if request.method == 'POST':
         form = AccreditationApplicationReviewForm(request.POST, instance=application)

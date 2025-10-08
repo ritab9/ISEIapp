@@ -61,8 +61,8 @@ class InfoPageAdmin(admin.ModelAdmin):
 
 @admin.register(AccreditationApplication)
 class AccreditationApplicationAdmin(admin.ModelAdmin):
-    list_display = ('school', 'anticipated_accreditation', 'date', 'accreditation' )
-    list_filter = ('anticipated_accreditation', 'date')
+    list_display = ('school', 'school_year', 'date', 'accreditation' )
+    list_filter = ('school_year', 'date')
     search_fields = ('school__name',)
 
 
