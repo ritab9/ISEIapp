@@ -160,21 +160,22 @@ def school_accreditation_dashboard(request, school_id):
 
     today = timezone.localdate()
 
-    # 1️⃣ In‑progress = neither start nor end date set
-    in_progress_app = AccreditationApplication.objects.filter(school=school,
-        site_visit_start_date__isnull=True,site_visit_end_date__isnull=True).first()
+    # 1️⃣ Get all applications for the school
+    applications = AccreditationApplication.objects.filter(school=school)
 
-    # 2️⃣ Scheduled = start date set, end date today or later
-    upcoming_visit = AccreditationApplication.objects.filter( school=school,
-        site_visit_start_date__isnull=False,site_visit_end_date__gte=today).order_by('-site_visit_start_date').first()
+    # 2️⃣ Check for an application not attached to any accreditation
+    in_progress_app = applications.filter(accreditation__isnull=True).first()
 
-    # 3️⃣ Decide status and optional message
+    # 3️⃣ Check for an application attached to a scheduled accreditation
+    scheduled_app = applications.filter(accreditation__status=Accreditation.AccreditationStatus.SCHEDULED).first()
+
+    # 4️⃣ Determine status
     if in_progress_app:
-        application_status = "progress"
-    elif upcoming_visit:
-        application_status = "scheduled"
+        application_status = "progress"  # In Progress
+    elif scheduled_app:
+        application_status = "scheduled"  # Scheduled
     else:
-        application_status = "apply"
+        application_status = "apply"  # Needs to apply
 
     #accreditation_scheduled = Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED).first()
     #accreditation_active = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.ACTIVE).first()

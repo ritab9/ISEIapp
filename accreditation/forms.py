@@ -51,7 +51,8 @@ class SchoolInfoForApplicationForm(forms.ModelForm):
 class AccreditationApplicationForm(forms.ModelForm):
     class Meta:
         model = AccreditationApplication
-        exclude = ['school', 'ss_orientation_date', 'site_visit_start_date', 'site_visit_end_date' ]
+        exclude = ['school', 'ss_orientation_date', 'site_visit_start_date', 'site_visit_end_date',
+                   'accreditation', 'isei_approval_date', 'isei_comment', 'ss_setup_date']
 
         widgets = {
             'lowest_grade': forms.TextInput(attrs={'class': 'zip-code-input', 'maxlength': '5'}),

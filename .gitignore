@@ -3,3 +3,4 @@
 /media/
 /new_venv/
 .idea/
+/django_errors.log

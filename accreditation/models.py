@@ -88,7 +88,7 @@ class Accreditation(models.Model):
 
 class AccreditationApplication(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE, null=True, blank=True)
+    accreditation = models.OneToOneField(Accreditation, on_delete=models.PROTECT, null=True, blank=True)
 
     lowest_grade = models.CharField(max_length=5)
     current_highest_grade = models.CharField(max_length=5)
