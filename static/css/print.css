@@ -32,7 +32,11 @@
   }
 
   /* Page breaks */
-  .page-break-before { page-break-before: always; }
+  .page-break-before {
+    page-break-before: always;
+    break-before: page;
+    margin-top:20mm;
+  }
   .page-break-after { page-break-after: always; }
   .no-page-break { page-break-inside: avoid; }
 
