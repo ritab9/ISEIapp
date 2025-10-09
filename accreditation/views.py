@@ -177,7 +177,9 @@ def school_accreditation_dashboard(request, school_id):
     else:
         application_status = "apply"  # Needs to apply
 
-    #accreditation_scheduled = Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED).first()
+    accreditation_scheduled = Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED).first()
+    current_selfstudy = SelfStudy.objects.filter(accreditation=accreditation_scheduled).first()
+
     #accreditation_active = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.ACTIVE).first()
     #accreditation_past = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST)
 
@@ -188,7 +190,7 @@ def school_accreditation_dashboard(request, school_id):
     }
 
     context = dict(accreditation_groups =accreditation_groups, school=school,
-                   application_status = application_status)
+                   application_status = application_status, current_selfstudy=current_selfstudy,)
 
     return render(request, 'accreditation/school_accreditation_dashboard.html', context)
 
@@ -243,7 +245,7 @@ def accreditation_application(request, school_id):
     # 3️⃣ Check for an application attached to a scheduled accreditation
     scheduled_app = applications.filter(accreditation__status=Accreditation.AccreditationStatus.SCHEDULED).first()
     if scheduled_app:
-        in_progress_app = scheduled_app.accreditation
+        in_progress_app = scheduled_app
     else:
         # 2️⃣ Check for an application not attached to any accreditation
         in_progress_app = applications.filter(accreditation__isnull=True).first()
@@ -283,9 +285,11 @@ def accreditation_application(request, school_id):
             print("Address form errors:", address_form.errors)
             print("Postal Address form errors:", postal_address_form.errors)
 
+
     context=dict(info_page=info_page, school=school,
                  app_form=app_form, school_form=school_form,
-                 address_form = address_form, postal_address_form = postal_address_form)
+                 address_form = address_form, postal_address_form = postal_address_form,
+                 application=in_progress_app,)
 
     return render(request, 'accreditation/accreditation_application.html', context)
 

@@ -102,7 +102,7 @@ def setup_indicator_evaluations(selfstudy):
     indicators = Indicator.objects.filter(active=True, school_type__in=school.school_type.all()).select_related('standard')
 
     if not indicators.exists():
-        raise ValueError("No active indicators found. Ensure that indicators are properly configured.")
+        return False
 
     # Fetch existing evaluations for this selfstudy
     existing_evaluations = IndicatorEvaluation.objects.filter(selfstudy=selfstudy).values_list('indicator_id', flat=True)
@@ -123,7 +123,7 @@ def setup_indicator_evaluations(selfstudy):
     indicator_evaluations.sort(key=lambda x: x.indicator.code) # Sort the evaluations by indicator code (if needed)
     IndicatorEvaluation.objects.bulk_create(indicator_evaluations) # Bulk create the new evaluations
 
-    #return len(indicator_evaluations)  # Optionally return the count of created objects
+    return True
 
 def setup_standard_evaluation(selfstudy, standards):
     # Create StandardEvaluation objects for the selfstudy
@@ -143,7 +143,13 @@ def setup_selfstudy(request, accreditation_id):
     setup_coordinating_team(selfstudy, standards)
     setup_school_profile(selfstudy)
     setup_standard_evaluation(selfstudy, standards)
-    setup_indicator_evaluations(selfstudy)
+    indicators_created = setup_indicator_evaluations(selfstudy)
+
+    if not indicators_created:
+        messages.error(request, "No active indicators found. Ensure that indicators are properly configured, and the school has the correct types selected. Delete SelfStudy, make the proper selection, and try again.")
+        return redirect('isei_accreditation_dashboard')
+
+    messages.success(request, "Self Study Setup Completed Successfully.")
 
     context = dict(selfstudy=selfstudy, standards=standards)
 

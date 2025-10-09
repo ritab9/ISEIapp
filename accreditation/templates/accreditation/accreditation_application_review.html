@@ -249,6 +249,11 @@
                   </div>
               </div>
 
+        {% if application.school_comment %}
+            <hr>
+            Additional comment: {{ application.school_comment }}
+        {% endif %}
+
             <hr>
           <div class="row">
               <div class="col">

@@ -9,15 +9,15 @@
     <div class="card card-body">
         <div class="d-flex justify-content-between align-items-center">
             <h6 class="mb-0">{{ school.name }} Accreditation Dashboard</h6>
-            {% if application_status != 'scheduled' %}
+            <!-- { % if application_status != 'scheduled' %} -->
                 <a href="{% url 'accreditation_application' school.id %}" class="btn btn-sm btn-ISEIblue4">
                     {% if application_status == 'apply' %}
-                        📄 Apply for Accreditation
+                        Apply for Accreditation
                     {% else %}
-                         📄 Edit Accreditation Application
+                        Edit Accreditation Application
                     {% endif %}
                 </a>
-            {% endif %}
+            <!-- { % endif %} -->
           </div>
             {% if messages %}
                 <div class="alert-container">
@@ -31,10 +31,17 @@
     </div>
 
     <div class="card card-body">
-        <div class="d-flex justify-content-end">
-        <a href="{% url 'required_evidence_list' %}" class="btn btn-sm btn-outline-ISEIblue4" target="_blank" rel="noopener noreferrer">
-            Required Evidence List
-        </a>
+        <div class="row">
+            {% if current_selfstudy %}
+                <div class="col d-flex justify-content-start">
+                    <a href="{% url "selfstudy" selfstudy_id=current_selfstudy.id %}" class="btn btn-sm btn-ISEIblue2"> 📄 SelfStudy</a>
+                </div>
+            {% endif %}
+            <div class="col d-flex justify-content-end">
+                <a href="{% url 'required_evidence_list' %}" class="btn btn-sm btn-outline-ISEIblue4" target="_blank" rel="noopener noreferrer">
+                    Required Evidence List
+                </a>
+            </div>
         </div>
     </div>
 

@@ -51,13 +51,16 @@ class SchoolInfoForApplicationForm(forms.ModelForm):
 class AccreditationApplicationForm(forms.ModelForm):
     class Meta:
         model = AccreditationApplication
-        exclude = ['school', 'accreditation', 'isei_approval_date', 'isei_comment']
+        exclude = ['school', 'accreditation', 'isei_date', 'isei_comment']
 
         widgets = {
             'lowest_grade': forms.TextInput(attrs={'class': 'zip-code-input', 'maxlength': '5'}),
             'current_highest_grade': forms.TextInput(attrs={'class': 'zip-code-input', 'maxlength': '5'}),
             'planned_highest_grade': forms.TextInput(attrs={'class': 'zip-code-input', 'maxlength': '5'}),
             'date': forms.DateInput(attrs={'class': '', 'type': 'date'}),
+            'school_comment': forms.Textarea(attrs={ 'class': 'form-control w-100','rows': 2,
+                'placeholder': 'Enter any additional comments about the school or accreditation...',
+            }),
         }
 
     def __init__(self, *args, **kwargs):

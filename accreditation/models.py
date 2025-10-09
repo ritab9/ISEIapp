@@ -98,6 +98,8 @@ class AccreditationApplication(models.Model):
     signature = models.CharField(max_length=30)
     date = models.DateField(default=dj_timezone.now)
 
+    school_comment = models.TextField(null=True, blank=True)
+
     isei_date = models.DateField(null=True, blank=True)
     isei_comment = models.TextField(null=True, blank=True)
 
