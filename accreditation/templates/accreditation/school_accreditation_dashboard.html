@@ -33,14 +33,17 @@
     <div class="card card-body">
         <div class="row">
               <!-- New school should have a place to upload documents even if a SelfStudy is not yet created -->
+
                 {% if new_school %}
-                    {% if school_doc.link %}
-                        <a href="{{ school_doc.link }}" target="_blank">
-                             <i class="fa fa-folder-open"></i> View Folder
-                        </a>
-                    {% else %}
-                      <em>No folder to upload documents is available. Please contact ISEI.</em>
-                    {% endif %}
+                    <div class="col d-flex justify-content-start">
+                        {% if school_doc.link %}
+                            <a href="{{ school_doc.link }}" target="_blank">
+                                 <i class="fa fa-folder-open"></i> View Folder
+                            </a>
+                        {% else %}
+                          <em>No folder to upload documents is available. Please contact ISEI.</em>
+                        {% endif %}
+                    </div>
                 {% endif %}
 
 
