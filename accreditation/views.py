@@ -12,6 +12,7 @@ from django.contrib import messages
 from .models import *
 from .forms import *
 from users.models import SchoolType
+from annualvisit.models import SchoolDocument
 from emailing.functions import send_simple_email
 
 #ISEI Views
@@ -158,6 +159,18 @@ def delete_accreditation(request, id):
 def school_accreditation_dashboard(request, school_id):
     school=get_object_or_404(School, id=school_id)
 
+
+    #For a new school create an accreditation document folder directly, instead of an annual visit one
+    #The Link will be stored in SchoolDocuments though, were the Annual Visit Document links usually are
+    #The logic is that a new school should prepare for accreditation all along
+    #When creating their first accreditation we will use that link and then replace it in the SchoolDocuments with the regular Annual Visit place
+    if Accreditation.objects.filter(school=school).exists():
+        new_school=False
+        school_doc = None
+    else:
+        new_school=True
+        school_doc=SchoolDocument.objects.filter(school=school).first()
+
     today = timezone.localdate()
 
     # 1️⃣ Get all applications for the school
@@ -190,7 +203,8 @@ def school_accreditation_dashboard(request, school_id):
     }
 
     context = dict(accreditation_groups =accreditation_groups, school=school,
-                   application_status = application_status, current_selfstudy=current_selfstudy,)
+                   application_status = application_status, current_selfstudy=current_selfstudy,
+                   new_school=new_school, school_doc=school_doc)
 
     return render(request, 'accreditation/school_accreditation_dashboard.html', context)
 

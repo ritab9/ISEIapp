@@ -32,6 +32,23 @@
 
     <div class="card card-body">
         <div class="row">
+              <!-- New school should have a place to upload documents even if a SelfStudy is not yet created -->
+                {% if new_school %}
+                    {% if school_doc.link %}
+                        <a href="{{ school_doc.link }}" target="_blank">
+                             <i class="fa fa-folder-open"></i> View Folder
+                        </a>
+                      <iframe src="{{ school_doc.link|cut:'view?usp=sharing' }}preview"
+                              width="100%"
+                              height="600"
+                              frameborder="0">
+                      </iframe>
+                    {% else %}
+                      <em>No folder to upload documents is available. Please contact ISEI.</em>
+                    {% endif %}
+                {% endif %}
+
+
             {% if current_selfstudy %}
                 <div class="col d-flex justify-content-start">
                     <a href="{% url "selfstudy" selfstudy_id=current_selfstudy.id %}" target="_blank" class="btn btn-sm btn-outline-ISEIblue4 bi bi-file-earmark"> SelfStudy</a>
