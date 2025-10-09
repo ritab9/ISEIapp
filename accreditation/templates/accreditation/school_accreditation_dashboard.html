@@ -34,11 +34,14 @@
         <div class="row">
             {% if current_selfstudy %}
                 <div class="col d-flex justify-content-start">
-                    <a href="{% url "selfstudy" selfstudy_id=current_selfstudy.id %}" class="btn btn-sm btn-ISEIblue2"> 📄 SelfStudy</a>
+                    <a href="{% url "selfstudy" selfstudy_id=current_selfstudy.id %}" target="_blank" class="btn btn-sm btn-outline-ISEIblue4 bi bi-file-earmark"> SelfStudy</a>
+                </div>
+                <div class="col d-flex justify-content-between">
+                    <a href="{{ current_selfstudy.accreditation.evidence_documents_link }}" target="_blank" class="btn btn-sm btn-outline-ISEIblue4 bi bi-folder"> Evidence Documents Folder</a>
                 </div>
             {% endif %}
             <div class="col d-flex justify-content-end">
-                <a href="{% url 'required_evidence_list' %}" class="btn btn-sm btn-outline-ISEIblue4" target="_blank" rel="noopener noreferrer">
+                <a href="{% url 'required_evidence_list' %}" class="btn btn-sm btn-outline-ISEIblue4 bi bi-list-ul" target="_blank" rel="noopener noreferrer">
                     Required Evidence List
                 </a>
             </div>
