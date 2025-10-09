@@ -18,6 +18,7 @@ class AnnualVisit(models.Model):
 class SchoolDocument(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="school_documents")
     link = models.URLField(blank=True, null=True, help_text="Google Drive folder link")
+    first_accreditation_link = models.URLField(blank=True, null=True, help_text="Google Drive folder link - Accreditation Docs")
 
     def __str__(self):
         return f"Documents - {self.school.name}"

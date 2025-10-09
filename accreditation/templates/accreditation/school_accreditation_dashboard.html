@@ -36,9 +36,9 @@
 
                 {% if new_school %}
                     <div class="col d-flex justify-content-start">
-                        {% if school_doc.link %}
-                            <a href="{{ school_doc.link }}" target="_blank">
-                                 <i class="fa fa-folder-open"></i> View Folder
+                        {% if school_doc.first_accreditation_link %}
+                            <a href="{{ school_doc.first_accreditation_link }}" target="_blank">
+                                 <i class="fa fa-folder-open"></i> Folder to Upload Documents
                             </a>
                         {% else %}
                           <em>No folder to upload documents is available. Please contact ISEI.</em>

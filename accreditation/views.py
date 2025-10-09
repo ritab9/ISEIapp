@@ -163,7 +163,7 @@ def school_accreditation_dashboard(request, school_id):
     #For a new school create an accreditation document folder directly, instead of an annual visit one
     #The Link will be stored in SchoolDocuments though, were the Annual Visit Document links usually are
     #The logic is that a new school should prepare for accreditation all along
-    #When creating their first accreditation we will use that link and then replace it in the SchoolDocuments with the regular Annual Visit place
+    #When creating their first accreditation we will use that link
     if Accreditation.objects.filter(school=school).exists():
         new_school=False
         school_doc = None
