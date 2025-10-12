@@ -148,7 +148,6 @@ class InserviceDiscretionaryDaysForm(forms.ModelForm):
         ('II', 'Instructional Improvement'),
         ('CM', 'Classroom Management'),
         ('IS', 'ISEI Workshop'),
-        ('TE', 'Teacher/Administrator Evaluation'),
         ('TC', 'Teacher Convention'),
         ('OT', 'Other'),
         ('DS', 'Discretionary'),
