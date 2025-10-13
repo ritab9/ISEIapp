@@ -536,7 +536,7 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
         school_profile.principal = school.principal
     if not school_profile.board_chair and school.board_chair:
         school_profile.board_chair = school.board_chair
-    if not school_profile.last_evaluation and school.current_accreditation().visit_date_range():
+    if not school_profile.last_evaluation and school.current_accreditation():
         school_profile.last_evaluation = school.current_accreditation().visit_date_range()
     if not school_profile.last_interim:
         school_profile.last_interim = ""  # Set a default value
