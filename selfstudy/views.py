@@ -526,17 +526,17 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
     # Populate missing fields from other sources
     if not school_profile.school_name:
         school_profile.school_name = school.name
-    if not school_profile.address:
+    if not school_profile.address and address:
         school_profile.address =address.address_1
         school_profile.city = address.city
         school_profile.state_us = address.state_us
         school_profile.zip_code = address.zip_code
         school_profile.country = address.country
-    if not school_profile.principal:
+    if not school_profile.principal and school.principal:
         school_profile.principal = school.principal
-    if not school_profile.board_chair:
+    if not school_profile.board_chair and school.board_chair:
         school_profile.board_chair = school.board_chair
-    if not school_profile.last_evaluation:
+    if not school_profile.last_evaluation and school.current_accreditation().visit_date_range():
         school_profile.last_evaluation = school.current_accreditation().visit_date_range()
     if not school_profile.last_interim:
         school_profile.last_interim = ""  # Set a default value
