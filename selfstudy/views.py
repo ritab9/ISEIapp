@@ -767,8 +767,12 @@ def profile_personnel(request, selfstudy_id, readonly=False):
     #get the accreditation year annual_report to import data from
     annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year= accreditation_school_year).first()
 
-    arID=annual_report.id or None
-    ar_school_year=annual_report.school_year or None
+    if annual_report:
+        arID=annual_report.id
+        ar_school_year=annual_report.school_year
+    else:
+        arID= None
+        ar_school_year= None
 
     FTE_formset = FTEFormSet(queryset=FullTimeEquivalency.objects.filter(school_profile=school_profile), prefix="fte")
     fte_equivalency_form = FTEEquivalencyForm(instance=school_profile)
@@ -867,6 +871,7 @@ def profile_personnel(request, selfstudy_id, readonly=False):
             })
 
     context = dict( selfstudy=selfstudy, standards=standards, active_sublink="personnel", active_link="profile",
+                    accreditation_school_year = accreditation_school_year,
         admin_academic_dean=admin_academic_dean, vocational_instructors=vocational_instructors, non_instructional=non_instructional,
         arID=arID, ar_school_year=ar_school_year, personnel_imported = personnel_imported,
         fte_formset=FTE_formset, fte_equivalency_form=fte_equivalency_form,
@@ -1144,7 +1149,10 @@ def profile_student(request, selfstudy_id, readonly=False):
             field.disabled = True
 
 
-
+    if annual_report:
+        annual_report_id=annual_report.id
+    else:
+        annual_report_id = None
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
                    form_id=form_id, grade_labels = grade_labels, valid_grades=valid_grades,
@@ -1154,7 +1162,7 @@ def profile_student(request, selfstudy_id, readonly=False):
                    student_data=student_data, international=international,
                    followup_data_tables = followup_data_tables,
                    total_by_year=total_by_year, total_baptism_data=total_baptism_data,
-                   annual_report_id=annual_report.id,
+                   annual_report_id=annual_report_id,
                    percentage_non_sda_home=round(percentage_non_sda_home, 1),
                    percentage_baptized=round(percentage_baptized, 1),
                    projected_enrollment_form=form,
@@ -1279,11 +1287,12 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
 
     # Add this near your serialized_sessions generation
     existing_keys = set()
-    for level in serialized_sessions:
-        for year_data in level["school_years"]:
-            if year_data["sessions"]:
-                key = f"{level['level_type'].lower()}|{year_data['school_year']}"
-                existing_keys.add(key)
+    if serialized_sessions:
+        for level in serialized_sessions:
+            for year_data in level["school_years"]:
+                if year_data["sessions"]:
+                    key = f"{level['level_type'].lower()}|{year_data['school_year']}"
+                    existing_keys.add(key)
 
     if readonly:
         for field in student_achievement_form.fields.values():

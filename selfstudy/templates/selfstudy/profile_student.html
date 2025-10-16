@@ -41,6 +41,14 @@
                         <hr>
                         <p>*<strong>Enrollment Data</strong> pulled from Enrollment History. If incomplete, or inaccurate, click on the <strong>school year</strong> (in the table head) and update.</p>
                         <hr>
+
+                        {% if not annual_report_id %}
+                            <p class="error">
+                                Please complete and submit the Opening Student Report for the accreditation school year before continuing with this section of the report.
+                            </p>
+                            <hr>
+                        {% endif %}
+
                     </div>
         <!-- Projected Enrollment -->
                     <div class="row align-items-end">
@@ -122,11 +130,11 @@
                     <h6>2. Student Enrollment Data Summary</h6><hr>
 
                      <p> If the information below is not accurate:
-                         <ul>
-                             <li>click the school year to edit the Student Report</li>
-                             <li class="error"> resubmit Opening/Closing Report for that school year</li>
-                             <li> refresh this page to see the updated data</li>
-                        </ul>
+                         <ol>
+                             <li>Click the school year to edit the Student Report</li>
+                             <li>Resubmit Opening/Closing Report for that school year</li>
+                             <li>Refresh this page to see the updated data</li>
+                        </ol>
                      </p>
 
 
@@ -217,9 +225,15 @@
 
                     <div class="noprint">
                             <hr>
+                                {% if annual_report_id %}
                                 <p>*If baptismal data for current students is inaccurate update <a class="clickable" href="{% url 'student_report' arID=annual_report_id %}" target="_blank">Student Report</a>
                                 <br> Refresh this page to see the updated data.
                                 </p>
+                                {% else %}
+                                    <p class="error">
+                                        Please complete and submit the Opening Student Report for the accreditation school year before continuing with this section of the report.
+                                    </p>
+                                {% endif %}
                             <hr>
                     </div>
 

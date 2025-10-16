@@ -2338,7 +2338,7 @@ def longitudinal_enrollment(request, individual_school_name=None):
 
     # Fetch enrollment data for display
     if not individual_school_name:
-        records = LongitudinalEnrollment.objects.select_related("school", "year")
+        records = LongitudinalEnrollment.objects.filter(school__active=True).select_related("school", "year")
         grade_range = list(range(1, 13)) + [14, 15, 16]
     else:
         records =LongitudinalEnrollment.objects.filter(school__name=individual_school_name).select_related("school", "year")
