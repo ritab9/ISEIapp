@@ -1158,6 +1158,7 @@ def profile_student(request, selfstudy_id, readonly=False):
                    form_id=form_id, grade_labels = grade_labels, valid_grades=valid_grades,
                    enrollment_by_grade_and_year=enrollment_by_grade_and_year,
                    previous_school_years=previous_school_years,
+                   accreditation_school_year = accreditation_school_year,
                    student_baptism_data=student_baptism_data,
                    student_data=student_data, international=international,
                    followup_data_tables = followup_data_tables,
