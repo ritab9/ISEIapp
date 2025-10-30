@@ -9,6 +9,11 @@
 
 {% block content %}
     <div class="card card-body">
+        <a href="{% url 'bulk_ceu_edit' school_year.id school.id %}" class="btn btn-outline-ISEIblue4">
+          View/Edit Existing Group CEUs
+        </a>
+    </div>
+    <div class="card card-body">
         <h6>Group CEU Entry</h6>
         <hr>
         <form method="POST" enctype="multipart/form-data">

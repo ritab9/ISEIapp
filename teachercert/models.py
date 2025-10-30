@@ -126,7 +126,7 @@ class CEUReport(models.Model):
 
 
 class CEUInstance(models.Model):
-    # report contains teacher, school-year and summary
+    # ceu_report contains teacher, school-year and summary
 
     # timestamps for creation, update(save /teacher submission), and reviewed (by principal or ISEI)
     created_at = models.DateField(auto_now_add=True, blank = True)
@@ -165,6 +165,7 @@ class CEUInstance(models.Model):
 
     approved_ceu = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
+    group = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['ceu_report', 'date_completed']

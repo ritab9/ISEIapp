@@ -75,6 +75,7 @@ urlpatterns = [
     #path('approved_pdf2/', views.approved_pdf2, name='approved_pdf2'),
 
     path('bulk_ceu_entry/', views.bulk_ceu_entry, name='bulk_ceu_entry'),
+    path("bulk-edit/<int:school_year_id>/<int:school_id>/",views.bulk_ceu_edit,name="bulk_ceu_edit",),
 
     path('add_ISEI_CEUs/', views.add_ISEI_CEUs, name='add_ISEI_CEUs'),
     path('isei_teacher_applications/', views.isei_teacher_applications, name='isei_teacher_applications'),

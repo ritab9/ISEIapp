@@ -39,6 +39,23 @@ class AcademicClass(admin.ModelAdmin):
         return qs.filter(teacher__user__is_active = True)
 
 
+@admin.register(CEUInstance)
+class CEUInstanceAdmin(admin.ModelAdmin):
+    list_display = ('get_teacher', 'get_school', 'description', 'ceu_report', 'group')
+    list_editable = ('group',)
+    list_filter = ('group',)
+
+    def get_teacher(self, obj):
+        return obj.ceu_report.teacher
+
+    get_teacher.short_description = 'Teacher'
+
+    def get_school(self, obj):
+        return obj.ceu_report.teacher.user.profile.school
+
+    get_school.short_description = 'School'
+
+
 class CEUInstanceInline(admin.StackedInline):
     model = CEUInstance
     can_delete = True

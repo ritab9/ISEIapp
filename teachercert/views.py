@@ -1134,13 +1134,16 @@ def isei_manage_application(request, appID):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
 def bulk_ceu_entry(request):
+
     is_isei = request.user.groups.filter(name='staff').exists()
     is_principal_or_registrar = request.user.groups.filter( name__in=['principal', 'registrar']).exists()
 
     if is_principal_or_registrar:
-        teachers = Teacher.objects.filter(user__is_active=True, school=request.user.profile.school)
+        school = request.user.profile.school
+        teachers = Teacher.objects.filter(user__is_active=True, school=school)
     elif is_isei:
         teachers = Teacher.objects.filter(user__is_active=True)  # Show all active teachers for ISEI
+
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         if request.GET.get('school'):
@@ -1163,6 +1166,7 @@ def bulk_ceu_entry(request):
             approved_ceu = form.cleaned_data['approved_ceu']
             date_completed = form.cleaned_data['date_completed']
             file = form.cleaned_data['file']
+
 
             ceu_category = ceu_type.ceu_category
 
@@ -1198,6 +1202,7 @@ def bulk_ceu_entry(request):
                             'file': saved_file_path,
                             'isei_reviewed': 'a' if is_isei else 'n',
                             'principal_reviewed': 'a' if is_principal_or_registrar else 'n',
+                            'group':True,
                         }
                     )
                     #if created:
@@ -1206,9 +1211,68 @@ def bulk_ceu_entry(request):
     else:
         form = BulkCEUForm(teachers=teachers)
 
-    context = dict(form=form, teachers=teachers, is_principal=is_principal_or_registrar)
+    if school:
+        school_year = school.current_school_year
+    else:
+        school_year = None
+
+    context = dict(form=form, teachers=teachers, is_principal=is_principal_or_registrar,
+                   school=school or None, school_year=school_year)
 
     return render(request, 'teachercert/bulk_ceu_entry.html', context)
+
+
+
+def bulk_ceu_edit(request, school_year_id, school_id):
+
+    if request.method == "POST":
+        group_desc = request.POST.get("group_desc")
+        ceu_instances = CEUInstance.objects.filter(
+            ceu_report__school_year_id=school_year_id,
+            ceu_report__teacher__user__profile__school_id=school_id,
+            group=True,
+            description=group_desc,
+        )
+
+        # Shared fields
+        ceu_type_id = request.POST.get("ceu_type")
+        date_completed = request.POST.get("date_completed")
+        evidence = request.POST.get("evidence")
+
+        for inst in ceu_instances:
+            # update shared info
+            inst.ceu_type_id = ceu_type_id or inst.ceu_type_id
+            inst.date_completed = date_completed or inst.date_completed
+            inst.evidence = evidence
+
+            # update amount per teacher
+            amount_field = f"amount_{inst.id}"
+            if amount_field in request.POST:
+                inst.amount = request.POST[amount_field]
+
+            inst.save()
+
+        messages.success(request, f"'{group_desc}' updated successfully!")
+
+        # GET request (normal display)
+    ceu_instances = (
+        CEUInstance.objects
+        .filter(ceu_report__school_year_id=school_year_id, group=True, ceu_report__teacher__user__profile__school_id=school_id,)
+        .select_related('ceu_category', 'ceu_type', 'ceu_report')
+        .order_by('description', 'date_completed')
+    )
+
+    grouped = {}
+    for instance in ceu_instances:
+        grouped.setdefault(instance.description, []).append(instance)
+
+    context = dict(
+        grouped_ceu_instances=grouped,
+        ceu_types=CEUType.objects.filter(ceu_category__name__in = ['Group', 'Collaboration']),
+    )
+    return render(request, 'teachercert/bulk_ceu_edit.html', context)
+
+
 
 
 @login_required(login_url='login')
