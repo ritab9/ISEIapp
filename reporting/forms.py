@@ -122,7 +122,7 @@ class Day190Form(forms.ModelForm):
             'end_date': forms.DateInput(attrs={'style': 'max-width: 300px;', 'type': 'date'}),
             #'number_of_sundays': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
             'number_of_days': forms.NumberInput(attrs={'min': 1, 'max': 250, 'style': 'max-width: 30px; border:none'}),
-            'inservice_days': forms.NumberInput(attrs={'min': 1, 'max': 20, 'style': 'max-width: 30px;'}),
+            'inservice_days': forms.NumberInput(attrs={'min': 1, 'max': 250, 'style': 'max-width: 30px;'}),
             'file': forms.FileInput(attrs={'size': 1}),
             'comment': forms.Textarea(attrs={ 'rows': 1,'style': 'width:100%; overflow:hidden; resize:none;',
                 'placeholder': 'Optional'
@@ -161,7 +161,7 @@ class InserviceDiscretionaryDaysForm(forms.ModelForm):
 
         widgets = {
             'dates': forms.TextInput(attrs={'style': 'max-width: 150px;'}),
-            'hours': forms.NumberInput(attrs={'min': 1, 'max': 40, 'style': 'max-width: 30px;'}),
+            'hours': forms.NumberInput(attrs={'min': 1, 'max': 400, 'style': 'max-width: 30px;'}),
         }
 
 class AbbreviatedDaysForm(forms.ModelForm):
