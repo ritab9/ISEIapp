@@ -265,6 +265,7 @@
                 }
             }
 
+            /*
             function updateAverage() {
                 let total = 0;
                 let count = 0;
@@ -275,6 +276,29 @@
                         count++;
                     }
                 });
+                const avg = count > 0 ? (total / count).toFixed(2) : 0;
+                if (averageDisplay) averageDisplay.textContent = `Running Average: ${avg}`;
+                if (averageInput) averageInput.value = avg;
+            }*/
+
+            function updateAverage() {
+                let total = 0;
+                let count = 0;
+
+                dropdowns.forEach(dropdown => {
+                    const selectedOption = dropdown.options[dropdown.selectedIndex];
+                    const textVal = selectedOption.textContent.trim();
+
+                    // Extract the number inside parentheses, e.g. "Exceptional (4)" → 4
+                    const match = textVal.match(/\((\d+)\)/);
+                    const val = match ? parseFloat(match[1]) : NaN;
+
+                    if (!isNaN(val)) {
+                        total += val;
+                        count++;
+                    }
+                });
+
                 const avg = count > 0 ? (total / count).toFixed(2) : 0;
                 if (averageDisplay) averageDisplay.textContent = `Running Average: ${avg}`;
                 if (averageInput) averageInput.value = avg;
