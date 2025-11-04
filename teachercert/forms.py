@@ -70,7 +70,7 @@ class BulkCEUForm(forms.Form):
     description = forms.CharField(
                                   required=True)
     approved_ceu = forms.DecimalField(max_digits=5, decimal_places=2, required=False)
-    date_completed = forms.DateField(required=True)
+    date_completed = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     evidence = forms.CharField(required=False)
     file = forms.FileField(required=False)
 
