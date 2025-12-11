@@ -120,7 +120,7 @@
                                                     <br><span class="span80">({{ form.instance.indicator.code }})</span>
                                                 {% endif %}
                                             </td>
-                                            <td class="width: 100%">{{ form.instance.indicator.description }}</td>
+                                            <td class="width: 100%">{{ form.instance.indicator.description|linebreaksbr  }}</td>
                                         </tr>
                                         <tr><td colspan="2">{{ form.instance.indicator.met_description|safe  }}</td></tr>
                                         <tr>
