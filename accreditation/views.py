@@ -14,6 +14,7 @@ from .forms import *
 from users.models import SchoolType
 from annualvisit.models import SchoolDocument
 from emailing.functions import send_simple_email
+from services.models import Resource
 
 #ISEI Views
 
@@ -366,7 +367,9 @@ def my_accreditations(request, user_id):
         visiting_team_membership__active=True
     ).distinct()
 
+    team_materials=Resource.objects.filter(name='Accreditation Team Materials').first()
+
     context = dict(
-        accreditations=accreditations
+        accreditations=accreditations, team_materials=team_materials,
     )
     return render(request, "accreditation/my_accreditations.html", context)
