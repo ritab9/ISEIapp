@@ -150,6 +150,9 @@ class SchoolProfile(models.Model):
     #this belongs to D
     fte_student_ratio = models.CharField(max_length=10, null=True, blank=True)
 
+    #financial comment
+    financial_comment = models.TextField(null=True, blank=True)
+
 #C.Financial Data
 class FinancialTwoYearDataEntry(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="two_year_financial_data")

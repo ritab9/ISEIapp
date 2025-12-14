@@ -99,6 +99,16 @@
         </div>
         <hr>
 
+
+            <div class="row">
+                <div class="col-12">
+                    <h6>Financial Comment</h6>
+                    <p>You may add a comment regarding the school's financial data.</p>
+                    <textarea name="financial_comment" class="form-control" rows="4" {% if readonly %}readonly{% endif %}>{{ financial_comment }}</textarea>
+                </div>
+            </div>
+
+        <hr>
         {% if additional_formset.non_form_errors %}
             <div class="errors">
                 {% for error in additional_formset.non_form_errors %}

@@ -83,9 +83,10 @@
             </div>
         </div>
 
-<!-- Services -->
+
         <div class="col mb-2">
-            <div class="card h-100 shadow-sm">
+<!-- Services -->
+            <div class="card h-50 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
                     <i class="bi bi-easel"></i>  <strong>Services</strong>
                 </div>
@@ -107,13 +108,27 @@
                     </ul>
                 </div>
             </div>
+
+<!-- Misc -->
+            <div class="card h-50 shadow-sm">
+                <div class="card-header bg-ISEIblue4" style="color: white;">
+                    <i class="bi bi-people-fill"></i>  <strong>Miscellaneous</strong>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for resource in misc %}
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
 
 <!-- Evaluation Forms -->
         <div class="col mb-2">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-ISEIblue4" style="color: white;">
-                    <i class="bi bi-person-lines-fill"></i>  <strong>Evaluation Forms</strong>
+                    <i class="bi bi-person-lines-fill"></i>  <strong>Evaluation Forms + Teacher Resources</strong>
                 </div>
                 <div class="card-body">
                     <strong>Teacher Evaluation Forms</strong>
@@ -127,6 +142,10 @@
                         {% for resource in admin_evaluation_resources %}
                             <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
                         {% endfor %}
+                    </ul>
+                     <strong>Teacher Resources</strong>
+                    <ul>
+                        <li><a href="{{ professional_growth_plan.link }}" target="_blank">{{ professional_growth_plan.name }}</a></li>
                     </ul>
                 </div>
             </div>

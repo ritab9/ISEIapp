@@ -126,6 +126,11 @@ def resources(request, school_id=None):
     meeting_materials =Resource.objects.filter(type__name='Meeting Materials')
     registrations =Resource.objects.filter(type__name='Registration').order_by('name')
     services = Resource.objects.filter(type__name='Service').order_by('name')
+    misc = Resource.objects.filter(type__name='Misc')
+
+    professional_growth_plan=Resource.objects.filter(name='Professional Growth Plan Template').first()
+
+
 
 
     context=dict(teacher_evaluation_resources = teacher_evaluation_resources,
@@ -136,7 +141,9 @@ def resources(request, school_id=None):
                  meeting_materials=meeting_materials,
                  registrations=registrations,
                  services=services,
-                 school_id=school_id)
+                 school_id=school_id,
+                 misc = misc,
+                 professional_growth_plan=professional_growth_plan)
 
     return render(request, 'resources.html', context)
 
