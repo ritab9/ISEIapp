@@ -368,7 +368,8 @@ def my_accreditations(request, user_id):
     user = User.objects.get(pk=user_id)
     accreditations = Accreditation.objects.filter(
         visiting_team_membership__user=user,  # join via the through model
-        visiting_team_membership__active=True
+        visiting_team_membership__active=True,
+        status=Accreditation.AccreditationStatus.SCHEDULED,
     ).distinct()
 
     team_materials=Resource.objects.filter(name='Accreditation Team Materials').first()

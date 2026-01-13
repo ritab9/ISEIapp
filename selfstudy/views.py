@@ -1422,63 +1422,81 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     teacher_names = [f"{t.first_name} {t.last_name}".strip() for t in teachers if t.first_name or t.last_name]
 
     other_curriculum, _ = OtherCurriculumData.objects.get_or_create(school_profile=school_profile)
-
     categories = CourseCategory.objects.all()
 
-    context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="curriculum", active_link="profile",
-                   form_id=form_id, category_formsets=[], other_curriculum = other_curriculum,
-                   teacher_names=teacher_names,
-                   readonly=readonly,
-                   show_profile_submenu=True)
+    context = dict(
+        selfstudy=selfstudy,
+        school=school,
+        standards=standards,
+        active_sublink="curriculum",
+        active_link="profile",
+        form_id=form_id,
+        category_formsets=[],
+        other_curriculum=other_curriculum,
+        teacher_names=teacher_names,
+        readonly=readonly,
+        show_profile_submenu=True
+    )
 
     if request.method == 'POST':
         something_saved = False
         something_invalid = False
-        error_details = []  # Collect validation errors for display or debugging
+        error_details = []
 
+        # --- Handle OtherCurriculumData ---
         other_form = OtherCurriculumDataForm(request.POST, instance=other_curriculum)
         if other_form.is_valid():
-            other=other_form.save(commit=False)
-            other.school_profile = school_profile
-            other.save()
-            something_saved=True
+            other_instance = other_form.save(commit=False)
+            other_instance.school_profile = school_profile
+            other_instance.save()
+            something_saved = True
         else:
-            something_invalid=True
-            # collect errors
+            something_invalid = True
             for field, errors in other_form.errors.items():
                 error_details.append(f"OtherCurriculumDataForm → {field}: {', '.join(errors)}")
 
-        # Loop through categories and process the formsets
+        # --- Handle SecondaryCurriculumCourse formsets ---
         for category in categories:
             prefix = f'cat_{category.id}'
             FormSet = modelformset_factory(
                 SecondaryCurriculumCourse,
                 form=SecondaryCurriculumCourseForm,
                 extra=1,
-                can_delete=False
+                can_delete=True
             )
-            queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
+            queryset = SecondaryCurriculumCourse.objects.filter(
+                school_profile=school_profile,
+                category=category
+            )
             formset = FormSet(request.POST, queryset=queryset, prefix=prefix)
 
             if formset.is_valid():
                 instances = formset.save(commit=False)
 
+                # Handle deletions
                 for obj in formset.deleted_objects:
                     obj.delete()
+                    something_saved = True
 
+                # Save new or updated instances, skip empty forms
                 for instance in instances:
                     instance.school_profile = school_profile
                     instance.category = category
+
+                    # Skip empty forms (assuming course_title is required)
+                    if not instance.course_title:
+                        continue
+
                     instance.save()
-                something_saved=True
+                    something_saved = True
+
             else:
-                something_invalid=True
+                something_invalid = True
                 for subform in formset.forms:
                     if subform.errors:
                         for field, errors in subform.errors.items():
                             error_details.append(f"{category.name} → {field}: {', '.join(errors)}")
 
-            # Always append the formset (valid or invalid) to the context
             context['category_formsets'].append((category, formset))
 
         context['other_form'] = other_form
@@ -1497,25 +1515,28 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
             for err in error_details:
                 print("-", err)
 
-    else:  # For GET request, render the initial formsets
+    else:  # GET request
         for category in categories:
             prefix = f'cat_{category.id}'
-
-            if readonly: extra_forms=0
-            else: extra_forms=3
+            extra_forms = 0 if readonly else 3
 
             FormSet = modelformset_factory(
                 SecondaryCurriculumCourse,
                 form=SecondaryCurriculumCourseForm,
                 extra=extra_forms,
-                can_delete=False
+                can_delete=True
             )
-            queryset = SecondaryCurriculumCourse.objects.filter(school_profile=school_profile, category=category)
+            queryset = SecondaryCurriculumCourse.objects.filter(
+                school_profile=school_profile,
+                category=category
+            )
             formset = FormSet(queryset=queryset, prefix=prefix)
+
             if readonly:
                 for subform in formset:
                     for field in subform.fields.values():
-                        field.disabled=True
+                        field.disabled = True
+
             context['category_formsets'].append((category, formset))
 
         other_form = OtherCurriculumDataForm(instance=other_curriculum)
@@ -1524,8 +1545,8 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
                 field.disabled = True
         context['other_form'] = other_form
 
-    # Render the template with the appropriate context (now always contains formsets)
     return render(request, 'selfstudy/profile_secondary_curriculum.html', context)
+
 
 
 

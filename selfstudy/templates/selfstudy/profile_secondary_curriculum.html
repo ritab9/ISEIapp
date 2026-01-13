@@ -62,6 +62,7 @@
                                             <th>Credits</th>
                                             <th>Periods/Wk</th>
                                             <th>Minutes/Wk</th>
+                                            <th>Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -71,6 +72,11 @@
                                                 {% for field in form.visible_fields %}
                                                     <td>{{ field }}<span class="error">{{ field.errors }}</span></td>
                                                 {% endfor %}
+                                                <td>
+                                                    {% if not readonly %}
+                                                        {{ form.DELETE }} <!-- Delete checkbox -->
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
