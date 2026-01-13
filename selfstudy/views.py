@@ -2139,7 +2139,7 @@ def get_selfstudy_standards_report(selfstudy):
         # Case 2: No substandards
         else:
             indicators = Indicator.objects.filter(
-                standard=standard, active=True
+                standard=standard, active=True, school_type__in=selfstudy.accreditation.school.school_type.all()
             ).order_by("code")
 
             standard_block["groups"].append({
