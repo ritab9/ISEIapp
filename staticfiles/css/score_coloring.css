@@ -1,0 +1,12 @@
+.score-line {
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.score-1 { background-color: mistyrose; }
+.score-2 { background-color: lightyellow; }
+.score-3 { background-color: honeydew; }
+.score-4 { background-color: #E5E8FB; }
+
+/* Optional: neutral */
+.score-0 { background-color: #f8f9fa; }
