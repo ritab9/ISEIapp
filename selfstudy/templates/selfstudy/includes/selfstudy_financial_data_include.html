@@ -1,0 +1,92 @@
+{% load humanize %}
+{% load template_extras %}
+
+ <div class="card card-body report-page page-break">
+
+    <h5 class="mt-4">C. Financial History</h5>
+    <hr>
+
+    <h6 class="">Two-Year Financial Overview</h6>
+
+    <table class="table table-sm table-bordered table-striped">
+        <thead class="blue-header">
+            <tr>
+                <th>Category</th>
+                <th>Two Years Ago</th>
+                <th>One Year Ago</th>
+                <th>Current Year</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key in financial_two_year_keys %}
+                {% with entry=two_year_lookup|get_from_dict:key.id %}
+                <tr>
+                    <td>{{ key.name }}</td>
+
+                    <td>
+                        {% if entry and entry.two_years_ago is not None %}
+                            ${{ entry.two_years_ago|floatformat:2|intcomma }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if entry and entry.one_year_ago is not None %}
+                            ${{ entry.one_year_ago|floatformat:2|intcomma }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if entry and entry.current_year is not None %}
+                            ${{ entry.current_year|floatformat:2|intcomma }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Financial Narrative / Commentary -->
+
+        {% if school_profile and school_profile.financial_comment %}
+            <h6 class="mt-4 mb-2">Financial Comment</h6>
+            <p>{{ school_profile.financial_comment }}</p>
+        {% endif %}
+
+    <h6 class="mt-5">Additional Financial Information</h6>
+
+    <table class="table table-sm table-bordered table-striped">
+        <thead class="blue-header">
+            <tr>
+                <th>Item</th>
+                <th>Information</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key in financial_additional_keys %}
+                {% with entry=additional_lookup|get_from_dict:key.id %}
+                <tr>
+                    <td>{{ key.name }}</td>
+                    <td>
+                        {% if entry and entry.value %}
+                            {{ entry.value }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+ <p class="back-to-toc">
+        <a href="#toc">⬆ Back to Table of Contents</a>
+    </p>
+ </div>

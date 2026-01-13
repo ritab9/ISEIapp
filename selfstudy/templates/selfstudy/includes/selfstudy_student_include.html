@@ -1,0 +1,219 @@
+<!-- Self-Study Student Data Include -->
+{% load template_extras %}
+
+ <div class="card card-body report-page page-break">
+<h5> E. Student Data </h5>
+ <hr>
+
+    <!-- 1. Enrollment Data -->
+    <div class="card card-body mb-3 keep-together">
+        <h6>1. Student Enrollment Data</h6>
+        <table class="table table-sm table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Grade</th>
+                    {% for year in previous_school_years %}
+                        <th>{{ year }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in valid_grades %}
+                    <tr>
+                        <td class="font-weight-bold">{{ grade_labels|get_item:grade }}</td>
+                        {% for year in previous_school_years %}
+                            <td>
+                                {{ enrollment_by_grade_and_year|get_item:grade|get_item:year|default:"" }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                <tr class="font-weight-bold">
+                    <td>Total</td>
+                    {% for year in previous_school_years %}
+                        <td>{{ total_by_year|get_item:year|default:"" }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+
+        <h7>Projected Enrollment</h7>
+        <table class="table table-sm text-center">
+            <thead class="blue-header2">
+                <tr>
+                    <th>Next School Year</th>
+                    <th>In 2 Years</th>
+                    <th>In 3 Years</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ projected_data.projected_enrollment_next_year|default:"–" }}</td>
+                    <td>{{ projected_data.projected_enrollment_2_years|default:"–" }}</td>
+                    <td>{{ projected_data.projected_enrollment_3_years|default:"–" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 2. Enrollment Summary -->
+    <div class="card card-body mb-3 keep-together">
+        <h6>2. Enrollment Summary</h6>
+        <table class="table table-sm table-bordered table-striped text-center">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Opening Enrollment</th>
+                    <th>Male/Female %</th>
+                    <th>% International</th>
+                    <th>% Non-Returning</th>
+                    <th>% Withdrawn</th>
+                    <th>% Retention</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in student_data %}
+                    <tr>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.opening_enrollment|default:"" }}</td>
+                        <td>{{ item.percent_male|default:"" }}/{{ item.percent_female|default:"" }}</td>
+                        <td>{{ item.percent_international|default:"" }}%</td>
+                        <td>{{ item.not_returned_percentage|default:"" }}%</td>
+                        <td>{{ item.withdrawn_percentage|default:"" }}%</td>
+                        <td>{{ item.retention|default:"" }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if international %}
+            <h7>International Students</h7>
+            <table class="table table-sm table-bordered table-striped text-center">
+                <thead>
+                    <tr>
+                        {% for item in student_data %}
+                            <th>{{ item.year }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for item in student_data %}
+                            <td>{{ item.percent_international }}%</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for item in student_data %}
+                            <td>
+                                {% if item.international_countries %}
+                                    {% for entry in item.international_countries %}
+                                        {{ entry.country__name }}: {{ entry.count }}<br>
+                                    {% endfor %}
+                                {% else %}
+                                    –
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <!-- 3. Baptismal Data -->
+    <div class="card card-body mb-3 keep-together">
+        <h6>3. Student Baptism Data</h6>
+
+        <table class="table table-sm table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Grade</th>
+                    <th colspan="2">SDA Home</th>
+                    <th colspan="2">Non-SDA Home</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>Not Baptized</th>
+                    <th>Baptized</th>
+                    <th>Not Baptized</th>
+                    <th>Baptized</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in valid_grades %}
+                    <tr>
+                        <td>{{ grade_labels|get_from_dict:grade }}</td>
+                        {% with student_baptism_data|get_item:grade as row %}
+                            <td>{{ row.sda_home.not_baptized|default:"–" }}</td>
+                            <td>{{ row.sda_home.baptized|default:"–" }}</td>
+                            <td>{{ row.non_sda_home.not_baptized|default:"–" }}</td>
+                            <td>{{ row.non_sda_home.baptized|default:"–" }}</td>
+                        {% endwith %}
+                    </tr>
+                {% endfor %}
+                <tr class="font-weight-bold">
+                    <td>Total</td>
+                    <td>{{ total_baptism_data.sda_home.not_baptized|default:"–" }}</td>
+                    <td>{{ total_baptism_data.sda_home.baptized|default:"–" }}</td>
+                    <td>{{ total_baptism_data.non_sda_home.not_baptized|default:"–" }}</td>
+                    <td>{{ total_baptism_data.non_sda_home.baptized|default:"–" }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>% Non-SDA Home:</strong> {{ percentage_non_sda_home }}%</p>
+        <p><strong>% Baptized:</strong> {{ percentage_baptized }}%</p>
+
+        <h7>Baptized Students by Year</h7>
+        <table class="table table-sm table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Baptized Students</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in student_data %}
+                    <tr>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.baptized_students|default:"–" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 4. Follow-up Data -->
+    <div class="card card-body mb-3 keep-together">
+        <h6>4. Student Follow-Up Data</h6>
+        {% for level, table in followup_data_tables.items %}
+            <h7>{{ level|title }} Follow-Up Data</h7>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-striped text-center">
+                <thead>
+                    <tr>
+                        <th>School Year</th>
+                        {% for key in table.keys %}
+                            <th>{{ key.description }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table.rows %}
+                        <tr>
+                            <td>{{ row.year.name }}</td>
+                            {% for entry in row.entries %}
+                                <td>{{ entry.value|default:"–" }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        {% endfor %}
+    </div>
+
+    <p class="back-to-toc">
+        <a href="#toc">⬆ Back to Table of Contents</a>
+    </p>
+ </div>

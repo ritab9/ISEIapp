@@ -156,7 +156,7 @@ def delete_accreditation(request, id):
 #School Accreditation Views
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['principal', 'registrar', 'staff'])
+@allowed_users(allowed_roles=['principal', 'registrar', 'staff', 'coordinating_team'])
 def school_accreditation_dashboard(request, school_id):
     school=get_object_or_404(School, id=school_id)
 
@@ -197,6 +197,8 @@ def school_accreditation_dashboard(request, school_id):
     #accreditation_active = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.ACTIVE).first()
     #accreditation_past = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST)
 
+    evidence_list=Resource.objects.filter(name="Required Evidence List").first()
+
     accreditation_groups = {
         "scheduled": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED),
         "active": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.ACTIVE),
@@ -205,7 +207,8 @@ def school_accreditation_dashboard(request, school_id):
 
     context = dict(accreditation_groups =accreditation_groups, school=school,
                    application_status = application_status, current_selfstudy=current_selfstudy,
-                   new_school=new_school, school_doc=school_doc)
+                   new_school=new_school, school_doc=school_doc,
+                   evidence_list=evidence_list)
 
     return render(request, 'accreditation/school_accreditation_dashboard.html', context)
 
@@ -234,10 +237,11 @@ def map_school_type_choices_to_school_types(school, app):
 
         # Elementary school check (e.g. lowest grade < 7)
         if app.lowest_grade:
+            print("lowest_grade")
             if app.lowest_grade == "K" or app.lowest_grade == "PreK":
                 grade = 0
-            else: int(app.lowest_grade)
-
+            else:
+                grade=int(app.lowest_grade)
             if grade < 7:
                 result_codes.add('e')
 

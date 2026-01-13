@@ -6,7 +6,7 @@ from django.urls import reverse
 from users.utils import is_in_any_group
 from django.contrib import messages
 
-from django.db.models import Max, Count, Q
+from django.db.models import Max, Count, Q, Prefetch
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from collections import defaultdict
@@ -30,6 +30,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from django.views.decorators.csrf import csrf_exempt
+from collections import defaultdict
+from decimal import Decimal
+
+
+
 
 @login_required(login_url='login')
 def check_lock(request, form_id):
@@ -895,8 +900,6 @@ def profile_personnel(request, selfstudy_id, readonly=False):
     return render(request, 'selfstudy/profile_personnel.html', context)
 
 
-from django.db.models import Count
-
 
 def get_international_students_by_country(report, school_country):
     """
@@ -1593,19 +1596,603 @@ def profile_philanthropy(request, selfstudy_id, readonly=False):
 
 # Pdf version of SS
 
+#personnel data helpers
+def get_personnel_data(school_profile):
+    """
+    Returns categorized personnel data, degree/gender summary,
+    FTE assignments, professional growth activities, and retention data.
+    """
+    if not school_profile:
+        return {}, [], [], [], [], []
+
+    personnel_data = SelfStudyPersonnelData.objects.filter(school_profile=school_profile).prefetch_related('position')
+
+    # Categorize staff
+    teaching_admin_positions = StaffPosition.objects.filter(
+        category__in=[StaffCategory.TEACHING, StaffCategory.ADMINISTRATIVE]
+    ).exclude(name="Practical Arts/Life Skills Teacher")
+
+    admin_academic_dean = personnel_data.filter(position__in=teaching_admin_positions).distinct()
+    vocational_instructors = personnel_data.filter(
+        position__name="Practical Arts/Life Skills Teacher"
+    ).exclude(id__in=admin_academic_dean.values_list('id', flat=True))
+    non_instructional = personnel_data.filter(Q(position__category=StaffCategory.GENERAL_STAFF))\
+                         .exclude(id__in=admin_academic_dean.values_list('id', flat=True))\
+                         .exclude(id__in=vocational_instructors.values_list('id', flat=True)).distinct()
+
+    # Degree / gender counts
+    degree_gender_counts = personnel_data.values('highest_degree', 'gender')\
+        .annotate(count=Count('id')).order_by('highest_degree', 'gender')
+    degree_gender_dict = {}
+    for item in degree_gender_counts:
+        deg = item['highest_degree']
+        g = item['gender']
+        count = item['count']
+        if deg not in degree_gender_dict:
+            degree_gender_dict[deg] = {'M': 0, 'F': 0}
+        degree_gender_dict[deg][g] = count
+
+    # FTE assignments (read-only for report)
+    fte_formset = school_profile.fte_assignments.all()
+    fte_equivalency_form = school_profile  # fte_student_ratio
+
+    # Professional Growth Activities
+    pga_formset = school_profile.activities.all()
+
+    # Retention data for last 5 school years
+    current_year = SchoolYear.objects.order_by('-name').first()  # fallback if needed
+    if current_year:
+        start_year = int(current_year.name.split('-')[0])
+    else:
+        from datetime import date
+        start_year = date.today().year
+
+    year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(5)][::-1]
+    school_years = SchoolYear.objects.filter(name__in=year_names)
+    reports = AnnualReport.objects.filter(school=school_profile.selfstudy.accreditation.school,
+                                          report_type__code="ER",
+                                          school_year__in=school_years).select_related('school_year')
+    reports_by_year = {r.school_year.name: r for r in reports}
+    retention_data = []
+    for y in year_names:
+        report = reports_by_year.get(y)
+        if report:
+            retention_data.append({
+                'year': y,
+                'total': report.total_personnel(),
+                'not_returned': report.not_returned_personnel(),
+                'retention': report.retention_rate(),
+            })
+
+    return {
+        'admin_academic_dean': admin_academic_dean,
+        'vocational_instructors': vocational_instructors,
+        'non_instructional': non_instructional,
+        'degree_gender_dict': degree_gender_dict,
+        'fte_formset': fte_formset,
+        'fte_equivalency_form': fte_equivalency_form,
+        'pga_formset': pga_formset,
+        'retention_data': retention_data
+    }
+def get_fte_data(school_profile):
+    """
+    Returns a list of FTE assignments with men/women/total counts
+    and overall totals.
+    """
+    fte_assignments = list(school_profile.fte_assignments.select_related('assignment').all())
+
+    total_men = 0
+    total_women = 0
+
+    fte_list = []
+    for fte in fte_assignments:
+        men = fte.fte_men or 0
+        women = fte.fte_women or 0
+        total = men + women
+
+        total_men += men
+        total_women += women
+
+        fte_list.append({
+            "assignment": fte.assignment.name,
+            "men": men,
+            "women": women,
+            "total": total,
+        })
+
+    grand_total = total_men + total_women
+
+    return {
+        "fte_list": fte_list,
+        "total_men": total_men,
+        "total_women": total_women,
+        "grand_total": grand_total,
+        "fte_student_ratio": getattr(school_profile, 'fte_student_ratio', None)
+    }
+def get_professional_activities(school_profile):
+    """
+    Returns a list of professional growth activities for the given school profile.
+    Each item is a dict with 'activity' and 'improvement'.
+    """
+    if not school_profile:
+        return []
+
+    activities = school_profile.activities.all()
+    return [
+        {
+            "activity": act.activity,
+            "improvement": act.improvement or "–",
+        }
+        for act in activities
+    ]
+
+#financial data helper
+def get_financial_lookup(school_profile):
+    """
+    Returns lookup dictionaries for two-year and additional financial data.
+    """
+    two_year_lookup = {}
+    additional_lookup = {}
+    if school_profile:
+        two_year_lookup = {entry.data_key_id: entry for entry in school_profile.two_year_financial_data.all()}
+        additional_lookup = {entry.data_key_id: entry for entry in school_profile.additional_financial_data.all()}
+    return two_year_lookup, additional_lookup
+
+#student data helpers
+def get_previous_school_years(current_school_year_name, count=5):
+    """
+    Returns a list of previous school years (including the current one) as strings.
+
+    Parameters:
+    - current_school_year_name: str, e.g., "2024-2025"
+    - count: number of years to return (default 5)
+
+    Returns:
+    - List of school year names in chronological order (oldest first)
+    """
+    try:
+        start_year = int(current_school_year_name.split('-')[0])
+    except (ValueError, AttributeError):
+        return []
+
+    years = [f"{start_year - i}-{start_year + 1 - i}" for i in range(count)]
+    return list(reversed(years))  # oldest first, current last
+def get_enrollment_data(school, previous_school_years):
+    """
+    Returns enrollment counts by grade and year for a given school.
+    Prepopulates missing data with 0 to avoid KeyErrors.
+    Also returns grade_labels mapping for display.
+    Returns:
+        enrollment_by_grade_and_year: dict {grade: {year_name: count, ...}, ...}
+        total_by_year: dict {year_name: total_count, ...}
+        grade_labels: dict {grade: display_name, ...}
+    """
+    valid_grades = school.get_grade_range()
+
+    # Build grade_labels mapping
+    #grade_labels = {grade: f"Grade {grade}" for grade in valid_grades}
+    grade_labels = {v: k for k, v in GRADE_LEVEL_DICT.items()}
+
+    # Initialize dictionary with all grades and years set to 0
+    enrollment_by_grade_and_year = {
+        grade: {year: 0 for year in previous_school_years}
+        for grade in valid_grades
+    }
+
+    # Fetch actual enrollment data
+    enrollment_qs = LongitudinalEnrollment.objects.filter(
+        school=school, year__name__in=previous_school_years
+    ).order_by('year', 'grade')
+
+    # Populate the dictionary with actual data
+    for record in enrollment_qs:
+        if record.grade in valid_grades:
+            enrollment_by_grade_and_year[record.grade][record.year.name] = record.enrollment_count or 0
+
+    # Calculate totals per year
+    total_by_year = {year: 0 for year in previous_school_years}
+    for year in previous_school_years:
+        for grade in valid_grades:
+            total_by_year[year] += enrollment_by_grade_and_year[grade].get(year, 0)
+
+    return enrollment_by_grade_and_year, total_by_year, grade_labels
+def get_student_summary(school, previous_school_years):
+    """Return student_data list, international flag, percentages, etc."""
+    student_data = []
+    international = False
+    school_country = school.street_address.country
+
+    for year in previous_school_years:
+        # Fetch opening, closing, and student reports
+        annual_opening_report = AnnualReport.objects.filter(
+            report_type__code="OR", school_year__name=year, school=school
+        ).first()
+        opening = Opening.objects.filter(annual_report=annual_opening_report).first()
+        annual_closing_report = AnnualReport.objects.filter(
+            report_type__code="CR", school_year__name=year, school=school
+        ).first()
+        closing = Closing.objects.filter(annual_report=annual_closing_report).first()
+        annual_student_report = AnnualReport.objects.filter(
+            report_type__code="SR", school_year__name=year, school=school
+        ).first()
+
+        if opening:
+            opening_enrollment = opening.opening_enrollment
+            international_count = Student.objects.filter(
+                annual_report=annual_student_report, status='enrolled'
+            ).exclude(country=school_country).count()
+            percent_international = round(international_count * 100 / opening_enrollment,
+                                          1) if opening_enrollment else 0
+            if international_count:
+                international = True
+            percent_female = opening.girl_percentage
+            percent_male = opening.boy_percentage
+
+            withdrawn_percentage = closing.withdrawn_percentage if closing else None
+
+            if opening_enrollment and opening_enrollment > 0 and opening.retention_percentage is not None:
+                not_returned_percentage = round(100 - opening.retention_percentage, 1)
+                if withdrawn_percentage is not None:
+                    retention = round(opening.retention_percentage - withdrawn_percentage, 1)
+                else:
+                    retention = opening.retention_percentage
+            else:
+                not_returned_percentage = None
+                retention = None
+
+            baptized_students = closing.baptized_students if closing else None
+
+            international_countries = get_international_students_by_country(annual_student_report, school_country)
+
+            student_data.append({
+                'year': year,
+                'opening_enrollment': opening_enrollment,
+                'percent_male': percent_male,
+                'percent_female': percent_female,
+                'percent_international': percent_international,
+                'international_countries': international_countries,
+                'withdrawn_percentage': withdrawn_percentage,
+                'retention': retention,
+                'not_returned_percentage': not_returned_percentage,
+                'baptized_students': baptized_students,
+                'opening_report': annual_opening_report,
+                'closing_report': annual_closing_report,
+                'student_report': annual_student_report,
+            })
+
+    return student_data, international
+def get_baptism_data(school, annual_report, valid_grades):
+    """Return nested dicts for baptism data and totals."""
+    students = Student.objects.filter(annual_report=annual_report, status="enrolled")
+    student_baptism_data = {
+        grade: {'sda_home': {'baptized': 0, 'not_baptized': 0},
+                'non_sda_home': {'baptized': 0, 'not_baptized': 0}}
+        for grade in valid_grades
+    }
+
+    for student in students:
+        grade = student.grade_level
+        if grade not in student_baptism_data:
+            continue
+        home_type = 'sda_home' if student.parent_sda=='Y' else 'non_sda_home'
+        key = 'baptized' if student.baptized=='Y' else 'not_baptized'
+        student_baptism_data[grade][home_type][key] += 1
+
+    # Totals
+    total_baptism_data = {'sda_home': {'baptized': 0, 'not_baptized': 0},
+                           'non_sda_home': {'baptized': 0, 'not_baptized': 0}}
+    for grade in valid_grades:
+        for home in ['sda_home','non_sda_home']:
+            for key in ['baptized','not_baptized']:
+                total_baptism_data[home][key] += student_baptism_data[grade][home][key]
+
+    total_students = students.count()
+    non_sda_home_students = students.filter(parent_sda__in=['N','O']).count()
+    baptized_students = students.filter(baptized='Y').count()
+    percentage_non_sda_home = (non_sda_home_students/total_students*100) if total_students else 0
+    percentage_baptized = (baptized_students/total_students*100) if total_students else 0
+
+    return student_baptism_data, total_baptism_data, round(percentage_non_sda_home,1), round(percentage_baptized,1)
+def get_followup_data(school, levels, previous_school_years):
+    """Return followup_data_tables dict ready for template."""
+    followup_data_tables = {}
+    for level in levels:
+        keys = list(StudentFollowUpDataKey.objects.filter(level=level, active=True).order_by('order_number'))
+        years = list(SchoolYear.objects.filter(name__in=previous_school_years[-3:]).order_by('name'))
+        entries_lookup = {
+            (year.id,key.id): StudentFollowUpDataEntry.objects.get_or_create(
+                school=school, school_year=year, followup_data_key=key
+            )[0]
+            for year in years for key in keys
+        }
+        rows = [{'year': year, 'entries':[entries_lookup[(year.id,key.id)] for key in keys]} for year in years]
+        followup_data_tables[level] = {'keys': keys, 'rows': rows}
+    return followup_data_tables
+
+#Student Achievement Helpers
+def get_student_achievement_overview(school_profile):
+    """
+    Returns narrative student achievement data and grade-level tests.
+    """
+    if not school_profile:
+        return None
+
+    achievement = school_profile.achievement_data.first()
+    if not achievement:
+        return None
+
+    grade_tests = achievement.grade_level_tests.all()
+
+    return {
+        "communication_parents": achievement.communication_parents,
+        "process_to_improve": achievement.process_to_improve,
+        "grade_level_tests": grade_tests,
+    }
+
+def get_standardized_test_report_data(school, school_years):
+    """
+    Returns standardized test scores grouped for reporting.
+
+    Structure returned:
+    {
+        "elementary": {
+            "2022-2023": [
+                {
+                    "test_type": "IOWA",
+                    "test_name": None,
+                    "grade_range": [1, 2, 3, 4, 5, 6, 7, 8],
+                    "scores": {
+                        "ENGLISH": {1: 1.4, 2: 3.5},
+                        "MATH": {1: 2.1}
+                    }
+                }
+            ]
+        },
+        "secondary": { ... }
+    }
+    """
+
+    sessions = (
+        StandardizedTestSession.objects
+        .filter(school=school, school_year__in=school_years)
+        .select_related("school_year")
+        .prefetch_related("scores")
+        .order_by("grade_level_type", "school_year__name")
+    )
+
+    # Step 1: collect raw data
+    raw_report = defaultdict(lambda: defaultdict(list))
+
+    for session in sessions:
+        score_map = defaultdict(dict)
+
+        for score in session.scores.all():
+            score_map[score.subject][score.grade] = score.score
+
+        grade_range = (
+            range(1, 9)
+            if session.grade_level_type == "elementary"
+            else range(9, 13)
+        )
+
+        raw_report[session.grade_level_type][session.school_year.name].append({
+            "test_type": session.test_type,
+            "test_name": session.test_name,
+            "grade_range": grade_range,
+            "scores": score_map,
+        })
+
+    # Step 2: normalize everything for template safety
+    standardized_test_report = {}
+
+    for level, years in raw_report.items():
+        standardized_test_report[level] = {}
+
+        for year, sessions in years.items():
+            normalized_sessions = []
+
+            for session in sessions:
+                # Normalize scores (Decimal → float)
+                normalized_scores = {}
+                for subject, grades in session["scores"].items():
+                    normalized_scores[subject] = {
+                        grade: float(value) if isinstance(value, Decimal) else value
+                        for grade, value in grades.items()
+                    }
+
+                normalized_sessions.append({
+                    "test_type": session["test_type"],
+                    "test_name": session["test_name"],
+                    "grade_range": list(session["grade_range"]),
+                    "scores": normalized_scores,
+                })
+
+            standardized_test_report[level][year] = normalized_sessions
+
+    return standardized_test_report
+
+from collections import defaultdict
+
+def get_secondary_curriculum_report_data(school_profile):
+    """
+    Returns secondary curriculum data grouped by course category,
+    plus other curriculum (dual enrollment, vocational).
+    """
+    if not school_profile:
+        return None
+
+    # Prefetch related category for efficiency
+    courses = (
+        school_profile.secondary_curriculum
+        .select_related("category")
+        .order_by("category__name", "course_title")
+    )
+
+    curriculum_by_category = defaultdict(list)
+
+    for course in courses:
+        curriculum_by_category[course.category.name].append({
+            "course_title": course.course_title,
+            "teacher_name": course.teacher_name,
+            "certification_endorsed": course.certification_endorsed,
+            "credit_value": course.credit_value,
+            "periods_per_week": course.periods_per_week,
+            "minutes_per_week": course.minutes_per_week,
+        })
+
+    other_curriculum = getattr(school_profile, "other_curriculum_data", None)
+
+    return {
+        "curriculum_by_category": dict(curriculum_by_category),
+        "other_curriculum": other_curriculum,
+    }
+
+def get_student_support_services(school_profile):
+    """
+    Returns student support services narrative data.
+    """
+    if not school_profile:
+        return None
+
+    support = school_profile.support_services.first()
+    if not support:
+        return None
+
+    return {
+        "academic_advisement": support.academic_advisement,
+        "career_advisement": support.career_advisement,
+        "personal_counseling": support.personal_counseling,
+    }
+
+def get_philanthropy_program(school_profile):
+    """
+    Returns philanthropy / development program narrative data.
+    """
+    if not school_profile:
+        return None
+
+    program = school_profile.philantrophy_program.first()
+    if not program:
+        return None
+
+    return {
+        "development_program": program.development_program,
+    }
+
+def get_selfstudy_standards_report(selfstudy):
+    """
+    Builds a fully-structured, read-only dataset for the SelfStudy report.
+    """
+
+    standards = (
+        Standard.objects.top_level()
+        .prefetch_related("substandards")
+        .order_by("number")
+    )
+
+    # Pull everything in bulk
+    indicator_evals = (
+        IndicatorEvaluation.objects
+        .filter(selfstudy=selfstudy)
+        .select_related("indicator", "indicator_score", "standard")
+    )
+
+    standard_evals = {
+        se.standard_id: se
+        for se in StandardEvaluation.objects.filter(selfstudy=selfstudy)
+    }
+
+    # Index indicator evaluations by standard
+    evals_by_standard = defaultdict(dict)
+    for ev in indicator_evals:
+        evals_by_standard[ev.standard_id][ev.indicator_id] = ev
+
+    report_standards = []
+
+    for standard in standards:
+        standard_block = {
+            "standard": standard,
+            "narrative": standard_evals.get(standard.id),
+            "groups": [],
+        }
+
+        substandards = standard.substandards.all()
+
+        # Case 1: Standard has substandards
+        if substandards.exists():
+            for sub in substandards:
+                indicators = Indicator.objects.filter(
+                    standard=sub, active=True
+                ).order_by("code")
+
+                standard_block["groups"].append({
+                    "standard": sub,
+                    "indicators": [
+                        {
+                            "indicator": ind,
+                            "evaluation": evals_by_standard[sub.id].get(ind.id),
+                        }
+                        for ind in indicators
+                    ],
+                })
+
+        # Case 2: No substandards
+        else:
+            indicators = Indicator.objects.filter(
+                standard=standard, active=True
+            ).order_by("code")
+
+            standard_block["groups"].append({
+                "standard": standard,
+                "indicators": [
+                    {
+                        "indicator": ind,
+                        "evaluation": evals_by_standard[standard.id].get(ind.id),
+                    }
+                    for ind in indicators
+                ],
+            })
+
+        report_standards.append(standard_block)
+
+    # Mission & Objectives (only once, if present)
+    mission = MissionAndObjectives.objects.filter(selfstudy=selfstudy).first()
+
+    return {
+        "mission": mission,
+        "standards": report_standards,
+    }
+
+def get_action_plans_for_report(accreditation):
+    """
+    Returns all action plans for an accreditation,
+    with their steps attached.
+    """
+    action_plans = (
+        ActionPlan.objects
+        .filter(accreditation=accreditation)
+        .select_related('progress_status')
+        .prefetch_related(
+            Prefetch(
+                'actionplansteps_set',
+                queryset=ActionPlanSteps.objects.order_by('number')
+            )
+        )
+        .order_by('number')
+    )
+
+    return action_plans
+
 @login_required(login_url='login')
 def selfstudy_report(request, selfstudy_id):
-
-    selfstudy = SelfStudy.objects.get(id=selfstudy_id)
-
-    # Pre-fetch all related data
-    selfstudy_data = SelfStudy.objects.prefetch_related(
+    selfstudy = SelfStudy.objects.prefetch_related(
         'teams__ss_team__user',
         'standard_evaluations__standard',
         'indicator_evaluations__indicator',
         'objectives',
-        'schoolprofile_set__personnel_data',  # Pre-fetch SelfStudyPersonnelData
-        'schoolprofile_set__personnel_data__position',  # Then the positions for each
+        'schoolprofile_set__two_year_financial_data__data_key',
+        'schoolprofile_set__additional_financial_data__data_key',
+        'schoolprofile_set__personnel_data__position',
         'schoolprofile_set__activities',
         'schoolprofile_set__fte_assignments__assignment',
         'schoolprofile_set__enrollment_data',
@@ -1614,23 +2201,101 @@ def selfstudy_report(request, selfstudy_id):
         'schoolprofile_set__secondary_curriculum__category',
         'schoolprofile_set__support_services',
         'schoolprofile_set__philantrophy_program',
-        'schoolprofile_set__enrollment_data',
-        'accreditation__school',  # Pre-fetch the school from accreditation
+        'accreditation__school',
     ).get(id=selfstudy_id)
 
-    # Global keys (not tied to SS)
-    financial_additional_keys = FinancialAdditionalDataKey.objects.filter(active=True)
-    financial_two_year_keys = FinancialTwoYearDataKey.objects.filter(active=True)
-    fte_keys = FTEAssignmentKey.objects.filter(active=True)
-    action_plan_instructions = ActionPlanInstructions.objects.first()  # if you only ever have one
+    school_profile = selfstudy.schoolprofile_set.first()
+    school = selfstudy.accreditation.school
+    accreditation_school_year = selfstudy.accreditation.school_year
+    previous_school_years = get_previous_school_years(accreditation_school_year.name)
+
+    # --- Financial Data ---
+    two_year_lookup, additional_lookup = get_financial_lookup(school_profile)
+
+    # --- Personnel Data ---
+    personnel_context = get_personnel_data(school_profile)
+    fte_context = get_fte_data(school_profile) if school_profile else None
+    pga_list = get_professional_activities(school_profile)
+
+    # --- Student Data Integration ---
+    valid_grades = school.get_grade_range()
+    student_data, international = get_student_summary(school, previous_school_years)
+    annual_report = AnnualReport.objects.filter(
+        school=school, report_type__code="SR", school_year=accreditation_school_year
+    ).first()
+
+    student_baptism_data, total_baptism_data, percentage_non_sda_home, percentage_baptized = get_baptism_data(
+        school, annual_report, valid_grades
+    )
+
+    levels = school.get_school_type()
+    followup_data_tables = get_followup_data(school, levels, previous_school_years)
+
+    projected_data = StudentEnrollmentData.objects.filter(school_profile=school_profile).first()
+    enrollment_by_grade_and_year, total_by_year, grade_labels = get_enrollment_data(school, previous_school_years)
+
+    #Student Achievement Data
+    achievement_overview = get_student_achievement_overview(school_profile)
+        # Last 3 school years
+    start_year = int(accreditation_school_year.name.split('-')[0])
+    school_year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(3)]
+    school_years_three = SchoolYear.objects.filter(name__in=school_year_names)
+    standardized_test_report = get_standardized_test_report_data(school, school_years_three)
+
+    #Secondary Curriculum Data
+    secondary_curriculum_data = get_secondary_curriculum_report_data(school_profile)
+
+    support_services = get_student_support_services(school_profile)
+    philanthropy_program = get_philanthropy_program(school_profile)
+
+    standards_report = get_selfstudy_standards_report(selfstudy)
+
+    action_plans = get_action_plans_for_report(selfstudy.accreditation)
 
     context = dict(
-        selfstudy=selfstudy, selfstudy_data = selfstudy_data,
-        financial_additional_keys=financial_additional_keys,
-        financial_two_year_keys=financial_two_year_keys,
-        fte_keys=fte_keys,
-        action_plan_instructions=action_plan_instructions,
+        selfstudy=selfstudy,
+        school_profile=school_profile,
+
+        financial_two_year_keys=FinancialTwoYearDataKey.objects.filter(active=True),
+        financial_additional_keys=FinancialAdditionalDataKey.objects.filter(active=True),
+        two_year_lookup=two_year_lookup,
+        additional_lookup=additional_lookup,
+
+        **personnel_context,  # merge all personnel keys
+        fte_context=fte_context,
+        pga_list=pga_list,
+
+        # --- Student Data ---
+        valid_grades=valid_grades,
+        previous_school_years=previous_school_years,
+        enrollment_by_grade_and_year=enrollment_by_grade_and_year,
+        total_by_year=total_by_year,
+        grade_labels=grade_labels,
+        student_data=student_data,
+        international=international,
+        student_baptism_data=student_baptism_data,
+        total_baptism_data=total_baptism_data,
+        percentage_non_sda_home=percentage_non_sda_home,
+        percentage_baptized=percentage_baptized,
+        followup_data_tables=followup_data_tables,
+        projected_data=projected_data,
+
+        student_achievement=achievement_overview,
+        standardized_test_report=standardized_test_report,
+        school_years_three=school_years_three,
+
+        secondary_curriculum=secondary_curriculum_data,
+        support_services=support_services,
+        philanthropy_program=philanthropy_program,
+
+        standards_report=standards_report,
+
+        action_plans=action_plans,
+
         show_actionplan_submenu=True,
     )
 
     return render(request, 'selfstudy/selfstudy_report.html', context)
+
+
+

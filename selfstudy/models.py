@@ -197,6 +197,9 @@ class ProfessionalActivity(models.Model):
     activity = models.CharField(max_length=255)
     improvement = models.TextField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ('school_profile', 'activity')
+
 class FullTimeEquivalency(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="fte_assignments")
     assignment = models.ForeignKey(FTEAssignmentKey, on_delete=models.CASCADE)

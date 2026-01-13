@@ -1,0 +1,49 @@
+<!-- selfstudy_toc_include.html-->
+
+<div class="pdf-toc card card-body report-page page-break" id="toc">
+    <h4>Table of Contents</h4>
+
+    <ul>
+        <li><a href="#cover">Cover</a></li>
+        <li><a href="#ss_team">Coordinating Team</a></li>
+
+        <li>School Profile
+            <ul>
+                <li><a href="#general_info">General Information</a></li>
+                <li><a href="#financial-data">Financial Data</a></li>
+                <li><a href="#personnel-data">Personnel</a></li>
+                <li><a href="#student-data">Student Data</a></li>
+                <li><a href="#student-achievement">Student Achievement</a></li>
+                <li><a href="#secondary-curriculum">Secondary Curriculum</a></li>
+           
+                <li><a href="#student-support-services">Student Support Services</a></li>
+                <li><a href="#philanthropy-programs">Philanthropy Programs</a></li>
+             </ul>
+        </li>
+
+
+        <li>Standards
+            <ul>
+                {% for block in standards_report.standards %}
+                    <li>
+                        <a href="#standard-{{ block.standard.id }}">
+                            Standard {{ block.standard.number|floatformat:"0" }}:
+                            {{ block.standard.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+        
+        <li>
+            <a href="#action-plans">Action Plans</a>
+            <ul>
+            {% for plan in action_plans %}
+                    <li><a href="#action-plan-{{ plan.number }}">
+                        Action Plan {{ plan.number }}
+                    </a></li>
+            {% endfor %}
+            </ul>
+        </li>
+    </ul>
+</div>

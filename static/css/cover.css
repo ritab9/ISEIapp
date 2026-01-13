@@ -13,7 +13,7 @@
   width: 8.5in;          /* fixed width matching printable area */
   min-height: 11in;    /* height minus top/bottom margins */
   margin: 1rem auto;     /* center horizontally with small spacing on screen */
-  padding: 0.25in;
+  padding: 0.50in;
   box-sizing: border-box;
   background: #fff;
   page-break-after: always;

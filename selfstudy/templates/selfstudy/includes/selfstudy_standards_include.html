@@ -1,0 +1,93 @@
+<!-- selfstudy_standads_include.html -->
+
+{% for block in standards_report.standards %}
+
+    <div id="standard-{{ block.standard.id }}" class="card card-body report-page page-break">
+        <h5>
+            Standard {{ block.standard.number|floatformat:"0" }}:
+            {{ block.standard.name }}
+        </h5>
+
+        {% if block.standard.description %}
+            <p class="text-muted">
+                <i>{{ block.standard.description }}</i>
+            </p>
+            <hr>
+        {% endif %}
+
+
+        {# Mission & Objectives only under that standard #}
+        {% if standards_report.mission and block.standard.name == "Mission, Philosophy, Goals, & Objectives" %}
+            <div class="print-section">
+                <h7>Mission Statement:</h7>{{ standards_report.mission.mission_statement|linebreaks|default_if_none:"-" }}
+
+                <h7>Vision Statement:</h7>{{ standards_report.mission.vision_statement|linebreaks|default_if_none:"-" }}
+
+                <h7>School Philosophy:</h7>{{ standards_report.mission.philosophy_statement|linebreaks|default_if_none:"-" }}
+
+                <h7>School-wide Goals and Objectives:</h7>{{ standards_report.mission.school_objectives|linebreaks|default_if_none:"-" }}
+            </div>
+            <hr>
+        {% endif %}
+
+
+        {% for group in block.groups %}
+            {% if group.standard != block.standard %}
+                <div class="print-section">
+                    <h5>{{ group.standard.name }}</h5>
+                    {% if group.standard.description %}
+                        <p class="text-muted"><i>{{ group.standard.description }}</i></p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% for row in group.indicators %}
+                <div class="print-section mt-2">
+                    <p style="background-color: #EAF1F7">
+                        <strong>Indicator: {{ group.standard.number|floatformat:"0"  }}.{{ forloop.counter }}</strong>
+                        {{ row.indicator.description }}
+                    </p>
+
+                    {% if row.indicator.met_description %}
+                        <p class="text-muted">{{ row.indicator.met_description|linebreaks }}</p>
+                    {% endif %}
+
+                    {% if row.evaluation.indicator_score %}
+                        <p class="score-line score-{{ row.evaluation.indicator_score.score|default:0 }}">
+                            <strong>Score:</strong>
+                            {{ row.evaluation.indicator_score.get_score_display|default:"–" }}
+                        </p>
+
+                            <strong>Justification:</strong>
+                            <i>{{ row.evaluation.indicator_score.comment|linebreaksbr }}</i>
+                            {% if row.evaluation.explanation %}
+                                <p>{{ row.evaluation.explanation|linebreaksbr}}</p>
+                            {% else %}
+                                <p class="error">None</p>
+                            {% endif %}
+
+                        {% if row.evaluation.reference_documents %}
+                            <p><strong>References: </strong>{{ row.evaluation.reference_documents|linebreaksbr }}</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="error"><em>No evaluation provided.</em></p>
+                    {% endif %}
+                <hr>
+
+                </div>
+
+            {% endfor %}
+        {% endfor %}
+
+        {% if block.narrative and block.narrative.narrative %}
+            <div class="print-section">
+                <h6>Standard Narrative</h6>
+                {{ block.narrative.narrative|linebreaks }}
+            </div>
+        {% endif %}
+
+            <p class="back-to-toc">
+                <a href="#toc">⬆ Back to Table of Contents</a>
+            </p>
+    </div>
+{% endfor %}

@@ -6,24 +6,72 @@
 {% block title %} SelfStudy Report{% endblock title %}
 
 
-
     {% block vertical_menu_navbar %}
         {% include "selfstudy/includes/vertical_menu_navbar_report.html" %}
     {% endblock %}
 
 
     {% block content %}
-\    <!-- Cover-->
+    <!-- Cover-->
         <div id="cover">
             {% include "selfstudy/includes/selfstudy_cover_include.html" %}
         </div>
 
+    <!-- Table of content for printing -->
+        {% include "selfstudy/includes/selfstudy_toc_include.html" %}
+
+
     <!-- Team members -->
         <div id ="ss_team">
             {% include "selfstudy/includes/selfstudy_coordinatingteam_include.html" %}
+
         </div>
 
+    <!-- School Profile -->
+        <div id="general_info">
+            {% include "selfstudy/includes/selfstudy_schoolprofile_include.html" %}
+        </div>
+
+    <!-- School Profile - Financial Data -->
+        <div id="financial-data">
+            {% include "selfstudy/includes/selfstudy_financial_data_include.html" %}
+        </div>
+
+     <!-- School Profile - Personnel -->
+        <div id="personnel-data">
+            {% include "selfstudy/includes/selfstudy_personnel_include.html" %}
+        </div>
+     <!-- School Profile - Personnel -->
+        <div id="student-data">
+            {% include "selfstudy/includes/selfstudy_student_include.html" %}
+        </div>
+
+     <!-- Student Achievement Data-->
+        <div id="student-achievement">
+            {% include "selfstudy/includes/selfstudy_student_achievement_include.html" %}
+        </div>
+        <div id="secondary-curriculum">
+            {% include "selfstudy/includes/selfstudy_secondary_curriculum_include.html" %}
+        </div>
+
+    <!-- Services and Philanthropy -->
+        <div class="card card-body report-page page-break">
+            <div id="student-support-services">
+                {% include "selfstudy/includes/selfstudy_support_include.html" %}
+            </div>
+            <div id="philanthropy-programs">
+                {% include "selfstudy/includes/selfstudy_philanthropy_include.html" %}
+            </div>
+        </div>
+
+    <!-- Standards -->
+        {% include "selfstudy/includes/selfstudy_standards_include.html" %}
+
+    <!-- Action Plans -->
+        {% include "selfstudy/includes/selfstudy_actionplan_include.html" %}
+
     {% endblock %}
+
 
 
 

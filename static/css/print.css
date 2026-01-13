@@ -59,5 +59,10 @@
     width: 2px !important;
     height: 100% !important;
   }
-
+   .print-section {
+        display: block;             /* important */
+        page-break-inside: avoid !important;  /* legacy */
+        break-inside: avoid !important;       /* modern */
+        overflow: visible;          /* ensure no clipping */
+    }
 }

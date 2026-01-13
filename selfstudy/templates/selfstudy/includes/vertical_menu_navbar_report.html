@@ -1,7 +1,7 @@
 <!-- vertical_menu_navbar_report -->
 
-<div class="noprint" id="vertical-navbar">
-    <nav class="nav flex-column navbar-dark navbar-nav sticky-vertical-navbar">
+<div class="noprint sticky-vertical-navbar">
+    <nav class="nav flex-column navbar-dark navbar-nav">
         <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
             <a href="#cover" class="text-white">Cover Page</a>
         </div>
@@ -10,10 +10,10 @@
         </div>
 
         <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
-            <a href="#school-profile" class="toggle-submenu text-white">School Profile ▾</a>
-            <div class="submenu ms-3 mt-1">
+            <a href="#school-profile" data-toggle="collapse" class="text-white">School Profile ▾ </a>
+            <div id="school-profile" class="submenu collapse ms-3 mt-1">
                 <div class="nav-item mt-1 p-2 bg-ISEIblue3 rounded">
-                    <a href="#general-info" class="text-white">General Information</a>
+                    <a href="#general_info" class="text-white">General Information</a>
                 </div>
                 <div class="nav-item mt-1 p-2 bg-ISEIblue3 rounded">
                     <a href="#school-history" class="text-white">School History</a>
@@ -43,19 +43,33 @@
         </div>
 
         <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
-            <a href="#financial-data" class="text-white">Financial Data</a>
+            <a href="#standards" data-toggle="collapse" class="text-white">Standards ▾ </a>
+            <div id="standards" class="submenu collapse ms-3 mt-1">
+                {% for block in standards_report.standards %}
+                    <div class="nav-item mt-1 p-2 bg-ISEIblue3 rounded">
+                        <a href="#standard-{{ block.standard.id }}" class="text-white">
+                            {{ block.standard.number|floatformat:"0" }}.
+                            {{ block.standard.name }}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
         <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
-            <a href="#personnel" class="text-white">Personnel</a>
-        </div>
-        <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
-            <a href="#student-data" class="text-white">Student Data</a>
-        </div>
-        <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
-            <a href="#evaluations" class="text-white">Evaluations</a>
-        </div>
-        <div class="nav-item mt-1 p-2 bg-ISEIblue2 text-white rounded">
-            <a href="#action-plan" class="text-white">Action Plan</a>
+            <a href="#action-plans-submenu" data-toggle="collapse" class="text-white">
+                Action Plans ▾
+            </a>
+            <div id="action-plans-submenu" class="submenu collapse ms-3 mt-1">
+                {% for plan in action_plans %}
+                <div class="nav-item mt-1 p-2 bg-ISEIblue3 rounded">
+                    <a href="#action-plan-{{ plan.number }}"
+                       class="text-white">
+                        Action Plan {{ plan.number }}
+                    </a>
+                </div>
+                {% endfor %}
+
+            </div>
         </div>
 
 

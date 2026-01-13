@@ -28,10 +28,12 @@ def get_from_dict(dictionary, key):
         return dictionary.get(key)
 
 @register.filter
-def get_item(list_, index):
+def get_item(obj, key):
     try:
-        return list_[index]
-    except IndexError:
+        if isinstance(obj, dict):
+            return obj.get(key)
+        return obj[key]  # works for lists, tuples, and strings
+    except (KeyError, IndexError, TypeError):
         return None
 
 @register.filter

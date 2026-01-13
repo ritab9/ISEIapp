@@ -1,9 +1,12 @@
 
 <div class="card card-body report-page page-break" >
 
-         <h5 class="mt-5 mb-5"> Coordinating Team and Standards Assessment Teams Members </h5>
+    <h5 class="mt-4">
+        Coordinating Team and Standards Assessment Teams Members
+    </h5>
+    <hr>
 
-        {% if selfstudy_data.teams.all %}
+        `{% if selfstudy.teams.all %}
             <table class="table table-sm table-bordered table-striped">
                 <thead class="blue-header">
                     <tr>
@@ -12,13 +15,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for team in selfstudy_data.teams.all %}
+                    {% for team in selfstudy.teams.all %}
                         <tr>
                             <td>{{ team.name }}</td>
                             <td>
                                 {% for member in team.ss_team.all %}
                                     {{ member.user.first_name }}
                                     {{ member.user.last_name }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    <em>No members</em>
                                 {% endfor %}
                             </td>
                         </tr>
@@ -26,6 +31,10 @@
                 </tbody>
             </table>
         {% else %}
-            <p><em>No members assigned to this team.</em></p>
-        {% endif %}
-    </div>
+            <p><em>No teams assigned to this self-study.</em></p>
+        {% endif %}`
+
+     <p class="back-to-toc">
+        <a href="#toc">⬆ Back to Table of Contents</a>
+    </p>
+</div>
