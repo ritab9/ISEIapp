@@ -15,6 +15,13 @@
             {% block first_line_navbar %}
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="nav navbar-nav">
+                        {% if user.visiting_team_membership.exists %}
+                            <li class="nav-item">
+                              <a class="nav-link" href="{% url 'my_accreditations' user.id %}">
+                                Accreditation Site Visit
+                              </a>
+                            </li>
+                        {% endif %}
                     
                         {% if user|in_group:"staff" %}
                             {% block isei_staff_nav %}
@@ -67,13 +74,13 @@
                                 {% endblock %}
                             {% endif %}    
                             
-                            {% if user|in_group:"coordinating_team" %}
-                                {% block coordinating_nav %}
+                            <!-- { % if user|in_group:"coordinating_team" %}
+                                { % block coordinating_nav %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'school_accreditation_dashboard' school_id %}"> Accreditation </a>
+                                        <a class="nav-link" href="{ % url 'school_accreditation_dashboard' school_id %}"> Accreditation </a>
                                     </li>
-                                {% endblock %}
-                            {% endif %}   
+                                { % endblock %}
+                            { % endif %}    -->
                             
                             {% if user|in_group:"test_ordering" %}
                                 {% block test_ordering_nav %}
@@ -85,13 +92,7 @@
                             
                         {% endif %}
                     
-                         {% if user.visiting_team_membership.exists %}
-                            <li class="nav-item">
-                              <a class="nav-link" href="{% url 'my_accreditations' user.id %}">
-                                Accreditation Site Visit
-                              </a>
-                            </li>
-                        {% endif %}
+                         
                     </ul>
                 </div>
             {% endblock first_line_navbar %}
