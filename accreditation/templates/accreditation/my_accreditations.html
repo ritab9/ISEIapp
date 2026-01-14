@@ -33,7 +33,7 @@
                                 <td class="blue-column">{{ accreditation.school.name }}</td>
 
                                 <td class="orange-column">
-                                    {% if category == "scheduled" %}
+                                    {% if accreditation.is_scheduled %}
                                         {% if accreditation.selfstudy %}
                                             <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">
                                                 Edit SelfStudy

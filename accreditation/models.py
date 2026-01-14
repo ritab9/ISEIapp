@@ -86,6 +86,10 @@ class Accreditation(models.Model):
 
         super().save(*args, **kwargs)
 
+    @property
+    def is_scheduled(self):
+        return self.status == self.AccreditationStatus.SCHEDULED
+
 
 class AccreditationApplication(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
