@@ -81,6 +81,17 @@
                                 <td colspan="10">No {{ category|title }} accreditations found.</td>
                             </tr>
                             {% endfor %}
+                            <tr>
+                                 {% for membership in accreditation.visiting_team_membership.all %}
+                                    Team members:
+                                        {{ membership.user.get_full_name }}
+                                        {% if membership.role %}
+                                            – {{ membership.role }}
+                                        {% endif %} <br>
+                                {% empty %}
+                                     No team members assigned
+                                {% endfor %}
+                            </tr>
                         </tbody>
 
                 </table>
