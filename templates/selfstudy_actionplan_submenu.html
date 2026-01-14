@@ -5,7 +5,7 @@
             {% for actionplan in actionplans %}
                 <div class="submenu-item mb-1">
                     <a class="nav-link {% if active_link == '' %}active{% endif %}"
-                        {% if has_submission_date %}
+                        {% if has_submission_date or user_on_team%}
                             href="{% url 'selfstudy_actionplan_readonly' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
                        {% else %}
                             href="{% url 'selfstudy_actionplan' accreditation_id=accreditation_id action_plan_id=actionplan.id  %}">
@@ -14,7 +14,7 @@
                     </a>
                 </div>
             {% endfor %}
-                {% if not has_submission_date %}
+                {% if not has_submission_date and not user_on_team %}
                     <div class="submenu-item mb-1">
                        <a class="nav-link btn-outline-ISEIblue4 {% if active_link == actionplan.id %}active{% endif %}"
                            href="{% url 'selfstudy_actionplan_create' accreditation_id=accreditation_id %}">
