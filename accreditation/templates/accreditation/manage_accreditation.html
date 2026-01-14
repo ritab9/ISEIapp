@@ -75,6 +75,14 @@
                     {% endif %}
                 </div>
                 <div class="col">
+                    {% if form.instance.visiting_team_documents %}
+                        <a href="{{ form.instance.visiting_team_documents }}" target="_blank">Team Documents</a><br>
+                        Change link: {{ form.visiting_team_documents }}
+                    {% else %}
+                        Team Documents link: {{ form.visiting_team_documents }}
+                    {% endif %}
+                </div>
+                <div class="col">
                     {% if form.instance.visiting_team_report %}
                         <a href="{{ form.instance.visiting_team_report }}" target="_blank">Visiting Team Report</a><br>
                         Change link: {{ form.visiting_team_report }}

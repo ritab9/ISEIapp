@@ -9,7 +9,8 @@ class AccreditationForm(forms.ModelForm):
         model = Accreditation
         fields = ['school', 'visit_start_date', 'visit_end_date',
                   'term', 'term_start_date', 'term_end_date', 'term_comment',
-                  'coa_approval_date', 'status', 'evidence_documents_link', 'school_year', 'visiting_team_report']
+                  'coa_approval_date', 'status', 'evidence_documents_link', 'school_year', 'visiting_team_report',
+                  'visiting_team_documents']
         widgets = {
             'visit_start_date': DateInput(attrs={'type': 'date'}),
             'visit_end_date': DateInput(attrs={'type': 'date'}),
@@ -18,6 +19,7 @@ class AccreditationForm(forms.ModelForm):
             'coa_approval_date': DateInput(attrs={'type': 'date'}),
             'term_comment':forms.Textarea(attrs={'rows': 1 }),
             'evidence_documents_link': forms.URLInput(attrs={'class': ''}),
+            'visiting_team_documents':forms.URLInput(attrs={'class': ''}),
             'visiting_team_report': forms.URLInput(attrs={'class': ''})
         }
 
