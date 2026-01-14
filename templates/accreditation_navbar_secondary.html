@@ -3,6 +3,13 @@
 {% load group_tags %}
 
 
+    {% if request.user.visiting_team_membership.exists %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'my_accreditations' request.user.id %}">
+                Visiting Team Resources
+              </a>
+            </li>
+    {% endif %}
     
 
   {% if selfstudy %}
@@ -46,14 +53,6 @@
          <li class="nav-item ">
             <a class="nav-link" href="{% url 'school_annual_visit' %}">Annual Visits </a>   
          </li>
-        
-        {% if request.user.visiting_team_membership.exists %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'my_accreditations' request.user.id %}">
-                My School Evaluation Teams
-              </a>
-            </li>
-        {% endif %}
      {% endif %}
 
     

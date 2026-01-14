@@ -161,7 +161,7 @@ def setup_selfstudy(request, accreditation_id):
     return render(request, 'selfstudy/selfstudy_cover.html', context)
 
 @login_required(login_url='login')
-def selfstudy(request, selfstudy_id):
+def selfstudy(request, selfstudy_id, readonly=False):
     try:
         # Try to retrieve the existing SelfStudy object
         selfstudy = SelfStudy.objects.get(id=selfstudy_id)
@@ -187,7 +187,7 @@ def selfstudy(request, selfstudy_id):
             return redirect('selfstudy', selfstudy_id=selfstudy.id)  # Reload the page after submission
 
         context = dict(selfstudy=selfstudy, standards=standards, active_link="selfstudy",
-                       school_privileges=school_privileges, isei_privileges=isei_privilages )
+                       school_privileges=school_privileges, isei_privileges=isei_privilages, readonly=readonly )
         return render(request, 'selfstudy/selfstudy_cover.html', context)
 
     except SelfStudy.DoesNotExist:
@@ -1546,8 +1546,6 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
         context['other_form'] = other_form
 
     return render(request, 'selfstudy/profile_secondary_curriculum.html', context)
-
-
 
 
 @login_required(login_url='login')

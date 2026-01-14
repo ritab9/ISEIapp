@@ -49,6 +49,7 @@ class Accreditation(models.Model):
 
     evidence_documents_link = models.URLField(null=True, blank=True)
     visiting_team_report = models.URLField(null=True, blank=True)
+    visiting_team_documents = models.URLField(null=True, blank=True)
 
     previous_self_study_link = models.URLField(null=True, blank=True)
 
