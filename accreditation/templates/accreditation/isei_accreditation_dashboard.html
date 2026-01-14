@@ -109,6 +109,9 @@
                             {% if accreditation.evidence_documents_link %}
                                 <a href="{{ accreditation.evidence_documents_link }}" target="_blank" class="small">Evidence Documents</a>
                             {% endif %}
+                            {% if accreditation.visiting_team_documents %}
+                                <a href="{{ accreditation.visiting_team_documents }}" target="_blank" class="small">Team Documents</a>
+                            {% endif %}
                         </td>
                         <td class="blue-column small">
                             {{ accreditation.visit_date_range|default_if_none:"" }}
