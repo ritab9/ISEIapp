@@ -54,3 +54,7 @@ def get_score(score_map, value):
         return score_map[session_id][subject][grade]
     return None
 
+@register.filter
+def is_on_team(accreditation, user):
+    return accreditation.is_user_on_team(user)
+

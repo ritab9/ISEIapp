@@ -3,6 +3,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load group_tags %}
+{% load template_extras %}
 
 
 {% block secondary_navbar %}
@@ -18,12 +19,12 @@
     
   <div class="row">
 
-  {% with has_submission_date=selfstudy.submission_date %}
+    {% with has_submission_date=selfstudy.submission_date user_on_team=selfstudy.accreditation|is_on_team:request.user %}
    <!-- Vertical Navbar -->
       <div id="vertical-navbar" class="col-md-3 col-lg-2">
           {% block vertical_menu_navbar %}
                 {% include "selfstudy/includes/vertical_menu_navbar.html" with profile_submenu=submenu %}
-          {% endblock %}
+          {% endblock vertical_menu_navbar%}
       </div>  
 
 <!-- Main Content -->
@@ -36,9 +37,7 @@
 
   {% endwith %}
   </div>
-
-
-
+    
     <script>
         function toggleNavbar() {
         const navbar = document.getElementById("vertical-navbar");

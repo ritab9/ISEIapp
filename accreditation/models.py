@@ -90,6 +90,12 @@ class Accreditation(models.Model):
     def is_scheduled(self):
         return self.status == self.AccreditationStatus.SCHEDULED
 
+    def is_user_on_team(self, user):
+        return any(
+            m.user_id == user.id and m.active
+            for m in self.visiting_team_membership.all()
+        )
+
 
 class AccreditationApplication(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
