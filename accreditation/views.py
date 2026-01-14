@@ -375,7 +375,7 @@ def my_accreditations(request, user_id):
             "visiting_team_membership",
             queryset=AccreditationVisitingTeam.objects.filter(active=True).select_related("user")
         )
-    ).distinct()
+    ).distinct().order_by('visit_start_date')
 
     team_materials=Resource.objects.filter(name='Accreditation Team Materials').first()
 
