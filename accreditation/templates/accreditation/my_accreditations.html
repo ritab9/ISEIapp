@@ -28,71 +28,60 @@
                     </thead>
                         <tbody class="accreditation-rows">
                             {% for accreditation in accreditations %}
+
                             <tr>
                                 <td class="blue-column">{{ accreditation.school.name }}</td>
+
                                 <td class="orange-column">
                                     {% if category == "scheduled" %}
                                         {% if accreditation.selfstudy %}
-                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SelfStudy</a>
-                                        <!-- { % else %}
-                                            <a href="{ % url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SelfStudy</a-->
+                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">
+                                                Edit SelfStudy
+                                            </a>
                                         {% endif %}
-                                        <p class="small">Due: <strong>{{ accreditation.selfstudy_due_date }}</strong></p>
-                                    {% else %}
-                                        {% if accreditation.selfstudy %}
-                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a>
-                                        {% elif accreditation.previous_self_study_link %}
-                                            <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
-                                        {% else %}N/A
-                                        {% endif %}
+                                        <p class="small">
+                                            Due: <strong>{{ accreditation.selfstudy_due_date }}</strong>
+                                        </p>
                                     {% endif %}
                                 </td>
+
                                 <td class="orange-column">
                                     {% if accreditation.visiting_team_documents %}
-                                        <a href="{{ accreditation.visiting_team_documents }}" target="_blank">Visiting Team Documents
-                                        <br> Evidence Documents
+                                        <a href="{{ accreditation.visiting_team_documents }}" target="_blank">
+                                            Visiting Team Documents<br>Evidence Documents
                                         </a>
                                     {% endif %}
                                 </td>
+
                                 <td class="blue-column small">
                                     {{ accreditation.visit_date_range|default_if_none:"" }}
                                 </td>
-                                <!--td class="blue-column">
-                                    <small>
-                                    { % if not accreditation.coa_approval_date %}
-                                            <b class="error">Recommended</b> term:
-                                    { % endif %}
-                                    { { accreditation.term|default_if_none:"" }}
-                                        <i tabindex="0" class="fas fa-info-circle small" role="button" data-toggle="popover" data-trigger="focus" data-placement="right" data-content="{{ accreditation.term.description }}"></i>
-                                        <br>
-                                    </small>{ { accreditation.term_start_date|default_if_none:"" }}-{ { accreditation.term_end_date|default_if_none:"" }}
-                                </td-->
-
-                                <!--td class="blue-column">
-                                    { % if accreditation.visiting_team_report %}
-                                        <a href="{ { accreditation.visiting_team_report }}" target="_blank">View Report</a>
-                                    { % endif %}
-                                </td-->
-
-
                             </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="10">No {{ category|title }} accreditations found.</td>
-                            </tr>
-                            {% endfor %}
-                            <tr>
-                                 {% for membership in accreditation.visiting_team_membership.all %}
-                                    Team members:
+
+                            <!-- TEAM MEMBERS ROW -->
+                            <tr class="team-members-row">
+                                <td colspan="4" class="small">
+                                    <strong>Team members:</strong><br>
+
+                                    {% for membership in accreditation.visiting_team_membership.all %}
                                         {{ membership.user.get_full_name }}
                                         {% if membership.role %}
                                             – {{ membership.role }}
-                                        {% endif %} <br>
-                                {% empty %}
-                                     No team members assigned
-                                {% endfor %}
+                                        {% endif %}
+                                        <br>
+                                    {% empty %}
+                                        <em>No team members assigned</em>
+                                    {% endfor %}
+                                </td>
                             </tr>
-                        </tbody>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No {{ category|title }} accreditations found.</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+
 
                 </table>
             </div>

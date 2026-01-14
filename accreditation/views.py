@@ -377,6 +377,10 @@ def my_accreditations(request, user_id):
         )
     ).distinct()
 
+    print(accreditations)
+    queryset = AccreditationVisitingTeam.objects.filter(active=True).select_related("user")
+    print(queryset)
+
     team_materials=Resource.objects.filter(name='Accreditation Team Materials').first()
 
     context = dict(
