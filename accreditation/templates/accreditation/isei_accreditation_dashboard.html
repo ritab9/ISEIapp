@@ -108,7 +108,7 @@
                             <a href="{% url 'edit_accreditation' id=accreditation.id %}">Manage Accr.</a><br>
                             {% if accreditation.evidence_documents_link %}
                                 <a href="{{ accreditation.evidence_documents_link }}" target="_blank" class="small">Evidence Documents</a>
-                            {% endif %}
+                            {% endif %}<br>
                             {% if accreditation.visiting_team_documents %}
                                 <a href="{{ accreditation.visiting_team_documents }}" target="_blank" class="small">Team Documents</a>
                             {% endif %}
