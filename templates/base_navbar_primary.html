@@ -18,7 +18,7 @@
                         {% if user.visiting_team_membership.exists %}
                             <li class="nav-item">
                               <a class="nav-link" href="{% url 'my_accreditations' user.id %}">
-                                Accreditation Site Visit
+                                Team Member Access
                               </a>
                             </li>
                         {% endif %}
@@ -67,6 +67,9 @@
                                 {% block teacher_nav %}
                                     <li class="nav-item" >
                                         <a class="nav-link" href="{% url 'teacher_dashboard' user.id %}">Certification </a>
+                                    </li>
+                                     <li class="nav-item ">
+                                        <a class="nav-link" href="{% url 'resources' school_id %}"> Resources </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'contactisei' user.id %}">Contact ISEI</a>

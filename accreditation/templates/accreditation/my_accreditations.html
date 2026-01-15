@@ -9,7 +9,7 @@
         <div class = "row">
             <h6 class="col">Accreditation Site Visits</h6>
             <div class="col d-flex justify-content-end">
-                <a class="btn btn-sm btn-ISEIblue4 mb-1" href="{{ team_materials.link }}" target="_blank">{{ team_materials.name }}</a>
+                <a class="btn btn-sm btn-ISEIblue4 mb-1" href="{{ team_materials.link }}" target="_blank">Team Member Materials</a>
             </div>
         </div>
 
@@ -36,9 +36,9 @@
                                     {% if accreditation.is_scheduled %}
                                         {% if accreditation.selfstudy %}
                                             <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">
-                                               SelfStudy (Sections)
+                                               SelfStudy View
                                             </a> <br>
-                                            <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy One Document (Printable)</a>
+                                            <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Printable (PDF)</a>
 
                                         {% endif %}
                                         <p class="small">
@@ -50,7 +50,7 @@
                                 <td class="orange-column">
                                     {% if accreditation.visiting_team_documents %}
                                         <a href="{{ accreditation.visiting_team_documents }}" target="_blank">
-                                            Visiting Team Documents<br>Evidence Documents
+                                            Site Visit Documents<br>Evidence Documents
                                         </a>
                                     {% endif %}
                                 </td>
