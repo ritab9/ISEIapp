@@ -36,8 +36,10 @@
                                     {% if accreditation.is_scheduled %}
                                         {% if accreditation.selfstudy %}
                                             <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">
-                                               SelfStudy
-                                            </a>
+                                               SelfStudy (Sections)
+                                            </a> <br>
+                                            <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy One Document (Printable)</a>
+
                                         {% endif %}
                                         <p class="small">
                                             Due: <strong>{{ accreditation.selfstudy_due_date }}</strong>
