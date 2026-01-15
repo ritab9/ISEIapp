@@ -1,12 +1,13 @@
 <!-- selfstudy_personnel_include.html -->
-<div class="card card-body report-page page-break">
+<div class="page page-break">
     <h5 class="mt-4 mb-4">D. Personnel Data</h5>
 
     {% if admin_academic_dean or vocational_instructors or non_instructional %}
 
         <!-- 1. Administrative / Academic Instructors / Deans -->
-        <h6 class="mt-3 mb-2">1. Administrative, Academic Instructors, Deans</h6>
-        <table class="table table-sm table-striped table-bordered">
+        <div class="keep-together">
+            <h6 class="mt-3 mb-2">1. Administrative, Academic Instructors, Deans</h6>
+            <table class="table table-sm table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -40,11 +41,13 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         <hr>
 
         <!-- 2. Vocational Instructors -->
-        <h6 class="mt-3 mb-2">2. Vocational Instructors</h6>
-        <table class="table table-sm table-striped table-bordered">
+        <div class="keep-together">
+            <h6 class="mt-3 mb-2">2. Vocational Instructors</h6>
+            <table class="table table-sm table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -78,11 +81,13 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         <hr>
 
         <!-- 3. Non-instructional Staff -->
-        <h6 class="mt-3 mb-2">3. Non-instructional Staff</h6>
-        <table class="table table-sm table-striped table-bordered">
+        <div class="keep-together">
+            <h6 class="mt-3 mb-2">3. Non-instructional Staff</h6>
+            <table class="table table-sm table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -110,11 +115,12 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         <hr>
 
-        <h6>4. Additional Staff Data</h6>
-
-        <h6 class="mt-3 mb-2">a. FTE Assignments</h6>
+        <div class="keep-together">
+            <h6>4. Additional Staff Data</h6>
+            <h6 class="mt-3 mb-2">a. FTE Assignments</h6>
 
             {% if fte_context and fte_context.fte_list %}
                 <table class="table table-sm table-striped table-bordered">
@@ -145,18 +151,17 @@
                         </tr>
                     </tfoot>
                 </table>
-
-
                     <h6>b. Ratio of Students to FTE Instructional Staff: {{ fte_context.fte_student_ratio }}</h6>
-
 
             {% else %}
                 <p><em>No FTE data available.</em></p>
             {% endif %}
+        </div>
 
         <!-- 4. Degree & Gender Summary -->
-        <h6 class="mt-3 mb-2">c. Summary of Academic Preparation</h6>
-        <table class="table table-sm table-striped table-bordered">
+        <div class="keep-together">
+            <h6 class="mt-3 mb-2">c. Summary of Academic Preparation</h6>
+            <table class="table table-sm table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Degree</th>
@@ -176,52 +181,56 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         <hr>
 
         <!-- 5. Staff Retention Data -->
-        <h6 class="mt-3 mb-2">d. Staff Retention Data</h6>
-        <table class="table table-sm table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>School Year</th>
-                    <th>Total Staff</th>
-                    <th>Did Not Return</th>
-                    <th>Retention Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in retention_data %}
+        <div class="keep-together">
+            <h6 class="mt-3 mb-2">d. Staff Retention Data</h6>
+            <table class="table table-sm table-striped table-bordered">
+                <thead>
                     <tr>
-                        <td>{{ row.year }}</td>
-                        <td>{{ row.total|default:"–" }}</td>
-                        <td>{{ row.not_returned|default:"–" }}</td>
-                        <td>
-                            {% if row.retention is not None %}
-                                {{ row.retention }}%
-                            {% else %}
-                                –
-                            {% endif %}
-                        </td>
+                        <th>School Year</th>
+                        <th>Total Staff</th>
+                        <th>Did Not Return</th>
+                        <th>Retention Rate</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for row in retention_data %}
+                        <tr>
+                            <td>{{ row.year }}</td>
+                            <td>{{ row.total|default:"–" }}</td>
+                            <td>{{ row.not_returned|default:"–" }}</td>
+                            <td>
+                                {% if row.retention is not None %}
+                                    {{ row.retention }}%
+                                {% else %}
+                                    –
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        <!-- Status Legend -->
-        <div class="legend mt-2">
-            <strong>Status Legend:</strong>
-            <span><strong>FT</strong> - Full Time</span> |
-            <span><strong>PT</strong> - Part Time</span> |
-            <span><strong>VO</strong> - Volunteer</span> |
-            <span><strong>LO</strong> - Leave of Absence</span>
+            <!-- Status Legend -->
+            <div class="legend mt-2">
+                <strong>Status Legend:</strong>
+                <span><strong>FT</strong> - Full Time</span> |
+                <span><strong>PT</strong> - Part Time</span> |
+                <span><strong>VO</strong> - Volunteer</span> |
+                <span><strong>LO</strong> - Leave of Absence</span>
+            </div>
         </div>
+
 
     {% else %}
         <p><em>No personnel data available.</em></p>
     {% endif %}
 
-
-    <h6 class="mt-3 mb-2">5. Professional Growth Activities</h6>
+    <div class="keep-together">
+        <h6 class="mt-3 mb-2">5. Professional Growth Activities</h6>
         <p>List any significant professional growth activities provided for your teachers that have improved instructional methods in the past two years.</p>
 
         {% if pga_list %}
@@ -246,8 +255,9 @@
         {% else %}
             <p><em>No professional growth activities recorded.</em></p>
         {% endif %}
+    </div>
 
     <p class="back-to-toc">
-        <a href="#toc">⬆ Back to Table of Contents</a>
+        <a href="#toc">⬆ TOC</a>
     </p>
 </div>

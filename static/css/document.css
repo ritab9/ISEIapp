@@ -1,0 +1,76 @@
+/* =========================
+   Document Page System
+========================= */
+
+/* General page setup for screen and print */
+@page {
+    size: letter;
+    margin: 0;  /* remove printer default margins */
+}
+
+/* =========================
+   Page Container
+========================= */
+.page {
+    width: 8.5in;             /* full letter width */
+    min-height: 11in;          /* full letter height */
+    margin: 1rem auto;         /* horizontal centering on screen */
+    padding: 0.75in;
+    padding-bottom: 1.2in;     /* reserve space for footer */
+    box-sizing: border-box;
+    background: #fff;
+    position: relative;
+    page-break-after: always;  /* force new page after each .page */
+    display: block;
+}
+
+/* Screen preview style */
+@media screen {
+    .page {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+}
+
+/* =========================
+   Back to TOC Footer
+========================= */
+.page .back-to-toc {
+    position: absolute;       /* place at bottom of page */
+    bottom: 0.75in;           /* matches page padding */
+    width: 100%;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #113a67;
+    margin: 0;
+}
+
+/* =========================
+   Keep Together Sections
+========================= */
+.keep-together {
+    display: block;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    /* Optional spacing if forced to new page */
+    padding-top: 0.5in;
+}
+
+/* =========================
+   Table Styling (common)
+========================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    font-size: 10pt;
+    border: 1px solid #ccc;
+    padding: 0.25em 0.5em;
+}
+
+/* Optional helper for TOC links on screen */
+.back-to-toc a {
+    text-decoration: underline;
+    color: #113a67;
+}

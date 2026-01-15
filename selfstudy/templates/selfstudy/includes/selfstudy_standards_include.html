@@ -2,7 +2,7 @@
 
 {% for block in standards_report.standards %}
 
-    <div id="standard-{{ block.standard.id }}" class="card card-body report-page page-break">
+    <div id="standard-{{ block.standard.id }}" class="page page-break">
         <h5>
             Standard {{ block.standard.number|floatformat:"0" }}:
             {{ block.standard.name }}
@@ -18,7 +18,7 @@
 
         {# Mission & Objectives only under that standard #}
         {% if standards_report.mission and block.standard.name == "Mission, Philosophy, Goals, & Objectives" %}
-            <div class="print-section">
+            <div class="keep-together">
                 <h7>Mission Statement:</h7>{{ standards_report.mission.mission_statement|linebreaks|default_if_none:"-" }}
 
                 <h7>Vision Statement:</h7>{{ standards_report.mission.vision_statement|linebreaks|default_if_none:"-" }}
@@ -33,7 +33,7 @@
 
         {% for group in block.groups %}
             {% if group.standard != block.standard %}
-                <div class="print-section">
+                <div class="keep-together">
                     <h5>{{ group.standard.name }}</h5>
                     {% if group.standard.description %}
                         <p class="text-muted"><i>{{ group.standard.description }}</i></p>
@@ -42,7 +42,7 @@
             {% endif %}
 
             {% for row in group.indicators %}
-                <div class="print-section mt-2">
+                <div class="keep-together">
                     <p style="background-color: #EAF1F7">
                         <strong>Indicator: {{ group.standard.number|floatformat:"0"  }}.{{ forloop.counter }}</strong>
                         {{ row.indicator.description }}
@@ -86,14 +86,14 @@
         {% endfor %}
 
         {% if block.narrative and block.narrative.narrative %}
-            <div class="print-section">
+            <div class="keep-together">
                 <h6>Standard Narrative</h6>
                 {{ block.narrative.narrative|linebreaks }}
             </div>
         {% endif %}
 
             <p class="back-to-toc">
-                <a href="#toc">⬆ Back to Table of Contents</a>
+                <a href="#toc">⬆ TOC</a>
             </p>
     </div>
 {% endfor %}

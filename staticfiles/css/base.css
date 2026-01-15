@@ -11,8 +11,15 @@
 @import url('misc.css');
 @import url('loadspinner.css');
 @import url('colors.css');
-@import url('cover.css');
 @import url('score_coloring.css');
+
+@import url('cover.css');
+@import url('document.css');
+@import url('components.css');
+@import url('print.css');
+
+
+
 
 
 

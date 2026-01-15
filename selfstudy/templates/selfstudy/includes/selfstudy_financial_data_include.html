@@ -1,7 +1,7 @@
 {% load humanize %}
 {% load template_extras %}
 
- <div class="card card-body report-page page-break">
+ <div class="page page-break">
 
     <h5 class="mt-4">C. Financial History</h5>
     <hr>
@@ -59,9 +59,9 @@
             <p>{{ school_profile.financial_comment }}</p>
         {% endif %}
 
-    <h6 class="mt-5">Additional Financial Information</h6>
-
-    <table class="table table-sm table-bordered table-striped">
+    <div class="keep-together">
+        <h6 class="mt-5">Additional Financial Information</h6>
+        <table class="table table-sm table-bordered table-striped">
         <thead class="blue-header">
             <tr>
                 <th>Item</th>
@@ -85,8 +85,9 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
 
  <p class="back-to-toc">
-        <a href="#toc">⬆ Back to Table of Contents</a>
+        <a href="#toc">⬆ TOC</a>
     </p>
  </div>

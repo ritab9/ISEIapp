@@ -1,0 +1,19 @@
+/* Components.css */
+
+.section-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 0.3in;
+}
+
+.section {
+  margin-bottom: 0.5in;
+}
+
+/* Prevent ugly breaks */
+.keep-together {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+
