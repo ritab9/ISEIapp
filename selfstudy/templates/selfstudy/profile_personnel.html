@@ -33,10 +33,12 @@
                         A lot of the information on this page is filled out based on the {{ ar_school_year }} Employee Report.
                         If changes need to be made:
                         <ul>
-                            <li>Make the changes in <a class="font-weight-bold" href="{% url 'employee_report' arID %}">{{ ar_school_year }} Employee Annual Report </a></li>
+                            <li>Make the changes in <a class="font-weight-bold" href="{% url 'employee_report' arID %}" {% if user_on_team %}disabled{% endif %}>{{ ar_school_year }} Employee Annual Report </a></li>
                             <li>
                                 After making changes please update this page's information by clicking:
-                                    <button type="submit" name="import_personnel" value="1" class="btn btn-xs btn-outline-ISEIblue4 ">
+                                    <button type="submit" name="import_personnel" value="1" class="btn btn-xs btn-outline-ISEIblue4"
+                                    {% if user_on_team %}disabled{% endif %}
+                                    >
                                         Update Personnel Information from {{ ar_school_year }} Employee Report
                                     </button>
                             </li>
@@ -49,7 +51,7 @@
 
                             {% if arID %}
                                 To get started with this report import the available information from
-                                    <a class="font-weight-bold" href="{% url 'employee_report' arID %}"> {{ ar_school_year }} Employee Report </a> by clicking the yellow button below.
+                                    <a class="font-weight-bold" href="{% url 'employee_report' arID %}" {% if user_on_team %}disabled{% endif %}> {{ ar_school_year }} Employee Report </a> by clicking the yellow button below.
                                 If this is not your current school year's report, or it is not up to date, please complete/update the Employee Report for this school year before proceeding.
 
                                 <div class="" style="text-align: right;">

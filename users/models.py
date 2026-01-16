@@ -366,3 +366,10 @@ class Address(models.Model):
     def __str__(self):
         return self.city + "," + self.country.name
 
+
+
+@property
+def has_active_visiting_team(self):
+    return self.visiting_team_membership.filter(active=True).exists()
+
+User.add_to_class("has_active_visiting_team", has_active_visiting_team)

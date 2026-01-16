@@ -108,9 +108,11 @@
                                         <th>In 3 Years</th>
                                     </thead>
                                     <tbody>
-                                        <td>{{ projected_enrollment_form.projected_enrollment_next_year }}</td>
-                                        <td>{{ projected_enrollment_form.projected_enrollment_2_years }}</td>
-                                        <td>{{ projected_enrollment_form.projected_enrollment_3_years }}</td>
+                                        <tr>
+                                        {% for field in projected_enrollment_form %}
+                                            <td>{{ field }}</td>
+                                        {% endfor %}
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

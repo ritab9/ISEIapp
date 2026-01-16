@@ -15,7 +15,7 @@
             {% block first_line_navbar %}
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="nav navbar-nav">
-                        {% if user.visiting_team_membership.exists %}
+                        {% if user.has_active_visiting_team %}
                             <li class="nav-item">
                               <a class="nav-link" href="{% url 'my_accreditations' user.id %}">
                                 Team Member Access

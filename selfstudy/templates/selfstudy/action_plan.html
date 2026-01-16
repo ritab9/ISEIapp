@@ -76,7 +76,7 @@
                 </table>
             </div>
 
-            {% if not has_submission_date %}
+            {% if not has_submission_date and not readonly%}
             <div class="card card-body ">
                 <div style="width: auto; text-align: center;">
                     <button id="end-save-btn" type="submit" class="btn btn-sm btn-ISEIyellow">Save Changes</button>
