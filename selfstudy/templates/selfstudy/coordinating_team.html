@@ -17,7 +17,7 @@
             <thead class="blue-header2">
                 <th>Team</th>
                 <th>Members</th>
-                {% if privileges and not has_submission_date %}
+                {% if privileges and not has_submission_date and not user_on_team %}
                     <th class = noprint>Add/Edit Member List</th>
                 {% endif %}
             </thead>
@@ -32,7 +32,7 @@
                                 -
                             {% endfor %}
                         </td>
-                        {% if privileges and not has_submission_date%}
+                        {% if privileges and not has_submission_date and not user_on_team%}
                             <td class="noprint">
                             <a href="{% url 'add_coordinating_team_members' selfstudy_id=selfstudy.id team_id=team.id %}">
                                 {% if team.ss_team.all %} Edit {% else %}<span class="error">Add</span> {% endif %}
@@ -44,7 +44,7 @@
         </table>
 
         <!-- Button to open the email review page -->
-        {% if privileges and not has_submission_date%}
+        {% if privileges and not has_submission_date and not user_on_team %}
             <div class="noprint">
                 <a href="{% url 'send_email_selfstudy_coordinating_team' selfstudy_id=selfstudy.id %}">
                     <button class="btn btn-sm btn-ISEIblue4">Send Invitation Emails</button>
