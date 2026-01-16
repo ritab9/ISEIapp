@@ -10,8 +10,16 @@
     <!-- TOGGLE BUTTON -->
     <button class="btn btn-link text-ISEIyellow p-0 m-0 align-baseline mr-lg-5" onclick="toggleNavbar()">
       ☰ Menu
-    </button>    
-    {% include 'accreditation_navbar_secondary.html' %}
+    </button>
+       
+    {% if selfstudy %}
+      <li class="nav-item">
+          <a class="nav-link active"
+           href="{% url 'selfstudy' selfstudy.id %}">
+              SelfStudy {{ selfstudy.accreditation.school }} <small>({{ selfstudy.accreditation.visit_date_range|default_if_none:"" }})</small>
+        </a>
+      </li>
+  {% endif %}
 {% endblock secondary_navbar %}
 
 
