@@ -115,7 +115,6 @@ def finalize_order(request, order_id):
 
 #resources page
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['staff', 'principal', 'registrar', 'test_ordering'])
 def resources(request, school_id=None):
 
     accreditation_resources= Resource.objects.filter(type__name='Accreditation')
