@@ -142,6 +142,9 @@ def student_report(request, arID):
                                 "New TN Student registered",
                                 f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
                                 f"has been registered on {instance.registration_date}\n"
+                                f" Address {instance.address}\n"
+                                f" Birthdate {instance.birth_date}\n"
+                                f" Age {instance.age}\n"
                                 f"The student is from {instance.TN_county or 'Unknown County'} "
                             )
 

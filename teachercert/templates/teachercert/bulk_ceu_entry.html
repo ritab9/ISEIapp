@@ -10,9 +10,11 @@
 {% block content %}
     <div class="card card-body align-content-end">
         <div class="col ">
+            {% if school_year.id and school.id %}
         <a href="{% url 'bulk_ceu_edit' school_year.id school.id %}" class="btn btn-sm btn-outline-ISEIblue4">
           View/Edit Existing Group CEUs
         </a>
+            {% endif %}
         </div>
     </div>
     <div class="card card-body">
