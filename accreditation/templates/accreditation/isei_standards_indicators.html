@@ -24,7 +24,7 @@
 
     <div class="row">
 
-        <div class="my-4 col-auto" style="position: sticky; top: 1rem; align-self: flex-start;">
+        <div class="my-4 col-auto noprint" style="position: sticky; top: 1rem; align-self: flex-start;">
             {% if not school %}
 
                 <form method="get" class="mb-3">
@@ -66,21 +66,37 @@
         </div>
 
         <div class="col">
-            <div class="report-page">
-                <img src="{% static 'appfiles/ISEIcolored.png' %}" alt="ISEI Logo" class="logo ml-4">
-                <div class="vertical-text">ISEI EDUCATION ASSOCIATION</div>
-                <div class="vertical-line-light"></div>
-                <div class="vertical-line-dark"></div>
+            <div class="cover-page page">
+                <!-- Vertical title -->
+                  <div class="vertical-title">ISEI EDUCATION ASSOCIATION</div>
 
-                <div class="title">
-                    Accreditation<br>
-                    Standards<br> &amp;<br>
-                    Indicators
-                </div>
+                  <!-- Double vertical lines -->
+                  <div class="vertical-lines">
+                    <div class="dark"></div>
+                    <div class="light"></div>
+                  </div>
 
-                <div class="version">Version 2.1</div>
+                  <!-- Logo -->
+                  <img src="{% static 'appfiles/ISEIcolored.png' %}"
+                       alt="ISEI Logo"
+                       class="cover-logo">
+
+                <!-- Main centered content -->
+              <div class="content">
+                <h1 class="">
+                  ISEI Education Association
+                </h1>
+                  <hr>
+
+                <h1>    Standards<br>
+                            &<br>
+                        Indicators
+                </h1>
+
+              </div>
 
                 <div class="footer">
+                    <div class="version align-content-end">Version 2.1</div>
                     P.O. Box 946 • Dayton, TN 37321, USA
                 </div>
             </div>
