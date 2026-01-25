@@ -86,7 +86,7 @@
                 <h1 class="">
                   ISEI Education Association
                 </h1>
-                  <hr>
+                <br> <br><br>
 
                 <h1>    Standards<br>
                             &<br>
@@ -105,7 +105,8 @@
 
                     {% for standard in standards %}
                         <hr class="page-break-before">
-                        <h6>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h6>
+                        <hr>
+                        <h5>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h5>
                         <hr>
                         <p class="text-ISEIblue4"> {{ standard.description }}</p>
                         <hr>

@@ -60,7 +60,11 @@
   }
 
   /* Ensure page breaks for helpers if needed */
-  .page-break-before { break-before: page; }
+  .page-break-before {
+      break-before: page;
+      page-break-before: always;
+      padding-top: 1.5rem
+  }
   .page-break-after  { break-after: page; }
 
   /* Optional: TOC lists print-friendly */
