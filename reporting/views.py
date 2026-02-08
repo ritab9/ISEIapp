@@ -2365,7 +2365,7 @@ def longitudinal_enrollment(request, individual_school_name=None):
         ).select_related("school", "year")
 
         # GLOBAL DISPLAY RANGE
-        grade_range = list(range(1, 13)) + [14, 15, 16]
+        grade_range = list(range(-2, 13)) + [14, 15, 16]
 
     else:
         records = LongitudinalEnrollment.objects.filter(
