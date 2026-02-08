@@ -2321,33 +2321,62 @@ def longitudinal_enrollment(request, individual_school_name=None):
         schools = School.objects.filter(active=True, name=individual_school_name)
         individual_school = schools.first()
 
+    # ======================
+    # GENERATE DATA FROM OPENING REPORTS
+    # ======================
     if request.method == "POST":
         school_years = SchoolYear.objects.all().order_by('name')
 
         for school_year in school_years:
             for school in schools:
                 allowed_grades = school.get_grade_range()
-                annual_report = AnnualReport.objects.filter(school_year=school_year, school=school,
-                                             report_type=ReportType.objects.get(code="SR")).first()
+
+                annual_report = AnnualReport.objects.filter(
+                    school_year=school_year,
+                    school=school,
+                    report_type=ReportType.objects.get(code="SR")
+                ).first()
+
                 if annual_report:
-                    student_counts = (annual_report.students.filter(grade_level__in=allowed_grades)
-                                      .values("grade_level").annotate(count=Count("id")))
-                    # Create or update EnrollmentRecord for each grade level
+                    student_counts = (
+                        annual_report.students
+                        .filter(grade_level__in=allowed_grades)
+                        .values("grade_level")
+                        .annotate(count=Count("id"))
+                    )
+
                     for entry in student_counts:
                         grade = entry["grade_level"]
                         count = entry["count"]
 
-                        LongitudinalEnrollment.objects.update_or_create(school=school,year=school_year,grade=grade, defaults={"enrollment_count": count},)
+                        LongitudinalEnrollment.objects.update_or_create(
+                            school=school,
+                            year=school_year,
+                            grade=grade,
+                            defaults={"enrollment_count": count},
+                        )
 
-    # Fetch enrollment data for display
+    # ======================
+    # FETCH DATA FOR DISPLAY
+    # ======================
     if not individual_school_name:
-        records = LongitudinalEnrollment.objects.filter(school__active=True).select_related("school", "year")
+        records = LongitudinalEnrollment.objects.filter(
+            school__active=True
+        ).select_related("school", "year")
+
+        # GLOBAL DISPLAY RANGE
         grade_range = list(range(1, 13)) + [14, 15, 16]
+
     else:
-        records =LongitudinalEnrollment.objects.filter(school__name=individual_school_name).select_related("school", "year")
-        grade_range=individual_school.get_grade_range()
+        records = LongitudinalEnrollment.objects.filter(
+            school__name=individual_school_name
+        ).select_related("school", "year")
 
+        grade_range = individual_school.get_grade_range()
 
+    # ======================
+    # BUILD DATA STRUCTURE
+    # ======================
     enrollment_data_dict = {}
 
     for record in records:
@@ -2356,52 +2385,71 @@ def longitudinal_enrollment(request, individual_school_name=None):
         grade = record.grade
         enrollment_count = record.enrollment_count
 
-        # Ensure the key (school_name) exists in the dictionary
-        if school_name not in enrollment_data_dict:
-            enrollment_data_dict[school_name] = {}
+        enrollment_data_dict.setdefault(school_name, {})
+        enrollment_data_dict[school_name].setdefault(
+            year_name,
+            {g: 0 for g in grade_range}
+        )
 
-        # Ensure each year within the school has a dictionary of grade counts (1-12)
-        if year_name not in enrollment_data_dict[school_name]:
-            # Initialize counts for all grades (1-12) as 0
-            enrollment_data_dict[school_name][year_name] = {grade: 0 for grade in grade_range}
-
-        # Update the count for the specific grade for that school-year combination
         enrollment_data_dict[school_name][year_name][grade] = enrollment_count
 
-        # Convert the dictionary to a list of dicts for template rendering
+    # ======================
+    # CONVERT TO TEMPLATE FORMAT + SORT YEARS
+    # ======================
     enrollment_data = []
+
     for school_name, year_data in sorted(enrollment_data_dict.items()):
-        # Sort the years by actual school year start (e.g., 2020 from "2020-2021")
         sorted_year_data = dict(
             sorted(
                 year_data.items(),
-                key=lambda item: int(item[0].split("-")[0]),  # assumes "YYYY-YYYY" format
-                reverse = True
+                key=lambda item: int(item[0].split("-")[0]),
+                reverse=True
             )
         )
+
         enrollment_data.append({
             "school_name": school_name,
             "year_data": sorted_year_data,
         })
 
+    # ======================
+    # CALCULATE TOTALS (🔥 FIXED)
+    # ======================
     for school in enrollment_data:
-        for year_name, grade_counts in school["year_data"].items():
-            total_enrollment = sum(grade_counts.values())
-            school["year_data"][year_name]["total_enrollment"] = total_enrollment
+        for year_name in list(school["year_data"].keys()):
+            grade_counts = school["year_data"][year_name]
 
+            # Only sum numeric grade keys (avoid metadata pollution)
+            real_grades = [g for g in grade_counts.keys() if isinstance(g, int)]
 
-    # Create the display labels from the choices
-    # Create a mapping from value to label
+            # Make sure we only sum displayed grades
+            real_grades = [g for g in real_grades if g in grade_range]
+
+            total_enrollment = sum(grade_counts.get(g, 0) for g in real_grades)
+
+            grade_counts["total_enrollment"] = total_enrollment
+
+    # ======================
+    # HEADERS & COLORS
+    # ======================
     GRADE_LABELS = dict(Student.GRADE_LEVEL_CHOICES)
-    grade_headers = [GRADE_LABELS[g] for g in grade_range]
+    grade_headers = [GRADE_LABELS.get(g, str(g)) for g in grade_range]
 
-    colors = ["dark-blue", "muted-orange", "muted-green",  "text-dark", "text-danger", "medium-blue",
-              "text-success", "text-primary", "muted-orange", "muted-green", "text-dark", "text-danger"]
+    colors = [
+        "dark-blue", "muted-orange", "muted-green", "text-dark", "text-danger",
+        "medium-blue", "text-success", "text-primary", "muted-orange",
+        "muted-green", "text-dark", "text-danger"
+    ]
 
-    context=dict(enrollment_data=enrollment_data, grade_range=grade_range, grade_headers=grade_headers, colors=colors,
-                 individual_school_name=individual_school_name)
+    context = dict(
+        enrollment_data=enrollment_data,
+        grade_range=grade_range,
+        grade_headers=grade_headers,
+        colors=colors,
+        individual_school_name=individual_school_name
+    )
+
     return render(request, 'longitudinal_enrollment.html', context)
-
 
 def add_enrollment(request, school_name=None, year_name=None):
     school = None
