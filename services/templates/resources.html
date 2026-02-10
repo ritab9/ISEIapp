@@ -8,18 +8,32 @@
 {% block content %}
 
 
-    <div class="card mt-2 col-auto">
-        <h6 class="ml-2 mt-2 mb-2">Member Resources</h6>
-        <p class="text-muted ml-5">Find essential documents, directories, and forms below.</p>
-    </div>
-    {% if temporary %}
-        <div class="card mt-2 col-auto">
-            <h6 class="ml-2 mt-2 mb-2">Temporary Resources</h6>
-            {% for resource in temporary %}
-                <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
-            {% endfor %}
+        <div class="card mt-2">
+            <h6 class="ml-2 mt-2 mb-2">Member Resources</h6>
+            <p class="text-muted ml-5">Find essential documents, directories, and forms below.</p>
         </div>
-    {% endif %}
+
+        {% if temporary %}
+
+            <div class="card h-100 shadow-sm mt-2">
+
+                <div class="card-header bg-ISEIblue2" style="color: white;">
+                    <i class="bi bi-clock-history"></i>  <strong>Temporary Resources</strong>
+                    <div class="text-white-50">*Documents available for a limited time (e.g., conference forms, special initiatives)</div>
+                </div>
+                <div class="card-body">
+                <ul>
+                    {% for resource in temporary %}
+                        <div class="mt-2">
+                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                        </div>
+                    {% endfor %}
+                </ul>
+                </div>
+            </div>
+
+        {% endif %}
+
 
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-2">
