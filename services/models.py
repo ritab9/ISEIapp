@@ -39,6 +39,7 @@ class TestOrder(models.Model):
     testing_dates=models.CharField(max_length=255, verbose_name="Testing dates")
     order_date=models.DateField(verbose_name="Order date")
     no_students_testing=models.PositiveSmallIntegerField(verbose_name="Number of students testing")
+    no_grades_testing=models.PositiveSmallIntegerField(verbose_name="Number of grade levels testing", default=1)
     sub_total=models.DecimalField(max_digits=6, decimal_places=2,verbose_name="Sub total")
     shipping=models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="Shipping")
     total=models.DecimalField(max_digits=6, decimal_places=2,null=True, blank=True, verbose_name="Total")

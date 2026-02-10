@@ -4,10 +4,12 @@ from .models import *
 class TestOrderForm(forms.ModelForm):
     class Meta:
         model = TestOrder
-        fields = ['testing_dates', 'order_date', 'no_students_testing', 'sub_total', 'shipping', 'total']
+        fields = ['testing_dates', 'order_date', 'no_students_testing', 'no_grades_testing','sub_total', 'shipping', 'total']
         widgets = {
             'order_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
             'no_students_testing': forms.NumberInput(attrs={'style': 'width:100px;'}),
+            'no_gradess_testing': forms.NumberInput(attrs={'style': 'width:100px;'}),
+
         }
 
 
