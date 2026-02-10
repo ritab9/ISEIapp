@@ -127,6 +127,8 @@ def resources(request, school_id=None):
     services = Resource.objects.filter(type__name='Service').order_by('name')
     misc = Resource.objects.filter(type__name='Misc')
 
+    temporary = Resource.objects.filter(type__name='Temporary').order_by('name')
+
     professional_growth_plan=Resource.objects.filter(name='Professional Growth Plan Template').first()
 
 
@@ -142,7 +144,8 @@ def resources(request, school_id=None):
                  services=services,
                  school_id=school_id,
                  misc = misc,
-                 professional_growth_plan=professional_growth_plan)
+                 professional_growth_plan=professional_growth_plan,
+                 temporary=temporary)
 
     return render(request, 'resources.html', context)
 
