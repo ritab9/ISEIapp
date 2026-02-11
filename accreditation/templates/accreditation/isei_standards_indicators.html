@@ -111,7 +111,13 @@
                         <p class="text-ISEIblue4"> {{ standard.description }}</p>
                         <hr>
                         {% for substandard in standard.substandards.all %}
-                            <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
+                            <hr>
+                            <br> <br>
+                                <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
+                                <hr>
+                                <p class="text-ISEIblue4"> {{ substandard.description }}</p>
+                                <hr>
+
 
                             {% for indicator in substandard.filtered_indicators %}
                                 <div class="keep-together">
