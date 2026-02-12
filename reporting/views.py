@@ -2474,8 +2474,11 @@ def add_enrollment(request, school_name=None, year_name=None):
             if enrollment_count is not None:
                 enrollment_count = int(enrollment_count or 0)
                 if enrollment_count == 0:
-                    # Skip empty or zero entries — optionally, also delete existing ones
+                    LongitudinalEnrollment.objects.filter(
+                        school=school, year=year, grade=grade
+                    ).delete()
                     continue
+
                 enrollment_obj, created = LongitudinalEnrollment.objects.get_or_create(
                     school=school,
                     year=year,

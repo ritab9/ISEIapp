@@ -448,24 +448,24 @@ class Inservice(models.Model):
 
 
 class GradeCount(models.Model):
-    pre_k_count = models.PositiveSmallIntegerField(default=0, verbose_name="Pre-K")
-    k_count = models.PositiveSmallIntegerField(default=0, verbose_name="K")
-    grade_0_count = models.PositiveSmallIntegerField(default=0, verbose_name="0")
-    grade_1_count = models.PositiveSmallIntegerField(default=0, verbose_name="1")
-    grade_2_count = models.PositiveSmallIntegerField(default=0, verbose_name="2")
-    grade_3_count = models.PositiveSmallIntegerField(default=0, verbose_name="3")
-    grade_4_count = models.PositiveSmallIntegerField(default=0, verbose_name="4")
-    grade_5_count = models.PositiveSmallIntegerField(default=0, verbose_name="5")
-    grade_6_count = models.PositiveSmallIntegerField(default=0, verbose_name="6")
-    grade_7_count = models.PositiveSmallIntegerField(default=0, verbose_name="7")
-    grade_8_count = models.PositiveSmallIntegerField(default=0, verbose_name="8")
-    grade_9_count = models.PositiveSmallIntegerField(default=0, verbose_name="9")
-    grade_10_count = models.PositiveSmallIntegerField(default=0, verbose_name="10")
-    grade_11_count = models.PositiveSmallIntegerField(default=0, verbose_name="11")
-    grade_12_count = models.PositiveSmallIntegerField(default=0, verbose_name="12")
-    ga_i_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-I")
-    ga_ii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-II")
-    ga_iii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-III")
+    pre_k_count = models.PositiveSmallIntegerField(default=0, verbose_name="Pre-K", blank=True, null=True)
+    k_count = models.PositiveSmallIntegerField(default=0, verbose_name="K", blank=True, null=True)
+    grade_0_count = models.PositiveSmallIntegerField(default=0, blank=True, verbose_name="0", null=True)
+    grade_1_count = models.PositiveSmallIntegerField(default=0, blank=True, verbose_name="1", null=True)
+    grade_2_count = models.PositiveSmallIntegerField(default=0, verbose_name="2", blank=True, null=True)
+    grade_3_count = models.PositiveSmallIntegerField(default=0, verbose_name="3", blank=True, null=True)
+    grade_4_count = models.PositiveSmallIntegerField(default=0, verbose_name="4", blank=True, null=True)
+    grade_5_count = models.PositiveSmallIntegerField(default=0, verbose_name="5", blank=True, null=True)
+    grade_6_count = models.PositiveSmallIntegerField(default=0, verbose_name="6", blank=True, null=True)
+    grade_7_count = models.PositiveSmallIntegerField(default=0, verbose_name="7", blank=True, null=True)
+    grade_8_count = models.PositiveSmallIntegerField(default=0, verbose_name="8", blank=True, null=True)
+    grade_9_count = models.PositiveSmallIntegerField(default=0, verbose_name="9", blank=True, null=True)
+    grade_10_count = models.PositiveSmallIntegerField(default=0, verbose_name="10", blank=True, null=True)
+    grade_11_count = models.PositiveSmallIntegerField(default=0, verbose_name="11", blank=True, null=True)
+    grade_12_count = models.PositiveSmallIntegerField(default=0, verbose_name="12", blank=True, null=True)
+    ga_i_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-I", blank=True, null=True)
+    ga_ii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-II", blank=True, null=True)
+    ga_iii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-III", blank=True, null=True)
 
     def total_count(self):
         return (
@@ -483,24 +483,24 @@ class GradeCount(models.Model):
 
 
 class PartTimeGradeCount(models.Model):
-    pre_k_count = models.PositiveSmallIntegerField(default=0, verbose_name="Pre-K")
-    k_count = models.PositiveSmallIntegerField(default=0, verbose_name="K")
-    grade_0_count = models.PositiveSmallIntegerField(default=0, verbose_name="0")
-    grade_1_count = models.PositiveSmallIntegerField(default=0, verbose_name="1")
-    grade_2_count = models.PositiveSmallIntegerField(default=0, verbose_name="2")
-    grade_3_count = models.PositiveSmallIntegerField(default=0, verbose_name="3")
-    grade_4_count = models.PositiveSmallIntegerField(default=0, verbose_name="4")
-    grade_5_count = models.PositiveSmallIntegerField(default=0, verbose_name="5")
-    grade_6_count = models.PositiveSmallIntegerField(default=0, verbose_name="6")
-    grade_7_count = models.PositiveSmallIntegerField(default=0, verbose_name="7")
-    grade_8_count = models.PositiveSmallIntegerField(default=0, verbose_name="8")
-    grade_9_count = models.PositiveSmallIntegerField(default=0, verbose_name="9")
-    grade_10_count = models.PositiveSmallIntegerField(default=0, verbose_name="10")
-    grade_11_count = models.PositiveSmallIntegerField(default=0, verbose_name="11")
-    grade_12_count = models.PositiveSmallIntegerField(default=0, verbose_name="12")
-    ga_i_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-I")
-    ga_ii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-II")
-    ga_iii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-III")
+    pre_k_count = models.PositiveSmallIntegerField(default=0, verbose_name="Pre-K", blank=True, null=True)
+    k_count = models.PositiveSmallIntegerField(default=0, verbose_name="K", blank=True, null=True)
+    grade_0_count = models.PositiveSmallIntegerField(default=0, verbose_name="0", blank=True, null=True)
+    grade_1_count = models.PositiveSmallIntegerField(default=0, verbose_name="1", blank=True, null=True)
+    grade_2_count = models.PositiveSmallIntegerField(default=0, verbose_name="2", blank=True, null=True)
+    grade_3_count = models.PositiveSmallIntegerField(default=0, verbose_name="3", blank=True, null=True)
+    grade_4_count = models.PositiveSmallIntegerField(default=0, verbose_name="4", blank=True, null=True)
+    grade_5_count = models.PositiveSmallIntegerField(default=0, verbose_name="5", blank=True, null=True)
+    grade_6_count = models.PositiveSmallIntegerField(default=0, verbose_name="6", blank=True, null=True)
+    grade_7_count = models.PositiveSmallIntegerField(default=0, verbose_name="7", blank=True, null=True)
+    grade_8_count = models.PositiveSmallIntegerField(default=0, verbose_name="8", blank=True, null=True)
+    grade_9_count = models.PositiveSmallIntegerField(default=0, verbose_name="9", blank=True, null=True)
+    grade_10_count = models.PositiveSmallIntegerField(default=0, verbose_name="10", blank=True, null=True)
+    grade_11_count = models.PositiveSmallIntegerField(default=0, verbose_name="11", blank=True, null=True)
+    grade_12_count = models.PositiveSmallIntegerField(default=0, verbose_name="12", blank=True, null=True)
+    ga_i_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-I", blank=True, null=True)
+    ga_ii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-II", blank=True, null=True)
+    ga_iii_count = models.PositiveSmallIntegerField(default=0, verbose_name="GA-III", blank=True, null=True)
 
     def total_count(self):
         return (
@@ -677,7 +677,7 @@ class LongitudinalEnrollment(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="enrollment_records")
     year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, related_name="enrollment_records")
     grade = models.IntegerField(choices=[(key, value) for key, value in GRADE_LEVEL_DICT.items()])
-    enrollment_count = models.PositiveIntegerField(default=0)  # Total students in this grade/year
+    enrollment_count = models.PositiveIntegerField(default=0, null=True, blank=True)  # Total students in this grade/year
 
     class Meta:
         unique_together = ("school", "year", "grade")  # Ensure unique records for each grade-year
