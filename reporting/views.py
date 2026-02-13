@@ -2340,7 +2340,7 @@ def longitudinal_enrollment(request, individual_school_name=None):
                 if annual_report:
                     student_counts = (
                         annual_report.students
-                        .filter(grade_level__in=allowed_grades)
+                        .filter(grade_level__in=allowed_grades, status__in=['enrolled', 'part-time'])
                         .values("grade_level")
                         .annotate(count=Count("id"))
                     )
