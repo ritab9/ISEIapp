@@ -304,6 +304,25 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
     else:
         staff=False
 
+    # --- Standard comments ---
+    standard_ct = ContentType.objects.get_for_model(Standard)
+    standard_comments = VisitingTeamComment.objects.filter(
+        content_type=standard_ct,
+        object_id=standard.id
+    ).order_by('-created_at')
+
+    # --- Indicator comments ---
+    # collect all indicators in this standard/substandards
+    all_indicators = []
+    for group in grouped_data:
+        for ind in group['indicators']:
+            all_indicators.append(ind)
+
+    indicator_ct = ContentType.objects.get_for_model(Indicator)
+    indicator_comments = VisitingTeamComment.objects.filter(
+        content_type=indicator_ct,
+        object_id__in=[ind.id for ind in all_indicators]
+    ).order_by('-created_at')
 
     context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
                    formset = formset, standard_form=standard_form, mission_form=mission_form,
@@ -312,7 +331,8 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
                    form_id=form_id,
                    score_options=score_options,
                    readonly=readonly,
-                   staff=staff)
+                   staff=staff,
+                   standard_comments=standard_comments, indicator_comments=indicator_comments)
 
     return render(request, 'selfstudy/standard.html', context)
 
@@ -407,7 +427,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
 
     context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
                    selfstudy=selfstudy,standards=standards,
-                   active_link=action_plan.id, actionplans=actionplans, form_id=form_id,
+                   active_link=action_plan.id, actionplans=actionplans, form_id=form_id, readonly=readonly,
                    show_actionplan_submenu=True,)
 
     return render(request, 'selfstudy/action_plan.html', context)
@@ -900,7 +920,6 @@ def profile_personnel(request, selfstudy_id, readonly=False):
     return render(request, 'selfstudy/profile_personnel.html', context)
 
 
-
 def get_international_students_by_country(report, school_country):
     """
     Returns a list of dictionaries with country names and student counts
@@ -1028,7 +1047,6 @@ def profile_student(request, selfstudy_id, readonly=False):
             })
 
 
-
 #Get Baptismal Data per grade level for current year
     annual_report = AnnualReport.objects.filter(school=school, report_type__code="SR", school_year=accreditation_school_year).first()
     # Initialize the nested dict
@@ -1095,8 +1113,6 @@ def profile_student(request, selfstudy_id, readonly=False):
     percentage_non_sda_home = (non_sda_home_students / total_students * 100) if total_students else 0
     percentage_baptized = (baptized_students / total_students * 100) if total_students else 0
 
-
-
 # Get or create the projected enrollment entry
     projected_data, created = StudentEnrollmentData.objects.get_or_create(school_profile=school_profile)
 
@@ -1159,7 +1175,6 @@ def profile_student(request, selfstudy_id, readonly=False):
     if readonly:
         for field in form.fields.values():
             field.disabled = True
-
 
     if annual_report:
         annual_report_id=annual_report.id
@@ -2318,3 +2333,61 @@ def selfstudy_report(request, selfstudy_id):
 
 
 
+#Visiting Team Comments
+from django.apps import apps
+from django.http import HttpResponseForbidden
+
+
+@login_required
+def add_team_comment(request, accreditation_id, model_name, object_id):
+
+    MODEL_APP_MAP = {
+        'Standard': 'accreditation',
+        'Indicator': 'accreditation',
+        'ActionPlan': 'selfstudy',
+    }
+
+    accreditation = get_object_or_404(Accreditation, id=accreditation_id)
+
+    if not accreditation.is_user_on_team(request.user):
+        return HttpResponseForbidden("You are not a visiting team member.")
+
+    app_label = MODEL_APP_MAP.get(model_name)
+    if not app_label:
+        return HttpResponseForbidden("Invalid object type.")
+
+    model = apps.get_model(app_label, model_name)
+    obj = get_object_or_404(model, id=object_id)
+
+    if request.method == 'POST':
+        form = VisitingTeamCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.accreditation = accreditation
+            comment.content_object = obj
+            comment.save()
+            # Redirect back to the page that opened this form
+            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER', '/')
+            return redirect(next_url)
+    else:
+        form = VisitingTeamCommentForm()
+
+    selfstudy = SelfStudy.objects.filter(accreditation=accreditation).first()
+
+    context=dict(form=form, selfstudy=selfstudy )
+
+    return render(request, 'selfstudy/add_team_comment.html', context)
+
+@login_required
+def delete_team_comment(request, comment_id):
+    comment = get_object_or_404(VisitingTeamComment, id=comment_id)
+
+    # Only allow the author or a superuser to delete
+    if comment.author != request.user and not request.user.is_superuser:
+        return HttpResponseForbidden("You cannot delete this comment.")
+
+    # Save the URL to redirect back to
+    next_url = request.META.get('HTTP_REFERER', '/')
+    comment.delete()
+    return redirect(next_url)

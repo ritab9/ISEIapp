@@ -172,3 +172,10 @@ class StudentFollowUpDataKeyAdmin(admin.ModelAdmin):
     list_editable = ('level', 'description', 'order_number', 'active')  # Make both fields editable directly in the list view
 
 admin.site.register(StudentFollowUpDataKey, StudentFollowUpDataKeyAdmin)
+
+
+@admin.register(VisitingTeamComment)
+class VisitingTeamCommentAdmin(admin.ModelAdmin):
+    list_display = ('author', 'accreditation', 'content_object', 'created_at')
+    list_filter = ('accreditation', 'created_at')
+    search_fields = ('comment', 'author__username', 'author__first_name', 'author__last_name')

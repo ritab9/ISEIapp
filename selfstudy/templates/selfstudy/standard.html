@@ -38,8 +38,45 @@
                 </div>
             </div>
         </div>
-
     </div>
+
+    {% if user_on_team %}
+        <div class="row text-muted">
+            <div class="col-1 d-flex justify-content-end align-items-start px-0">
+                <a href="{% url 'add_team_comment' selfstudy.accreditation.id 'Standard' standard.id %}"
+                   class="btn btn-sm btn-light">
+                    💬
+                </a>
+            </div>
+
+
+    <!-- Standard comments -->
+            <div class="col-11 team-comments">
+                {% for comment in standard_comments %}
+                    <div class="card card-body p-2 mb-1 bg-light">
+                        <small>
+                            <strong>{{ comment.author.get_full_name }}</strong>
+                            <span class="text-muted">({{ comment.created_at|date:"M d, Y H:i" }})</span>:
+                        </small>
+                        <div>{{ comment.comment|linebreaksbr }}</div>
+
+                        {% if comment.author == request.user or request.user.is_superuser %}
+                            <!-- red X -->
+                            <a href="{% url 'delete_team_comment' comment.id %}"
+                               class="position-absolute text-danger"
+                               style="top: 5px; right: 5px; font-size: 1rem;"
+                               onclick="return confirm('Delete this comment?');"
+                               title="Delete comment"
+                            >
+                                <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% endif %}
 
 <!-- Indicators Evaluation Form -->
     <div id="content-div">
@@ -143,7 +180,6 @@
                                                         {% endfor %}
                                                     </select>
 
-
                                                 {% if form.indicator_score.errors %}
                                                     <div class="alert alert-danger">
                                                         {% for error in form.indicator_score.errors %}
@@ -187,6 +223,41 @@
                                     </tbody>
                                 </table>
                                 </div>
+                                {% if user_on_team %}
+                                    <div class="ml-5">
+                                        <a href="{% url 'add_team_comment' selfstudy.accreditation.id 'Indicator' form.instance.indicator.id %}"
+                                           class="btn btn-sm btn-light ml-2">
+                                            💬
+                                        </a>
+
+                                        <div class="team-comments mt-1 mb-2 text-muted">
+                                            {% for comment in indicator_comments %}
+                                                {% if comment.content_object.id == form.instance.indicator.id %}
+                                                    <div class="card card-body p-1 mb-1 bg-light">
+                                                        <small>
+                                                            <strong>{{ comment.author.get_full_name }}</strong>
+                                                            <span class="text-muted">({{ comment.created_at|date:"M d, Y H:i" }})</span>:
+                                                        </small>
+                                                        <div>{{ comment.comment|linebreaksbr }}</div>
+
+                                                        {% if comment.author == request.user or request.user.is_superuser %}
+                                                            <!-- red X -->
+                                                            <a href="{% url 'delete_team_comment' comment.id %}"
+                                                               class="position-absolute text-danger"
+                                                               style="top: 5px; right: 5px; font-size: 1rem;"
+                                                               onclick="return confirm('Delete this comment?');"
+                                                               title="Delete comment"
+                                                            >
+                                                                <i class="fas fa-times"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
                                 <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
                             </fieldset>
                     {% endif %}

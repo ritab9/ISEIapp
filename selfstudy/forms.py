@@ -335,3 +335,13 @@ class OtherCurriculumDataForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # 🔹 Explicitly make this optional
         self.fields['dual_enrollment_number'].required = False
+
+
+
+class VisitingTeamCommentForm(forms.ModelForm):
+    class Meta:
+        model = VisitingTeamComment
+        fields = ['comment']
+        widgets = {'comment': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Add your comment...'})}
+        labels = {'comment': ''}
+

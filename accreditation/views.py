@@ -379,7 +379,8 @@ def my_accreditations(request, user_id):
 
     team_materials=Resource.objects.filter(name='Team Member Materials').first()
 
+
     context = dict(
-        accreditations=accreditations, team_materials=team_materials,
+        accreditations=accreditations, team_materials=team_materials, team_member=True
     )
     return render(request, "accreditation/my_accreditations.html", context)

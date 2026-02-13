@@ -64,5 +64,6 @@ urlpatterns = [
 
     path('selfstudy/<int:selfstudy_id>/report/', views.selfstudy_report, name='selfstudy_report'),
 
-    #path('<int:selfstudy_id>/completion/', views.selfstudy_completion, name='completion'),  # Optional completion page
+    path('team-comments/add/<int:accreditation_id>/<str:model_name>/<int:object_id>/', views.add_team_comment, name='add_team_comment'),
+    path('team-comments/delete/<int:comment_id>/',views.delete_team_comment, name='delete_team_comment')
 ]

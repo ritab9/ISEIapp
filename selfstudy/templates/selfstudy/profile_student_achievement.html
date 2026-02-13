@@ -46,6 +46,7 @@
                                 {% for form in grade_level_test_formset %}
                                     <tr>
                                         {{ form.non_field_errors }}
+                                        {{ form.id }}
                                         <td>{{ form.grade_level }}</td>
                                         <td>{{ form.test_administered }}</td>
                                     </tr>

@@ -1,0 +1,18 @@
+{# selfstudy/templates/selfstudy/add_comment.html #}
+{% extends 'base.html' %}
+
+{% block title %}Add Team Comment{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h5>Add a Comment</h5>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+            <input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}">
+        <button type="submit" class="btn btn-small btn-ISEIblue">Submit Comment</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-small btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

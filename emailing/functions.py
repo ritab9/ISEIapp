@@ -29,7 +29,7 @@ def send_custom_email(template_id, recipient, context):
         raise ValueError(f"Template with id {template_id} does not exist.")
 
 
-def send_simple_email(subject, message, send_to = ["info@iseiea.org"]):
+def send_simple_email(subject, message, send_to = ["teacher_certification@iseiea.org"]):
     message = message
     mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to)
     mail.send()
