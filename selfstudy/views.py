@@ -2152,9 +2152,11 @@ def get_selfstudy_standards_report(selfstudy):
     report_standards = []
 
     for standard in standards:
+        evaluation = standard_evals.get(standard.id)
         standard_block = {
             "standard": standard,
-            "narrative": standard_evals.get(standard.id),
+            "narrative": evaluation.narrative,
+            "average_score": evaluation.average_score,
             "groups": [],
         }
 

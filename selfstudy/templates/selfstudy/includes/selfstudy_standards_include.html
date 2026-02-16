@@ -85,13 +85,12 @@
             {% endfor %}
         {% endfor %}
 
-        {% if block.narrative and block.narrative.narrative %}
+
             <div class="keep-together">
                 <h6>Standard Narrative</h6>
-                {{ block.narrative.narrative|linebreaks }}
-                <h6> Average: {{ block.average_score }}</h6>
+                {{ block.narrative|linebreaks|default_if_none:"-" }}
+                <h6> Average: {{ block.average_score|default_if_none:"-" }}</h6>
             </div>
-        {% endif %}
 
             <p class="back-to-toc">
                 <a href="#toc">⬆ TOC</a>
