@@ -22,14 +22,16 @@
                             <th class="orange-header2">SelfStudy</th>
                             <th class="orange-header2">Documents</th>
                             <th class="blue-header2">Visit dates </th>
+                            <th class="blue-header">Previous APR</th>
                             <!--th class="blue-header2">Term </th>
                             <th class="blue-header2">Visiting Team Report </th-->
                         </tr>
                     </thead>
                         <tbody class="accreditation-rows">
-                            {% for accreditation in accreditations %}
+                            {% for item in accreditations %}
+                                {% with accreditation=item.accreditation previous_apr=item.previous_apr %}
 
-                            <tr>
+                                <tr>
                                 <td class="blue-column">{{ accreditation.school.name }}</td>
 
                                 <td class="orange-column">
@@ -58,10 +60,18 @@
                                 <td class="blue-column small">
                                     {{ accreditation.visit_date_range|default_if_none:"" }}
                                 </td>
+
+                                <td>
+                                    {% if previous_apr %}
+                                        <a href="{% url 'apr_progress_report' previous_apr.id %}">AAPR </a>
+                                      {% else %}
+                                        <p>None</p>
+                                      {% endif %}
+                                </td>
                             </tr>
 
                             <!-- TEAM MEMBERS ROW -->
-                            <tr class="team-members-row">
+                                <tr class="team-members-row">
                                 <td colspan="4" class="small">
                                     <strong>Team members:</strong><br>
 
@@ -77,10 +87,12 @@
                                 </td>
                             </tr>
 
+                                {% endwith %}
                             {% empty %}
-                            <tr>
-                                <td colspan="4">No {{ category|title }} accreditations found.</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="4">No {{ category|title }} accreditations found.</td>
+                                </tr>
+
                             {% endfor %}
                             </tbody>
 

@@ -112,11 +112,10 @@ class FTEEquivalencyForm(forms.ModelForm):
 class StandardEvaluationForm(forms.ModelForm):
     class Meta:
         model = StandardEvaluation
-        fields = ['narrative', 'average_score']  # Include only narrative and average_score fields
+        fields = ['narrative']  # Include only narrative and average_score fields
 
         widgets = {
             'narrative': forms.Textarea(attrs={'rows': 2}),
-            'average_score': forms.HiddenInput(),
         }
 
 class IndicatorScoreSelect(forms.Select):

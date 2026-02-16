@@ -379,8 +379,25 @@ def my_accreditations(request, user_id):
 
     team_materials=Resource.objects.filter(name='Team Member Materials').first()
 
+    # Add previous APR for each accreditation
+    accreditation_with_apr = []
+    for acc in accreditations:
+        # Get previous accreditation for this school (the most recent one before current scheduled)
+        previous_accreditation = Accreditation.objects.filter(
+            school=acc.school,
+            status=Accreditation.AccreditationStatus.ACTIVE
+        ).first()
+
+        previous_apr = None
+        if previous_accreditation:
+            previous_apr = getattr(previous_accreditation, 'apr', None)  # APR may be None
+
+        accreditation_with_apr.append({
+            'accreditation': acc,
+            'previous_apr': previous_apr,
+        })
 
     context = dict(
-        accreditations=accreditations, team_materials=team_materials, team_member=True
+        accreditations=accreditation_with_apr, team_materials=team_materials, team_member=True
     )
     return render(request, "accreditation/my_accreditations.html", context)

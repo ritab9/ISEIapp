@@ -199,142 +199,146 @@ def selfstudy(request, selfstudy_id, readonly=False):
 
 #School filling out the self study views
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
+from django.db.models import Avg
+
 @login_required(login_url='login')
 def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
-
+    # --- Fetch main objects ---
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
-    standards = Standard.objects.top_level()
     standard = get_object_or_404(Standard, id=standard_id, parent_standard__isnull=True)
+    standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_standard_{standard_id}"
 
+    # --- Evidence & narrative ---
     evidence_list = standard.evidence.split(';') if standard.evidence else []
     narrative = StandardNarrative.objects.first()
-    standard_evaluation, created = StandardEvaluation.objects.get_or_create(selfstudy=selfstudy, standard=standard)
-
+    standard_evaluation, created = StandardEvaluation.objects.get_or_create(
+        selfstudy=selfstudy, standard=standard
+    )
     substandards = standard.substandards.all()
-    grouped_data = []
-    if substandards.exists():
-        substandards_exist=True
-        for substandard in substandards:
-            evaluations = IndicatorEvaluation.objects.filter(selfstudy=selfstudy, standard=substandard)
-            indicators = Indicator.objects.filter(standard=substandard, active=True)
+    substandards_exist = substandards.exists()
 
-            grouped_data.append({
-                "standard": substandard,
-                "indicators": indicators,
-                "evaluations": evaluations,
-            })
-        # Evidence is specific to the main standard
-    else:
-        substandards_exist=False
-        evaluations = IndicatorEvaluation.objects.filter(selfstudy=selfstudy, standard=standard)
-        indicators = Indicator.objects.filter(standard=standard, active=True)
+    # --- Prepare all standards & evaluations ---
+    all_standards = [standard] + list(substandards)
+    evaluations_qs = IndicatorEvaluation.objects.filter(
+        selfstudy=selfstudy, standard__in=all_standards
+    ).select_related("indicator_score")
+
+    indicators_qs = Indicator.objects.filter(standard__in=all_standards, active=True)
+
+    # --- Build grouped_data ---
+    grouped_data = []
+    for std in all_standards if substandards_exist else [standard]:
+        evaluations = [ev for ev in evaluations_qs if ev.standard_id == std.id]
+        indicators = [ind for ind in indicators_qs if ind.standard_id == std.id]
 
         grouped_data.append({
-            "standard": standard,
+            "standard": std,
             "indicators": indicators,
             "evaluations": evaluations,
         })
 
-        # Handle the MissionAndObjectives form in the same way as the standard form
+    # --- Mission & Objectives ---
     mission_and_objectives = MissionAndObjectives.objects.filter(selfstudy=selfstudy).first()
+    mission_form = MissionAndObjectivesForm(
+        request.POST if request.method == "POST" else None,
+        instance=mission_and_objectives
+    ) if standard.name == "Mission, Philosophy, Goals, & Objectives" else None
 
-    if request.method == "POST":
-        formset = IndicatorEvaluationFormSet(request.POST, queryset=IndicatorEvaluation.objects.filter(
-            selfstudy=selfstudy, standard__in=[standard] + list(substandards) ))
-        standard_form = StandardEvaluationForm(request.POST, instance=standard_evaluation)
-        if standard.name == "Mission, Philosophy, Goals, & Objectives":
-            mission_form = MissionAndObjectivesForm(request.POST, instance=mission_and_objectives)
-        else:
-            mission_form = None
+    # --- Forms ---
+    standard_form = StandardEvaluationForm(
+        request.POST if request.method == "POST" else None,
+        instance=standard_evaluation
+    )
+    formset = IndicatorEvaluationFormSet(
+        request.POST if request.method == "POST" else None,
+        queryset=evaluations_qs
+    )
 
+    # --- POST handling ---
+    if request.method == "POST" and not readonly:
         if formset.is_valid() and standard_form.is_valid():
+            # Save indicator scores from POST
             for form in formset:
-                if form.is_valid():
-                    # Manually set the indicator_score from the form data
-                    # Manually get the indicator_score value from POST data
-                    indicator_score_id = request.POST.get(f'{form.prefix}-indicator_score')
-                    if indicator_score_id:
-                        # Assign the selected IndicatorScore to the form instance
-                        form.instance.indicator_score = IndicatorScore.objects.get(id=indicator_score_id)
+                indicator_score_id = request.POST.get(f'{form.prefix}-indicator_score')
+                if indicator_score_id:
+                    form.instance.indicator_score = IndicatorScore.objects.get(id=indicator_score_id)
+                form.save()
 
-                    form.save()
-            formset.save()
+            # Save standard narrative
             standard_form.save()
 
-            if mission_form:
-                if mission_form.is_valid():
-                    mission_and_objectives = mission_form.save(commit=False)
-                    mission_and_objectives.selfstudy = selfstudy  # Associate with the correct SelfStudy instance
-                    mission_and_objectives.save()
+            # Recalculate and save average
+            avg_score = evaluations_qs.aggregate(avg=Avg("indicator_score__score"))["avg"] or 0
+            standard_evaluation.average_score = round(avg_score, 2)
+            standard_evaluation.save()
+
+            # Save Mission & Objectives if applicable
+            if mission_form and mission_form.is_valid():
+                mission_obj = mission_form.save(commit=False)
+                mission_obj.selfstudy = selfstudy
+                mission_obj.save()
 
             messages.success(request, "Your changes have been successfully saved!")
         else:
             messages.error(request, "Some of your changes were not saved!")
 
-            context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
-                           active_link=standard_id, evidence_list=evidence_list, narrative=narrative,
-                           formset = formset, standard_form=standard_form,
-                           grouped_data = grouped_data, substandards_exist=substandards_exist,
-                           )
+    # --- Read-only / GET average ---
+    if readonly:
+        avg_score = standard_evaluation.average_score or 0
+    elif request.method != "POST":
+        # For GET, also show current saved average
+        avg_score = standard_evaluation.average_score or 0
 
-            return render(request, 'selfstudy/standard.html', context)
-    else:
-        formset = IndicatorEvaluationFormSet(queryset=IndicatorEvaluation.objects.filter(selfstudy=selfstudy,
-                                                 standard__in=[standard] + list(substandards)))
-        standard_form = StandardEvaluationForm(instance=standard_evaluation)
-        if standard.name == "Mission, Philosophy, Goals, & Objectives":
-            mission_form = MissionAndObjectivesForm(instance=mission_and_objectives)
-        else: mission_form = None
+    # --- Background color for average ---
+    def avg_color(avg):
+        if avg >= 3:
+            return "honeydew"
+        elif avg >= 2:
+            return "lightyellow"
+        else:
+            return "mistyrose"
 
-    score_options = IndicatorScore.objects.all()
+    avg_bg = avg_color(avg_score)
+
+    # --- Handle read-only fields ---
+    def disable_form(f):
+        for field in f.fields.values():
+            field.disabled = True
 
     if readonly:
-        for form in formset:
-            for field in form.fields.values():
-                field.disabled = True
-        for field in standard_form.fields.values():
-            field.disabled = True
+        for f in formset:
+            disable_form(f)
+        disable_form(standard_form)
         if mission_form:
-            for field in mission_form.fields.values():
-                field.disabled = True
+            disable_form(mission_form)
 
-    if request.user.is_staff:
-        staff=True
-    else:
-        staff=False
-
-    # --- Standard comments ---
-    standard_ct = ContentType.objects.get_for_model(Standard)
-    standard_comments = VisitingTeamComment.objects.filter(
-        content_type=standard_ct,
-        object_id=standard.id
-    ).order_by('-created_at')
-
-    # --- Indicator comments ---
-    # collect all indicators in this standard/substandards
-    all_indicators = []
-    for group in grouped_data:
-        for ind in group['indicators']:
-            all_indicators.append(ind)
-
-    indicator_ct = ContentType.objects.get_for_model(Indicator)
-    indicator_comments = VisitingTeamComment.objects.filter(
-        content_type=indicator_ct,
-        object_id__in=[ind.id for ind in all_indicators]
-    ).order_by('-created_at')
-
-    context = dict(selfstudy=selfstudy, standards = standards, standard=standard,
-                   formset = formset, standard_form=standard_form, mission_form=mission_form,
-                   active_link=standard_id, evidence_list=evidence_list, narrative=narrative,
-                   grouped_data = grouped_data, substandards_exist=substandards_exist,
-                   form_id=form_id,
-                   score_options=score_options,
-                   readonly=readonly,
-                   staff=staff,
-                   standard_comments=standard_comments, indicator_comments=indicator_comments)
+    # --- Context ---
+    context = {
+        "selfstudy": selfstudy,
+        "standards": standards,
+        "standard": standard,
+        "formset": formset,
+        "standard_form": standard_form,
+        "mission_form": mission_form,
+        "active_link": standard_id,
+        "evidence_list": evidence_list,
+        "narrative": narrative,
+        "grouped_data": grouped_data,
+        "substandards_exist": substandards_exist,
+        "form_id": form_id,
+        "score_options": IndicatorScore.objects.all(),
+        "readonly": readonly,
+        "staff": request.user.is_staff,
+        "avg_score": avg_score,
+        "avg_bg": avg_bg,
+    }
 
     return render(request, 'selfstudy/standard.html', context)
+
 
 @login_required(login_url='login')
 def selfstudy_actionplan_instructions(request, selfstudy_id):
