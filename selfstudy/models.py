@@ -96,7 +96,7 @@ class ActionPlanInstructions(models.Model):
 #Building a SelfStudy for a School
 class SelfStudy(models.Model):
     accreditation = models.OneToOneField(Accreditation, on_delete=models.CASCADE)
-    last_updated = models.DateTimeField(blank=True, null=True)
+    original_submission_date = models.DateTimeField(blank=True, null=True)
     submission_date = models.DateField(blank=True, null=True)
     # status = models.CharField(max_length=20,
     #                          choices=[('draft', 'Draft'), ('submitted', 'Submitted'), ('reviewed', 'Reviewed')])

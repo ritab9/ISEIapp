@@ -180,7 +180,11 @@ def selfstudy(request, selfstudy_id, readonly=False):
 
         if request.method == "POST":
             if "submit_selfstudy" in request.POST:
-                selfstudy.submission_date = timezone.now().date()
+                if not selfstudy.original_submission_date:
+                    selfstudy.original_submission_date=timezone.now().date()
+                    selfstudy.submission_date = timezone.now().date()
+                else:
+                    selfstudy.submission_date = timezone.now().date()
             elif "reopen_selfstudy" in request.POST:
                 selfstudy.submission_date = None
             selfstudy.save()

@@ -86,11 +86,11 @@ class SchoolProfileInline(admin.TabularInline):
 
 # Admin for SelfStudy with inlines for CoordinatingTeam and SchoolProfile
 class SelfStudyAdmin(admin.ModelAdmin):
-    list_display = ('accreditation', 'last_updated', 'submission_date')
-    list_filter = ('accreditation', 'last_updated')  # Add filters
+    list_display = ('accreditation', 'original_submission_date', 'submission_date')
+    list_filter = ('accreditation', 'original_submission_date')  # Add filters
     search_fields = ('accreditation__school__name',)  # Enable searching by school name (assuming you have this field)
     inlines = [SchoolProfileInline]
-    ordering = ('-last_updated',)  # Order by last_updated descending by default
+    ordering = ('-original_submission_date',)  # Order by last_updated descending by default
 
 # Register your models with the admin site
 
