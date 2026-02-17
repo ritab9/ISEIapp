@@ -7,26 +7,36 @@
   <div class="noprint submission-box">
     <form method="post">
       {% csrf_token %}
-      {% if not selfstudy.submission_date %}
         <h6>Due date: {{ selfstudy.accreditation.selfstudy_due_date }}</h6>
-        <p>Self Study is not yet submitted</p>
-        {% if school_privileges %}
-          <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="submit_selfstudy">
-            Submit SelfStudy
-          </button>
+
+        {% if not selfstudy.original_submission_date %}
+            <p>Self Study is not yet submitted</p>
+            {% else %}
+              <h6 class="success">
+              Self Study was submitted on {{ selfstudy.original_submission_date }}.
+            </h6>
+                {% if selfstudy.submission_date %}
+                    <p> Last update: {{ selfstudy.submission_date }}</p>
+                {% else %}
+                    <p class="error">Please resubmit SelfStudy after update</p>
+                {% endif %}
         {% endif %}
-      {% else %}
-        <h6 class="success">
-          Self Study was submitted on {{ selfstudy.submission_date }}.
-        </h6>
-        {% if isei_privileges %}
-          <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="reopen_selfstudy">
-            Reopen SelfStudy
-          </button>
-        {% else %}
-          <h6>Please contact ISEI if you would like to make changes.</h6>
-        {% endif %}
-      {% endif %}
+
+          {% if not selfstudy.submission_date %}
+            {% if school_privileges %}
+              <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="submit_selfstudy">
+                Submit SelfStudy
+              </button>
+            {% endif %}
+          {% else %}
+            {% if isei_privileges %}
+              <button class="btn btn-sm btn-ISEIyellow2" type="submit" name="reopen_selfstudy">
+                Reopen SelfStudy
+              </button>
+            {% else %}
+              <h6>Please contact ISEI if you would like to make changes.</h6>
+            {% endif %}
+          {% endif %}
     </form>
   </div>
 
