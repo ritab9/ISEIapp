@@ -470,6 +470,11 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
     last_annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER",
                                                 school_year=selfstudy.accreditation.school_year).first()
 
+    if not last_annual_report:
+        last_annual_report = AnnualReport.objects.filter(school=selfstudy.accreditation.school, report_type__code="ER"
+                     ).exclude(submit_date__isnull=True).order_by('-submit_date').first()
+
+
     # Get all personnel from the school's last annual report
     school_personnel = Personnel.objects.filter(annual_report=last_annual_report).exclude(status=StaffStatus.NO_LONGER_EMPLOYED
             ).exclude(email_address__isnull=True).exclude(email_address__exact=''

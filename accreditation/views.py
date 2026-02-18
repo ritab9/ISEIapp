@@ -290,7 +290,8 @@ def accreditation_application(request, school_id):
             app = app_form.save(commit=False)
             app.school = school
             app.save()
-            map_school_type_choices_to_school_types(school,app)
+            #To Do this doesn't seem to be mapping well so we skip it for now
+            #map_school_type_choices_to_school_types(school,app)
 
             message=f"{school.name} has submitted an Accreditation Application"
             send_simple_email("Accreditation Application", message, ['info@iseiea.org'])
