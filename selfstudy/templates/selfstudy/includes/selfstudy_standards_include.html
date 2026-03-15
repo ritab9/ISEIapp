@@ -44,7 +44,9 @@
             {% for row in group.indicators %}
                 <div class="keep-together">
                     <p style="background-color: #EAF1F7">
-                        <strong>Indicator: {{ group.standard.number|floatformat:"0"  }}.{{ forloop.counter }}</strong>
+                        <strong>Indicator:
+                            {{ block.standard.number|floatformat:"0" }}.{{ row.number }}
+                        </strong>
                         {{ row.indicator.description }}
                     </p>
 

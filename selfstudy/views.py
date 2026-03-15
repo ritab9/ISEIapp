@@ -2133,6 +2133,8 @@ def get_philanthropy_program(school_profile):
         "development_program": program.development_program,
     }
 
+from collections import defaultdict
+
 def get_selfstudy_standards_report(selfstudy):
     """
     Builds a fully structured read-only dataset for the SelfStudy report.
@@ -2162,7 +2164,7 @@ def get_selfstudy_standards_report(selfstudy):
         for se in StandardEvaluation.objects.filter(selfstudy=selfstudy)
     }
 
-    # group evaluations by standard
+    # Group evaluations by standard
     evals_by_standard = defaultdict(list)
     for ev in indicator_evals:
         evals_by_standard[ev.standard_id].append(ev)
@@ -2182,6 +2184,9 @@ def get_selfstudy_standards_report(selfstudy):
 
         substandards = standard.substandards.all()
 
+        # Indicator numbering resets for each top-level standard
+        indicator_number = 1
+
         # Case 1: standard has substandards
         if substandards.exists():
 
@@ -2189,15 +2194,18 @@ def get_selfstudy_standards_report(selfstudy):
 
                 evaluations = evals_by_standard.get(sub.id, [])
 
+                indicators = []
+                for ev in evaluations:
+                    indicators.append({
+                        "indicator": ev.indicator,
+                        "evaluation": ev,
+                        "number": indicator_number
+                    })
+                    indicator_number += 1
+
                 standard_block["groups"].append({
                     "standard": sub,
-                    "indicators": [
-                        {
-                            "indicator": ev.indicator,
-                            "evaluation": ev,
-                        }
-                        for ev in evaluations
-                    ],
+                    "indicators": indicators,
                 })
 
         # Case 2: no substandards
@@ -2205,15 +2213,18 @@ def get_selfstudy_standards_report(selfstudy):
 
             evaluations = evals_by_standard.get(standard.id, [])
 
+            indicators = []
+            for ev in evaluations:
+                indicators.append({
+                    "indicator": ev.indicator,
+                    "evaluation": ev,
+                    "number": indicator_number
+                })
+                indicator_number += 1
+
             standard_block["groups"].append({
                 "standard": standard,
-                "indicators": [
-                    {
-                        "indicator": ev.indicator,
-                        "evaluation": ev,
-                    }
-                    for ev in evaluations
-                ],
+                "indicators": indicators,
             })
 
         report_standards.append(standard_block)
