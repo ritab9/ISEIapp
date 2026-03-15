@@ -46,6 +46,7 @@ class FinancialTwoYearDataKey(models.Model):
     name = models.CharField(max_length=100)
     order_number = models.PositiveIntegerField(default=0, verbose_name="Order Number")
     active = models.BooleanField(default=True, verbose_name="Active")
+    symbol = models.CharField(max_length=5, blank=True, default="$")
 
     class Meta:
         ordering = ['order_number']

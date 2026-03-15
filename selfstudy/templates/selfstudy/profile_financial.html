@@ -59,7 +59,7 @@
                         {% for form in two_year_formset %}
                             <tr>
                                 <td class="blue-column"> {{ form.id }}
-                                    ${{ form.two_years_ago }}
+                                    {{ form.instance.data_key.symbol }}{{ form.two_years_ago }}
                                     {% if form.two_years_ago.errors %}
                                         <div class="errors">
                                             {% for error in form.two_years_ago.errors %}
@@ -69,7 +69,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="blue-column">
-                                    ${{ form.one_year_ago }}
+                                    {{ form.instance.data_key.symbol }}{{ form.one_year_ago }}
                                     {% if form.one_year_ago.errors %}
                                         <div class="errors">
                                             {% for error in form.one_year_ago.errors %}
@@ -79,7 +79,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="blue-column">
-                                    ${{ form.current_year }}
+                                    {{ form.instance.data_key.symbol }}{{ form.current_year }}
                                     {% if form.current_year.errors %}
                                         <div class="errors">
                                             {% for error in form.current_year.errors %}

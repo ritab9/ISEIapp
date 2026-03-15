@@ -25,7 +25,7 @@
 
                     <td>
                         {% if entry and entry.two_years_ago is not None %}
-                            ${{ entry.two_years_ago|floatformat:2|intcomma }}
+                            {{ key.symbol }}{{ entry.two_years_ago|floatformat:2|intcomma }}
                         {% else %}
                             -
                         {% endif %}
@@ -33,7 +33,7 @@
 
                     <td>
                         {% if entry and entry.one_year_ago is not None %}
-                            ${{ entry.one_year_ago|floatformat:2|intcomma }}
+                            {{ key.symbol }}{{ entry.one_year_ago|floatformat:2|intcomma }}
                         {% else %}
                             -
                         {% endif %}
@@ -41,7 +41,7 @@
 
                     <td>
                         {% if entry and entry.current_year is not None %}
-                            ${{ entry.current_year|floatformat:2|intcomma }}
+                            {{ key.symbol }}{{ entry.current_year|floatformat:2|intcomma }}
                         {% else %}
                             -
                         {% endif %}
