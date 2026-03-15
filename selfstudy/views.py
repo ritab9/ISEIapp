@@ -228,15 +228,11 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
 
     # --- Prepare all standards & evaluations ---
     all_standards = [standard] + list(substandards)
-    #evaluations_qs = IndicatorEvaluation.objects.filter(
-    #    selfstudy=selfstudy, standard__in=all_standards
-    #).select_related("indicator_score")
-
-    #indicators_qs = Indicator.objects.filter(standard__in=all_standards, active=True, school_type__in=school.school_type.all())
 
     evaluations_qs = IndicatorEvaluation.objects.filter(
         selfstudy=selfstudy,
-        standard__in=all_standards
+        standard__in=all_standards,
+        indicator__school_type__in=school.school_type.all()
     ).select_related("indicator", "indicator_score")
 
     # --- Build grouped_data ---
