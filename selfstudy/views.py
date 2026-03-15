@@ -2135,8 +2135,11 @@ def get_philanthropy_program(school_profile):
 
 def get_selfstudy_standards_report(selfstudy):
     """
-    Builds a fully-structured, read-only dataset for the SelfStudy report.
+    Builds a fully structured read-only dataset for the SelfStudy report.
+    Uses IndicatorEvaluation as the source of truth.
     """
+
+    school = selfstudy.accreditation.school
 
     standards = (
         Standard.objects.top_level()
@@ -2144,11 +2147,14 @@ def get_selfstudy_standards_report(selfstudy):
         .order_by("number")
     )
 
-    # Pull everything in bulk
     indicator_evals = (
         IndicatorEvaluation.objects
-        .filter(selfstudy=selfstudy)
+        .filter(
+            selfstudy=selfstudy,
+            indicator__school_type__in=school.school_type.all()
+        )
         .select_related("indicator", "indicator_score", "standard")
+        .order_by("indicator__code")
     )
 
     standard_evals = {
@@ -2156,62 +2162,62 @@ def get_selfstudy_standards_report(selfstudy):
         for se in StandardEvaluation.objects.filter(selfstudy=selfstudy)
     }
 
-    # Index indicator evaluations by standard
-    evals_by_standard = defaultdict(dict)
+    # group evaluations by standard
+    evals_by_standard = defaultdict(list)
     for ev in indicator_evals:
-        evals_by_standard[ev.standard_id][ev.indicator_id] = ev
+        evals_by_standard[ev.standard_id].append(ev)
 
     report_standards = []
 
     for standard in standards:
+
         evaluation = standard_evals.get(standard.id)
+
         standard_block = {
             "standard": standard,
-            "narrative": evaluation.narrative,
-            "average_score": evaluation.average_score,
+            "narrative": evaluation.narrative if evaluation else "",
+            "average_score": evaluation.average_score if evaluation else None,
             "groups": [],
         }
 
         substandards = standard.substandards.all()
 
-        # Case 1: Standard has substandards
+        # Case 1: standard has substandards
         if substandards.exists():
+
             for sub in substandards:
-                indicators = Indicator.objects.filter(
-                    standard=sub, active=True
-                ).order_by("code")
+
+                evaluations = evals_by_standard.get(sub.id, [])
 
                 standard_block["groups"].append({
                     "standard": sub,
                     "indicators": [
                         {
-                            "indicator": ind,
-                            "evaluation": evals_by_standard[sub.id].get(ind.id),
+                            "indicator": ev.indicator,
+                            "evaluation": ev,
                         }
-                        for ind in indicators
+                        for ev in evaluations
                     ],
                 })
 
-        # Case 2: No substandards
+        # Case 2: no substandards
         else:
-            indicators = Indicator.objects.filter(
-                standard=standard, active=True, school_type__in=selfstudy.accreditation.school.school_type.all()
-            ).order_by("code")
+
+            evaluations = evals_by_standard.get(standard.id, [])
 
             standard_block["groups"].append({
                 "standard": standard,
                 "indicators": [
                     {
-                        "indicator": ind,
-                        "evaluation": evals_by_standard[standard.id].get(ind.id),
+                        "indicator": ev.indicator,
+                        "evaluation": ev,
                     }
-                    for ind in indicators
+                    for ev in evaluations
                 ],
             })
 
         report_standards.append(standard_block)
 
-    # Mission & Objectives (only once, if present)
     mission = MissionAndObjectives.objects.filter(selfstudy=selfstudy).first()
 
     return {
