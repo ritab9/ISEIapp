@@ -215,6 +215,7 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
     standard = get_object_or_404(Standard, id=standard_id, parent_standard__isnull=True)
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_standard_{standard_id}"
+    school=selfstudy.accreditation.school
 
     # --- Evidence & narrative ---
     evidence_list = standard.evidence.split(';') if standard.evidence else []
@@ -231,7 +232,7 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
         selfstudy=selfstudy, standard__in=all_standards
     ).select_related("indicator_score")
 
-    indicators_qs = Indicator.objects.filter(standard__in=all_standards, active=True)
+    indicators_qs = Indicator.objects.filter(standard__in=all_standards, active=True, school_type__in=school.school_type.all())
 
     # --- Build grouped_data ---
     grouped_data = []
