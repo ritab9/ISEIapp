@@ -91,7 +91,8 @@
                                 <td class="orange-column">
                                     {% if category == "scheduled" %}
                                         {% if accreditation.selfstudy %}
-                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SelfStudy</a>
+                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SelfStudy</a><br>
+                                            <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Printable (PDF)</a>
                                         <!-- { % else %}
                                             <a href="{ % url 'setup_selfstudy' accreditation_id=accreditation.id %}">Add SelfStudy</a-->
                                         {% endif %}
