@@ -1694,7 +1694,8 @@ def get_personnel_data(school_profile):
     pga_formset = school_profile.activities.all()
 
     # Retention data for last 5 school years
-    current_year = SchoolYear.objects.order_by('-name').first()  # fallback if needed
+    #current_year = SchoolYear.objects.order_by('-name').first()  # fallback if needed
+    current_year = school_profile.selfstudy.accreditation.school_year
     if current_year:
         start_year = int(current_year.name.split('-')[0])
     else:
