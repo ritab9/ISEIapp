@@ -299,7 +299,7 @@ class StandardizedTestScore(models.Model):
     session = models.ForeignKey(StandardizedTestSession, on_delete=models.CASCADE, related_name='scores')
     subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
     grade = models.IntegerField(choices=[(i, str(i)) for i in range(1, 13)], null=True, blank=True)  # Validated to be 1–8 or 9–12 based on session
-    score = models.DecimalField(max_digits=10, decimal_places=2)
+    score = models.CharField(max_length=20, blank=True)
 
     class Meta:
         unique_together = ('session', 'subject', 'grade')
