@@ -4,3 +4,4 @@
 /new_venv/
 .idea/
 /django_errors.log
+staticfiles/
