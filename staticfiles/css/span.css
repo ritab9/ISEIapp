@@ -1,0 +1,35 @@
+
+/* defined some text and coloring resizing spans */
+.spangreen {
+    color:green;
+}
+
+.spanyellow{
+    color: #f1a542;
+}
+
+.spanred {
+   color: red;
+}
+
+.spanblue{
+      color: #053A64; /*ISEI blue*/
+}
+
+.span80{
+    font-size: 80%;
+}
+
+.span90{
+    font-size: 90%;
+}
+
+.span80red {
+    color: red;
+    font-size: 80%;
+}
+
+.span80blue {
+    color: #053A64; /*ISEI blue*/
+    font-size: 80%;
+}

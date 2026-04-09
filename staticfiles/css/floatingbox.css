@@ -1,0 +1,25 @@
+
+.floating-box-background, .floating-box {
+    position: fixed;
+    right: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.floating-box-background {
+    /* bottom: 20px; */
+    top:200px;
+    background-color: #fdfd96;
+    padding: 5px 10px;
+}
+
+.floating-box {
+    /* bottom: 60px; */
+    top: 140px;
+}

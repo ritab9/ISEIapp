@@ -1,0 +1,26 @@
+/* Status and Alerts             */
+/* ============================= */
+.success {
+    color: green;
+}
+
+.info {
+    color: blue;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+    font-weight: normal;
+}
+
+.error input, .error select {
+    border: 2px red solid;
+}
+
+.bg-error {
+    background-color: red;
+}

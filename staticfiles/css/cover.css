@@ -1,0 +1,77 @@
+/* =========================
+   Cover Page Layout
+========================= */
+
+.cover-page {
+  padding-left: 1.75in;   /* reserve vertical strip */
+}
+
+/* Vertical title */
+.cover-page .vertical-title {
+  position: absolute;
+  left: 0.7in;
+  top: 50%;
+  transform: rotate(-90deg) translate(-50%, 0);
+  transform-origin: left top;
+  font-size: 35px;
+  font-style: italic;
+  font-weight: bold;
+  color: #5a8fcf;
+  white-space: nowrap;
+}
+
+/* Double vertical line */
+.cover-page .vertical-lines {
+  position: absolute;
+  left: 1.25in;
+  top: 1in;
+  bottom: 1in;
+  display: flex;
+  gap: 2px;
+}
+
+.cover-page .vertical-lines .light {
+  width: 2px;
+  background: #5a8fcf;
+}
+
+.cover-page .vertical-lines .dark {
+  width: 2px;
+  background: #1a3d5d;
+}
+
+.cover-logo {
+  position: absolute;
+  top: 1.2in;         /* adjust vertical placement */
+  left: 2.1in;        /* start after vertical lines */
+  max-width: 200px;
+  height: auto;
+  z-index: 5;
+}
+
+/* Centered content */
+.cover-page .content {
+  text-align: center;
+  margin-top: 3.5in;
+  padding-left: 1.35in;
+}
+
+
+.submission-box {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    max-width: 300px;
+    z-index: 10;
+}
+
+.cover-page .footer {
+    position: absolute;
+    bottom: 1in;        /* distance from the bottom of the page */
+    width: 100%;         /* full width of the page */
+    text-align: center;  /* center text */
+    font-size: 14px;
+    color: #113a67;
+    z-index: 10;
+}
+
