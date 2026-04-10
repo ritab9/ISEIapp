@@ -1,8 +1,17 @@
+/* print.css */
+
 @media print {
 
   /* =========================
      Reset layout for print
   ========================== */
+
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white;
+    }
+
   .container, .row, [class*="col-"] {
       display: block !important;   /* ignore flex/grid */
       float: none !important;
@@ -14,21 +23,34 @@
 
   /* Remove shadows, padding is controlled in document.css */
   .page {
-      margin: 0;
+      width: 100%;
+      min-height: unset !important;
+      margin: 0 !important;
+      padding: 0.75in;
       box-shadow: none;
       page-break-after: always;
       break-after: page;
+      box-sizing: border-box;
+      background: white;
+      position:relative; !important;
   }
+   @page {
+        size: letter;
+        margin: 0.75in;        /* ✅ browser handles margins cleanly */
+        background: #fff;
+    }
 
-  /* Ensure back-to-TOC footer is fixed at bottom */
-  .page .back-to-toc {
-    position: absolute;
-    bottom: 0.75in;       /* reserve space in .page padding-bottom */
-    width: 100%;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #113a67;
-    display: block !important;  /* force it to show in print */
+  /* ✅ in-flow, static, no absolute */
+    .back-to-toc {
+        display: block !important;
+        position: static !important;    /* ✅ override document.css if needed */
+        width: 100%;
+        text-align: center;
+        font-size: 9pt;
+        color: #113a67;
+        margin-top: 1.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #ccc;
     }
 
   /* Keep sections together if possible */
@@ -36,12 +58,11 @@
       page-break-inside: avoid;
       break-inside: avoid;
       display: block;
-      padding-top: 0.5in;   /* no extra padding needed in print */
+      padding-top: 0; !important   /* no extra padding needed in print */
   }
 
   /* Hide UI-only elements */
-  .noprint,
-  button {
+  .noprint, button {
       display: none !important;
   }
 
@@ -63,16 +84,44 @@
   .page-break-before {
       break-before: page;
       page-break-before: always;
-      padding-top: 1.5rem
+      /* padding-top: 1.5rem */
   }
-  .page-break-after  { break-after: page; }
+  .page-break-after  {
+      break-after: page;
+  }
 
   /* Optional: TOC lists print-friendly */
   .toc-page ul {
       page-break-inside: auto;
+      page-break-after: always;
   }
 
   .toc-page li {
       page-break-inside: avoid;
   }
+
+   /* ✅ Cover page needs special handling */
+    .cover-page {
+        width: 100% !important;
+        height: 100vh !important;        /* ✅ fills exactly one printed page */
+        padding-left: 1.4in !important; /* ✅ keep the vertical strip */
+        padding-right: 1.7in !important;
+        padding-top: 0 !important;
+        padding-right: 0 !important;
+        padding-bottom: 0 !important;
+        position: relative !important;   /* ✅ anchor for absolute children */
+        page-break-after: always !important;
+        break-after: page !important;
+        overflow: hidden !important;     /* ✅ nothing spills out */
+    }
+
+    .cover-page .content {
+        padding-left: 0 !important;        /* ✅ remove the extra offset — padding-left on parent handles it */
+        padding-right: 0 !important;
+        text-align: center !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-top: 3.5in !important;
+    }
 }
+

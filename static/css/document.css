@@ -1,5 +1,6 @@
+
 /* =========================
-   Document Page System
+document.css
 ========================= */
 
 /* General page setup for screen and print */
@@ -16,11 +17,11 @@
     min-height: 11in;          /* full letter height */
     margin: 1rem auto;         /* horizontal centering on screen */
     padding: 0.75in;
-    padding-bottom: 1.2in;     /* reserve space for footer */
+    /* padding-bottom: 1.2in;      reserve space for footer */
     box-sizing: border-box;
     background: #fff;
     position: relative;
-    page-break-after: always;  /* force new page after each .page */
+    /* page-break-after: always;   force new page after each .page */
     display: block;
 }
 
@@ -34,14 +35,26 @@
 /* =========================
    Back to TOC Footer
 ========================= */
-.page .back-to-toc {
-    position: absolute;       /* place at bottom of page */
-    bottom: 0.75in;           /* matches page padding */
+/* .page .back-to-toc {
+    position: absolute;       / * place at bottom of page * /
+    bottom: 0.75in;           / * matches page padding * /
     width: 100%;
     text-align: right;
     font-size: 0.9rem;
     color: #113a67;
     margin: 0;
+} */
+
+.back-to-toc {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #113a67;
+    margin-top: 1.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #ccc;
+    /* ❌ NO position: absolute */
 }
 
 /* =========================
@@ -52,7 +65,7 @@
     page-break-inside: avoid;
     break-inside: avoid;
     /* Optional spacing if forced to new page */
-    padding-top: 0.5in;
+    padding-top: 0.25in;
 }
 
 /* =========================
