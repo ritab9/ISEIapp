@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from . import views
 
@@ -36,4 +37,6 @@ urlpatterns = [
     path('update_school_info/<int:schoolID>/', views.update_school_info, name='update_school_info'),
 
     path('change_school_year/', views.change_school_year, name='change_school_year'),
+
+    path('admin/', admin.site.urls)
 ]
