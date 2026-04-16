@@ -90,21 +90,37 @@ class TeacherCertificationApplicationFilter(django_filters.FilterSet):
     )
     billed = ChoiceFilter(field_name="billed", choices=CHOICES_B, label='Billed')
 
-    CHOICES_C = (
-        (False, 'Processing'),
-        (True, 'Finalized'),
-        (None, 'Any')
-    )
-    closed = ChoiceFilter(field_name="closed", choices=CHOICES_C, label='Status')
-    # CHOICES_D = (
-    #     (True, 'Valid'),
-    #     (False, 'Expired'),
-    #     (None, 'Any')
-    # )
-    # expired = ChoiceFilter(field_name='expired', choices = CHOICES_D, label = 'Expired')
+
     applied_after = DateFilter(field_name="date", lookup_expr='gte', label='Applied after:',
                              widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
     applied_before = DateFilter(field_name="date", lookup_expr='lte', label='Applied before:',
                               widget=DateInput(attrs={'placeholder': 'mm/dd/yyyy'}))
 
+    CHOICES_C = (
+        ('False', 'Processing'),
+        ('True', 'Finalized'),
+        ('', 'All'),
+    )
 
+    closed = django_filters.TypedChoiceFilter(
+        field_name="closed",
+        choices=CHOICES_C,
+        coerce=lambda x: None if x == '' else x == 'True',
+        empty_value=None,
+        label='Status'
+    )
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        if data is None:
+            data = {}
+
+        data = data.copy()
+
+        # Default to Processing if nothing selected
+        if 'closed' not in data:
+            data['closed'] = 'False'
+
+        super().__init__(data, queryset=queryset, request=request, prefix=prefix)
+
+        # ✅ This makes it visually preselected in the form
+        self.form.initial['closed'] = 'False'

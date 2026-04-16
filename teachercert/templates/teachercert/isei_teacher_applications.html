@@ -103,6 +103,29 @@
 
 
 <script>
+
+    // Auto-submit filter form on change
+    const filterForm = document.querySelector('form[method="get"]');
+
+    filterForm.querySelectorAll('select, input').forEach(el => {
+        // Skip date inputs if you want (optional)
+        if (el.type === 'date') return;
+
+        el.addEventListener('change', () => {
+            filterForm.submit();
+        });
+    });
+
+    // Optional: submit on Enter for text fields
+    filterForm.querySelectorAll('input[type="text"]').forEach(el => {
+        el.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterForm.submit();
+            }
+        });
+    });
+
+
     $('#emailbtn').on("click", function() {
                  var value = $(this).attr('value');
 
