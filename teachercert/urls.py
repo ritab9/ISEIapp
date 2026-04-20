@@ -7,7 +7,9 @@ from . import views
 urlpatterns = [
 
     path('teacherdashboard/<str:userID>/', views.teacherdashboard, name='teacher_dashboard'),
-    path('principalteachercert/<str:schoolID>/', views.principalteachercert, name='principal_teachercert'),
+    #path('principalteachercert/<str:schoolID>/', views.principalteachercert, name='principal_teachercert'),
+    path('principalteachercert', views.principalteachercert, name='principal_teachercert'),
+
     path('isei_teachercert_dashboard/', views.isei_teachercert_dashboard, name='isei_teachercert_dashboard'),
     #path('iseiteachers/', views.isei_teachers, name='isei_teachers'),
 
@@ -85,4 +87,6 @@ urlpatterns = [
 
     path("school/<int:school_id>/checklist-summary/", views.school_checklist_summary, name="school_checklist_summary"),
     path("isei/checklist-summary/", views.isei_checklist_summary, name="isei_checklist_summary"),
+
+    path('teacher-cert/email/<int:school_id>/', views.send_principal_cert_email, name='send_principal_cert_email')
 ]

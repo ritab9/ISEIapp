@@ -75,7 +75,7 @@
 
     {% for summary in school_summaries %}
         <div class="card card-body">
-            <h6><a href="{% url 'principal_teachercert' summary.school.id %}">{{ summary.school.name }}</a></h6>
+            <h6><!--a href="{ % url 'principal_teachercert' summary.school.id % }"-->{{ summary.school.name }}</h6>
             <p>Total teachers: {{ summary.total }}</p>
           <table class="table table-sm  table-responsive table-bordered">
             <thead>

@@ -21,3 +21,4 @@ class MessageTemplate(models.Model):
         context = Context(context)
         return subject_template.render(context), body_template.render(context)
 
+

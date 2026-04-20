@@ -12,6 +12,7 @@ from django.db.models.functions import Now
 from django.forms import modelformset_factory
 from .myfunctions import *
 from emailing.teacher_cert_functions import *
+from emailing.models import MessageTemplate
 
 import datetime
 from datetime import datetime, timedelta
@@ -35,92 +36,153 @@ def ceu_info(request):
     return render(request, 'teachercert/ceu_info.html', context)
 
 
+def build_school_cert_summary(teachers_queryset, valid_tcert_ids, expired_tcert_ids, all_tcert_ids):
+    schools = School.objects.filter(active=True)
+
+    cert_dict = {}
+
+    for s in schools:
+        s_teachers = teachers_queryset.filter(school=s)
+        teacher_ids = set(s_teachers.values_list("id", flat=True))
+
+        total = len(teacher_ids)
+
+        certified = len(teacher_ids & valid_tcert_ids)
+        expired = len(teacher_ids & expired_tcert_ids)
+        non_certified = len(teacher_ids - all_tcert_ids)
+
+        percent = round(certified * 100 / total) if total else 0
+
+        bc_missing = Teacher.objects.filter(
+            user__is_active=True,
+            user__groups__name="teacher",
+            user__profile__school=s,
+            background_check=False
+        ).count()
+
+        cert_dict[s] = {
+            "teachers": total,
+            "certified": certified,
+            "expired": expired,
+            "non_certified": non_certified,
+            "percent": percent,
+            "bc_missing": bc_missing,
+        }
+
+    return cert_dict
+
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_teachercert_dashboard(request):
-    # all active teacher
-    teachers = Teacher.objects.filter(Q(user__is_active=True), Q(user__groups__name__in=['teacher']))
-    # ~Q(school__name__in={'ISEI', 'Sample School'}))
 
-    # filter by school
+    # --------------------------------------------------
+    # 1. Base teacher queryset (filtered once)
+    # --------------------------------------------------
+    teachers = Teacher.objects.filter(
+        Q(user__is_active=True),
+        Q(user__groups__name__in=['teacher'])
+    )
+
     school_filter = SchoolFilter(request.GET, queryset=teachers)
     teachers = school_filter.qs
 
-    # Teacher Certificates Section
-    # number_of_teachers = teachers.count()
-    # Last certificate for each active user
-    tcertificates = TCertificate.objects.filter(archived=False, teacher__user__is_active=True).order_by('renewal_date', 'teacher__user__profile__school')
+    # --------------------------------------------------
+    # 2. Certificates (single base queryset)
+    # --------------------------------------------------
+    today = date.today()
 
-    # Valid certificates
-    valid_tcertificates = tcertificates.filter(renewal_date__gte=date.today(), teacher__in=teachers)
-    # certified teachers with unexpired certificates
-    certified_teachers = teachers.filter(tcertificate__in=valid_tcertificates).distinct().order_by('school')
-    number_of_certified_teachers = certified_teachers.count()
+    tcertificates_qs = TCertificate.objects.filter(
+        archived=False,
+        teacher__user__is_active=True
+    )
 
-    # expired certificates and teachers with expired certificates
-    expired_tcertificates = tcertificates.filter(renewal_date__lt=date.today(), teacher__in=teachers)
-    expired_teachers = teachers.filter(tcertificate__in=expired_tcertificates)
-    number_of_expired_teachers = expired_teachers.count()
+    valid_tcert_ids = set(
+        tcertificates_qs
+        .filter(renewal_date__gte=today)
+        .values_list("teacher_id", flat=True)
+    )
 
-    # not certified teachers
-    non_certified_teachers = teachers.filter(~Q(tcertificate__in=tcertificates)).order_by("school")
+    expired_tcert_ids = set(
+        tcertificates_qs
+        .filter(renewal_date__lt=today)
+        .values_list("teacher_id", flat=True)
+    )
+
+    all_tcert_ids = set(
+        tcertificates_qs.values_list("teacher_id", flat=True)
+    )
+
+    # --------------------------------------------------
+    # 3. Per-school summary (optimized helper)
+    # --------------------------------------------------
+    cert_dict = build_school_cert_summary(
+        teachers,
+        valid_tcert_ids,
+        expired_tcert_ids,
+        all_tcert_ids
+    )
+
+    # --------------------------------------------------
+    # 4. Derived lists for UI tables (still useful)
+    # --------------------------------------------------
+    valid_tcertificates = tcertificates_qs.filter(
+        renewal_date__gte=today,
+        teacher__in=teachers
+    )
+
+    expired_tcertificates = tcertificates_qs.filter(
+        renewal_date__lt=today,
+        teacher__in=teachers
+    )
+
+    non_certified_teachers = teachers.filter(
+        ~Q(tcertificate__in=tcertificates_qs)
+    ).order_by("school")
+
+    number_of_certified_teachers = teachers.filter(
+        tcertificate__in=valid_tcertificates
+    ).distinct().count()
+
+    number_of_expired_teachers = expired_tcertificates.count()
+
     number_of_non_certified_teachers = non_certified_teachers.count()
 
-    # if number_of_teachers >= 1:
-    #    percent_certified = round(number_of_certified_teachers * 100 / number_of_teachers)
-    # else:
-    #    percent_certified = "There are no teachers registered for this school"
-
-    today = date.today()
+    # --------------------------------------------------
+    # 5. Dates
+    # --------------------------------------------------
     in_six_months = today + timedelta(183)
     a_year_ago = today - timedelta(365)
 
-    schools = School.objects.filter(active=True)
-    cert_dict = {}
-    for s in schools:
-        s_teachers = teachers.filter(school=s)
-        # certified teachers with unexpired certificates
-        s_certified_teachers = s_teachers.filter(tcertificate__in=valid_tcertificates).distinct()
-        s_number_of_teachers = s_teachers.count()
-        s_number_of_certified_teachers = s_certified_teachers.count()
-        # s_number_of_certified_academic_teachers = s_certified_teachers.filter(academic=True).count()
-        # s_number_of_academic_teachers = s_teachers.filter(academic=True).count()
-        if s_teachers.count() > 0:
-            percent = round(s_number_of_certified_teachers * 100 / s_number_of_teachers)
-            # percent= round(s_number_of_certified_academic_teachers * 100 / s_number_of_academic_teachers)
-        else:
-            percent = "-"
+    # --------------------------------------------------
+    # 6. Context
+    # --------------------------------------------------
+    context = dict(
+        today=today,
+        in_six_months=in_six_months,
+        a_year_ago=a_year_ago,
 
-        #bc_complete = Teacher.objects.filter(user__is_active=True, user__profile__school__id=s.id, background_check=True)
-        bc_missing = Teacher.objects.filter(user__is_active=True, user__groups__name="teacher", user__profile__school__id=s.id, background_check=False).count()
+        valid_tcertificates=valid_tcertificates,
+        expired_tcertificates=expired_tcertificates,
+        non_certified_teachers=non_certified_teachers,
 
-        cert_dict[s] = {
-            'teachers': s_number_of_teachers,
-            'certified': s_number_of_certified_teachers,
-            # 'academic': s_number_of_academic_teachers,
-            # 'certified_academic':s_number_of_certified_academic_teachers,
-            'percent': percent,
-            'bc_missing': bc_missing,
-        }
+        number_of_certified_teachers=number_of_certified_teachers,
+        number_of_expired_teachers=number_of_expired_teachers,
+        number_of_non_certified_teachers=number_of_non_certified_teachers,
 
-    context = dict(today=today, in_six_months=in_six_months, a_year_ago=a_year_ago,
-                   # percent_certified=percent_certified,
-                   valid_tcertificates=valid_tcertificates, number_of_certified_teachers=number_of_certified_teachers,
-                   expired_tcertificates=expired_tcertificates, number_of_expired_teachers=number_of_expired_teachers,
-                   non_certified_teachers=non_certified_teachers,
-                   number_of_non_certified_teachers=number_of_non_certified_teachers,
-                   # number_of_teachers=number_of_teachers,
-                   school_filter=school_filter,
-                   cert_dict=cert_dict,
-                   )
+        school_filter=school_filter,
+        cert_dict=cert_dict,
+    )
 
     return render(request, 'teachercert/isei_teachercert_dashboard.html', context)
 
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal','registrar', 'staff'])
-def principalteachercert(request, schoolID):
-    #principal = User.objects.get(id=userID).teacher
+def principalteachercert(request):
+    user = request.user
+
+    # safest version: derive school from user
+    schoolID = user.profile.school.id
 
     teachers = Teacher.objects.filter(user__profile__school_id=schoolID, user__is_active=True, user__groups__name__in=['teacher'])
 
@@ -179,6 +241,53 @@ def principalteachercert(request, schoolID):
 
     return render(request, 'teachercert/principal_teachercert.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def send_principal_cert_email(request, school_id):
+    school = School.objects.get(id=school_id)
+
+    teachers = Teacher.objects.filter(
+        user__is_active=True,
+        user__groups__name__in=['teacher'],
+        school=school
+    )
+
+    tcertificates = TCertificate.objects.filter(
+        archived=False,
+        teacher__user__is_active=True
+    )
+
+    # reuse your optimized logic indirectly via cert_dict
+    cert_dict = build_school_cert_summary(
+        teachers,
+        set(tcertificates.filter(renewal_date__gte=date.today()).values_list("teacher_id", flat=True)),
+        set(tcertificates.filter(renewal_date__lt=date.today()).values_list("teacher_id", flat=True)),
+        set(tcertificates.values_list("teacher_id", flat=True))
+    )
+
+    summary = cert_dict[school]
+
+    principal_user = User.objects.filter(
+        profile__school=school,
+        groups__name='principal'
+    ).first()
+    context = build_principal_email_context(school, summary, principal_user, request)
+    template = MessageTemplate.objects.get(name="Principal_TeacherCert")
+    subject, message = template.render(context)
+
+    if request.method == "POST":
+        send_email(
+            subject=f"Teacher Certification Update – {school.name}",
+            message=request.POST.get("message", message),
+            send_to=[principal_user.email] if hasattr(principal_user, "email") else None
+        )
+        return redirect("isei_teachercert_dashboard")
+
+    return render(request, "teachercert/email_preview.html", {
+        "school": school,
+        "message": message,
+        "subject": f"Teacher Certification Update – {school.name}",
+    })
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['teacher', 'staff', 'principal', 'registrar'])

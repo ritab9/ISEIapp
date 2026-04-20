@@ -149,7 +149,7 @@
 
     <div class="card card-body" id="school_list" >
     <table class = "col-6 table table-striped" style = "table-layout: auto">
-        <thead class="span80">
+        <thead class="span80"><th>Send Email</th>
             <th>School</th><th>% teachers certified</th>
             <th>Teachers </th><th>Certified</th><th>Missing Background Check</th>
         </thead>
@@ -157,6 +157,9 @@
             {% for s, s_info in cert_dict.items %}
                 {% if s_info.teachers > 0 %}
                 <tr>
+                <td><small><a target="_blank" href="{% url 'send_principal_cert_email' s.id %}">
+                    Send Email
+                </a></small></td>
                 <td>
                     <div class ='btn btn-sm' onClick="selectschool({{ s.id }})">{{ s }}</div>
                 </td>

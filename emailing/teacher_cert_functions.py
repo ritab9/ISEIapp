@@ -9,14 +9,24 @@ from django.conf import settings
 signature = "\n" + "\n" +"Rita Burjan" + "\n" + "ISEI Teacher Certification" + "\n" + "isei1.org"
 office_email = []
 
+def send_email(subject, message, send_to=None, cc=None):
+    if send_to is None:
+        send_to = ["teacher_certification@iseiea.org"]
 
-def send_email(subject, message, send_to = ["teacher_certification@iseiea.org"]):
-    message = message+signature
-    #send_mail(subject, message, "ritab@iseiea.org", send_to, fail_silently=False, auth_user="ritab@iseiea.org", auth_password="*********",
-    #          connection=None, html_message=None)
+    if cc is None:
+        cc = ["teacher_certification@iseiea.org"]
 
-    mail = EmailMessage(subject, message, settings.EMAIL_HOST_USER, send_to, cc=["teacher_certification@iseiea.org"])
-    mail.send()
+    message = message + signature
+
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=settings.EMAIL_HOST_USER,
+        to=send_to,
+        cc=cc
+    )
+
+    mail.send(fail_silently=False)
 
 def email_registered_user(teacher):
     subject = "ISEI Teacher Certification Account"
@@ -167,3 +177,16 @@ def email_Application_on_hold(teacher, note = None):
         message = "Dear " + str(teacher.first_name) +","+"\n " + "\n "+"Your ISEI Teacher Certification Application has been received and will be processed soon."
 
     send_email(subject, message, [teacher.user.email])
+
+
+def build_principal_email_context(school, cert_summary, principal_user, request=None):
+    return {
+        "school_name": school.name,
+        "principal_name": principal_user.first_name,
+        "percent_certified": cert_summary["percent"],
+        "expired": cert_summary["expired"],
+        "non_certified": cert_summary["non_certified"],
+        "bc_missing": cert_summary["bc_missing"],
+        "dashboard_link": request.build_absolute_uri("/principalteachercert/"),
+    }
+
