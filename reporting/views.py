@@ -1703,7 +1703,9 @@ def opening_report(request, arID):
             opening.unkown_baptismal_status_count = students.filter(baptized='U').count()
             opening.baptized_non_sda_count = students.filter(baptized='O').count()
 
-        personnel = Personnel.objects.filter(annual_report=annual_report_personnel).annotate(highest_degree_rank=Max('degrees__rank'))
+
+        personnel = Personnel.objects.filter(annual_report=annual_report_personnel).exclude(
+            status=StaffStatus.NO_LONGER_EMPLOYED).annotate(highest_degree_rank=Max('degrees__rank'))
 
         if personnel.exists():
             teacher_admin=personnel.filter(
