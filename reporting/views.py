@@ -2331,13 +2331,60 @@ def longitudinal_enrollment(request, individual_school_name=None):
             for school in schools:
                 allowed_grades = school.get_grade_range()
 
-                annual_report = AnnualReport.objects.filter(
+                report = AnnualReport.objects.filter(
                     school_year=school_year,
                     school=school,
-                    report_type=ReportType.objects.get(code="SR")
+                    report_type=ReportType.objects.get(code="OR")
                 ).first()
 
-                if annual_report:
+                if not report:
+                    continue
+
+                opening = getattr(report, "opening", None)
+
+                if not opening or not opening.grade_count:
+                    continue
+
+                if not opening or not opening.grade_count:
+                    continue
+
+                gc = opening.grade_count
+
+                grade_map = {
+                    -2: gc.pre_k_count,
+                    -1: gc.k_count,
+                    0: gc.grade_0_count,
+                    1: gc.grade_1_count,
+                    2: gc.grade_2_count,
+                    3: gc.grade_3_count,
+                    4: gc.grade_4_count,
+                    5: gc.grade_5_count,
+                    6: gc.grade_6_count,
+                    7: gc.grade_7_count,
+                    8: gc.grade_8_count,
+                    9: gc.grade_9_count,
+                    10: gc.grade_10_count,
+                    11: gc.grade_11_count,
+                    12: gc.grade_12_count,
+                    14: gc.ga_i_count,
+                    15: gc.ga_ii_count,
+                    16: gc.ga_iii_count,
+                }
+
+                for grade, count in grade_map.items():
+                    if grade not in allowed_grades:
+                        continue
+
+                    count = count or 0
+
+                    LongitudinalEnrollment.objects.update_or_create(
+                        school=school,
+                        year=school_year,
+                        grade=grade,
+                        defaults={"enrollment_count": count},
+                    )
+
+                """if annual_report:
                     student_counts = (
                         annual_report.students
                         .filter(grade_level__in=allowed_grades, status__in=['enrolled', 'part-time'])
@@ -2354,7 +2401,7 @@ def longitudinal_enrollment(request, individual_school_name=None):
                             year=school_year,
                             grade=grade,
                             defaults={"enrollment_count": count},
-                        )
+                        )"""
 
     # ======================
     # FETCH DATA FOR DISPLAY
