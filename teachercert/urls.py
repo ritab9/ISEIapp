@@ -8,7 +8,7 @@ urlpatterns = [
 
     path('teacherdashboard/<str:userID>/', views.teacherdashboard, name='teacher_dashboard'),
     #path('principalteachercert/<str:schoolID>/', views.principalteachercert, name='principal_teachercert'),
-    path('principalteachercert', views.principalteachercert, name='principal_teachercert'),
+    path('principalteachercert/', views.principalteachercert, name='principal_teachercert'),
 
     path('isei_teachercert_dashboard/', views.isei_teachercert_dashboard, name='isei_teachercert_dashboard'),
     #path('iseiteachers/', views.isei_teachers, name='isei_teachers'),

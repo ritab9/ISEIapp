@@ -178,11 +178,21 @@ def email_Application_on_hold(teacher, note = None):
 
     send_email(subject, message, [teacher.user.email])
 
+def format_names(names):
+    if not names:
+        return "Principal"
+    if len(names) == 1:
+        return names[0]
+    if len(names) == 2:
+        return f"{names[0]} and {names[1]}"
+    return f"{', '.join(names[:-1])}, and {names[-1]}"
 
-def build_principal_email_context(school, cert_summary, principal_user, request=None):
+def build_principal_email_context(school, cert_summary, principal_users, request=None):
+    principal_names = [u.first_name for u in principal_users if u.first_name]
+
     return {
         "school_name": school.name,
-        "principal_name": principal_user.first_name,
+        "principal_name": format_names(principal_names),
         "percent_certified": cert_summary["percent"],
         "expired": cert_summary["expired"],
         "non_certified": cert_summary["non_certified"],

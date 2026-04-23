@@ -267,19 +267,27 @@ def send_principal_cert_email(request, school_id):
 
     summary = cert_dict[school]
 
-    principal_user = User.objects.filter(
+    principal_users = User.objects.select_related("profile").filter(
         profile__school=school,
-        groups__name='principal'
-    ).first()
-    context = build_principal_email_context(school, summary, principal_user, request)
+        groups__name='principal',
+        is_active=True
+    ).distinct()
+
+    recipient_emails = list(
+        principal_users.values_list("email", flat=True)
+    )
+
+    context = build_principal_email_context(school, summary, principal_users, request)
     template = MessageTemplate.objects.get(name="Principal_TeacherCert")
     subject, message = template.render(context)
 
     if request.method == "POST":
+        recipients = request.POST.get("recipients", "")
+        recipient_emails = [e.strip() for e in recipients.split(",") if e.strip()]
         send_email(
-            subject=f"Teacher Certification Update – {school.name}",
+            subject=request.POST.get("subject", subject),
             message=request.POST.get("message", message),
-            send_to=[principal_user.email] if hasattr(principal_user, "email") else None
+            send_to= recipient_emails,
         )
         return redirect("isei_teachercert_dashboard")
 
@@ -287,6 +295,7 @@ def send_principal_cert_email(request, school_id):
         "school": school,
         "message": message,
         "subject": f"Teacher Certification Update – {school.name}",
+        "recipients": recipient_emails,
     })
 
 @login_required(login_url='login')

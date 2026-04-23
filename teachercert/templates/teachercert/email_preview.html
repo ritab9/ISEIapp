@@ -10,6 +10,11 @@
     <form method="post">
         {% csrf_token %}
 
+        <label>Recipients</label><br>
+        <input type="text" name="recipients"
+               value="{{ recipients|join:', ' }}"
+               style="width:100%">
+
         <label>Subject</label><br>
         <input type="text" name="subject" value="{{ subject }}" style="width:100%"><br><br>
 
