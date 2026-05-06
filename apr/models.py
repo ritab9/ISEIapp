@@ -130,7 +130,7 @@ class ActionPlan(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Action Plan #{self.number}"
+        return f"Action_Plan #{self.number}-{self.accreditation}"
 
 class ActionPlanSteps(models.Model):
     action_plan = models.ForeignKey(ActionPlan, on_delete=models.CASCADE)

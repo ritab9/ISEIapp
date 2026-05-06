@@ -61,6 +61,7 @@ def manage_apr(request, accreditation_id):
     for action_plan in action_plans:
         steps = ActionPlanSteps.objects.filter(action_plan=action_plan).order_by('number')
         action_plans_with_steps.append((action_plan, steps))
+    create_progress_records(request, apr, ActionPlan)
 
     context = {
         'apr': apr,
@@ -303,7 +304,7 @@ def apr_progress_report(request, apr_id):
     priority_directives = PriorityDirective.objects.filter(apr=apr)
     directives = Directive.objects.filter(apr=apr)
     recommendations = Recommendation.objects.filter(apr=apr)
-    action_plans = ActionPlan.objects.filter(accreditation=apr.accreditation)
+    action_plans = ActionPlan.objects.filter(accreditation=apr.accreditation).order_by('number')
 
     # Fetch all progress and group dynamically
     all_progress = Progress.objects.filter(
@@ -323,6 +324,7 @@ def apr_progress_report(request, apr_id):
     action_plans_progress = group_progress_by_directive(
         all_progress.filter(action_plan__in=action_plans), 'action_plan', include_steps=True
     )
+
     progress_statuses = ProgressStatus.objects.all()
 
     context = {
