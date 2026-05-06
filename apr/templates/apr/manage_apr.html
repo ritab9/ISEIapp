@@ -12,7 +12,7 @@
 <!-- Action Plan Directives -->
         <div class="card card-body">
             <div class="row">
-                <div class="col"><h6 class="section-title clickable">Action Plan Directives</h6></div>
+                <div class="col"><h6 class=" clickable">Action Plan Directives</h6></div>
                 <div class="col text-right">
                     <a href="{% url 'add_action_plan_directives' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Action Plan Directives</a>
                 </div>
@@ -33,7 +33,7 @@
 <!-- Priority Directives -->
         <div class="card card-body">
             <div class="row">
-                <div class="col"><h6 class="section-title clickable">Priority Directives</h6></div>
+                <div class="col"><h6 class=" clickable">Priority Directives</h6></div>
                 <div class="col text-right">
                     <a href="{% url 'add_priority_directives' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Priority Directives</a>
                 </div>
@@ -54,7 +54,7 @@
 <!-- Directives -->
         <div class="card card-body">
             <div class="row">
-                <div class="col"><h6 class="section-title clickable">Directives</h6></div>
+                <div class="col"><h6 class=" clickable">Directives</h6></div>
                 <div class="col text-right">
                     <a href="{% url 'add_directives' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Directives</a>
                 </div>
@@ -73,7 +73,7 @@
 <!-- Recommendations -->
         <div class="card card-body">
             <div class="row">
-                <div class="col"><h6 class="section-title clickable">Recommendations</h6></div>
+                <div class="col"><h6 class="clickable">Recommendations</h6></div>
                 <div class="col text-right">
                     <a href="{% url 'add_recommendations' apr.id %}" class="btn btn-sm btn-outline-ISEIblue">Add/Edit Recommendations</a>
                 </div>
@@ -104,7 +104,7 @@
                 <!-- Action Plan Title -->
                 <div class="row">
                     <div class="col">
-                        <h6 class="section-title clickable">Action Plan #{{ action_plan.number }}</h6>
+                        <h6 class=" clickable">Action Plan #{{ action_plan.number }}</h6>
                     </div>
                     <div class="col text-right">
                         <a href="{% url 'edit_action_plan' apr.accreditation.id action_plan.id %}" class="btn btn-sm btn-outline-ISEIblue">Manage Action Plan</a>

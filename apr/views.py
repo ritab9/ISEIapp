@@ -101,7 +101,7 @@ def handle_formset(request, apr_id, model, formset_class, form_action_url):
         # Use existing objects for the apr
         formset = formset_class(queryset=model.objects.filter(apr=apr))
 
-    context = dict(apr=apr, formset=formset, model_name=model.__name__, form_action_url = form_action_url)
+    context = dict(apr=apr, formset=formset, model_name=model._meta.verbose_name, form_action_url = form_action_url)
     # Render the template with the formset
     return render(request, 'apr/handle_formset.html', context)
 
