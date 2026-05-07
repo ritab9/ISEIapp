@@ -64,7 +64,8 @@
                                 {% else %}‼️
                                 {% endif %}
                                 <a href="{% url 'apr_progress_report' apr.id %}">APR Progress</a>
-                                <div class="small">{{ apr.updated_at|default_if_none:"" }}</div>
+                                <div class="small">Updated:{{ apr.updated_at|default_if_none:"" }}</div>
+                                <div class="">Submitted:{{ apr.submitted_at }}</div>
                                 <br><small>Due date: May 1st</small>
                             {% endwith %}
                         {% else %}
