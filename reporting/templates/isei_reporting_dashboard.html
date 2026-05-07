@@ -64,9 +64,9 @@
                                         {{ apr.submitted_at|apr_status }}
                                         <a href="{% url 'apr_progress_report' apr.id %}">
                                         {{ apr.submitted_at|default_if_none:"Never submitted" }}</a>
-                                        <br><small>Due date: May 1st</small>
                                     {% endif %}
-                                    <small>Update: {{ apr.updated_at }}</small>
+                                    <br><small>Update: {{ apr.updated_at }}</small>
+                                    <br><small>Due date: May 1st</small>
                                 {% endwith %}
                             {% else %}
                                 No APR
