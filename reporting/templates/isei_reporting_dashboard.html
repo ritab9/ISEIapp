@@ -66,6 +66,7 @@
                                         {{ apr.submitted_at|default_if_none:"Never submitted" }}</a>
                                         <br><small>Due date: May 1st</small>
                                     {% endif %}
+                                    <small>Update: {{ apr.updated_at }}</small>
                                 {% endwith %}
                             {% else %}
                                 No APR
