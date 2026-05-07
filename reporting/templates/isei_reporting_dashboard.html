@@ -54,16 +54,22 @@
                 </td>
                 {% endfor %}
                     <td class="orange-column">
-                        {% if school.current_accreditation.apr %}
-                            {% with apr=school.current_accreditation.apr %}
-                                {{ apr.submitted_at|apr_status }}
-                                <a href="{% url 'apr_progress_report' apr.id %}">
-                                {{ apr.submitted_at|default_if_none:"Never submitted" }}</a>
-                                <br><small>Due date: May 1st</small>
-                            {% endwith %}
-                        {% else %}
-                            No APR
-                        {% endif %}
+                            {% if school.current_accreditation.apr %}
+                                {% with apr=school.current_accreditation.apr %}
+                                    {% if school.current_accreditation.school_year == current_school_year %}
+                                        <a href="{% url 'apr_progress_report' apr.id %}">
+                                            Accreditation Year <br> APR
+                                        {{ apr.submitted_at|default_if_none:"" }}</a>
+                                    {% else %}
+                                        {{ apr.submitted_at|apr_status }}
+                                        <a href="{% url 'apr_progress_report' apr.id %}">
+                                        {{ apr.submitted_at|default_if_none:"Never submitted" }}</a>
+                                        <br><small>Due date: May 1st</small>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                No APR
+                            {% endif %}
                     </td>
                 </tr>
             {% endfor %}
