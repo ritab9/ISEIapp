@@ -56,16 +56,9 @@
                     <td class="orange-column">
                         {% if school.current_accreditation.apr %}
                             {% with apr=school.current_accreditation.apr %}
-                                {% if apr.updated_at %}
-                                    {% if apr.updated_at >= apr_yellow_threshold %}🟢
-                                    {% elif apr.updated_at >= apr_red_threshold %}🟡
-                                    {% else %}🔴
-                                    {% endif %}
-                                {% else %}‼️
-                                {% endif %}
-                                <a href="{% url 'apr_progress_report' apr.id %}">APR Progress</a>
-                                <div class="small">Updated:{{ apr.updated_at|default_if_none:"" }}</div>
-                                <div class="">Submitted:{{ apr.submitted_at }}</div>
+                                {{ apr.submitted_at|apr_status }}
+                                <a href="{% url 'apr_progress_report' apr.id %}">
+                                {{ apr.submitted_at|default_if_none:"Never submitted" }}</a>
                                 <br><small>Due date: May 1st</small>
                             {% endwith %}
                         {% else %}
@@ -84,11 +77,11 @@
             <div class="col">
                  🟢 On Time - Report submitted before or on the due date. <br>
                  🟡 Late - Report submitted within two weeks of due date.<br>
-                 🔴 Overdue - Report submitted more than two weeks after due date.
+                 🔴 Very Late - Report submitted more than two weeks after due date.
             </div>
             <div class="col">
-                 ❗ Late - Report not submitted, due date passed. <br>
-                 ‼️ Overdue - Report not submitted, due date was more than 2 weeks ago.<br>
+                 ❗ Not submitted - due date passed. <br>
+                 ‼️ Not submitted, due date was more than 2 weeks ago.<br>
                  📅 Calendar - School calendar uploaded.
             </div>
         </div>

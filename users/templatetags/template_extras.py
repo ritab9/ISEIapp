@@ -58,3 +58,38 @@ def get_score(score_map, value):
 def is_on_team(accreditation, user):
     return accreditation.is_user_on_team(user)
 
+
+from django.utils import timezone
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
+
+@register.filter
+def apr_status(submitted_at):
+    today = date.today()
+    due_date = date(today.year, 5, 1)
+
+    green_threshold = due_date - relativedelta(months=2)  # March 1
+    yellow_ex_threshold = due_date - relativedelta(months=4)  # Jan 1
+    red_ex_threshold = due_date - relativedelta(years=1)  # May 1 last year
+    late_threshold = due_date + relativedelta(weeks=2)  # May 15
+
+    if submitted_at is None:
+        return '‼️❗'
+
+    # normalize to date
+    if hasattr(submitted_at, 'date'):
+        submitted_at = submitted_at.date()
+
+    if submitted_at > late_threshold:
+        return '🔴'
+    elif submitted_at > due_date:
+        return '🟡'
+    elif submitted_at >= green_threshold:
+        return '🟢'
+    elif submitted_at >= yellow_ex_threshold:
+        return '🔶'
+    elif submitted_at >= red_ex_threshold:
+        return '❗'
+    else:
+        return '‼️'

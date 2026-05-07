@@ -2005,20 +2005,11 @@ def isei_reporting_dashboard(request):
     opening_report_codes = ['SR', 'ER', '190', 'OR']
     closing_report_codes = ['IR', 'CR', 'WS']
 
-    from datetime import datetime
-    from dateutil.relativedelta import relativedelta
-    import pytz
-
-
-    today = date.today()
-    apr_due_date = date(today.year, 5, 1)
-    apr_yellow_threshold = apr_due_date - relativedelta(months=1)
-    apr_red_threshold = apr_due_date - relativedelta(months=6)
 
     context = {'schools':schools, 'wss_schools':wss_schools, 'report_types':report_types, 'todays_date': date.today(),
                'opening_report_codes': opening_report_codes, 'closing_report_codes': closing_report_codes,
                'dashboard':True,
-               'apr_due_date': apr_due_date, 'apr_yellow_threshold': apr_yellow_threshold, 'apr_red_threshold':apr_red_threshold}
+               }
 
     return render(request, 'isei_reporting_dashboard.html', context)
 
