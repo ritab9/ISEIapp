@@ -53,13 +53,24 @@
                     {% endfor %}
                 </td>
                 {% endfor %}
-                <td class="orange-column">{% if school.current_accreditation.apr %}
-                        <a href="{% url 'apr_progress_report' school.current_accreditation.apr.id %}">APR Progress</a>
-                        <div class="small">{{ school.current_accreditation.apr.updated_at|default_if_none:"" }}</div>
-                        <br><small>Due date: May 1st</small>
-                    {% else %}
-                        No APR
-                {% endif %}</td>
+                    <td class="orange-column">
+                        {% if school.current_accreditation.apr %}
+                            {% with apr=school.current_accreditation.apr %}
+                                {% if apr.updated_at %}
+                                    {% if apr.updated_at >= apr_yellow_threshold %}🟢
+                                    {% elif apr.updated_at >= apr_red_threshold %}🟡
+                                    {% else %}🔴
+                                    {% endif %}
+                                {% else %}‼️
+                                {% endif %}
+                                <a href="{% url 'apr_progress_report' apr.id %}">APR Progress</a>
+                                <div class="small">{{ apr.updated_at|default_if_none:"" }}</div>
+                                <br><small>Due date: May 1st</small>
+                            {% endwith %}
+                        {% else %}
+                            No APR
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
