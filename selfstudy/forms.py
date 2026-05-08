@@ -263,7 +263,7 @@ class StandardizedTestScoreForm(forms.ModelForm):
         widgets = {
             'subject': forms.HiddenInput(),
             'grade': forms.HiddenInput(),
-            'score': forms.NumberInput(attrs={'class': 'form-control form-control-sm w-30', 'step': '0.01'}),
+            'score': forms.TextInput(attrs={'class': 'form-control form-control-sm w-30'}),
         }
 
     def __init__(self, *args, **kwargs):
