@@ -35,11 +35,16 @@ class ActionPlanInline(admin.StackedInline):
     extra = 1
     inlines = [ProgressInline]
 
+class APRSchoolYearInline(admin.TabularInline):
+    model = APRSchoolYear
+    extra = 0
+    fields = ['name', 'recommendation']
+
 @admin.register(APR)
 class APRAdmin(admin.ModelAdmin):
     list_display = ['accreditation', 'accreditation_school']
     search_fields = ['accreditation__school']  # Filtering by accreditation school
-    inlines = [PriorityDirectiveInline, DirectiveInline, RecommendationInline, ActionPlanInline]
+    inlines = [APRSchoolYearInline, PriorityDirectiveInline, DirectiveInline, RecommendationInline, ActionPlanInline]
 
     def accreditation_school(self, obj):
         return obj.accreditation.school

@@ -45,10 +45,10 @@ def manage_apr(request, accreditation_id):
             apr=apr
         )
 
-    apr_school_year, created = APRSchoolYear.objects.get_or_create(
-        name=f'{year_start}-{year_end}',
+    apr_school_year, created = APRSchoolYear.objects.update_or_create(
         apr=apr,
-        recommendation=True
+        recommendation=True,
+        defaults={'name': f'{year_start}-{year_end}'}
     )
 
     action_plan_directives = ActionPlanDirective.objects.filter(apr=apr).order_by('number')
