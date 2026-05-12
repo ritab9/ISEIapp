@@ -87,8 +87,18 @@ def test_order(request, schoolID, orderID=None):
 @allowed_users(allowed_roles=['staff'])
 def isei_test_order(request):
 
-    test_orders = TestOrder.objects.exclude(school__abbreviation='SS').filter(finalized=False)
-    f = TestOrderFilter(request.GET, queryset=test_orders)
+    #test_orders = TestOrder.objects.exclude(school__abbreviation='SS').filter(finalized=False)
+    #f = TestOrderFilter(request.GET, queryset=test_orders)
+
+    #base_qs = TestOrder.objects.exclude(school__abbreviation='SS')
+    base_qs = TestOrder.objects
+
+    # Default: show non-finalized unless the user explicitly filters
+    #if not any(k in request.GET for k in ['finalized', 'school', 'submitted', 'order_date_after', 'order_date_before']):
+    #    base_qs = base_qs.filter(finalized=False)
+
+    f = TestOrderFilter(request.GET, queryset=base_qs)
+    test_orders = f.qs  # use filtered queryset everywhere below
 
 
     test_booklets_counts = ReusableTestBookletOrdered.objects.filter(order__in=test_orders).values('level').annotate(
