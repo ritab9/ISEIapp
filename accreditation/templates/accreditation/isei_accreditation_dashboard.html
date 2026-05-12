@@ -86,7 +86,7 @@
                             {% if category == "scheduled" %}
                                 {% if accreditation.selfstudy %}
                                     <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Report</a><br>
-                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Edit SS</a>
+                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">Editable SS</a>
                                 {% elif accreditation.previous_self_study_link %}
                                     <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
                                 {% else %}
@@ -96,8 +96,8 @@
 
                             {% else %}
                                 {% if accreditation.selfstudy %}
-                                    <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Report (PDF)</a>
-                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}" class="error">Edit SS</a>
+                                    <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Report (PDF)</a><br>
+                                    <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}" class="error">Editable SS</a>
                                 {% elif accreditation.previous_self_study_link %}
                                     <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>
                                 {% else %} N/A
