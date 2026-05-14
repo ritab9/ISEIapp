@@ -17,9 +17,10 @@ admin.site.register(Accreditation, AccreditationAdmin)
 
 @admin.register(AccreditationVisitingTeam)
 class AccreditationVisitingTeamAdmin(admin.ModelAdmin):
-    list_display = ('user', 'accreditation')
+    list_display = ('user', 'accreditation', 'active')
     list_filter = ('accreditation__status',)
-    search_fields = ('user__username', 'user__email')
+    search_fields = ('user__username', 'accreditation__school__name')
+    list_editable = ['active']
 
 
 @admin.register(AccreditationTerm)

@@ -19,7 +19,7 @@
 <br>
 <div id="add_class" >
     <div class="card card-body">
-        <div><input type="button" class="btn btn-ISEIblue3" id="classaddbtn"  value ="Enter New Academic Course"></div>
+        <div><input type="button" class="btn btn-sm btn-ISEIblue3" id="classaddbtn"  value ="Enter New Academic Course"></div>
         <form action=" " method="POST" id="add_academic_class" enctype="multipart/form-data" style = "display: none">
             {% csrf_token %}
             <p id="teacher">{{form.teacher}}</p>

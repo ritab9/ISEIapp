@@ -52,7 +52,7 @@ def isei_annual_visit(request):
     visits = AnnualVisit.objects.filter(school_year=current_year).select_related("school").order_by(order_by)
 
     for visit in visits:
-        document = SchoolDocument.objects.filter(school=visit.school).first()
+        document = SchoolDocumentLink.objects.filter(school=visit.school).first()
         visit.document_link = document.link if document else None
 
     context = dict(visits=visits, current_year=current_year)

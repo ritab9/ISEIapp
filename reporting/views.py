@@ -133,17 +133,20 @@ def student_report(request, arID):
                         if instance.status == 'withdrawn' and instance.us_state == 'TN':
                             send_simple_email(
                                 "TN Student withdrawn",
-                                f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
-                                f"has been withdrawn on {instance.withdraw_date or 'Unknown Date'}\n"
+                                f"{instance.name or 'Unknown Student'} "
+                                f"has been withdrawn on {instance.withdraw_date.strftime('%m/%d/%Y') or 'Unknown Date'} from {school.name or 'Unknown School'}\n"
+                                f" Address: {instance.address}\n"
+                                f" Birthdate: {instance.birth_date.strftime('%m/%d/%Y')}\n"
+                                f" Age: {instance.age}\n"
                                 f"The student is from {instance.TN_county or 'Unknown County'} "
                             )
                         elif instance.us_state == 'TN' and instance.registration_date and instance.registration_date > sept_10:
                             send_simple_email(
                                 "New TN Student registered",
                                 f"{instance.name or 'Unknown Student'} from {school.name or 'Unknown School'} "
-                                f"has been registered on {instance.registration_date}\n"
+                                f"has been registered on {instance.registration_date.strftime('%m/%d/%Y')}\n"
                                 f" Address {instance.address}\n"
-                                f" Birthdate {instance.birth_date}\n"
+                                f" Birthdate {instance.birth_date.strftime('%m/%d/%Y')}\n"
                                 f" Age {instance.age}\n"
                                 f"The student is from {instance.TN_county or 'Unknown County'} "
                             )

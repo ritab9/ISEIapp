@@ -12,7 +12,7 @@ from django.contrib import messages
 from .models import *
 from .forms import *
 from users.models import SchoolType
-from annualvisit.models import SchoolDocument
+from annualvisit.models import SchoolDocumentLink
 from emailing.functions import send_simple_email
 from services.models import Resource
 
@@ -170,7 +170,7 @@ def school_accreditation_dashboard(request, school_id):
         school_doc = None
     else:
         new_school=True
-        school_doc=SchoolDocument.objects.filter(school=school).first()
+        school_doc=SchoolDocumentLink.objects.filter(school=school).first()
 
     today = timezone.localdate()
 

@@ -97,7 +97,7 @@ class UserAdmin(AuthUserAdmin):
     inlines = [UserProfileInline]  # Add the UserProfile inline
     list_display = ('username', 'School', 'id', 'group', 'is_active', "last_login", 'email')  # Add custom fields
     list_editable = ('is_active',)  # Allow toggling 'is_active' directly in the list view
-    ordering = ('-is_active', 'last_login', 'username',)  # Custom ordering
+    ordering = ('-is_active', 'username', 'last_login', )  # Custom ordering
     list_filter = (SchoolFilter, 'groups', 'is_active')  # Add custom filter for 'school'
 
     # Custom method to display the user's school
