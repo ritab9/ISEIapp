@@ -45,7 +45,9 @@
                 <div class="card-body">
                     <ul>
                         {% for resource in document_resources %}
-                            <li><a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a></li>
+                            <li {% if resource.sublist %} class="ml-3" style="list-style-type: circle "{% endif %}>
+                                <a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a>
+                            </li>
                         {% endfor %}
                         <li><a href="{% url 'school_personnel_directory' %}" target="_blank">ISEI Directory</a></li>
                         <li><a class="" href="{% url 'calendar' %}">ISEI Calendar <i class="bi bi-calendar-event"></i> </a></li>
