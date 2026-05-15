@@ -42,8 +42,8 @@ class APRSchoolYearInline(admin.TabularInline):
 
 @admin.register(APR)
 class APRAdmin(admin.ModelAdmin):
-    list_display = ['accreditation', 'accreditation_school']
-    search_fields = ['accreditation__school']  # Filtering by accreditation school
+    list_display = ['accreditation', 'accreditation_school', 'submitted_at', 'updated_at']
+    #search_fields = ['accreditation__school']  # Filtering by accreditation school
     inlines = [APRSchoolYearInline, PriorityDirectiveInline, DirectiveInline, RecommendationInline, ActionPlanInline]
 
     def accreditation_school(self, obj):
@@ -55,6 +55,7 @@ class APRAdmin(admin.ModelAdmin):
 class PriorityDirectiveAdmin(admin.ModelAdmin):
     list_display = ['number', 'apr', 'progress_status', 'description']
     list_filter = ['apr']
+    #search_fields = ['']
     inlines = [ProgressInline]
 
 @admin.register(Directive)
@@ -85,6 +86,7 @@ class ActionPlanAdmin(admin.ModelAdmin):
 class ActionPlanStepsAdmin(admin.ModelAdmin):
     list_display = ['action_plan', 'number', 'person_responsible']
     search_fields = ['action_plan__number', 'person_responsible']
+    list_filter = ['action_plan__accreditation']
 
 @admin.register(Progress)
 class ProgressAdmin(admin.ModelAdmin):

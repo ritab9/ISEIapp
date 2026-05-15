@@ -18,7 +18,7 @@ class APR(models.Model):
     submitted_at = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return f"AAPR: {self.accreditation.school}"
+        return f"AAPR: {self.accreditation}"
 
 
 class APRSchoolYear(models.Model):

@@ -370,6 +370,6 @@ class Address(models.Model):
 
 @property
 def has_active_visiting_team(self):
-    return self.visiting_team_membership.filter(active=True).exists()
+    return self.visiting_team_membership.filter(active=True, accreditation__status='scheduled').exists()
 
 User.add_to_class("has_active_visiting_team", has_active_visiting_team)
