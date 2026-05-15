@@ -127,17 +127,17 @@ def finalize_order(request, order_id):
 @login_required(login_url='login')
 def resources(request, school_id=None):
 
-    accreditation_resources= Resource.objects.filter(type__name='Accreditation')
-    document_resources= Resource.objects.filter(type__name='Document')
-    teacher_evaluation_resources = Resource.objects.filter(type__name='Teacher Evaluation')
-    admin_evaluation_resources = Resource.objects.filter(type__name='Admin Evaluation')
-    safety_resources = Resource.objects.filter(type__name='Safety & Maintenance')
-    meeting_materials =Resource.objects.filter(type__name='Meeting Materials')
-    registrations =Resource.objects.filter(type__name='Registration').order_by('name')
-    services = Resource.objects.filter(type__name='Service').order_by('name')
-    misc = Resource.objects.filter(type__name='Misc')
+    accreditation_resources= Resource.objects.filter(type__name='Accreditation').order_by('order')
+    document_resources= Resource.objects.filter(type__name='Document').order_by('order')
+    teacher_evaluation_resources = Resource.objects.filter(type__name='Teacher Evaluation').order_by('order')
+    admin_evaluation_resources = Resource.objects.filter(type__name='Admin Evaluation').order_by('order')
+    safety_resources = Resource.objects.filter(type__name='Safety & Maintenance').order_by('order')
+    meeting_materials =Resource.objects.filter(type__name='Meeting Materials').order_by('order')
+    registrations =Resource.objects.filter(type__name='Registration').order_by('order')
+    services = Resource.objects.filter(type__name='Service').order_by('order')
+    misc = Resource.objects.filter(type__name='Misc').order_by('order')
 
-    temporary = Resource.objects.filter(type__name='Temporary').order_by('name')
+    temporary = Resource.objects.filter(type__name='Temporary').order_by('order')
 
     professional_growth_plan=Resource.objects.filter(name='Professional Growth Plan Template').first()
 

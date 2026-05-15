@@ -9,6 +9,8 @@ class ResourceTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
+    list_display = ('name','order', 'sublist', 'link',  'type')
+    list_editable = ('order', 'sublist', 'link')
     list_filter = ['type', ]
 
 class TestMaterialTypeAdmin(admin.ModelAdmin):

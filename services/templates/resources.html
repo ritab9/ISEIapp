@@ -63,7 +63,7 @@
                     <ul>
                         {% for resource in registrations %}
                             {% if resource.link %}
-                                <li{% if forloop.counter|divisibleby:2 %} class="ml-3" style="list-style-type: circle "{% endif %}>
+                                <li{% if resource.sublist %} class="ml-3" style="list-style-type: circle "{% endif %}>
                                     <a href="{{ resource.link }}" target="_blank">{{ resource.name }}</a>
                                 </li>
                             {% endif %}

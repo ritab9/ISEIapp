@@ -15,6 +15,8 @@ class Resource(models.Model):
     name = models.CharField(max_length=200)
     link = models.URLField(max_length=1000, blank=True, null=True)
     type = models.ForeignKey(ResourceType, on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField(default=0)
+    sublist = models.BooleanField(default=False)
     def __str__(self):
         return self.name
 
