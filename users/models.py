@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from datetime import date
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -218,8 +219,13 @@ class School(models.Model):
         Accreditation = apps.get_model('accreditation', 'Accreditation')  # Lazy load the Accreditation model
         return Accreditation.objects.filter(school=self, status='active').first()
 
+
     def get_active_users(school):
-        return User.objects.filter(profile__school=school, is_active=True).distinct()
+        return User.objects.filter(
+            Q(profile__school=school) |
+            Q(memberships__school=school),
+            is_active=True
+        ).distinct()
 
     class Meta:
         ordering = ('name',)
@@ -251,7 +257,21 @@ class UserProfile(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
-        return str(self.user) + ", " + self.school.name
+        return f"{self.user} — {self.school.name if self.school else 'No school'}"
+
+
+class UserSchoolMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="memberships")
+    school = models.ForeignKey(School, on_delete=models.PROTECT, related_name="user_memberships")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "school"], name="unique_user_school_membership")
+        ]
+
+    def __str__(self):
+        return f"{self.user} — {self.school}"
+
 
 #Teacher Models
 class Teacher(models.Model):

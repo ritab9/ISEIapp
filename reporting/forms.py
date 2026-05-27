@@ -6,6 +6,7 @@ from .models import *
 from django.forms import BaseModelFormSet, TextInput, NumberInput, DateInput
 from django.forms.models import inlineformset_factory
 from django.forms import modelformset_factory
+from django.db.models import Q
 
 from django.forms.widgets import CheckboxSelectMultiple
 
@@ -234,7 +235,11 @@ class PersonnelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if schoolID is not None:
-            queryset = Teacher.objects.filter(user__profile__school_id=schoolID, user__is_active=True).select_related('user')
+            queryset = Teacher.objects.filter(
+                Q(user__profile__school_id=schoolID) |
+                Q(user__memberships__school_id=schoolID),
+                user__is_active=True
+            ).select_related('user').distinct()
             self.fields['teacher'].queryset = queryset
 
 

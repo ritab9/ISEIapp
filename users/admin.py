@@ -76,6 +76,12 @@ class UserProfileInline(admin.StackedInline):  # You can also use TabularInline 
     can_delete = False
     verbose_name_plural = "Profile"
 
+class UserSchoolMembershipInline(admin.TabularInline):
+    model = UserSchoolMembership
+    extra = 1
+    #autocomplete_fields = ["school"]
+
+
 # Custom UserProfile school filter
 class SchoolFilter(admin.SimpleListFilter):
     title = 'School'  # Title of the filter in the admin
@@ -87,31 +93,49 @@ class SchoolFilter(admin.SimpleListFilter):
         return [(school.id, school.name) for school in schools]
 
     def queryset(self, request, queryset):
-        # Filter queryset based on the selected school
         if self.value():
-            return queryset.filter(profile__school_id=self.value())
+            return queryset.filter(
+                Q(profile__school_id=self.value()) |
+                Q(memberships__school_id=self.value())
+            ).distinct()
         return queryset
+
 
 # Custom UserAdmin
 class UserAdmin(AuthUserAdmin):
-    inlines = [UserProfileInline]  # Add the UserProfile inline
-    list_display = ('username', 'School', 'id', 'group', 'is_active', "last_login", 'email')  # Add custom fields
-    list_editable = ('is_active',)  # Allow toggling 'is_active' directly in the list view
-    ordering = ('-is_active', 'username', 'last_login', )  # Custom ordering
-    list_filter = (SchoolFilter, 'groups', 'is_active')  # Add custom filter for 'school'
+    inlines = [UserProfileInline, UserSchoolMembershipInline]
 
-    # Custom method to display the user's school
-    def School(self, obj):
-        # Check if the user has a profile and if the profile has a school
+    list_display = (
+        'username',
+        'school',
+        'schools',
+        'id',
+        'group',
+        'is_active',
+        'last_login',
+        'email'
+    )
+
+    list_editable = ('is_active',)
+    ordering = ('-is_active', 'username', 'last_login')
+    list_filter = (SchoolFilter, 'groups', 'is_active')
+
+    def school(self, obj):
         if hasattr(obj, 'profile') and obj.profile and obj.profile.school:
             return obj.profile.school.name
         return "No School"
-    School.short_description = "School"  # Set a custom column header
+    school.short_description = "Active School"
 
-    # Custom method to display the user's groups
+    def schools(self, obj):
+        return ", ".join(
+            obj.memberships.select_related("school")
+            .values_list("school__name", flat=True)
+        )
+    schools.short_description = "Schools"
+
     def group(self, obj):
         return ", ".join(group.name for group in obj.groups.all())
-    group.short_description = "Groups"  # Set a custom column header
+    group.short_description = "Groups"
 
 # Unregister the default User admin and register the customized one
 admin.site.unregister(User)

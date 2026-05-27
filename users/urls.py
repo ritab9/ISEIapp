@@ -28,6 +28,8 @@ urlpatterns = [
 
     # dashboard urls
     path('school_dashboard/<str:schoolID>/', views.school_dashboard, name='school_dashboard'),
+    path('school_dashboard/', views.school_dashboard, name='school_dashboard'),
+
     path('isei_dashboard/', views.isei_dashboard, name='isei_dashboard'),
 
     #teacher account settings
@@ -38,5 +40,7 @@ urlpatterns = [
 
     path('change_school_year/', views.change_school_year, name='change_school_year'),
 
-    path('admin/', admin.site.urls)
+    path("change-active-school/", views.change_active_school, name="change_active_school"),
+
+    #path('admin/', admin.site.urls)
 ]

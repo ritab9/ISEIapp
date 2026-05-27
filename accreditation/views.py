@@ -206,6 +206,7 @@ def school_accreditation_dashboard(request, school_id):
     }
 
     context = dict(accreditation_groups =accreditation_groups, school=school,
+                   return_context = "school_accreditation_dashboard",
                    application_status = application_status, current_selfstudy=current_selfstudy,
                    new_school=new_school, school_doc=school_doc,
                    evidence_list=evidence_list)

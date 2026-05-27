@@ -49,7 +49,7 @@
                         {% elif user|in_group:"principal,registrar"%}
                             {% block principal_nav %}
                              <li class="nav-item ">
-                                <a class="nav-link" href="{% url 'school_dashboard' school_id %}"> Dashboard </a>
+                                <a class="nav-link" href="{% url 'school_dashboard'%}"> Dashboard </a>
                              </li>
                              <li class="nav-item ">
                                 <a class="nav-link" href="{% url 'school_accreditation_dashboard' school_id %}"> Accreditation & Annual Visit </a>
@@ -81,13 +81,13 @@
                                 {% endblock %}
                             {% endif %}    
                             
-                            <!-- { % if user|in_group:"coordinating_team" %}
-                                { % block coordinating_nav %}
+                            {% if user|in_group:"coordinating_team" %}
+                                {% block coordinating_nav %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{ % url 'school_accreditation_dashboard' school_id %}"> Accreditation </a>
+                                        <a class="nav-link" href="{% url 'school_accreditation_dashboard' school_id %}"> Accreditation </a>
                                     </li>
-                                { % endblock %}
-                            { % endif %}    -->
+                                {% endblock %}
+                            {% endif %}
                             
                             {% if user|in_group:"test_ordering" %}
                                 {% block test_ordering_nav %}
@@ -105,10 +105,33 @@
             {% endblock first_line_navbar %}
         
     <!-- Username, school_year and Logout -->
-             {% if user.is_authenticated and user.is_active%}
+             {% if user.is_authenticated and user.is_active %}
                 <span class ="name-msg">
-                  {{ request.user.profile.school }}<br>
-                    {% if user|in_group:"principal,registrar,staff" and dashboard == True%}
+                    {% with memberships=user.memberships.all %}
+                        {% if memberships.count > 1 and return_context %} 
+                            
+                            <form method="post" action="{% url 'change_active_school' %}">
+                                {% csrf_token %}
+                                 <input type="hidden" name="next_view" value="{{ return_context }}">     
+
+                                <select name="school" onchange="this.form.submit()" class="span80 form-select form-select-sm mb-2">
+
+                                    {% for membership in memberships %}
+                                        <option value="{{ membership.school.id }}"
+                                            {% if membership.school == request.user.profile.school %}selected{% endif %}>
+                                            {{ membership.school.name }}
+                                        </option>
+                                    {% endfor %}
+
+                                </select>
+                            </form>
+                        {% else %}
+                            {{ request.user.profile.school }}
+                        {% endif %}
+                    {% endwith %}
+
+                  
+                    {% if user|in_group:"principal,registrar,staff" and dashboard %}
                         <form method="post" id="schoolYearForm" action="{% url 'change_school_year' %}">
                             {% csrf_token %}
                             <span class="span80">{{ navbar_schoolyear_form }}</span>

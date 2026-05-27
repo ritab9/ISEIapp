@@ -266,10 +266,12 @@ def accountsettings(request, userID):
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['principal', 'registrar','staff'])
-def school_dashboard(request, schoolID):
+def school_dashboard(request, schoolID=None):
     #TODO Review this for efficiency. See what cases could benefit from prefertch related.
-
-    school=School.objects.get(id=schoolID)
+    if schoolID is None:
+        school = request.user.profile.school
+    else:
+        school=School.objects.get(id=schoolID)
     school_year=school.current_school_year
 
     sr_report_type = ReportType.objects.get(code='SR')
@@ -361,7 +363,7 @@ def school_dashboard(request, schoolID):
                     other_agency_accreditation_info=other_agency_accreditation_info, accreditation=accreditation,
                     sr_er_submitted = sr_er_submitted, or_submitted=or_submitted, cr_submitted=cr_submitted,
                     is_old = is_old, fire_marshal_date=fire_marshal_date, wss=wss,
-                    apr=apr, dashboard=True,
+                    apr=apr, return_context = "school_dashboard", dashboard=True,
                     safety_form_link=safety_form_link,
                   )
 
@@ -450,3 +452,32 @@ def change_school_year(request):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     else:
         return HttpResponseRedirect('/')  # or any default redirect
+
+
+@login_required
+@login_required
+def change_active_school(request):
+
+    if request.method == "POST":
+
+        school_id = request.POST.get("school")
+        next_view = request.POST.get("next_view", "school_dashboard")
+
+        school = get_object_or_404(School, id=school_id)
+
+        if not request.user.memberships.filter(school=school).exists():
+            raise PermissionDenied("You do not have access to this school.")
+
+        profile = request.user.profile
+        profile.school = school
+        profile.save(update_fields=["school"])
+
+        # safe fallback if school_id missing
+        fallback_school_id = profile.school.id
+
+        if next_view:
+            return redirect(next_view, school_id or fallback_school_id)
+
+        return redirect("school_dashboard", school_id or fallback_school_id)
+
+    return redirect("school_dashboard")
