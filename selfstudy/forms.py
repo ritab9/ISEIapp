@@ -17,27 +17,34 @@ class SelfStudy_TeamMemberForm(forms.Form):
 
         # Show all active users from the school (personnel that has accounts on ISEIapp)
         school = selfstudy.accreditation.school
-        self.fields['users'].queryset = school.get_active_users()
+        self.fields['users'].queryset = school.get_active_users().order_by('last_name')
 
         # Pre-check users who are already part of the given team
-        initial_users = team.ss_team.values_list('user', flat=True)
-        self.initial['users'] = User.objects.filter(id__in=initial_users)
+        #initial_users = team.ss_team.values_list('user', flat=True)
+        #self.initial['users'] = User.objects.filter(id__in=initial_users)
+
+        initial_users = team.ss_team.values_list( 'user_id', flat=True)
+        self.initial['users'] = list(initial_users)
 
     def save(self, team):
         """Save the selected users to the team."""
         selected_users = self.cleaned_data['users']
         current_members = team.ss_team.all()
 
+        group=Group.objects.get(name="coordinating_team")
         # Add new users
         for user in selected_users:
-            if not SelfStudy_TeamMember.objects.filter(team=team, user=user).exists():
-                SelfStudy_TeamMember.objects.create(user=user, team=team)
-                user.groups.add(Group.objects.get(name="coordinating_team"))
+            SelfStudy_TeamMember.objects.get_or_create(user=user, team=team)
+            user.groups.add(group)
 
         # Remove unchecked users
         for member in current_members:
             if member.user not in selected_users:
+                user = member.user
                 member.delete()
+                still_on_team = SelfStudy_TeamMember.objects.filter(user=user).exists()
+                if not still_on_team:
+                    user.groups.remove(group)
 
 
 class SchoolProfileForm(forms.ModelForm):

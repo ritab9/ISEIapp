@@ -22,51 +22,88 @@
         </div>
 
         <table class="table table-sm table-bordered table-striped">
-        <thead class="blue-header">
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Select</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if form.fields.users.queryset %}
-                <tr><td colspan="4" class="small" style="background-color: lightgray">Existing users (teachers or team members)</td></tr>
-                {% for user in form.fields.users.queryset %}
+            <thead class="blue-header">
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if form.fields.users.queryset %}
+                    <tr><td colspan="4" class="small" style="background-color: lightgray">Existing users (teachers or team members)</td></tr>
+                    {% for user in form.fields.users.queryset %}
+                        <tr>
+                            <td>{{ user.first_name }}</td>
+                            <td>{{ user.last_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td><input type="checkbox" name="users" value="{{ user.id }}"
+                                       {% if user.id in selected_user_ids %}
+                                               checked
+                                        {% endif %}
+                            ></td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+
+                {% if personnel_without_users %}
+                    <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel without user account (account will be created upon selection)</td></tr>
+                    {% for person in personnel_without_users %}
                     <tr>
-                        <td>{{ user.first_name }}</td>
-                        <td>{{ user.last_name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td><input type="checkbox" name="users" value="{{ user.id }}" {% if user in form.users.initial %}checked{% endif %}></td>
+                        <td>{{ person.first_name }}</td>
+                        <td>{{ person.last_name }}</td>
+                        <td>{{ person.email }}</td>
+                        <td><input type="checkbox" name="personnel_without_users" value="{{ person.id }}"
+                            {% if user.id in selected_user_ids %}
+                                   checked
+                            {% endif %}
+                        ></td>
                     </tr>
-                {% endfor %}
-            {% endif %}
+                    {% endfor %}
+                {% endif %}
 
-            {% if personnel_without_users %}
-                <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel without user account (account will be created upon selection)</td></tr>
-                {% for person in personnel_without_users %}
-                <tr>
-                    <td>{{ person.first_name }}</td>
-                    <td>{{ person.last_name }}</td>
-                    <td>{{ person.email }}</td>
-                    <td><input type="checkbox" name="personnel_without_users" value="{{ person.id }}"></td>
-                </tr>
-                {% endfor %}
-            {% endif %}
+                {% if inactive_users %}
+                    <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel with inactive user account (account will be activated upon selection)</td></tr>
+                    {% for person in inactive_users %}
+                    <tr>
+                        <td>{{ person.first_name }}</td>
+                        <td>{{ person.last_name }}</td>
+                        <td>{{ person.email }}</td>
+                        <td><input type="checkbox" name="inactive_users" value="{{ person.id }}"
+                            {% if user.id in selected_user_ids %}
+                                   checked
+                            {% endif %}
+                        ></td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
 
-            {% if inactive_users %}
-                <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel with inactive user account (account will be activated upon selection)</td></tr>
-                {% for person in inactive_users %}
-                <tr>
-                    <td>{{ person.first_name }}</td>
-                    <td>{{ person.last_name }}</td>
-                    <td>{{ person.email }}</td>
-                    <td><input type="checkbox" name="inactive_users" value="{{ person.id }}"></td>
-                </tr>
-                {% endfor %}
-            {% endif %}
-            </table>
+                {% if True %}
+                    <tr>
+                        <td colspan="4" class="small" style="background-color: lightgray">
+                            Add additional team-members for the SeflStudy (board-member, volunteer, etc)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input type="text" name="external_first_name" class="form-control form-control-sm" placeholder="First name">
+                        </td>
+
+                        <td>
+                            <input type="text" name="external_last_name" class="form-control form-control-sm" placeholder="Last name">
+                        </td>
+
+                        <td>
+                            <input type="email" name="external_email" class="form-control form-control-sm" placeholder="Email">
+                        </td>
+
+                        <td></td>
+                    </tr>
+                    {% endif %}
+            </tbody>
+        </table>
 
         <!-- Submit button with custom class for styling -->
         <button type="submit" class="btn btn-sm btn-ISEIyellow floating-box">Save</button>
