@@ -88,7 +88,7 @@
                                                                 <thead>
                                                                     <tr class="blue-header2">
                                                                         <th><b>{{ session_data.test_type }}</b></th>
-                                                                        {% for grade in session_data.grade_range %}
+                                                                        {% for grade in session_data.grades %}
                                                                             <th>Grade {{ grade }}</th>
                                                                         {% endfor %}
                                                                     </tr>
@@ -97,7 +97,7 @@
                                                                     {% for subject, grade_scores in session_data.scores.items %}
                                                                         <tr>
                                                                             <td>{{ subject }}</td>
-                                                                            {% for grade in session_data.grade_range %}
+                                                                            {% for grade in session_data.grades %}
                                                                                 <td>{{ grade_scores|get_from_dict:grade|default_if_none:"" }}</td>
                                                                             {% endfor %}
                                                                         </tr>

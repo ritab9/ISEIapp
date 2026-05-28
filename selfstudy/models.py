@@ -288,11 +288,13 @@ class StandardizedTestSession(models.Model):
 class StandardizedTestScore(models.Model):
     SUBJECT_CHOICES = [
         ('ENGLISH', 'English'),
+        ('NATIVE LANGUAGE', 'Native Language'),
         ('READING', 'Reading'),
         ('WRITING', 'Writing'),
         ('MATH', 'Mathematics'),
         ('SCIENCE', 'Science'),
         ('SOCIAL STUDIES', 'Social Studies'),
+        ('CIVICS','Civics'),
         ('COMPOSITE', 'Composite Score'),
     ]
 

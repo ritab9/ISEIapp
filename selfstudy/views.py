@@ -36,6 +36,12 @@ from decimal import Decimal
 import re
 
 
+#School filling out the self study views
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
+from django.db.models import Avg
 
 @login_required(login_url='login')
 def check_lock(request, form_id):
@@ -199,15 +205,6 @@ def selfstudy(request, selfstudy_id, readonly=False):
         # If no SelfStudy is found, redirect to setup_selfstudy
         accreditation = get_object_or_404(Accreditation, id=selfstudy_id)  # Assuming the selfstudy_id matches accreditation_id
         return setup_selfstudy(request, accreditation_id=accreditation.id)
-
-
-
-#School filling out the self study views
-
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
-from django.db.models import Avg
 
 @login_required(login_url='login')
 def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
@@ -1397,13 +1394,22 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
         # Loop through each session and group them by school year and grade level
         for session in sessions:
             score_map = defaultdict(dict)
+
             for score in session.scores.all():
                 score_map[score.subject][score.grade] = score.score
 
+            subjects = sorted(score_map.keys())
+
+            grades = sorted({
+                grade
+                for subject_scores in score_map.values()
+                for grade in subject_scores.keys()
+            })
+
             session_data = {
                 'session': session,
-                'grade_range': get_grade_range_for_level(session.grade_level_type),
-                'subjects': sorted(score_map.keys()),
+                'subjects': subjects,
+                'grades': grades,
                 'scores': score_map
             }
 
@@ -1423,13 +1429,18 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
                 }
                 for session_data in sessions:
                     session_info = {
-                        'session_id':session_data['session'].id,
+                        'session_id': session_data['session'].id,
                         'test_type': session_data['session'].test_type,
                         'test_name': session_data['session'].test_name,
-                        'grade_range': session_data['grade_range'],
                         'subjects': session_data['subjects'],
-                        'scores': {subject: {grade: str(score) for grade, score in subject_scores.items()}
-                                   for subject, subject_scores in session_data['scores'].items()}
+                        'grades': session_data['grades'],
+                        'scores': {
+                            subject: {
+                                grade: str(score)
+                                for grade, score in subject_scores.items()
+                            }
+                            for subject, subject_scores in session_data['scores'].items()
+                        }
                     }
                     year_data['sessions'].append(session_info)
                 level_data['school_years'].append(year_data)
@@ -1492,7 +1503,9 @@ def manage_standardized_test_scores(request, school_id=None, school_year_name=No
             test_type="OT"  # default; you can adjust or prompt user to fill this
         )
 
-    SUBJECTS = ['ENGLISH', 'READING', 'WRITING', 'MATH', 'SCIENCE', 'SOCIAL STUDIES', 'COMPOSITE']
+    SUBJECTS = ['ENGLISH', 'READING', 'WRITING', 'MATH', 'SCIENCE', 'SOCIAL STUDIES',
+                'NATIVE LANGUAGE', 'CIVICS',
+                'COMPOSITE']
     form_dict = {}
 
     if request.method == 'POST':
