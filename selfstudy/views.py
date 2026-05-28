@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from users.decorators import allowed_users
 
 from users.utils import is_in_any_group
-from users.models import UserProfile
+from users.models import UserProfile, UserSchoolMembership
 from .forms import *
 from accreditation.models import Standard, Indicator, Level
 from teachercert.models import SchoolYear
@@ -33,6 +33,7 @@ from django.views.decorators.csrf import csrf_exempt
 from collections import defaultdict
 from decimal import Decimal
 
+import re
 
 
 
@@ -459,151 +460,188 @@ def selfstudy_coordinating_team(request, selfstudy_id, readonly=False):
                  teams=teams, privileges=privileges, readonly=readonly)
     return render(request, 'selfstudy/coordinating_team.html', context)
 
+def generate_username(first_name, last_name):
+    # Normalize input
+    first = (first_name or "").strip().title()
+    last = (last_name or "").strip().title()
+
+    # Base format: John.Smith
+    base_username = f"{first}.{last}"
+
+    # Remove invalid characters (optional but safer)
+    base_username = re.sub(r"[^A-Za-z0-9.]", "", base_username)
+
+    username = base_username
+    counter = 1
+
+    # Ensure uniqueness
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{counter}"
+        counter += 1
+
+    return username
+
+
+def ensure_user_school_link(user, school):
+    # 1. Ensure profile exists (do NOT overwrite existing school blindly)
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    # Optional: only set school if profile is empty
+    if profile.school is None:
+        profile.school = school
+        profile.save()
+
+    # 2. Ensure membership exists (this is the real multi-school source)
+    membership, created = UserSchoolMembership.objects.get_or_create(
+        user=user,
+        school=school
+    )
+
+    return membership, created
+
 @login_required(login_url='login')
 def add_coordinating_team_members(request, selfstudy_id, team_id):
 
-    def generate_username(first_name, last_name):
-        base_username = f"{first_name.title()}.{last_name.title()}"
-        username = base_username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}{counter}"
-            counter += 1
-        return username
-
-
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school = selfstudy.accreditation.school
-    standards = Standard.objects.top_level()
     team = get_object_or_404(SelfStudy_Team, id=team_id, selfstudy=selfstudy)
 
     group = Group.objects.get(name="coordinating_team")
 
     # ----------------------------
-    # Get last annual report
+    # CORE FORM (stable team membership)
     # ----------------------------
-    last_annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year=selfstudy.accreditation.school_year).first()
+    form = SelfStudy_TeamMemberForm(request.POST or None, selfstudy=selfstudy, team=team )
+
+    # ----------------------------
+    # PERSONNEL DATA (UI only)
+    # ----------------------------
+    last_annual_report = AnnualReport.objects.filter( school=school, report_type__code="ER", school_year=selfstudy.accreditation.school_year ).first()
 
     if not last_annual_report:
         last_annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER"
         ).exclude(submit_date__isnull=True).order_by('-submit_date').first()
 
-    # ----------------------------
-    # Personnel extraction
-    # ----------------------------
-    school_personnel = Personnel.objects.filter( annual_report=last_annual_report
-    ).exclude( status=StaffStatus.NO_LONGER_EMPLOYED
-    ).exclude( email_address__isnull=True
-    ).exclude( email_address__exact=''
-    ).values( 'id', 'first_name', 'last_name', 'email_address')
+    school_personnel = Personnel.objects.filter(
+        annual_report=last_annual_report
+    ).exclude(status=StaffStatus.NO_LONGER_EMPLOYED
+    ).exclude(email_address__isnull=True
+    ).exclude(email_address__exact=''
+    ).values('id', 'first_name', 'last_name', 'email_address')
 
-    inactive_users = []
     personnel_without_users = []
+    inactive_users = []
 
-    for personnel in school_personnel:
-        user = User.objects.filter(email__iexact=personnel['email_address']).first()
+    for p in school_personnel:
+        user = User.objects.filter(email__iexact=p['email_address']).first()
 
         if user:
             if not user.is_active:
                 inactive_users.append({
-                    'id': personnel['id'], 'first_name': personnel['first_name'], 'last_name': personnel['last_name'],
-                    'email': personnel['email_address'], 'user_id': user.id,})
+                    'id': p['id'],
+                    'user_id': user.id,
+                    'first_name': p['first_name'],
+                    'last_name': p['last_name'],
+                    'email': p['email_address'],
+                })
         else:
             personnel_without_users.append({
-                'id': personnel['id'], 'first_name': personnel['first_name'], 'last_name': personnel['last_name'],
-                'email': personnel['email_address'], })
-
-    # ----------------------------
-    # Form
-    # ----------------------------
-    form = SelfStudy_TeamMemberForm(request.POST or None, selfstudy=selfstudy, team=team )
+                'id': p['id'],
+                'first_name': p['first_name'],
+                'last_name': p['last_name'],
+                'email': p['email_address'],
+            })
 
     # ----------------------------
     # POST
     # ----------------------------
     if request.method == 'POST':
+
         if form.is_valid():
-            form.save(team)
+            form.save(team, school)
 
             # ----------------------------
-            # External member
+            # A. External user
             # ----------------------------
-            external_first = request.POST.get('external_first_name')
-            external_last = request.POST.get('external_last_name')
-            external_email = request.POST.get('external_email')
+            ext_first = request.POST.get('external_first_name')
+            ext_last = request.POST.get('external_last_name')
+            ext_email = request.POST.get('external_email')
 
-            if external_first and external_last and external_email:
-                user = User.objects.filter( email__iexact=external_email).first()
+            if ext_first and ext_last and ext_email:
+
+                user = User.objects.filter(email__iexact=ext_email).first()
+
                 if not user:
-                    username = generate_username( external_first, external_last)
-                    user = User.objects.create_user( username=username, email=external_email,
-                        first_name=external_first, last_name=external_last, )
-                    UserProfile.objects.create( user=user, school=school )
-                else:
-                    UserProfile.objects.update_or_create(user=user, defaults={'school': school})
+                    username = generate_username(ext_first, ext_last)
+                    user = User.objects.create_user(
+                        username=username,
+                        email=ext_email,
+                        first_name=ext_first,
+                        last_name=ext_last
+                    )
 
+                ensure_user_school_link(user, school)
 
-                SelfStudy_TeamMember.objects.get_or_create(user=user, team=team )
+                SelfStudy_TeamMember.objects.get_or_create(user=user, team=team)
                 user.groups.add(group)
 
             # ----------------------------
-            # Personnel without users
+            # B. Personnel without users
             # ----------------------------
-            selected_personnel_without_users_ids = request.POST.getlist('personnel_without_users')
+            selected_personnel = request.POST.getlist('personnel_without_users')
 
-            personnel_dict = { p['id']: p for p in personnel_without_users}
+            personnel_dict = {p['id']: p for p in personnel_without_users}
 
-            for personnel_id in selected_personnel_without_users_ids:
-                personnel = personnel_dict.get(int(personnel_id))
+            for pid in selected_personnel:
+                p = personnel_dict.get(int(pid))
+                if not p:
+                    continue
 
-                if personnel:
-                    username = generate_username( personnel['first_name'], personnel['last_name'] )
+                user = User.objects.create_user(
+                    username=generate_username(p['first_name'], p['last_name']),
+                    email=p['email'],
+                    first_name=p['first_name'],
+                    last_name=p['last_name']
+                )
 
-                    user = User.objects.create_user(username=username, email=personnel['email_address'],
-                        first_name=personnel['first_name'], last_name=personnel['last_name'] )
+                ensure_user_school_link(user, school)
 
-                    UserProfile.objects.create( user=user, school=school )
-
-                    SelfStudy_TeamMember.objects.get_or_create(user=user, team=team )
-
-                    user.groups.add(group)
+                SelfStudy_TeamMember.objects.get_or_create(user=user, team=team)
+                user.groups.add(group)
 
             # ----------------------------
-            # Reactivate inactive users
+            # C. Reactivate inactive users
             # ----------------------------
-            selected_inactive_users_ids = request.POST.getlist( 'inactive_users' )
+            selected_inactive = request.POST.getlist('inactive_users')
 
-            for user_data in inactive_users:
-                if str(user_data['id']) in selected_inactive_users_ids:
-                    user = User.objects.get( id=user_data['user_id'] )
+            for u in inactive_users:
+                if str(u['id']) in selected_inactive:
+
+                    user = User.objects.get(id=u['user_id'])
                     user.is_active = True
                     user.save()
 
-                    UserProfile.objects.update_or_create( user=user, defaults={'school': school})
+                    ensure_user_school_link(user, school)
 
-                    SelfStudy_TeamMember.objects.get_or_create(user=user, team=team )
+                    SelfStudy_TeamMember.objects.get_or_create(user=user, team=team)
                     user.groups.add(group)
 
-            return redirect( 'selfstudy_coordinating_team', selfstudy_id=selfstudy.id )
-
-    selected_user_ids = set(team.ss_team.values_list('user_id', flat=True))
+            return redirect('selfstudy_coordinating_team', selfstudy_id=selfstudy.id)
 
     # ----------------------------
-    # Context
+    # CONTEXT
     # ----------------------------
     context = dict(
-        form=form, selfstudy=selfstudy, team=team, standards=standards,
-        active_link="coordinating_team",
-        report_id=last_annual_report.id if last_annual_report else None,
-        personnel_without_users=personnel_without_users, inactive_users=inactive_users,
-        selected_user_ids = selected_user_ids,
+        form=form,
+        selfstudy=selfstudy,
+        team=team,
+        personnel_without_users=personnel_without_users,
+        inactive_users=inactive_users,
+        selected_user_ids=set(team.ss_team.values_list('user_id', flat=True)),
     )
 
-    return render(
-        request,
-        'selfstudy/add_coordinating_team_members.html',
-        context
-    )
+    return render(request, 'selfstudy/add_coordinating_team_members.html', context)
+
 
 @login_required(login_url='login')
 def selfstudy_profile(request, selfstudy_id, readonly=False):

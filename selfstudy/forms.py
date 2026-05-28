@@ -8,44 +8,43 @@ from django.contrib.auth.models import Group
 from reporting.models import Personnel, StaffStatus
 
 class SelfStudy_TeamMemberForm(forms.Form):
-    """Form to add or remove team members for a given team."""
-    users = forms.ModelMultipleChoiceField( queryset=User.objects.none(), widget=forms.CheckboxSelectMultiple, required=False)
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+
     def __init__(self, *args, **kwargs):
         selfstudy = kwargs.pop('selfstudy')
         team = kwargs.pop('team')
         super().__init__(*args, **kwargs)
 
-        # Show all active users from the school (personnel that has accounts on ISEIapp)
         school = selfstudy.accreditation.school
-        self.fields['users'].queryset = school.get_active_users().order_by('last_name')
 
-        # Pre-check users who are already part of the given team
-        #initial_users = team.ss_team.values_list('user', flat=True)
-        #self.initial['users'] = User.objects.filter(id__in=initial_users)
+        self.fields['users'].queryset = school.get_active_users()
 
-        initial_users = team.ss_team.values_list( 'user_id', flat=True)
-        self.initial['users'] = list(initial_users)
+        # pre-check existing members
+        self.fields['users'].initial = team.ss_team.values_list('user_id', flat=True)
 
-    def save(self, team):
-        """Save the selected users to the team."""
+    def save(self, team, school):
         selected_users = self.cleaned_data['users']
-        current_members = team.ss_team.all()
+        group = Group.objects.get(name="coordinating_team")
 
-        group=Group.objects.get(name="coordinating_team")
-        # Add new users
+        selected_ids = set(selected_users.values_list('id', flat=True))
+        current_members = team.ss_team.select_related('user')
+
+        current_ids = set(current_members.values_list('user_id', flat=True))
+
+        # ADD
         for user in selected_users:
-            SelfStudy_TeamMember.objects.get_or_create(user=user, team=team)
-            user.groups.add(group)
+            if user.id not in current_ids:
+                SelfStudy_TeamMember.objects.create(user=user, team=team)
+                user.groups.add(group)
 
-        # Remove unchecked users
+        # REMOVE
         for member in current_members:
-            if member.user not in selected_users:
-                user = member.user
+            if member.user_id not in selected_ids:
                 member.delete()
-                still_on_team = SelfStudy_TeamMember.objects.filter(user=user).exists()
-                if not still_on_team:
-                    user.groups.remove(group)
-
 
 class SchoolProfileForm(forms.ModelForm):
     class Meta:

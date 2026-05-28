@@ -1,114 +1,77 @@
 <!--coordinating_team.html-->
 {% extends 'selfstudy_base.html' %}
 
-{% block title %} Coordinating Team SelfStudy {% endblock title %}
-
 {% block content %}
 
-    <div class="card card-body">
+<div class="card card-body">
 
-        <h5>{{ team.name }} Members</h5>
+<h5>{{ team.name }} Members</h5>
 
-        <form method="post">
-        {% csrf_token %}
+<form method="post">
+{% csrf_token %}
 
-        <div class="instructions">
-            <p>
-                <b>Select the team members</b> from the list below.
-                If there are any individuals you would like to add who are not already listed, please ensure that they are included in the current
-                <a class="" href="{% url 'employee_report' report_id %}"> Employee Report </a>.
-                Be sure to add their <b>valid email address</b> as well.
-            </p>
-        </div>
+<!-- ================= CORE USERS ================= -->
+<h6>Team Members</h6>
 
-        <table class="table table-sm table-bordered table-striped">
-            <thead class="blue-header">
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Select</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if form.fields.users.queryset %}
-                    <tr><td colspan="4" class="small" style="background-color: lightgray">Existing users (teachers or team members)</td></tr>
-                    {% for user in form.fields.users.queryset %}
-                        <tr>
-                            <td>{{ user.first_name }}</td>
-                            <td>{{ user.last_name }}</td>
-                            <td>{{ user.email }}</td>
-                            <td><input type="checkbox" name="users" value="{{ user.id }}"
-                                       {% if user.id in selected_user_ids %}
-                                               checked
-                                        {% endif %}
-                            ></td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
+<table class="table table-sm">
+    {% for user in form.fields.users.queryset %}
+    <tr>
+        <td>{{ user.first_name }} {{ user.last_name }} ({{ user.email }})</td>
+        <td>
+            <input type="checkbox"
+                   name="users"
+                   value="{{ user.id }}"
+                   {% if user.id in form.fields.users.initial %}checked{% endif %}>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
-                {% if personnel_without_users %}
-                    <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel without user account (account will be created upon selection)</td></tr>
-                    {% for person in personnel_without_users %}
-                    <tr>
-                        <td>{{ person.first_name }}</td>
-                        <td>{{ person.last_name }}</td>
-                        <td>{{ person.email }}</td>
-                        <td><input type="checkbox" name="personnel_without_users" value="{{ person.id }}"
-                            {% if user.id in selected_user_ids %}
-                                   checked
-                            {% endif %}
-                        ></td>
-                    </tr>
-                    {% endfor %}
-                {% endif %}
+<hr>
 
-                {% if inactive_users %}
-                    <tr><td colspan="4" class="small"  style="background-color: lightgray">Personnel with inactive user account (account will be activated upon selection)</td></tr>
-                    {% for person in inactive_users %}
-                    <tr>
-                        <td>{{ person.first_name }}</td>
-                        <td>{{ person.last_name }}</td>
-                        <td>{{ person.email }}</td>
-                        <td><input type="checkbox" name="inactive_users" value="{{ person.id }}"
-                            {% if user.id in selected_user_ids %}
-                                   checked
-                            {% endif %}
-                        ></td>
-                    </tr>
-                    {% endfor %}
-                {% endif %}
+<!-- ================= EXTERNAL USER ================= -->
+<h6>Add External Member</h6>
 
-                {% if True %}
-                    <tr>
-                        <td colspan="4" class="small" style="background-color: lightgray">
-                            Add additional team-members for the SeflStudy (board-member, volunteer, etc)
-                        </td>
-                    </tr>
+<input name="external_first_name" placeholder="First name">
+<input name="external_last_name" placeholder="Last name">
+<input name="external_email" placeholder="Email">
 
-                    <tr>
-                        <td>
-                            <input type="text" name="external_first_name" class="form-control form-control-sm" placeholder="First name">
-                        </td>
+<hr>
 
-                        <td>
-                            <input type="text" name="external_last_name" class="form-control form-control-sm" placeholder="Last name">
-                        </td>
+<!-- ================= PERSONNEL WITHOUT USERS ================= -->
+<h6>Personnel without accounts</h6>
 
-                        <td>
-                            <input type="email" name="external_email" class="form-control form-control-sm" placeholder="Email">
-                        </td>
+<table class="table table-sm">
+{% for p in personnel_without_users %}
+<tr>
+    <td>{{ p.first_name }} {{ p.last_name }} ({{ p.email }})</td>
+    <td>
+        <input type="checkbox" name="personnel_without_users" value="{{ p.id }}">
+    </td>
+</tr>
+{% endfor %}
+</table>
 
-                        <td></td>
-                    </tr>
-                    {% endif %}
-            </tbody>
-        </table>
+<hr>
 
-        <!-- Submit button with custom class for styling -->
-        <button type="submit" class="btn btn-sm btn-ISEIyellow floating-box">Save</button>
-            <button type="submit" class="btn btn-sm btn-ISEIyellow">Save</button>
+<!-- ================= INACTIVE USERS ================= -->
+<h6>Inactive users</h6>
 
-    </form>
-    </div>
+<table class="table table-sm">
+{% for u in inactive_users %}
+<tr>
+    <td>{{ u.first_name }} {{ u.last_name }} ({{ u.email }})</td>
+    <td>
+        <input type="checkbox" name="inactive_users" value="{{ u.id }}">
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+<button type="submit" class="btn btn-primary">Save</button>
+
+</form>
+
+</div>
+
 {% endblock %}
