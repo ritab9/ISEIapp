@@ -552,6 +552,8 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                 'email': p['email_address'],
             })
 
+    existing_team_users = set(team.ss_team.values_list('user_id', flat=True))
+
     # ----------------------------
     # POST
     # ----------------------------
@@ -559,6 +561,15 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
 
         if form.is_valid():
             form.save(team, school)
+
+            new_team_users = set(team.ss_team.values_list('user_id', flat=True))
+            removed_user_ids = existing_team_users - new_team_users
+            for user_id in removed_user_ids:
+                user = User.objects.get(id=user_id)
+                # if user is no longer in ANY coordinating team → remove group
+                still_in_any_team = SelfStudy_TeamMember.objects.filter(user=user).exists()
+                if not still_in_any_team:
+                    user.groups.remove(group)
 
             # ----------------------------
             # A. External user
