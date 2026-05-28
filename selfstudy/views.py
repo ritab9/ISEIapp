@@ -579,6 +579,13 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                         first_name=ext_first,
                         last_name=ext_last
                     )
+                else:
+                    messages.info(
+                        request,
+                        f"Existing account found for {ext_email}, "
+                        f" associated with {user} . {user} will be added to this SelfStudy team."
+                    )
+
 
                 ensure_user_school_link(user, school)
 

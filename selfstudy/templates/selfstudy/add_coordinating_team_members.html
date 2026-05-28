@@ -14,9 +14,17 @@
 <h6>Team Members</h6>
 
 <table class="table table-sm">
+    <thead class="blue-header">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
     {% for user in form.fields.users.queryset %}
     <tr>
-        <td>{{ user.first_name }} {{ user.last_name }} ({{ user.email }})</td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>({{ user.email }})</td>
         <td>
             <input type="checkbox"
                    name="users"
@@ -42,9 +50,17 @@
 <h6>Personnel without accounts</h6>
 
 <table class="table table-sm">
+        <thead class="blue-header">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
 {% for p in personnel_without_users %}
 <tr>
-    <td>{{ p.first_name }} {{ p.last_name }} ({{ p.email }})</td>
+    <td>{{ p.first_name }} {{ p.last_name }}</td>
+    <td> ({{ p.email }})</td>
     <td>
         <input type="checkbox" name="personnel_without_users" value="{{ p.id }}">
     </td>
@@ -58,9 +74,17 @@
 <h6>Inactive users</h6>
 
 <table class="table table-sm">
+            <thead class="blue-header">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
 {% for u in inactive_users %}
 <tr>
-    <td>{{ u.first_name }} {{ u.last_name }} ({{ u.email }})</td>
+    <td>{{ u.first_name }} {{ u.last_name }}</td>
+    <td> ({{ u.email }})</td>
     <td>
         <input type="checkbox" name="inactive_users" value="{{ u.id }}">
     </td>
@@ -68,7 +92,9 @@
 {% endfor %}
 </table>
 
-<button type="submit" class="btn btn-primary">Save</button>
+        <!-- Submit button with custom class for styling -->
+        <button type="submit" class="btn btn-sm btn-ISEIyellow floating-box">Save</button>
+            <button type="submit" class="btn btn-sm btn-ISEIyellow">Save</button>
 
 </form>
 
