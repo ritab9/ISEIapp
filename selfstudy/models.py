@@ -287,15 +287,17 @@ class StandardizedTestSession(models.Model):
 
 class StandardizedTestScore(models.Model):
     SUBJECT_CHOICES = [
+        ('COMPOSITE', 'Composite Score'),
         ('ENGLISH', 'English'),
-        ('NATIVE LANGUAGE', 'Native Language'),
         ('READING', 'Reading'),
         ('WRITING', 'Writing'),
         ('MATH', 'Mathematics'),
         ('SCIENCE', 'Science'),
         ('SOCIAL STUDIES', 'Social Studies'),
+        ('NATIVE LANGUAGE', 'Native Language'),
         ('CIVICS','Civics'),
-        ('COMPOSITE', 'Composite Score'),
+        ('HISTORY', 'History'),
+        ('OTHER', 'Other'),
     ]
 
     session = models.ForeignKey(StandardizedTestSession, on_delete=models.CASCADE, related_name='scores')

@@ -1380,7 +1380,7 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
             current_school_year = school.current_school_year
         start_year = int(current_school_year.name.split('-')[0])
         # Generate the last 3 school year names (e.g., "2024-2025", "2023-2024", ...)
-        school_year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(3)]
+        school_year_names = [f"{start_year - i}-{start_year + 1 - i}" for i in range(5)]
         school_years = SchoolYear.objects.filter(name__in=school_year_names)
         school_years = school_years[::-1]  # Reverse the order of years to have the current year last
 
@@ -1503,9 +1503,8 @@ def manage_standardized_test_scores(request, school_id=None, school_year_name=No
             test_type="OT"  # default; you can adjust or prompt user to fill this
         )
 
-    SUBJECTS = ['ENGLISH', 'READING', 'WRITING', 'MATH', 'SCIENCE', 'SOCIAL STUDIES',
-                'NATIVE LANGUAGE', 'CIVICS',
-                'COMPOSITE']
+
+    SUBJECTS = [key for key, _ in StandardizedTestScore.SUBJECT_CHOICES]
     form_dict = {}
 
     if request.method == 'POST':
