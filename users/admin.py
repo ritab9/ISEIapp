@@ -40,8 +40,8 @@ class AddressAdmin(admin.ModelAdmin):
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
     inlines = [AccreditationInfoInline]
-    list_display = ('name', 'id', 'abbreviation', 'grade_levels', 'get_school_types','current_school_year','initial_accreditation_date','worthy_student_report_needed')
-    list_editable = ('current_school_year','initial_accreditation_date', 'worthy_student_report_needed')
+    list_display = ('name', 'id', 'abbreviation', 'timezone', 'grade_levels', 'get_school_types','current_school_year','initial_accreditation_date','worthy_student_report_needed')
+    list_editable = ('timezone','current_school_year','initial_accreditation_date', 'worthy_student_report_needed')
 
     # This enables the little "+" button to add Address directly
     autocomplete_fields = ['street_address', 'postal_address']

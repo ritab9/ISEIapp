@@ -128,6 +128,8 @@ class School(models.Model):
     postal_address = models.OneToOneField('Address', related_name='school_postal', on_delete=models.SET_NULL,
                                            null=True, blank=True)
 
+    timezone = models.CharField(max_length=50, default="UTC")
+
     principal = models.CharField(max_length=100, blank=True, null=True)
     date_hired = models.CharField(max_length=20, blank=True, null=True) #Principal Date Hired
     principal_phone = models.CharField(max_length=20, null=True, blank=True)

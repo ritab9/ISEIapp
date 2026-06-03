@@ -21,6 +21,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 import numpy as np
 
+from django.utils import timezone
+from zoneinfo import ZoneInfo
+
 from django.http import FileResponse
 from django.views import View
 from django.views.generic import ListView
@@ -161,13 +164,15 @@ def student_report(request, arID):
             # Update report dates if all forms valid
             if all_forms_valid:
                 redirect_to_school_dashboard = True
+                school_tz = ZoneInfo(annual_report.school.timezone)
+
                 if 'submit' in request.POST:
                     if not annual_report.submit_date:
-                        annual_report.submit_date = date.today()
-                    annual_report.last_update_date = date.today()
+                        annual_report.submit_date = timezone.localtime( timezone.now(),school_tz).date()
+                    annual_report.last_update_date = timezone.localtime( timezone.now(),school_tz).date()
                     annual_report.save()
                 elif 'save' in request.POST:
-                    annual_report.last_update_date = date.today()
+                    annual_report.last_update_date = timezone.localtime( timezone.now(),school_tz).date()
                     annual_report.save()
             else:
                 redirect_to_school_dashboard = False
@@ -1021,13 +1026,15 @@ def day190_report(request, arID):
                 errors.append(formset_enrichment.errors)
 
             if not errors:
+                school_tz = ZoneInfo(annual_report.school.timezone)
+                submit_date = timezone.localtime(timezone.now(),school_tz).date()
                 if 'submit' in request.POST:
                     if not annual_report.submit_date:
-                            annual_report.submit_date = date.today()
-                    annual_report.last_update_date=date.today()
+                            annual_report.submit_date = submit_date
+                    annual_report.last_update_date= submit_date
                     annual_report.save()
                 elif 'save'in request.POST:
-                    annual_report.last_update_date = date.today()
+                    annual_report.last_update_date = submit_date
                     annual_report.save()
                 return redirect('school_dashboard', annual_report.school.id)
 
@@ -1162,13 +1169,15 @@ def employee_report(request, arID, show_all=False):
         personnel_groups.append({'group_name': group, 'group_personnel': group_personnel_list, 'code':code })
 
     if request.method == 'POST':
+        school_tz = ZoneInfo(annual_report.school.timezone)
+        submit_date = timezone.localtime(timezone.now(), school_tz).date()
         if 'complete' in request.POST:
             if not annual_report.submit_date:
-                annual_report.submit_date = date.today()
-            annual_report.last_update_date = date.today()
+                annual_report.submit_date = submit_date
+            annual_report.last_update_date = submit_date
             annual_report.save()
         elif 'save' in request.POST:
-            annual_report.last_update_date = date.today()
+            annual_report.last_update_date = submit_date
             annual_report.save()
         return redirect('school_dashboard', annual_report.school.id)
 
@@ -1512,15 +1521,16 @@ def inservice_report(request, arID):
                     instance.annual_report = annual_report
                     instance.save()
             formset.save()
-
+            school_tz = ZoneInfo(annual_report.school.timezone)
+            submit_date = timezone.localtime(timezone.now(), school_tz).date()
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
-                    annual_report.submit_date = date.today()
-                annual_report.last_update_date = date.today()
+                    annual_report.submit_date = submit_date
+                annual_report.last_update_date = submit_date
                 annual_report.save()
                 return redirect('school_dashboard', schoolID)
             elif 'save' in request.POST:
-                annual_report.last_update_date = date.today()
+                annual_report.last_update_date = submit_date
                 annual_report.save()
                 return redirect('school_dashboard', schoolID)
             else:
@@ -1604,9 +1614,11 @@ def opening_report(request, arID):
     school=annual_report.school
 
     if request.method == 'POST':
+        school_tz = ZoneInfo(annual_report.school.timezone)
+        submit_date = timezone.localtime(timezone.now(), school_tz).date()
         if not annual_report.submit_date:
-            annual_report.submit_date = date.today()
-        annual_report.last_update_date = date.today()
+            annual_report.submit_date = submit_date
+        annual_report.last_update_date = submit_date
         annual_report.save()
         return redirect('school_dashboard', annual_report.school.id)
 
@@ -1771,14 +1783,17 @@ def closing_report(request, arID):
         if form.is_valid():
             form.save()
 
+            school_tz = ZoneInfo(annual_report.school.timezone)
+            submit_date = timezone.localtime(timezone.now(), school_tz).date()
+
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
-                    annual_report.submit_date = date.today()
-                annual_report.last_update_date = date.today()
+                    annual_report.submit_date = submit_date
+                annual_report.last_update_date = submit_date
                 annual_report.save()
                 return redirect('school_dashboard', annual_report.school.id)
             elif 'save' in request.POST:
-                annual_report.last_update_date = date.today()
+                annual_report.last_update_date = submit_date
                 annual_report.save()
                 return redirect('school_dashboard', annual_report.school.id)
             else:
@@ -1908,9 +1923,11 @@ def worthy_student_scholarship_non_member(request, schoolID):
             form.save()
 
             if 'submit' in request.POST:
+                school_tz = ZoneInfo(annual_report.school.timezone)
+                submit_date = timezone.localtime(timezone.now(), school_tz).date()
                 if not annual_report.submit_date:
-                    annual_report.submit_date = date.today()
-                annual_report.last_update_date = date.today()
+                    annual_report.submit_date = submit_date
+                annual_report.last_update_date = submit_date
                 annual_report.save()
 
         messages.success(request, "Your report was successfully submitted.")
@@ -1932,15 +1949,16 @@ def worthy_student_scholarship(request, arID):
         form = WorthyStudentScholarshipForm(request.POST, request.FILES or None, instance=wss)
         if form.is_valid():
             form.save()
-
+            school_tz = ZoneInfo(annual_report.school.timezone)
+            submit_date = timezone.localtime(timezone.now(), school_tz).date()
             if 'submit' in request.POST:
                 if not annual_report.submit_date:
-                    annual_report.submit_date = date.today()
-                annual_report.last_update_date = date.today()
+                    annual_report.submit_date = submit_date
+                annual_report.last_update_date = submit_date
                 annual_report.save()
                 return redirect('school_dashboard', annual_report.school.id)
             elif 'save' in request.POST:
-                annual_report.last_update_date = date.today()
+                annual_report.last_update_date = submit_date
                 annual_report.save()
                 return redirect('school_dashboard', annual_report.school.id)
             else:
