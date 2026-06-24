@@ -1808,10 +1808,10 @@ def closing_report(request, arID):
     arStudentID = annual_report_student.id
 
     opening_report = AnnualReport.objects.filter(school_year=annual_report.school_year, school=annual_report.school,
-                                                 report_type__code="OR").first()
+                                                 report_type__code="190").first()
     school=annual_report.school
     if opening_report:
-        start_date = opening_report.submit_date
+        start_date = opening_report.day190.first().start_date
     else:
         start_date = None
 
