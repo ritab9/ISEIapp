@@ -1822,7 +1822,7 @@ def closing_report(request, arID):
             closing.withdraw_count = Student.objects.filter(annual_report=annual_report_student,
                                                             status="withdrawn").count()
             closing.new_student_count = students.filter(annual_report=annual_report_student,
-                                                        registration_date__gt=start_date).count()
+                                                        registration_date__gt=start_date + timedelta(days=7)).count()
 
             full_time_students = Student.objects.filter(annual_report=annual_report_student, status='enrolled')
 
