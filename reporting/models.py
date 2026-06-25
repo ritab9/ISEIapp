@@ -665,11 +665,11 @@ class WorthyStudentScholarship(models.Model):
     opening_enrollment = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Opening Enrollment (9-12th grade)")
     closing_enrollment = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Closing Enrollment (9-12th grade)")
 
-    school_generated_fund=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Academy Generated Worthy Student Fund distributed")
-    wss_fund = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Worthy Student Scholarship Fund money distributed")
+    school_generated_fund=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Non MWF Worthy Student Fund distributed")
+    wss_fund = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="MWF Worthy Student Scholarship Fund distributed")
 
     students_assisted_total=models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of students assisted from ALL funds")
-    students_assisted_wss= models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of students assisted from Worthy Student Scholarship Fund")
+    students_assisted_wss= models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Number of students assisted from MWF Worthy Student Scholarship Fund")
 
     next_year_budget=models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Amount of academy generated worthy student money budgeted for next year")
 
