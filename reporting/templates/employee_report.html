@@ -42,6 +42,14 @@
                 </div>
             </form>
         </div>
+        <div class="card card-body">
+            <div class="">
+                <ul>
+                    <li>To add new personnel, click the <b class="text-ISEIblue4">Add New Personnel</b> button below each group.</li>
+                    <li>To update an employee's information, click the <u class="text-ISEIblue4">Edit</u> link next to their name.</li>
+                    <li>To remove an employee from the Employee Report, click the <u class="text-ISEIblue4">Edit</u> link next to their name and change their <b>Status</b> to <b class="error">No Longer Employed</b>.</li> </ul>
+            </div>
+        </div>
         <div class="row ml-5">
             {% for message in messages %}
                 <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
@@ -146,9 +154,9 @@
             {% endfor %}
                 {% if 'employee_report_display' not in request.path %}
                     <tr>
-                        <td colspan="14" style="text-align: right">
+                        <td colspan="14" style="text-align: left">
                             <a href="{% url 'employee_add' arID=arID positionCode=personnel_group.code %}">
-                              <button class="btn-ISEIblue2">Add New Personnel</button>
+                              <button class="btn-ISEIblue4">Add New Personnel</button>
                             </a>
                         </td>
                     </tr>
