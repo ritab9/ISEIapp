@@ -34,6 +34,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 import re
+from django.utils.crypto import get_random_string
 
 
 #School filling out the self study views
@@ -585,7 +586,8 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                         username=username,
                         email=ext_email,
                         first_name=ext_first,
-                        last_name=ext_last
+                        last_name=ext_last,
+                        password=get_random_string(32),
                     )
                 else:
                     messages.info(
@@ -616,7 +618,8 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
                     username=generate_username(p['first_name'], p['last_name']),
                     email=p['email'],
                     first_name=p['first_name'],
-                    last_name=p['last_name']
+                    last_name=p['last_name'],
+                    password=get_random_string(32),
                 )
 
                 ensure_user_school_link(user, school)
