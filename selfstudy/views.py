@@ -44,7 +44,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Avg
 
+from django.views.decorators.cache import never_cache
+
 @login_required(login_url='login')
+@never_cache
 def check_lock(request, form_id):
     """Returns JSON indicating whether the form is locked by another user."""
     CurrentlyEditing.remove_stale_entries()
@@ -54,6 +57,7 @@ def check_lock(request, form_id):
     return JsonResponse({"locked": False})
 
 @login_required(login_url='login')
+@never_cache
 def acquire_lock(request, form_id):
     """Acquire a lock on the form."""
     CurrentlyEditing.objects.update_or_create(user=request.user, form_id=form_id, defaults={"last_active": now()})
@@ -61,6 +65,7 @@ def acquire_lock(request, form_id):
 
 @csrf_exempt
 @login_required(login_url='login')
+@never_cache
 def release_lock(request, form_id):
     """Release the lock when the user leaves the page."""
     CurrentlyEditing.objects.filter(user=request.user, form_id=form_id).delete()
@@ -169,6 +174,7 @@ def setup_selfstudy(request, accreditation_id):
     return render(request, 'selfstudy/selfstudy_cover.html', context)
 
 @login_required(login_url='login')
+@never_cache
 def selfstudy(request, selfstudy_id, readonly=False):
     try:
         # Try to retrieve the existing SelfStudy object
@@ -208,6 +214,7 @@ def selfstudy(request, selfstudy_id, readonly=False):
         return setup_selfstudy(request, accreditation_id=accreditation.id)
 
 @login_required(login_url='login')
+@never_cache
 def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
     # --- Fetch main objects ---
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -367,6 +374,7 @@ def selfstudy_actionplan_instructions(request, selfstudy_id):
     return render(request, 'selfstudy/action_plan_instructions.html', context)
 
 @login_required(login_url='login')
+@never_cache
 def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonly=False):
     accreditation = get_object_or_404(Accreditation, id=accreditation_id)
 
@@ -443,6 +451,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
     return render(request, 'selfstudy/action_plan.html', context)
 
 @login_required(login_url='login')
+@never_cache
 def selfstudy_coordinating_team(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards= Standard.objects.top_level()
@@ -498,6 +507,7 @@ def ensure_user_school_link(user, school):
     return membership, created
 
 @login_required(login_url='login')
+@never_cache
 def add_coordinating_team_members(request, selfstudy_id, team_id):
 
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -662,6 +672,7 @@ def add_coordinating_team_members(request, selfstudy_id, team_id):
 
 
 @login_required(login_url='login')
+@never_cache
 def selfstudy_profile(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
@@ -745,6 +756,7 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
 
 
 @login_required(login_url='login')
+@never_cache
 def profile_history(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -774,6 +786,7 @@ def profile_history(request, selfstudy_id, readonly=False):
     return render(request, 'selfstudy/profile_history.html', context)
 
 @login_required(login_url='login')
+@never_cache
 def profile_financial(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -885,6 +898,7 @@ def import_personnel_data(request, school_profile, annual_report):
     messages.success(request, "Personnel was successfully imported/updated!")
 
 @login_required(login_url='login')
+@never_cache
 def handle_fte_data(request, school_profile, fte_queryset):
     """Handles FTE data form submission."""
     FTE_formset = FTEFormSet(request.POST, queryset=fte_queryset, prefix="fte")
@@ -913,6 +927,7 @@ def handle_fte_data(request, school_profile, fte_queryset):
     return FTEFormSet(queryset=fte_queryset, prefix="fte"), FTEEquivalencyForm(instance=school_profile)
 
 @login_required(login_url='login')
+@never_cache
 def profile_personnel(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -1068,6 +1083,7 @@ def get_international_students_by_country(report, school_country):
 
 
 @login_required(login_url='login')
+@never_cache
 def profile_student(request, selfstudy_id, readonly=False):
 
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -1333,6 +1349,7 @@ def get_grade_range_for_level(level_type):
     return []
 
 @login_required(login_url='login')
+@never_cache
 def profile_student_achievement(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, _ = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -1565,6 +1582,7 @@ def manage_standardized_test_scores(request, school_id=None, school_year_name=No
 
 
 @login_required(login_url='login')
+@never_cache
 def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -1704,6 +1722,7 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
 
 
 @login_required(login_url='login')
+@never_cache
 def profile_support_services(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -1737,6 +1756,7 @@ def profile_support_services(request, selfstudy_id, readonly=False):
 
 
 @login_required(login_url='login')
+@never_cache
 def profile_philanthropy(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
@@ -2378,6 +2398,7 @@ def get_action_plans_for_report(accreditation):
     return action_plans
 
 @login_required(login_url='login')
+@never_cache
 def selfstudy_report(request, selfstudy_id):
     selfstudy = SelfStudy.objects.prefetch_related(
         'teams__ss_team__user',
