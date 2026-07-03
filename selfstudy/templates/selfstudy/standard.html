@@ -85,6 +85,9 @@
         <form method="post" id="content-form">
             {% csrf_token %}
             {{ formset.management_form }}
+
+            <input type="hidden" id="form_version" name="form_version" value="{{ form_version }}">
+
             <div class="form-group">
 
         <!-- Error Messages -->

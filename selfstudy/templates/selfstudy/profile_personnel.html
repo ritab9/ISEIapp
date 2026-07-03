@@ -28,6 +28,7 @@
               <hr>
                 <form method="POST">
                     {% csrf_token %}
+                            <input type="hidden" name="form_version" id="form_version" value="{{ form_version }}">
 
                     {% if personnel_imported %}
                         A lot of the information on this page is filled out based on the {{ ar_school_year }} Employee Report.

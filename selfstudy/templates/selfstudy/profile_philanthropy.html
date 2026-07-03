@@ -31,6 +31,7 @@
      <div id="content-div">
         <form id="content-form" method="post">
             {% csrf_token %}
+                <input type="hidden" name="form_version" id="form_version" value="{{ form_version }}">
 
             <div id="somethingData">
                 <div class="card card-body">

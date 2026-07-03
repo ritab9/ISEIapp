@@ -78,13 +78,13 @@
 <!-- The Document Body - it has both main_content and content for the base cases where there is a main_content applicable for all templates from that app 
                                          (for example selfstudy has a sidebar, and then content is in a separate column there-->
                 
-                 {% if messages %}
-                        {% for message in messages %}
+                 <!-- { % if messages %}
+                        { % for message in messages %}
                             <div class="alert error" role="alert">
-                                {{ message }}
+                                { { message }}
                             </div>
-                        {% endfor %}
-                    {% endif %}    
+                        { % endfor %}
+                    { % endif %}  --> 
              
                  {% block main_content %}
                     {% block content %}

@@ -14,22 +14,50 @@ from users.models import StateField, Country, School
 from reporting.models import StaffStatus, StaffPosition, SchoolYear
 from accreditation.models import IndicatorScore
 
-class CurrentlyEditing(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    form_id = models.CharField(max_length=255)  # Identifies which form is being edited
+class CurrentlyEditing(models.Model): #What is the state of this Form
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    form_id = models.CharField(max_length=255, unique=True)  # Identifies which form is being edited
+    version = models.PositiveIntegerField(default=1)
     last_active = models.DateTimeField(auto_now=True)  # Updated when user interacts
-    created_at = models.DateTimeField(auto_now_add=True)
+    last_modified_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
-    class Meta:
-        unique_together = ('form_id', 'user')  # Prevents duplicate locks for the same user
+    def __str__(self):
+        return f"{self.form_id} (v{self.version})"
 
-    @staticmethod
-    def remove_stale_entries():
-        """Remove entries older than 60 minutes (stale locks)."""
-        threshold = now() - timedelta(minutes=60)
-        CurrentlyEditing.objects.filter(last_active__lt=threshold).delete()
+    #created_at = models.DateTimeField(auto_now_add=True)
 
-#Models for information needed from the schools (Standards + Inidcators are in Accreditation app)
+    #class Meta:
+    #    unique_together = ('form_id', 'user')  # Prevents duplicate locks for the same user
+
+    #@staticmethod
+    #def remove_stale_entries():
+    #    """Remove entries older than 60 minutes (stale locks)."""
+    #    threshold = now() - timedelta(minutes=60)
+    #    CurrentlyEditing.objects.filter(last_active__lt=threshold).update(user=None)
+
+    #make user None when changes have been save
+    #set user to self when prior user is Null or last_Active >60
+
+    #when page opens pull user and last_active
+    #if user is not self, page read-only (with message)
+    #if user is null capture last_active (the time stamp of the form, of when we got the data)
+    #when trying to edit self user becomes user of the lock  - but would need to check current last_active,
+            # it would need to be the same as the captured last_active
+            #if not the same timestamp "someone has changed information on this form.
+                # Page will be refreshed, so you have the updated information "
+            #if the timestamp is the same but user is not null, give message and lock
+
+    #pull every 10-15 seconds if locked, and refresh the page if edit has been finalized
+    #unlock page if user navigates away, closes the window
+
+
+#Models for information needed from the schools (Standards + Indicators are in Accreditation app)
 
 #Financial Data Keys
 class FinancialAdditionalDataKey(models.Model):

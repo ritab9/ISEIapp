@@ -24,6 +24,7 @@
    <div id="content-div">
        <form id="content-form" method="post">
         {% csrf_token %}
+           <input type="hidden" name="form_version" id="form_version" value="{{ form_version }}">
 
         <!-- Add the ManagementForm for each formset -->
         {{ two_year_formset.management_form }}
