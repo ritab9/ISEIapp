@@ -33,6 +33,9 @@ window.divsButtonMapping = [
     
             let lockAcquired = false;
             let checkingLock = false;
+            
+            let pollTimer = null;
+            const originalVersion = Number(document.getElementById("form_version").value);
     
             if (divs.length === 0 || saveButtons.length === 0) return;
     
@@ -63,6 +66,58 @@ window.divsButtonMapping = [
                 });
             }
     
+            function startPolling() {
+                if (pollTimer) return;
+                pollTimer = setInterval(checkIfUnlocked, 15000);
+            }
+            
+            function stopPolling() {
+                if (pollTimer) {
+                    clearInterval(pollTimer);
+                    pollTimer = null;
+                }
+            }
+            
+            function showReloadModal(username){
+
+                    document.getElementById("formUpdatedMessage").textContent =
+                        username + " has finished editing this form.";
+                
+                    document
+                        .getElementById("formUpdatedBox")
+                        .classList.remove("d-none");
+                
+                }
+            
+            function checkIfUnlocked() {
+                fetch(`/check-lock/${formId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+            
+                        if (data.locked) {
+                            return;
+                        }
+            
+                        stopPolling();
+            
+                        if (data.version != originalVersion) {
+                            
+                            showReloadModal(data.last_modified_by);
+                            
+                        } else {
+            
+                            enableFormInputs();
+                            toggleButtons(saveButtons, false);
+            
+                            let lockMessageDiv = document.querySelector("#lock-message");
+                            lockMessageDiv.style.display = "none";
+            
+                        }
+            
+                    });
+            
+            }
+            
             function checkFormLock(formId) {
     
                 fetch(`/check-lock/${formId}/`)
@@ -86,7 +141,8 @@ window.divsButtonMapping = [
     
                             disableFormInputs();
                             toggleButtons(saveButtons, false);
-    
+                            startPolling();
+                            
                         } else {
     
                             enableFormInputs();
@@ -146,19 +202,15 @@ window.divsButtonMapping = [
     
                         disableFormInputs();
                         toggleButtons(saveButtons, false);
-    
                         return;
                     }
     
                     if (data.status === "locked") {
-    
+                        stopPolling();
                         lockAcquired = true;
                         window.currentFormId = formId;
-    
                         toggleButtons(saveButtons, true);
-    
                     }
-    
                 })
     
                 .catch(error => console.error("Error acquiring lock:", error));
@@ -240,6 +292,15 @@ window.divsButtonMapping = [
             console.warn("divButtonMapping is not set or empty. Locking setup may not work.");
     
         }
+        
+        
+        document
+            .getElementById("reloadPageButton")
+                .addEventListener("click", function () {
+            
+                    window.location.reload();
+            
+                });
     
         window.addEventListener("beforeunload", function () {
     

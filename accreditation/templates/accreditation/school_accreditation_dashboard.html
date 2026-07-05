@@ -99,7 +99,7 @@
                                         <p class="small">Due: <strong>{{ accreditation.selfstudy_due_date }}</strong></p>
                                     {% else %}
                                         {% if accreditation.selfstudy %}
-                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a>
+                                            <a href="{% url "selfstudy" selfstudy_id=accreditation.selfstudy.id %}">View SelfStudy</a><br>
                                             <a href="{% url 'selfstudy_report' accreditation.selfstudy.id %}">SelfStudy Printable (PDF)</a>
                                         {% elif accreditation.previous_self_study_link %}
                                             <a href="{{ accreditation.previous_self_study_link }}" target="_blank" rel="noopener noreferrer">SelfStudy Doc</a>

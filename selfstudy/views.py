@@ -63,14 +63,20 @@ def check_lock(request, form_id):
             "locked": True,
             "username": form_state.user.get_full_name(),
             "version": form_state.version,
+            "last_modified_by": (
+                form_state.last_modified_by.get_full_name()
+                if form_state.last_modified_by else ""
+            ),
         })
 
-    return JsonResponse({"locked": False,"version": form_state.version,})
-
-    #active_locks = CurrentlyEditing.objects.filter(form_id=form_id).exclude(user=request.user).first()
-    #if active_locks:
-    #    return JsonResponse({"locked": True, "username": f"{active_locks.user.first_name} {active_locks.user.last_name}" })
-    #return JsonResponse({"locked": False})
+    return JsonResponse({
+        "locked": False,
+        "version": form_state.version,
+        "last_modified_by": (
+            form_state.last_modified_by.get_full_name()
+            if form_state.last_modified_by else ""
+        ),
+    })
 
 @login_required(login_url='login')
 @never_cache

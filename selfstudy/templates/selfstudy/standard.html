@@ -405,6 +405,7 @@
 
     {% if not readonly %}
         {% include "includes/script_lock_and_save_forms.html" %}
+        {% include "includes/modal_for_unlocked.html" %}
     {% endif %}
 
 {% endblock %}
