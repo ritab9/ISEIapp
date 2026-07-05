@@ -183,7 +183,7 @@ window.divsButtonMapping = [
                         alert(
                             `This form has been modified by ${data.username} since you opened it. The page will now reload so you can review the latest information.`
                         );
-    
+                        sessionStorage.setItem("scrollPosition", window.scrollY);
                         window.location.reload();
                         return;
                     }
@@ -270,6 +270,7 @@ window.divsButtonMapping = [
             saveButtons.forEach(button => {
     
                 button.addEventListener("click", function () {
+                    sessionStorage.setItem("scrollPosition", window.scrollY );
                     releaseLock(formId);
                 });
     
@@ -298,6 +299,7 @@ window.divsButtonMapping = [
             .getElementById("reloadPageButton")
                 .addEventListener("click", function () {
             
+                    sessionStorage.setItem("scrollPosition", window.scrollY);
                     window.location.reload();
             
                 });

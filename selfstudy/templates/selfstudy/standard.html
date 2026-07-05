@@ -21,6 +21,15 @@
                 {% endfor %}
             </div>
         {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                    <script>
+                        sessionStorage.setItem("showSavedNotification", "true");
+                    </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         <div class="text-ISEIblue4 mt-3 mb-3">
             <i>{{ standard.description }}</i>
@@ -305,6 +314,20 @@
                         <button id="end-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
                     </div>
                 </div>
+
+                <div id="savedNotification"
+                     class="floating-box d-none">
+
+                    <div class="card border-success shadow">
+
+                        <div class="card-body">
+
+                            <i class="fas fa-check-circle text-success mr-2"></i>
+
+                            Your changes have been successfully saved.
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         </form>
     </div>
@@ -319,6 +342,7 @@
     <script>
 
         {% include "includes/script_auto_expand_textarea.html" %}
+        {% include "includes/save_position.html" %}
 
         document.addEventListener('DOMContentLoaded', function () {
             const dropdowns = document.querySelectorAll('.indicator-score-dropdown');

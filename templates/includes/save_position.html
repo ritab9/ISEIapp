@@ -1,0 +1,30 @@
+const savedPosition = sessionStorage.getItem("scrollPosition");
+
+if (savedPosition !== null) {
+
+    window.addEventListener("load", function () {
+
+        window.scrollTo(0, parseInt(savedPosition));
+
+        sessionStorage.removeItem("scrollPosition");
+
+    });
+
+}
+
+
+if (sessionStorage.getItem("showSavedNotification") === "true") {
+
+    sessionStorage.removeItem("showSavedNotification");
+
+    const box = document.getElementById("savedNotification");
+
+    box.classList.remove("d-none");
+
+    setTimeout(function () {
+
+        box.classList.add("d-none");
+
+    }, 3500);
+
+}
