@@ -6,14 +6,42 @@ window.divsButtonMapping = [
 -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
-        let editorId = sessionStorage.getItem("editorId");
-            if (!editorId) {
-                editorId = crypto.randomUUID();
-                sessionStorage.setItem("editorId", editorId);
-            }
 
-    
+    // =========================================================================
+    // ISEI Edit Protection Framework
+    // Features:
+    // • Edit locking
+    // • Same-user session detection
+    // • Take over editing
+    // • Version conflict detection
+    // • Automatic polling
+    // • Unsaved changes warning
+    // • Automatic lock release
+    // =========================================================================
+        
+        
+// Configuration
+        const CONFIG = {POLLING_INTERVAL: 15000, LOCK_TIMEOUT_MINUTES: 60,};
+     
+// Current Editing Session
+        let editorId = sessionStorage.getItem("editorId");
+        
+        if (!editorId) {
+            editorId = crypto.randomUUID();
+            sessionStorage.setItem("editorId", editorId);
+        }
+        
+        const session = {
+            editorId: editorId,
+            currentFormId: null,
+            dirty: false,
+            submitting: false,
+        };
+        
+ // =========================================================================
+// Utilities
+// =========================================================================
+        
         function getCookie(name) {
             let cookieValue = null;
     
@@ -32,17 +60,77 @@ window.divsButtonMapping = [
     
             return cookieValue;
         }
+        
+// ============================================================================
+// UI Helpers
+// ============================================================================
+        
+        function removeMessages() {
+                document.querySelectorAll(".messages").forEach(message => message.remove());
+            }
+    
+        function toggleButtons(buttons, show) {
+            buttons.forEach(button => {
+                button.style.display = show ? "inline-block" : "none";
+            });
+        }
+        
+        function showReloadModal(username){
+            
+                document.getElementById("formUpdatedMessage").textContent =
+                    username + " has finished editing this form.";
+                
+                document
+                    .getElementById("formUpdatedBox")
+                    .classList.remove("d-none");
+            }
+        
+        function setInputsEnabled(divs, enabled) {
+                    divs.forEach(div => {
+                        div.querySelectorAll("input, textarea, select")
+                            .forEach(field => {
+                                field.disabled = !enabled;
+                            });
+                    });
+                }
+        
+        function showLockMessage(message) {
+            const lockMessageDiv = document.querySelector("#lock-message");
+            if (!lockMessageDiv) return;
+            lockMessageDiv.innerHTML = `${message}<hr>`;
+            lockMessageDiv.style.display = "block";
+        }
+        
+        function hideLockMessage() {
+            const lockMessageDiv = document.querySelector("#lock-message");
+            if (lockMessageDiv) {
+                lockMessageDiv.style.display = "none";
+            }
+        }
+        
+        function setEditingEnabled(divs, saveButtons, enabled) {
+            setInputsEnabled(divs, enabled);
+            toggleButtons(saveButtons, enabled);
+            if (enabled) {
+                hideLockMessage();
+            }
+        }
+        
+// =========================================================================
+// Form Setup
+// =========================================================================
     
         function setupDivTracking(divIds, buttonIds, formId) {
     
             let divs = divIds.map(id => document.querySelector(`#${id}`)).filter(div => div !== null);
             let saveButtons = buttonIds.map(id => document.querySelector(`#${id}`)).filter(btn => btn !== null);
     
-            let lockAcquired = false;
-            let checkingLock = false;
-            
-            let pollTimer = null;
-            const originalVersion = Number(document.getElementById("form_version").value);
+            const state = {
+                    lockAcquired: false,
+                    checkingLock: false,
+                    pollTimer: null,
+                    originalVersion: Number(document.getElementById("form_version").value)
+                };
     
             if (divs.length === 0 || saveButtons.length === 0) return;
     
@@ -55,46 +143,28 @@ window.divsButtonMapping = [
             });
     
             function handleChange() {
+                
+                session.dirty= true;
+                
                 removeMessages();
     
-                if (!checkingLock && !lockAcquired) {
-                    checkingLock = true;
+                if (!state.checkingLock && !state.lockAcquired) {
+                    state.checkingLock = true;
                     checkFormLock(formId);
                 }
             }
     
-            function removeMessages() {
-                document.querySelectorAll(".messages").forEach(message => message.remove());
-            }
-    
-            function toggleButtons(buttons, show) {
-                buttons.forEach(button => {
-                    button.style.display = show ? "inline-block" : "none";
-                });
-            }
-    
             function startPolling() {
-                if (pollTimer) return;
-                pollTimer = setInterval(checkIfUnlocked, 15000);
+                if (state.pollTimer) return;
+                state.pollTimer = setInterval(checkIfUnlocked, CONFIG.POLLING_INTERVAL);
             }
             
             function stopPolling() {
-                if (pollTimer) {
-                    clearInterval(pollTimer);
-                    pollTimer = null;
+                if (state.pollTimer) {
+                    clearInterval(state.pollTimer);
+                    state.pollTimer = null;
                 }
             }
-            
-            function showReloadModal(username){
-
-                    document.getElementById("formUpdatedMessage").textContent =
-                        username + " has finished editing this form.";
-                
-                    document
-                        .getElementById("formUpdatedBox")
-                        .classList.remove("d-none");
-                
-                }
             
             function checkIfUnlocked() {
                 fetch(`/check-lock/${formId}/`)
@@ -107,22 +177,12 @@ window.divsButtonMapping = [
             
                         stopPolling();
             
-                        if (data.version != originalVersion) {
-                            
+                        if (data.version != state.originalVersion) {
                             showReloadModal(data.last_modified_by);
-                            
                         } else {
-            
-                            enableFormInputs();
-                            toggleButtons(saveButtons, false);
-            
-                            let lockMessageDiv = document.querySelector("#lock-message");
-                            lockMessageDiv.style.display = "none";
-            
+                            setEditingEnabled(divs, saveButtons, true);
                         }
-            
                     });
-            
             }
             
             function checkFormLock(formId) {
@@ -131,10 +191,8 @@ window.divsButtonMapping = [
                     .then(response => response.json())
                     .then(data => {
     
-                        checkingLock = false;
-    
-                        let lockMessageDiv = document.querySelector("#lock-message");
-    
+                        state.checkingLock = false;
+                        
                         if (data.locked) {
     
                             let message =
@@ -143,25 +201,20 @@ window.divsButtonMapping = [
     
                             alert(message);
     
-                            lockMessageDiv.innerHTML = `${message}<hr>`;
-                            lockMessageDiv.style.display = "block";
-    
-                            disableFormInputs();
-                            toggleButtons(saveButtons, false);
+                            showLockMessage(message);
+
+                            setEditingEnabled(divs, saveButtons, false);
+                        
                             startPolling();
                             
                         } else {
-    
-                            enableFormInputs();
-                            lockMessageDiv.style.display = "none";
-    
+                            setEditingEnabled(divs, saveButtons, true);
                             acquireLock(formId);
-    
                         }
     
                     })
                     .catch(error => {
-                        checkingLock = false;
+                        state.checkingLock = false;
                         console.error("Error checking lock:", error);
                     });
             }
@@ -188,9 +241,10 @@ window.divsButtonMapping = [
     
                     if (data.status === "stale") {
     
-                        alert(
-                            `This form has been modified by ${data.username} since you opened it. The page will now reload so you can review the latest information.`
-                        );
+                        alert(`This form has been modified by ${data.username} since you opened it.\n\n` + 
+                            `To prevent conflicting changes, the page will now reload so you can review the latest information.\n\n` +
+                            `Depending on your browser, you may be asked to confirm that the page should be reloaded or that the form should be resubmitted.`
+                                );
                         sessionStorage.setItem("scrollPosition", window.scrollY);
                         window.location.reload();
                         return;
@@ -202,10 +256,12 @@ window.divsButtonMapping = [
 
                         if (data.same_user) {
                             if (confirm(
-                                "You already have this form open in another browser or device.\n\n" +
-                                "Click OK to take over editing. You will loose any unsaved changed from that session if you edit and save here. \n\n" +
-                                "Any unsaved changes here will be lost here if the save button is clicked in the other session first. \n\n" +
-                                "Otherwise click Cancel."
+                                "You already have this form open for editing in another tab, browser, or device.\n\n" +
+                                "Click OK to transfer editing to this session.\n\n" +
+                                "Warning:\n" +
+                                "• Unsaved changes in the other session may be lost if you save here first.\n" +
+                                "• If the other session is saved before this one, this session will no longer be able to save its changes.\n\n" +
+                                "Click Cancel to continue editing in the other session."
                             )) {
                                 takeOverLock(formId);
                             }
@@ -218,21 +274,19 @@ window.divsButtonMapping = [
                         }
     
                         alert(message);
-    
-                        let lockMessageDiv = document.querySelector("#lock-message");
-                        lockMessageDiv.innerHTML = `${message}<hr>`;
-                        lockMessageDiv.style.display = "block";
-    
-                        disableFormInputs();
-                        toggleButtons(saveButtons, false);
+                        showLockMessage(message);
+                        setEditingEnabled(divs, saveButtons, false);
+                        
                         return;
                     }
     
                     if (data.status === "locked") {
                         stopPolling();
-                        lockAcquired = true;
-                        window.currentFormId = formId;
-                        toggleButtons(saveButtons, true);
+                        state.lockAcquired = true;
+                        session.currentFormId = formId;
+                        setEditingEnabled(divs, saveButtons, true);
+                        // If acquireLock() was triggered by an edit, that edit already made the form dirty.
+                        session.dirty = true;
                     }
                 })
     
@@ -241,7 +295,7 @@ window.divsButtonMapping = [
     
             function releaseLock(formId) {
     
-                if (!lockAcquired) return;
+                if (!state.lockAcquired) return;
     
                 fetch(`/release-lock/${formId}/`, {
                     method: "POST",
@@ -260,8 +314,8 @@ window.divsButtonMapping = [
     
                     if (data.status === "released") {
     
-                        lockAcquired = false;
-                        window.currentFormId = null;
+                        state.lockAcquired = false;
+                        session.currentFormId = null;
     
                         toggleButtons(saveButtons, false);
     
@@ -275,77 +329,48 @@ window.divsButtonMapping = [
             }
             
             function takeOverLock(formId) {
+                
                 fetch(`/take-over-lock/${formId}/`, {
-            
                     method: "POST",
-            
                     headers: {
                         "Content-Type": "application/json",
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
-            
                     body: JSON.stringify({
                         editor_id: editorId
                     })
-            
                 })
             
                 .then(response => response.json())
-            
                 .then(data => {
-            
                     if (data.status === "taken_over") {
-            
-                        lockAcquired = true;
-            
-                        window.currentFormId = formId;
-            
-                        toggleButtons(saveButtons, true);
-            
-                        enableFormInputs();
-            
-                        let lockMessageDiv =
-                            document.querySelector("#lock-message");
-            
-                        lockMessageDiv.style.display = "none";
-            
+                        state.lockAcquired = true;
+                        session.currentFormId = formId;
+                        session.dirty = true;
+                        setEditingEnabled(divs, saveButtons, true);
                     }
+                });
+            }
             
-                });
             
-            }
-    
-            function disableFormInputs() {
-    
-                divs.forEach(div => {
-                    div.querySelectorAll("input, textarea, select").forEach(field => {
-                        field.disabled = true;
-                    });
-                });
-    
-            }
-    
-            function enableFormInputs() {
-    
-                divs.forEach(div => {
-                    div.querySelectorAll("input, textarea, select").forEach(field => {
-                        field.disabled = false;
-                    });
-                });
-    
-            }
-    
-            saveButtons.forEach(button => {
-    
-                button.addEventListener("click", function () {
-                    sessionStorage.setItem("scrollPosition", window.scrollY );
+            const form = saveButtons[0].closest("form");
+            
+            if (form) {
+                form.addEventListener("submit", function () {
+                    session.submitting = true;
+                    session.dirty = false;
                     releaseLock(formId);
                 });
-    
-            });
+            }
     
         }
-    
+        
+        
+
+// =========================================================================
+// Framework Initialization
+// =========================================================================
+        
         if (window.divButtonMapping && window.divButtonMapping.length > 0) {
     
             window.divButtonMapping.forEach(mapping => {
@@ -362,7 +387,9 @@ window.divsButtonMapping = [
     
         }
         
-        
+// =========================================================================
+// Global Event Handlers
+// =========================================================================  
         document
             .getElementById("reloadPageButton")
                 .addEventListener("click", function () {
@@ -372,17 +399,22 @@ window.divsButtonMapping = [
             
                 });
     
-        window.addEventListener("beforeunload", function () {
-    
-            if (window.currentFormId) {
+        window.addEventListener("beforeunload", function (event) {
+            if (session.dirty && !session.submitting)
+                {
+                    event.preventDefault();
+                    event.returnValue = "";
+                }
+            
+            if (session.currentFormId) {
                 const data = new Blob(
                     [JSON.stringify({ editor_id: editorId })],
                     { type: "application/json" }
                 );
-                navigator.sendBeacon(`/release-lock/${window.currentFormId}/`, data);
+                navigator.sendBeacon(`/release-lock/${session.currentFormId}/`, data);
             }
-    
+            
         });
-    
+        
     });
 </script>
