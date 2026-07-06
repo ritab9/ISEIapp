@@ -6,6 +6,13 @@ window.divsButtonMapping = [
 -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        
+        let editorId = sessionStorage.getItem("editorId");
+            if (!editorId) {
+                editorId = crypto.randomUUID();
+                sessionStorage.setItem("editorId", editorId);
+            }
+
     
         function getCookie(name) {
             let cookieValue = null;
@@ -170,7 +177,8 @@ window.divsButtonMapping = [
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
                     body: JSON.stringify({
-                        version: version
+                        version: version,
+                        editor_id: editorId
                     })
                 })
     
@@ -190,9 +198,24 @@ window.divsButtonMapping = [
     
                     if (data.status === "locked_by_other") {
     
-                        let message =
-                            `This form is currently being edited by ${data.username}. ` +
-                            `You cannot edit it until the other user saves his/her work.`;
+                        let message;
+
+                        if (data.same_user) {
+                            if (confirm(
+                                "You already have this form open in another browser or device.\n\n" +
+                                "Click OK to take over editing. You will loose any unsaved changed from that session if you edit and save here. \n\n" +
+                                "Any unsaved changes here will be lost here if the save button is clicked in the other session first. \n\n" +
+                                "Otherwise click Cancel."
+                            )) {
+                                takeOverLock(formId);
+                            }
+                            
+                            return;
+                             } else {
+                            message =
+                                `This form is currently being edited by ${data.username}. ` +
+                                "You cannot edit it until the other user saves his/her work.";
+                        }
     
                         alert(message);
     
@@ -223,8 +246,12 @@ window.divsButtonMapping = [
                 fetch(`/release-lock/${formId}/`, {
                     method: "POST",
                     headers: {
+                        "Content-Type": "application/json",
                         "X-CSRFToken": getCookie("csrftoken"),
-                    }
+                    },
+                    body: JSON.stringify({
+                        editor_id: editorId
+                    })
                 })
     
                 .then(response => response.json())
@@ -245,6 +272,47 @@ window.divsButtonMapping = [
                 })
     
                 .catch(error => console.error("Error releasing lock:", error));
+            }
+            
+            function takeOverLock(formId) {
+                fetch(`/take-over-lock/${formId}/`, {
+            
+                    method: "POST",
+            
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken"),
+                    },
+            
+                    body: JSON.stringify({
+                        editor_id: editorId
+                    })
+            
+                })
+            
+                .then(response => response.json())
+            
+                .then(data => {
+            
+                    if (data.status === "taken_over") {
+            
+                        lockAcquired = true;
+            
+                        window.currentFormId = formId;
+            
+                        toggleButtons(saveButtons, true);
+            
+                        enableFormInputs();
+            
+                        let lockMessageDiv =
+                            document.querySelector("#lock-message");
+            
+                        lockMessageDiv.style.display = "none";
+            
+                    }
+            
+                });
+            
             }
     
             function disableFormInputs() {
@@ -307,7 +375,11 @@ window.divsButtonMapping = [
         window.addEventListener("beforeunload", function () {
     
             if (window.currentFormId) {
-                navigator.sendBeacon(`/release-lock/${window.currentFormId}/`);
+                const data = new Blob(
+                    [JSON.stringify({ editor_id: editorId })],
+                    { type: "application/json" }
+                );
+                navigator.sendBeacon(`/release-lock/${window.currentFormId}/`, data);
             }
     
         });

@@ -18,6 +18,7 @@ class CurrentlyEditing(models.Model): #What is the state of this Form
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     form_id = models.CharField(max_length=255, unique=True)  # Identifies which form is being edited
     version = models.PositiveIntegerField(default=1)
+    editor_id = models.CharField(max_length=36, blank=True, null=True)
     last_active = models.DateTimeField(auto_now=True)  # Updated when user interacts
     last_modified_by = models.ForeignKey(
         User,

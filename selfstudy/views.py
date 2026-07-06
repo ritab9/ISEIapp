@@ -85,6 +85,7 @@ def acquire_lock(request, form_id):
 
     data = json.loads(request.body)
     submitted_version = int(data["version"])
+    editor_id = data["editor_id"]
 
     with transaction.atomic():
 
@@ -94,6 +95,7 @@ def acquire_lock(request, form_id):
         # Release stale lock
         if (form_state.user and form_state.last_active < threshold):
             form_state.user = None
+            form_state.editor_id = None
 
         # Page is stale
         if submitted_version != form_state.version:
@@ -108,15 +110,26 @@ def acquire_lock(request, form_id):
             })
 
         # Someone else owns the lock
-        if (form_state.user and form_state.user != request.user):
-            return JsonResponse({
-                "status": "locked_by_other",
-                "username": form_state.user.get_full_name(),
-                "version": form_state.version,
-            })
+        if form_state.user:
+            # Same user, same browser tab → allow
+            if (
+                    form_state.user == request.user and
+                    form_state.editor_id == editor_id
+            ):
+                pass
+
+            # Any other editor (including yourself on another device/tab)
+            else:
+                return JsonResponse({
+                    "status": "locked_by_other",
+                    "username": form_state.user.get_full_name(),
+                    "version": form_state.version,
+                    "same_user": form_state.user == request.user,
+                })
 
         # Acquire lock
         form_state.user = request.user
+        form_state.editor_id = editor_id
         form_state.save()
 
     return JsonResponse({"status": "locked", "version": form_state.version,})
@@ -129,12 +142,19 @@ def acquire_lock(request, form_id):
 @never_cache
 def release_lock(request, form_id):
     """Release the lock when the user leaves the page."""
+    data = json.loads(request.body)
+    editor_id = data["editor_id"]
+
     try:
         form_state = CurrentlyEditing.objects.get(form_id=form_id)
 
-        if form_state.user == request.user:
+        if (
+                form_state.user == request.user and
+                form_state.editor_id == editor_id
+        ):
             form_state.user = None
-            form_state.save(update_fields=["user", "last_active"])
+            form_state.editor_id = None
+            form_state.save(update_fields=["user", "editor_id", "last_active"])
 
     except CurrentlyEditing.DoesNotExist:
         pass
@@ -144,6 +164,44 @@ def release_lock(request, form_id):
     })
     #CurrentlyEditing.objects.filter(user=request.user, form_id=form_id).delete()
     #return JsonResponse({"status": "released"})
+
+@login_required(login_url="login")
+@never_cache
+def take_over_lock(request, form_id):
+
+    data = json.loads(request.body)
+
+    editor_id = data["editor_id"]
+
+    with transaction.atomic():
+
+        form_state = CurrentlyEditing.objects.select_for_update().get(
+            form_id=form_id
+        )
+
+        # Never allow taking over another user's lock
+        if form_state.user != request.user:
+
+            return JsonResponse({
+                "status": "denied"
+            })
+
+        form_state.user = request.user
+        form_state.editor_id = editor_id
+        form_state.last_active = now()
+
+        form_state.save(
+            update_fields=[
+                "user",
+                "editor_id",
+                "last_active",
+            ]
+        )
+
+    return JsonResponse({
+        "status": "taken_over",
+        "version": form_state.version,
+    })
 
 
 #Creating the self-study views
