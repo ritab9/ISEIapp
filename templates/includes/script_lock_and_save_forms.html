@@ -1,5 +1,31 @@
 <!-- use it as { % include "includes/script_lock_and_save_forms.html" %} in the script area-->
 <!--
+/*
+==========================================================================
+ISEI Edit Protection Framework
+
+Required:
+
+1. Hidden field:  id="form_version"
+
+2. Lock message: id="lock-message"
+
+3. Reload notification:
+    formUpdatedBox
+    formUpdatedMessage
+    reloadPageButton
+
+4. Configuration:
+
+window.divButtonMapping = [
+    {
+        formId: "...",
+        divs: [...],
+        buttons: [...]
+    }
+];
+
+
 window.divsButtonMapping = [
         { divs: ["div1", "div2"], buttons: ["save-button1", "save-button2"], formId: "{ { formId|escapejs  }}" } // Both forms trigger both buttons
     ];
@@ -35,7 +61,8 @@ window.divsButtonMapping = [
             editorId: editorId,
             currentFormId: null,
             dirty: false,
-            submitting: false,
+            saving: false,
+            reloading:false,
         };
         
  // =========================================================================
@@ -77,8 +104,14 @@ window.divsButtonMapping = [
         
         function showReloadModal(username){
             
-                document.getElementById("formUpdatedMessage").textContent =
-                    username + " has finished editing this form.";
+                const message = document.getElementById("formUpdatedMessage");
+                const box = document.getElementById("formUpdatedBox");
+                
+                if (!message || !box) {
+                    return;
+                }
+                message.textContent = `${username} has finished editing this form.`;
+                box.classList.remove("d-none");
                 
                 document
                     .getElementById("formUpdatedBox")
@@ -117,19 +150,25 @@ window.divsButtonMapping = [
         }
         
 // =========================================================================
-// Form Setup
+// Edit Protection Initialization
 // =========================================================================
     
-        function setupDivTracking(divIds, buttonIds, formId) {
+        function initializeEditProtection(divIds, buttonIds, formId) {
     
             let divs = divIds.map(id => document.querySelector(`#${id}`)).filter(div => div !== null);
             let saveButtons = buttonIds.map(id => document.querySelector(`#${id}`)).filter(btn => btn !== null);
     
+            const versionField = document.getElementById("form_version");
+            if (!versionField) {
+                    console.error("ISEI Edit Protection: #form_version not found.");
+                    return;
+                }
+            
             const state = {
                     lockAcquired: false,
                     checkingLock: false,
                     pollTimer: null,
-                    originalVersion: Number(document.getElementById("form_version").value)
+                    originalVersion: Number(versionField.value),
                 };
     
             if (divs.length === 0 || saveButtons.length === 0) return;
@@ -182,6 +221,9 @@ window.divsButtonMapping = [
                         } else {
                             setEditingEnabled(divs, saveButtons, true);
                         }
+                    })
+                    .catch(error => {
+                        console.error("Error checking lock:", error);
                     });
             }
             
@@ -220,9 +262,7 @@ window.divsButtonMapping = [
             }
     
             function acquireLock(formId) {
-    
-                const version = document.getElementById("form_version").value;
-    
+                
                 fetch(`/acquire-lock/${formId}/`, {
                     method: "POST",
                     headers: {
@@ -230,8 +270,8 @@ window.divsButtonMapping = [
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
                     body: JSON.stringify({
-                        version: version,
-                        editor_id: editorId
+                        version: versionField.value,
+                        editor_id: session.editorId
                     })
                 })
     
@@ -245,6 +285,7 @@ window.divsButtonMapping = [
                             `To prevent conflicting changes, the page will now reload so you can review the latest information.\n\n` +
                             `Depending on your browser, you may be asked to confirm that the page should be reloaded or that the form should be resubmitted.`
                                 );
+                        session.reloading = true;
                         sessionStorage.setItem("scrollPosition", window.scrollY);
                         window.location.reload();
                         return;
@@ -304,7 +345,7 @@ window.divsButtonMapping = [
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
                     body: JSON.stringify({
-                        editor_id: editorId
+                        editor_id: session.editorId
                     })
                 })
     
@@ -316,13 +357,9 @@ window.divsButtonMapping = [
     
                         state.lockAcquired = false;
                         session.currentFormId = null;
-    
-                        toggleButtons(saveButtons, false);
-    
+                        setEditingEnabled(divs, saveButtons, false);
                         checkFormLock(formId);
-    
                     }
-    
                 })
     
                 .catch(error => console.error("Error releasing lock:", error));
@@ -337,7 +374,7 @@ window.divsButtonMapping = [
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
                     body: JSON.stringify({
-                        editor_id: editorId
+                        editor_id: session.editorId
                     })
                 })
             
@@ -357,7 +394,7 @@ window.divsButtonMapping = [
             
             if (form) {
                 form.addEventListener("submit", function () {
-                    session.submitting = true;
+                    session.saving = true;
                     session.dirty = false;
                     releaseLock(formId);
                 });
@@ -374,7 +411,7 @@ window.divsButtonMapping = [
         if (window.divButtonMapping && window.divButtonMapping.length > 0) {
     
             window.divButtonMapping.forEach(mapping => {
-                setupDivTracking(
+                initializeEditProtection(
                     mapping.divs,
                     mapping.buttons,
                     mapping.formId
@@ -391,24 +428,25 @@ window.divsButtonMapping = [
 // Global Event Handlers
 // =========================================================================  
         document
-            .getElementById("reloadPageButton")
-                .addEventListener("click", function () {
-            
-                    sessionStorage.setItem("scrollPosition", window.scrollY);
-                    window.location.reload();
-            
-                });
+            const reloadButton = document.getElementById("reloadPageButton");
+            if(reloadButton) {
+                reloadButton.addEventListener("click", function () {
+                session.reloading = true;
+                sessionStorage.setItem("scrollPosition", window.scrollY);
+                window.location.reload();
+        
+            });
+                }
     
         window.addEventListener("beforeunload", function (event) {
-            if (session.dirty && !session.submitting)
-                {
+            if (session.dirty && !session.saving && !session.reloading) {
                     event.preventDefault();
                     event.returnValue = "";
                 }
             
             if (session.currentFormId) {
                 const data = new Blob(
-                    [JSON.stringify({ editor_id: editorId })],
+                    [JSON.stringify({ editor_id: session.editorId })],
                     { type: "application/json" }
                 );
                 navigator.sendBeacon(`/release-lock/${session.currentFormId}/`, data);
@@ -418,3 +456,266 @@ window.divsButtonMapping = [
         
     });
 </script>
+
+<!--
+/ =============================================================================
+// ISEI EDIT PROTECTION FRAMEWORK
+// =============================================================================
+//
+// PURPOSE
+// -------
+// Prevents multiple users (or multiple sessions of the same user) from editing
+// the same form simultaneously.
+//
+// FEATURES
+// --------
+// ✓ Automatic edit locking
+// ✓ Same-user multi-tab/device detection
+// ✓ Lock takeover
+// ✓ Automatic lock release
+// ✓ Polling while another user is editing
+// ✓ Version conflict detection
+// ✓ Unsaved changes warning
+// ✓ Restore scroll position after reload
+//
+// =============================================================================
+// REQUIREMENTS
+// =============================================================================
+//
+// 1. Hidden Version Field
+// -----------------------
+//
+// Every protected form must contain:
+//
+//     <input type="hidden"
+//            id="form_version"
+//            value="{{ form.version }}">
+//
+//
+// =============================================================================
+// 2. Editable Containers
+// =============================================================================
+//
+// Every editable area must have an id.
+//
+// Example:
+//
+//     <div id="standard-form">
+//         ...
+//     </div>
+//
+//
+// =============================================================================
+// 3. Save Buttons
+// =============================================================================
+//
+// Every save button must have an id.
+//
+// Example:
+//
+//     <button id="floating-save-btn" type="submit">
+//         Save Changes
+//     </button>
+//
+//     <button id="bottom-save-btn" type="submit">
+//         Save Changes
+//     </button>
+//
+//
+// =============================================================================
+// 4. Lock Message Area
+// =============================================================================
+//
+// The page must contain:
+//
+//     <div id="lock-message"></div>
+//
+// This is used to display:
+//
+//     "This form is currently being edited by ..."
+//
+//
+// =============================================================================
+// 5. Reload Notification
+// =============================================================================
+//
+// The page should contain:
+//
+//     formUpdatedBox
+//     formUpdatedMessage
+//     reloadPageButton
+//
+// These are shown when another user has saved changes while this page
+// was open.
+//
+//
+//
+// =============================================================================
+// 6. JavaScript Configuration
+// =============================================================================
+//
+// Before including this file define:
+//
+// window.divButtonMapping = [
+//     {
+//         formId: "{{ formId|escapejs }}",
+//         divs: [
+//             "standard-form"
+//         ],
+//         buttons: [
+//             "floating-save-btn",
+//             "bottom-save-btn"
+//         ]
+//     }
+// ];
+//
+// Multiple editable sections may be configured.
+//
+// Example:
+//
+// window.divButtonMapping = [
+//     {
+//         formId: "...",
+//         divs: ["div1"],
+//         buttons: ["save1"]
+//     },
+//     {
+//         formId: "...",
+//         divs: ["div2","div3"],
+//         buttons: ["save2","save3"]
+//     }
+// ];
+//
+//
+// =============================================================================
+// 7. Required Django Endpoints
+// =============================================================================
+//
+// GET
+//
+//     /check-lock/<form_id>/
+//
+// Returns:
+//
+// {
+//     locked: true/false,
+//     username: "...",
+//     version: 12,
+//     last_modified_by: "..."
+// }
+//
+//
+//
+// POST
+//
+//     /acquire-lock/<form_id>/
+//
+// Returns one of:
+//
+//     locked
+//     locked_by_other
+//     stale
+//
+//
+//
+// POST
+//
+//     /take-over-lock/<form_id>/
+//
+// Transfers editing from another session of the SAME USER.
+//
+//
+//
+// POST
+//
+//     /release-lock/<form_id>/
+//
+// Releases the editing lock.
+//
+//
+//
+// =============================================================================
+// 8. Database Requirements
+// =============================================================================
+//
+// CurrentlyEditing model:
+//
+//     form_id
+//     user
+//     editor_id
+//     last_active
+//
+//
+//
+// =============================================================================
+// 9. What Happens
+// =============================================================================
+//
+// User edits page
+//        │
+//        ▼
+// Check for existing lock
+//        │
+//        ├──────── locked by another user
+//        │             │
+//        │             ▼
+//        │      Disable editing
+//        │      Poll every 15 seconds
+//        │
+//        └──────── available
+//                      │
+//                      ▼
+//              Acquire lock
+//                      │
+//                      ▼
+//              Enable Save buttons
+//                      │
+//                      ▼
+//                 User saves
+//                      │
+//                      ▼
+//               Release lock
+//
+//
+//
+// =============================================================================
+// 10. Testing Checklist
+// =============================================================================
+//
+// □ User can edit normally
+//
+// □ Save buttons appear after first edit
+//
+// □ Closing tab releases lock
+//
+// □ Refresh releases lock
+//
+// □ Browser Back button warns about unsaved changes
+//
+// □ User cannot edit while another user is editing
+//
+// □ Polling re-enables editing after other user saves
+//
+// □ Same user opening second tab gets Take Over dialog
+//
+// □ Version conflict forces reload
+//
+// □ Scroll position restored after reload
+//
+// □ Save does NOT trigger unsaved changes warning
+//
+// □ Framework works with multiple editable divs
+//
+//
+//
+// =============================================================================
+// Version
+// =============================================================================
+//
+// ISEI Edit Protection Framework
+//
+// Author: Rita B.
+// Version: 1.0
+//
+// =============================================================================
+-->

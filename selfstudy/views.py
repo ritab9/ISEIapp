@@ -142,8 +142,16 @@ def acquire_lock(request, form_id):
 @never_cache
 def release_lock(request, form_id):
     """Release the lock when the user leaves the page."""
-    data = json.loads(request.body)
-    editor_id = data["editor_id"]
+    try:
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        data = {}
+
+    editor_id = data.get("editor_id")
+
+    # If no editor_id was provided, there is nothing to release.
+    if not editor_id:
+        return JsonResponse({"status": "released"})
 
     try:
         form_state = CurrentlyEditing.objects.get(form_id=form_id)
@@ -162,8 +170,6 @@ def release_lock(request, form_id):
     return JsonResponse({
         "status": "released"
     })
-    #CurrentlyEditing.objects.filter(user=request.user, form_id=form_id).delete()
-    #return JsonResponse({"status": "released"})
 
 @login_required(login_url="login")
 @never_cache

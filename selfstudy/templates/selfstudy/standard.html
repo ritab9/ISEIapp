@@ -338,12 +338,18 @@
 {% block script %}
 
 
-    {# --- Always-loaded script: coloring and comment update --- #}
+     {% include "includes/script_auto_expand_textarea.html" %}
+     {% include "includes/save_position.html" %}
+
+     {% if not readonly %}
+        {% include "includes/script_lock_and_save_forms.html" %}
+        {% include "includes/modal_for_unlocked.html" %}
+    {% endif %}
+
+
     <script>
 
-        {% include "includes/script_auto_expand_textarea.html" %}
-        {% include "includes/save_position.html" %}
-
+        {# --- coloring and comment update --- #}
         document.addEventListener('DOMContentLoaded', function () {
             const dropdowns = document.querySelectorAll('.indicator-score-dropdown');
             const averageDisplay = document.getElementById('average-score');
@@ -426,11 +432,6 @@
             {% endif %}
         });
     </script>
-
-    {% if not readonly %}
-        {% include "includes/script_lock_and_save_forms.html" %}
-        {% include "includes/modal_for_unlocked.html" %}
-    {% endif %}
 
 {% endblock %}
 
