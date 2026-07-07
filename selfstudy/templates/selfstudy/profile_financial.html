@@ -9,17 +9,8 @@
     <h5>C. Significant Financial Data</h5>
     <hr>
 
-        <div id="lock-message" class="error" style="display: none;"></div>
+       {% include "includes/messages.html" %}
 
-        {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div> <hr>
-            {% endif %}
 
    <div id="content-div">
        <form id="content-form" method="post">
@@ -142,10 +133,9 @@
                     </table>
             </div>
         </div>
-
-
-        <button id="end-save-btn" class="btn btn-sm btn-ISEIyellow" type="submit" {% if locked_by %}disabled{% endif %}>Save Changes</button>
-        <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3" {% if locked_by %}disabled{% endif %}>Save Changes</button>
+            {% include "includes/saved_notification.html" %}
+            {% include "includes/floating_save_button.html" %}
+            {% include "includes/bottom_save_button.html" %}
 
     </form>
    </div>
@@ -155,21 +145,34 @@
 
 {% block script %}
 
-     {% include "includes/script_lock_and_save_forms.html" %}
+
+// Auto-expanding textareas
+    {% include "includes/script_auto_expand_textarea.html" %}
+//Save cursor position
+    {% include "includes/save_position.html" %}
+
+    {% if not readonly %}
+        {% include "includes/edit_protection.html" %}
+        {% include "includes/form_reload_modal.html" %}
+    {% endif %}
+
     <script>
 
         //1.When content changes show Save button. Also remove the Content Saved Message
-            window.divButtonMapping = [
-                {
-                    divs: ["content-div"],
-                    buttons: ["floating-save-btn", "end-save-btn"],
-                    formId: "{{ form_id|escapejs  }}"
-                } // Both forms trigger both buttons
-            ];
+           document.addEventListener("DOMContentLoaded", function () {
 
+             // page-specific JS
 
-        // 2. Auto-expanding textareas
-        {% include "includes/script_auto_expand_textarea.html" %}
+                window.initializeEditProtectionFramework([
+                    {
+                        divs: ["content-div"],
+                        buttons: ["floating-save-btn", "end-save-btn"],
+                        formId: "{{ form_id|escapejs }}"
+                    }
+                ]);
+
+            });
+
 
 
     </script>

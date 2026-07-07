@@ -7,6 +7,10 @@
 
   {% with has_submission_date=selfstudy.submission_date %}
     <div id="content-div">
+
+        {% include "includes/messages.html" %}
+
+
         <form method="post" id="content-form">
         {% csrf_token %}
 
@@ -17,18 +21,6 @@
                     <h5>Action Plan {{ action_plan.number }}</h5>
                 {% else %}
                     <h5>Add New Action Plan </h5>
-                {% endif %}
-
-                <div id="lock-message" class="error" style="display: none;"></div>
-
-                {% if messages %}
-                    <div class="messages card card-body">
-                        {% for message in messages %}
-                            <div class="{{ message.tags }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
                 {% endif %}
 
                 <table class="table table-sm">
@@ -86,11 +78,12 @@
                 </div>
             </div>
              <div class="row mb-2">
-                <div class="col-auto ml-auto d-flex justify-content-end">
-                    <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
-                </div>
+                    {% include "includes/floating_save_button.html" %}
             </div>
             {% endif %}
+
+            {% include "includes/saved_notification.html" %}
+
         </form>
     </div>
 
@@ -98,27 +91,34 @@
 
 {% endblock %}
 
+
 {% block script %}
 
-    {% include "includes/script_lock_and_save_forms.html" %}
+// Auto-expanding textareas
+    {% include "includes/script_auto_expand_textarea.html" %}
+//Save cursor position
+    {% include "includes/save_position.html" %}
+
+    {% if not readonly %}
+        {% include "includes/edit_protection.html" %}
+        {% include "includes/form_reload_modal.html" %}
+    {% endif %}
+
 
     <script>
 
-//1.When content changes show Save button. Also remove the Content Saved Message
-        window.divButtonMapping = [
-             { divs: ["content-div"], buttons: ["end-save-btn","floating-save-btn"], formId: "{{ form_id|escapejs  }}" },
-         ];
-
-
         document.addEventListener('DOMContentLoaded', function () {
 
-    // 2. Auto-expanding textareas
-            {% include "includes/script_auto_expand_textarea.html" %}
+            window.initializeEditProtectionFramework([
+                {
+                    divs: ["content-div"],
+                    buttons: ["floating-save-btn", "end-save-btn"],
+                    formId: "{{ form_id|escapejs }}"
+                }
+            ]);
+          });
 
-        });
-
-
-        document.getElementById('delete-btn').addEventListener('click', function(e) {
+            document.getElementById('delete-btn').addEventListener('click', function (e) {
                 e.preventDefault(); // Prevent the default form submission
 
                 // Show confirmation dialog
@@ -133,5 +133,7 @@
                     form.submit(); // Submit the form after adding the delete flag
                 }
             });
+
+
     </script>
 {% endblock %}

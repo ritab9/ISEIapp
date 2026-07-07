@@ -47,6 +47,8 @@ from django.db.models import Avg
 from django.views.decorators.cache import never_cache
 from django.db import transaction
 
+from selfstudy.utils.edit_protection import *
+
 @login_required(login_url='login')
 @never_cache
 def check_lock(request, form_id):
@@ -358,7 +360,10 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standard = get_object_or_404(Standard, id=standard_id, parent_standard__isnull=True)
     standards = Standard.objects.top_level()
+
+    #--- Edit Protection---
     form_id = f"{selfstudy.id}_standard_{standard_id}"
+
     school=selfstudy.accreditation.school
 
     # --- Evidence & narrative ---
@@ -413,31 +418,13 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
     if request.method == "POST" and not readonly:
 
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
 
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
+            # --- Edit Protection---
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-
-                #messages.error(
-                #    request,
-                #    f"This form has been modified by {username} since you opened it. "
-                #    "Your changes were not saved. Please reload the page."
-                #)
-
-                return redirect(request.path)
+            # Save Forms
             if formset.is_valid() and standard_form.is_valid():
                 # Save indicator scores from POST
                 for form in formset:
@@ -460,11 +447,7 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
                     mission_obj.selfstudy = selfstudy
                     mission_obj.save()
 
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
-
+                complete_edit(form_state, request.user)
 
                 messages.success(request, "Your changes have been successfully saved!")
             else:
@@ -500,29 +483,26 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
         if mission_form:
             disable_form(mission_form)
 
-    form_state, created = CurrentlyEditing.objects.get_or_create(form_id=form_id)
-
     # --- Context ---
-    context = {
-        "selfstudy": selfstudy,
-        "standards": standards,
-        "standard": standard,
-        "formset": formset,
-        "standard_form": standard_form,
-        "mission_form": mission_form,
-        "active_link": standard_id,
-        "evidence_list": evidence_list,
-        "narrative": narrative,
-        "grouped_data": grouped_data,
-        "substandards_exist": substandards_exist,
-        "form_id": form_id,
-        "score_options": IndicatorScore.objects.all(),
-        "readonly": readonly,
-        "staff": request.user.is_staff,
-        "avg_score": avg_score,
-        "avg_bg": avg_bg,
-        "form_version":form_state.version,
-    }
+    context = dict(
+        selfstudy=selfstudy,
+        standards=standards,
+        standard=standard,
+        formset=formset,
+        standard_form=standard_form,
+        mission_form=mission_form,
+        active_link=standard_id,
+        evidence_list=evidence_list,
+        narrative=narrative,
+        grouped_data=grouped_data,
+        substandards_exist=substandards_exist,
+        score_options=IndicatorScore.objects.all(),
+        readonly=readonly,
+        staff=request.user.is_staff,
+        avg_score=avg_score,
+        avg_bg=avg_bg,
+        **get_edit_context(form_id),
+    )
 
     return render(request, 'selfstudy/standard.html', context)
 
@@ -563,9 +543,6 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
         action_plan = ActionPlan(accreditation=accreditation)
 
     form_id = f"{selfstudy.id}_actionplan_{action_plan.id}"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     # Inline formset to manage ActionPlanSteps with ActionPlan
     ActionPlanStepsFormSet = inlineformset_factory(ActionPlan, ActionPlanSteps, form=ActionPlanStepsForm, extra=10,
@@ -574,29 +551,8 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
 
     if request.method == 'POST':
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
-
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
-                return redirect(request.path)
-
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
             if 'delete' in request.POST and action_plan.id:
@@ -620,10 +576,7 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
                             step.action_plan = action_plan  # Link the step to the ActionPlan
                             step.save()
                         messages.success(request, "Action Plan has been successfully saved!")
-                        form_state.version += 1
-                        form_state.last_modified_by = request.user
-                        form_state.user = None
-                        form_state.save()
+                        complete_edit(form_state, request.user)
                     else:
                         messages.error(request, "Action Plan was not saved!")
 
@@ -652,8 +605,9 @@ def selfstudy_actionplan(request, accreditation_id, action_plan_id=None, readonl
 
     context = dict(ap_form=ap_form, formset=formset, action_plan=action_plan, accreditation_id=accreditation_id,
                    selfstudy=selfstudy,standards=standards,
-                   active_link=action_plan.id, actionplans=actionplans, form_id=form_id, readonly=readonly,
-                   show_actionplan_submenu=True, form_version=form_state.version,)
+                   active_link=action_plan.id, actionplans=actionplans, readonly=readonly,
+                   show_actionplan_submenu=True,
+                   **get_edit_context(form_id),)
 
     return render(request, 'selfstudy/action_plan.html', context)
 
@@ -884,9 +838,6 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     standards = Standard.objects.top_level()
     form_id=f"{selfstudy.id}_profile"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     # Retrieve or create the SchoolProfile
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
@@ -916,38 +867,49 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
     school_profile.save()
 
     # Handle form submission
-    if request.method == "POST":
-        form = SchoolProfileForm(request.POST, instance=school_profile)
-        if form.is_valid():
-            updated_profile = form.save(commit=False)  # Get updated profile but don't save it to DB just yet
+    if request.method == "POST" and not readonly:
+          with transaction.atomic():
+            form = SchoolProfileForm(request.POST, instance=school_profile)
 
-            # Check if any fields were updated, and if so, update the other models
-            if updated_profile.school_name != school.name:
-                school.name = updated_profile.school_name
-                school.save()
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
+                return redirect(request.path)
 
-            if updated_profile.address != address.address_1:
-                address.address_1 = updated_profile.address
-                address.city = form.cleaned_data.get('city')
-                address.state_us = form.cleaned_data.get('state_us')
-                address.zip_code = form.cleaned_data.get('zip_code')
-                address.country = form.cleaned_data.get('country')
-                address.save()
+            if form.is_valid():
+                updated_profile = form.save(commit=False)  # Get updated profile but don't save it to DB just yet
 
-            if updated_profile.principal != school.principal:
-                school.principal = updated_profile.principal
-                school.save()
+                # Check if any fields were updated, and if so, update the other models
+                school_changed = False
+                if updated_profile.school_name != school.name:
+                    school.name = updated_profile.school_name
+                    school_changed = True
 
-            if updated_profile.board_chair != school.board_chair:
-                school.board_chair = updated_profile.board_chair
-                school.save()
+                if updated_profile.principal != school.principal:
+                    school.principal = updated_profile.principal
+                    school_changed = True
 
-            # Save the updated school_profile now that we've made changes
-            school_profile.save()
+                if updated_profile.board_chair != school.board_chair:
+                    school.board_chair = updated_profile.board_chair
+                    school_changed = True
 
-            messages.success(request, "Changes have been successfully saved!")
-        else:
-            messages.error(request, "Some changes were not saved!")
+                if school_changed:
+                    school.save()
+
+                if updated_profile.address != address.address_1:
+                    address.address_1 = updated_profile.address
+                    address.city = form.cleaned_data.get('city')
+                    address.state_us = form.cleaned_data.get('state_us')
+                    address.zip_code = form.cleaned_data.get('zip_code')
+                    address.country = form.cleaned_data.get('country')
+                    address.save()
+
+                # Save the updated school_profile now that we've made changes
+                school_profile.save()
+                complete_edit(form_state, request.user)
+
+                messages.success(request, "Changes have been successfully saved!")
+            else:
+                messages.error(request, "Some changes were not saved!")
 
     else:
         form = SchoolProfileForm(instance=school_profile)
@@ -958,9 +920,10 @@ def selfstudy_profile(request, selfstudy_id, readonly=False):
 
     context= dict(selfstudy=selfstudy, standards = standards,
                    active_link="profile", active_sublink="general_info",
-                    form=form, form_id=form_id, form_version=form_state.version,
+                    form=form,
                     readonly=readonly,
-                  show_profile_submenu=True)
+                  show_profile_submenu=True,
+                  **get_edit_context(form_id))
 
     return render(request, "selfstudy/profile.html", context )
 
@@ -971,48 +934,24 @@ def profile_history(request, selfstudy_id, readonly=False):
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
-    form_id= f"{selfstudy.id}_history"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
+    form_id = f"{selfstudy.id}_history"
+
+    history_form = SchoolHistoryForm(
+        request.POST if request.method == "POST" else None,
+        instance=school_profile,
     )
 
-    history_form = SchoolHistoryForm(instance=school_profile)
-
-    if request.method == 'POST':
+    if request.method == 'POST' and not readonly:
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
-
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
-                return redirect(request.path)
-
-            history_form = SchoolHistoryForm(request.POST, instance=school_profile)
             if history_form.is_valid():
                 history_form.save()
+                complete_edit(form_state, request.user)
                 messages.success(request, "School history has been successfully saved!")
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
+
             else:
                 messages.error(request,"School history was not saved!")
 
@@ -1023,7 +962,7 @@ def profile_history(request, selfstudy_id, readonly=False):
     context = dict(selfstudy=selfstudy, standards = standards,
                    history_form = history_form,
                    active_sublink="history", active_link="profile",
-                   form_id=form_id, form_version=form_state.version,
+                   **get_edit_context(form_id),
                    readonly=readonly, show_profile_submenu=True)
 
     return render(request, 'selfstudy/profile_history.html', context)
@@ -1035,9 +974,6 @@ def profile_financial(request, selfstudy_id, readonly=False):
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_financial"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     # Query related financial data entries
     two_year_data_queryset = FinancialTwoYearDataEntry.objects.filter(school_profile=school_profile)
@@ -1046,31 +982,9 @@ def profile_financial(request, selfstudy_id, readonly=False):
 
     if request.method == 'POST':
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
-
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
-
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
-                return redirect(request.path)
-
 
             two_year_formset = FinancialTwoYearDataFormSet(request.POST or None, queryset=two_year_data_queryset, prefix="two_years")
             additional_formset = FinancialAdditionalDataFormSet(request.POST or None, queryset=additional_data_queryset, prefix="additional")
@@ -1078,11 +992,9 @@ def profile_financial(request, selfstudy_id, readonly=False):
             if two_year_formset.is_valid():
                 if any(form.has_changed() for form in two_year_formset):
                     two_year_formset.save()
+                    complete_edit(form_state, request.user)
                     messages.success(request, "2-Year Financial Data has been successfully saved!")
-                    form_state.version += 1
-                    form_state.last_modified_by = request.user
-                    form_state.user = None
-                    form_state.save()
+
                 else:
                     messages.info(request, "No changes made to 2-Year Financial Data")
             else:
@@ -1124,7 +1036,7 @@ def profile_financial(request, selfstudy_id, readonly=False):
     context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial", active_link="profile",
                     two_year_formset = two_year_formset, additional_formset = additional_formset,
                    financial_comment=financial_comment,
-                   form_id=form_id, form_version=form_state.version,
+                   **get_edit_context(form_id),
                    readonly=readonly,
                    show_profile_submenu=True)
 
@@ -1178,8 +1090,6 @@ def import_personnel_data(request, school_profile, annual_report):
 
     messages.success(request, "Personnel was successfully imported/updated!")
 
-@login_required(login_url='login')
-@never_cache
 def handle_fte_data(request, school_profile, fte_queryset):
     """Handles FTE data form submission."""
     FTE_formset = FTEFormSet(request.POST, queryset=fte_queryset, prefix="fte")
@@ -1211,20 +1121,18 @@ def handle_fte_data(request, school_profile, fte_queryset):
 @never_cache
 def profile_personnel(request, selfstudy_id, readonly=False):
     """Main personnel profile view, handling personnel data and FTE data."""
+
+    """Core Objects"""
     selfstudy = get_object_or_404(SelfStudy, id=selfstudy_id)
     school_profile, created = SchoolProfile.objects.get_or_create(selfstudy=selfstudy)
     school = selfstudy.accreditation.school
-    standards = Standard.objects.top_level()
-    form_id = f"{selfstudy.id}_personnel"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
-
     accreditation_school_year = selfstudy.accreditation.school_year
+    standards = Standard.objects.top_level()
 
-    #get the accreditation year annual_report to import data from
+    form_id = f"{selfstudy.id}_personnel"
+
+    # Annual Report used for importing personnel
     annual_report = AnnualReport.objects.filter(school=school, report_type__code="ER", school_year= accreditation_school_year).first()
-
     if annual_report:
         arID=annual_report.id
         ar_school_year=annual_report.school_year
@@ -1232,9 +1140,9 @@ def profile_personnel(request, selfstudy_id, readonly=False):
         arID= None
         ar_school_year= None
 
+    # Forms (GET versions)
     FTE_formset = FTEFormSet(queryset=FullTimeEquivalency.objects.filter(school_profile=school_profile), prefix="fte")
     fte_equivalency_form = FTEEquivalencyForm(instance=school_profile)
-
     pga_formset=ProfessionalActivityFormSet(instance=school_profile)
 
     #import_personnel and fte-data functions are defined above
@@ -1244,20 +1152,32 @@ def profile_personnel(request, selfstudy_id, readonly=False):
 
         #I will save it all for each submit to avoid loosing data
         else:
-            FTE_formset, fte_equivalency_form = handle_fte_data(request, school_profile, FullTimeEquivalency.objects.filter(school_profile=school_profile))
 
-            pga_formset = ProfessionalActivityFormSet(request.POST, instance=school_profile)
-            if pga_formset.is_valid():
-                if any(form.has_changed() for form in pga_formset):
-                    pga_formset.save()
-                    if "pga" in request.POST or "submit-all" in request.POST:
-                        messages.success(request, "Professional Activity Data has been successfully saved!")
+            with transaction.atomic():
+                form_state = validate_edit_version(request, form_id)
+                if not form_state:
+                    return redirect(request.path)
+
+                FTE_formset, fte_equivalency_form = handle_fte_data(request, school_profile,
+                                                                    FullTimeEquivalency.objects.filter(
+                                                                        school_profile=school_profile))
+
+                pga_formset = ProfessionalActivityFormSet(request.POST, instance=school_profile)
+
+                if pga_formset.is_valid():
+                    if any(form.has_changed() for form in pga_formset):
+                        pga_formset.save()
+                        if "pga" in request.POST or "submit-all" in request.POST:
+                            messages.success(request, "Professional Activity Data has been successfully saved!")
+                    else:
+                        if "pga" in request.POST or "submit-all" in request.POST:
+                            messages.info(request, "No changes in Professional Activity Data")
+
                 else:
-                    if "pga" in request.POST or "submit-all" in request.POST:
-                        messages.info(request, "No changes in Professional Activity Data")
-            else:
-                messages.error(request, "Some Professional Activity Data was not saved!")
 
+                    messages.error(request, "Some Professional Activity Data was not saved or it is not complete!")
+
+                complete_edit(form_state, request.user)
 
 
     #Personnel Data to be displayed (was imported with "import_personnel"
@@ -1335,7 +1255,7 @@ def profile_personnel(request, selfstudy_id, readonly=False):
         fte_formset=FTE_formset, fte_equivalency_form=fte_equivalency_form,
         degree_gender_dict=degree_gender_dict,
         pga_formset=pga_formset,
-        form_id=form_id, form_version=form_state.version,
+         **get_edit_context(form_id),
          readonly=readonly,
         retention_data=retention_data,
                     show_profile_submenu=True
@@ -1375,9 +1295,6 @@ def profile_student(request, selfstudy_id, readonly=False):
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_student"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     # Get the current school year from the accreditation model
     accreditation_school_year = selfstudy.accreditation.school_year
@@ -1544,13 +1461,7 @@ def profile_student(request, selfstudy_id, readonly=False):
 # Get or create the projected enrollment entry
     projected_data, created = StudentEnrollmentData.objects.get_or_create(school_profile=school_profile)
 
-    if request.method == "POST" and "projected_enrollment_submit" in request.POST:
-        form = StudentEnrollmentDataForm(request.POST, instance=projected_data)
-        if form.is_valid():
-            form.save()
-            return redirect(request.path_info)  # or use ?next= like before
-    else:
-        form = StudentEnrollmentDataForm(instance=projected_data)
+
 
 
 #Get or create student follow-up data
@@ -1586,18 +1497,33 @@ def profile_student(request, selfstudy_id, readonly=False):
             'rows': rows,
         }
 
-    if request.method == "POST":
-        for level_data in followup_data_tables.values():
-            for row in level_data['rows']:
-                for entry in row['entries']:
-                    field_name = f"entry_{entry.id}"
-                    val = request.POST.get(field_name)
-                    try:
-                        entry.value = int(val) if val else None
-                        entry.save()
-                    except ValueError:
-                        pass  # Optionally handle invalid input
 
+
+    if request.method == "POST":
+        with transaction.atomic():
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
+                return redirect(request.path)
+
+            form = StudentEnrollmentDataForm(request.POST, instance=projected_data)
+            if form.is_valid():
+                form.save()
+            else:
+                form = StudentEnrollmentDataForm(instance=projected_data)
+
+            for level_data in followup_data_tables.values():
+                for row in level_data['rows']:
+                    for entry in row['entries']:
+                        field_name = f"entry_{entry.id}"
+                        val = request.POST.get(field_name)
+                        try:
+                            entry.value = int(val) if val else None
+                            entry.save()
+                        except ValueError:
+                            pass  # Optionally handle invalid input
+            complete_edit(form_state, request.user)
+
+    form = StudentEnrollmentDataForm(instance=projected_data)
 
     #Disable fields for read-only version
     if readonly:
@@ -1610,7 +1536,6 @@ def profile_student(request, selfstudy_id, readonly=False):
         annual_report_id = None
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="student", active_link="profile",
-                   form_id=form_id, form_version=form_state.version,
                    grade_labels = grade_labels, valid_grades=valid_grades,
                    enrollment_by_grade_and_year=enrollment_by_grade_and_year,
                    previous_school_years=previous_school_years,
@@ -1622,9 +1547,11 @@ def profile_student(request, selfstudy_id, readonly=False):
                    annual_report_id=annual_report_id,
                    percentage_non_sda_home=round(percentage_non_sda_home, 1),
                    percentage_baptized=round(percentage_baptized, 1),
-                   projected_enrollment_form=form,
+                   projected_enrollment_form = form,
                    readonly=readonly,
-                   show_profile_submenu=True)
+                   show_profile_submenu=True,
+                   **get_edit_context(form_id),
+                   )
 
     return render(request, 'selfstudy/profile_student.html', context)
 
@@ -1644,9 +1571,7 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_achievement"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
+
 
 #General Achievement data
     try:
@@ -1665,29 +1590,9 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
 
     if request.method == 'POST':
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
 
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
-                return redirect(request.path)
-
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
-
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
             student_achievement_form = StudentAchievementDataForm(request.POST, instance=achievement)
@@ -1702,10 +1607,7 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
                 for test in grade_tests:
                     test.achievement_data = achievement
                     test.save()
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
+                complete_edit(form_state, request.user)
     else:
         student_achievement_form = StudentAchievementDataForm(instance=achievement)
         formset = GradeLevelTestFormSet(queryset=achievement.grade_level_tests.all())
@@ -1807,7 +1709,6 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
                 field.disabled = True
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="achievement", active_link="profile",
-                   form_id=form_id, form_version=form_state.version,
                    level_types=level_types,
                    student_achievement_form = student_achievement_form,
                    grade_level_test_formset = formset,
@@ -1815,7 +1716,8 @@ def profile_student_achievement(request, selfstudy_id, readonly=False):
                    school_years=school_years,
                    existing_keys=existing_keys,
                    readonly=readonly,
-                   show_profile_submenu=True)
+                   show_profile_submenu=True,
+                   **get_edit_context(form_id),)
 
     return render(request, 'selfstudy/profile_student_achievement.html', context)
 
@@ -1912,9 +1814,6 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_curriculum"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     teachers = SelfStudyPersonnelData.objects.filter(school_profile=school_profile)
     teacher_names = [f"{t.first_name} {t.last_name}".strip() for t in teachers if t.first_name or t.last_name]
@@ -1928,39 +1827,18 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
         standards=standards,
         active_sublink="curriculum",
         active_link="profile",
-        form_id=form_id, form_version=form_state.version,
         category_formsets=[],
         other_curriculum=other_curriculum,
         teacher_names=teacher_names,
         readonly=readonly,
-        show_profile_submenu=True
+        show_profile_submenu=True,
+        **get_edit_context(form_id),
     )
 
     if request.method == 'POST':
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
-
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
-                return redirect(request.path)
-
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
 
@@ -2028,17 +1906,11 @@ def profile_secondary_curriculum(request, selfstudy_id, readonly=False):
 
             # --- Feedback messages ---
             if something_saved and not something_invalid:
+                complete_edit(form_state, request.user)
                 messages.success(request, "All data saved successfully.")
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
                 return redirect(request.path)
             elif something_saved and something_invalid:
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
+                complete_edit(form_state, request.user)
                 messages.warning(request, "Some fields contain errors. Valid data was saved, but some items were not.")
             elif not something_saved and something_invalid:
                 messages.error(request, "No data was saved. Please correct the errors below and try again.")
@@ -2090,47 +1962,20 @@ def profile_support_services(request, selfstudy_id, readonly=False):
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_services"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     # Try to get an existing SupportService for the school profile, or create a new one
     support_service, created = SupportService.objects.get_or_create(school_profile=school_profile)
 
     if request.method == 'POST':
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
-
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
-                return redirect(request.path)
-
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
             form = SupportServiceForm(request.POST, instance=support_service)
             if form.is_valid():
                 form.save()
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
+                complete_edit(form_state, request.user)
                 messages.success(request, 'Support service details updated successfully.')
 
     else:
@@ -2142,7 +1987,7 @@ def profile_support_services(request, selfstudy_id, readonly=False):
 
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="services", active_link="profile",
-                   form_id=form_id, form_version=form_state.version,
+                   **get_edit_context(form_id),
                    form=form,
                    readonly=readonly, show_profile_submenu=True)
 
@@ -2158,48 +2003,22 @@ def profile_philanthropy(request, selfstudy_id, readonly=False):
     school = selfstudy.accreditation.school
     standards = Standard.objects.top_level()
     form_id = f"{selfstudy.id}_philantrophy"
-    form_state, _ = CurrentlyEditing.objects.get_or_create(
-        form_id=form_id
-    )
 
     philanthropy, created = PhilantrophyProgram.objects.get_or_create(school_profile=school_profile)
 
     if request.method == 'POST':
         with transaction.atomic():
-            submitted_version = request.POST.get("form_version")
-
-            if submitted_version is None:
-                messages.error(
-                    request,
-                    "The form version is missing. Please reload the page."
-                )
-                return redirect(request.path)
-
-            submitted_version = int(submitted_version)
-            form_state = CurrentlyEditing.objects.select_for_update().get(form_id=form_id)
-            if submitted_version != form_state.version:
-                username = (
-                    form_state.last_modified_by.get_full_name()
-                    if form_state.last_modified_by
-                    else "another user"
-                )
-                messages.error(
-                    request,
-                    f"This form has been modified by {username} since you opened it. "
-                    "Your changes were not saved. Please reload the page."
-                )
-
+            form_state = validate_edit_version(request, form_id)
+            if not form_state:
                 return redirect(request.path)
 
 
             form = PhilantrophyProgramForm(request.POST, instance=philanthropy)
             if form.is_valid():
                 form.save()
+                complete_edit(form_state, request.user)
                 messages.success(request, 'Support service details updated successfully.')
-                form_state.version += 1
-                form_state.last_modified_by = request.user
-                form_state.user = None
-                form_state.save()
+
 
     else:
         form = PhilantrophyProgramForm(instance=philanthropy)
@@ -2209,13 +2028,11 @@ def profile_philanthropy(request, selfstudy_id, readonly=False):
             field.disabled = True
 
     context = dict(selfstudy=selfstudy, school=school, standards=standards, active_sublink="philanthropy", active_link="profile",
-                   form_id=form_id, form_version=form_state.version,
                    form=form,
-                   readonly=readonly, show_profile_submenu=True)
+                   readonly=readonly, show_profile_submenu=True,
+                   **get_edit_context(form_id),)
 
     return render(request, 'selfstudy/profile_philanthropy.html', context)
-
-
 
 # Pdf version of SS
 

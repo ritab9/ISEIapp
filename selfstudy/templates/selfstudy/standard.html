@@ -10,26 +10,7 @@
 <!-- Standard Name and Description -->
         <h5>Standard {{ standard.number|floatformat:"0" }}: {{ standard.name }}</h5>
 
-        <div id="lock-message" class="error" style="display: none;"></div>
-
-        {% if messages %}
-            <div class="card card-body messages">
-                {% for message in messages %}
-                    <div class="{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "success" %}
-                    <script>
-                        sessionStorage.setItem("showSavedNotification", "true");
-                    </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        {% include "includes/messages.html" %}
 
         <div class="text-ISEIblue4 mt-3 mb-3">
             <i>{{ standard.description }}</i>
@@ -298,37 +279,17 @@
                 </table>
             </div>
 
-        <!-- Floating boxes -->
+        <!-- Save Controls + Average -->
              <div class="floating-box-background noprint">
                     <div id="average-score" class="span80 text-ISEIblue4">Average: </div>
                 </div>
 
-            {% if not readonly %}
+        {% if not readonly %}
+             {% include "includes/saved_notification.html" %}
+             {% include "includes/floating_save_button.html" %}
+             {% include "includes/bottom_save_button.html" %}
+        {% endif %}
 
-                <div class="floating-box noprint">
-                    <button id="floating-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
-                </div>
-
-                <div class="card card-body">
-                    <div style="width: auto; text-align: center;">
-                        <button id="end-save-btn" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
-                    </div>
-                </div>
-
-                <div id="savedNotification"
-                     class="floating-box d-none">
-
-                    <div class="card border-success shadow">
-
-                        <div class="card-body">
-
-                            <i class="fas fa-check-circle text-success mr-2"></i>
-
-                            Your changes have been successfully saved.
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
         </form>
     </div>
 
@@ -342,8 +303,8 @@
      {% include "includes/save_position.html" %}
 
      {% if not readonly %}
-        {% include "includes/script_lock_and_save_forms.html" %}
-        {% include "includes/modal_for_unlocked.html" %}
+         {% include "includes/edit_protection.html" %}
+         {% include "includes/form_reload_modal.html" %}
     {% endif %}
 
 
@@ -422,13 +383,13 @@
                 });
 
                 // Show Save button when form is changed
-                window.divButtonMapping = [
+                window.initializeEditProtectionFramework([
                     {
                         divs: ["content-div"],
                         buttons: ["floating-save-btn", "end-save-btn"],
                         formId: "{{ form_id|escapejs }}"
                     }
-                ];
+                ]);
             {% endif %}
         });
     </script>

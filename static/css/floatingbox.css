@@ -21,16 +21,14 @@
 
 .floating-box {
     /* bottom: 60px; */
-    top: 140px;
+    top: 250px;
 }
 
 #formUpdatedBox {
 
     position: fixed;
-
     top: 120px;
     right: 20px;
-
     z-index: 9999;
 
 }

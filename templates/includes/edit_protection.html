@@ -408,21 +408,15 @@ window.divsButtonMapping = [
 // Framework Initialization
 // =========================================================================
         
-        if (window.divButtonMapping && window.divButtonMapping.length > 0) {
-    
-            window.divButtonMapping.forEach(mapping => {
-                initializeEditProtection(
-                    mapping.divs,
-                    mapping.buttons,
-                    mapping.formId
-                );
-            });
-    
-        } else {
-    
-            console.warn("divButtonMapping is not set or empty. Locking setup may not work.");
-    
-        }
+        window.initializeEditProtectionFramework = function (mapping) {
+                mapping.forEach(item => {
+                    initializeEditProtection(
+                        item.divs,
+                        item.buttons,
+                        item.formId
+                    );
+                });
+            };
         
 // =========================================================================
 // Global Event Handlers

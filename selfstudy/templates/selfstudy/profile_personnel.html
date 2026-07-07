@@ -10,18 +10,8 @@
     <div class="card card-body">
         <h5>D. Personnel Data</h5>
 
-        <div id="lock-message" class="error" style="display: none;"></div>
-
 <!-- Success and Error Messages -->
-        {% if messages %}
-                <div class="messages noprint"><hr>
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-        {% endif %}
+        {% include "includes/messages.html" %}
 
 <!-- Import/Update button -->
             <div class="noprint">
@@ -222,6 +212,8 @@
 
     <form id="content-form" method="post">
                 {% csrf_token %}
+
+    <input type="hidden" name="form_version" value="{{ form_version }}">
 <!-- Additional Staff Data-->
         <div class="card-body card mt-3">
         <h6 class="">4. Additional Staff Data</h6>
@@ -431,9 +423,8 @@
         </div>
     </div>
 
-        <div class="floating-box noprint">
-            <button id="floating-save-btn" name="submit-all" type="submit" class="btn btn-ISEIyellow btn-sm">Save Changes</button>
-        </div>
+        {% include "includes/saved_notification.html" %}
+        {% include "includes/floating_save_button.html" %}
 
     </form>
 
@@ -442,17 +433,37 @@
 
 {% block script %}
 
-    {% include "includes/script_lock_and_save_forms.html" %}
+
+// Auto-expanding textareas
+    {% include "includes/script_auto_expand_textarea.html" %}
+//Save cursor position
+    {% include "includes/save_position.html" %}
+
+    {% if not readonly %}
+        {% include "includes/edit_protection.html" %}
+        {% include "includes/form_reload_modal.html" %}
+    {% endif %}
+
 
     <script>
-//1.When content changes show Save button. Also remove the Content Saved Message. Uses the Include from above
-         window.divButtonMapping = [
-             { divs: ["fte-div"], buttons: ["fte-save-btn","floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
-             { divs: ["pga-div"], buttons: ["pga-save-btn","floating-save-btn"],  formId: "{{ form_id|escapejs  }}" },
-         ];
 
-// 3. Auto-expanding textareas
-       {% include "includes/script_auto_expand_textarea.html" %}
+    document.addEventListener("DOMContentLoaded", function () {
+
+    // page-specific JS
+
+        window.initializeEditProtectionFramework([
+            {
+                divs: ["fte-div"],
+                buttons: ["fte-save-btn", "floating-save-btn"],
+                formId: "{{ form_id|escapejs }}"
+            },
+            {
+                divs: ["pga-div"],
+                buttons: ["pga-save-btn", "floating-save-btn"],
+                formId: "{{ form_id|escapejs }}"
+            }
+        ]);
+
 
 //4. Calculate total FTE as users enter data
         document.addEventListener("DOMContentLoaded", function () {
@@ -509,6 +520,8 @@
 
         updateTotals();
     });
+
+});
 
     </script>
 {% endblock %}

@@ -1,35 +1,38 @@
 <!-- { % include "includes/save_position.html" %} -->
 
+
+
+
 <script>
 
-const savedPosition = sessionStorage.getItem("scrollPosition");
+// Save current scroll position whenever the page is unloaded
+    window.addEventListener("beforeunload", function () {
+        sessionStorage.setItem("scrollPosition", window.scrollY);
+    });
 
-    if (savedPosition !== null) {
-    
-        window.addEventListener("load", function () {
-    
+    // Restore after the next page load
+    window.addEventListener("load", function () {
+        const savedPosition = sessionStorage.getItem("scrollPosition");
+
+        if (savedPosition !== null) {
             window.scrollTo(0, parseInt(savedPosition));
-    
             sessionStorage.removeItem("scrollPosition");
-    
-        });
-    
-    }
+        }
+    });
 
-
+    // Saved notification
     if (sessionStorage.getItem("showSavedNotification") === "true") {
-    
-        sessionStorage.removeItem("showSavedNotification");
-    
-        const box = document.getElementById("savedNotification");
-    
-        box.classList.remove("d-none");
-    
-        setTimeout(function () {
-    
-            box.classList.add("d-none");
-    
-        }, 3500);
 
-}
+        sessionStorage.removeItem("showSavedNotification");
+
+        const box = document.getElementById("savedNotification");
+
+        if (box) {
+            box.classList.remove("d-none");
+
+            setTimeout(function () {
+                box.classList.add("d-none");
+            }, 3500);
+        }
+    }
 </script>

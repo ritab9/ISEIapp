@@ -10,24 +10,12 @@
     <div class="card card-body">
         <h5>School Profile</h5> <hr>
 
-        <div id="lock-message" class="error" style="display: none;"></div>
+       {% include "includes/messages.html" %}
 
         <p>The principal, with assistance from the Coordinating Committee, is responsible for completing sections A-F. The principal may delegate responsibility for completion of applicable sections to others, such as the media center to the librarian, etc.</p>
 
         <hr>
         <h5> A. General Information</h5> <hr>
-
-<!-- Saved Data Messages -->
-        {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            <hr>
-        {% endif %}
 
         <div id="content-div">
         <form id="content-form" method="post">
@@ -127,10 +115,12 @@
             </fieldset>
 
             <hr>
-            <div class="">
-                <button id="end-save-btn" class="btn btn-sm btn-ISEIyellow" type="submit">Save Changes</button>
-                <button id="floating-save-btn" type="submit" class="floating-box btn btn-sm btn-ISEIyellow mr-3">Save Changes</button>
-            </div>
+            {% if not readonly %}
+                {% include "includes/saved_notification.html" %}
+                {% include "includes/floating_save_button.html" %}
+                {% include "includes/bottom_save_button.html" %}
+            {% endif %}
+
         </form>
         </div>
     </div>
@@ -140,38 +130,51 @@
 
 {% block script %}
 
-     {% include "includes/script_lock_and_save_forms.html" %}
 
-    <script>
-        //1.When content changes show Save button. Also remove the Content Saved Message
-        window.divButtonMapping = [
-            {
-                divs: ["content-div"],
-                buttons: ["floating-save-btn", "end-save-btn"],
-                formId: "{{ form_id|escapejs  }}" } // Both forms trigger both buttons
-         ];
+// Auto-expanding textareas
+    {% include "includes/script_auto_expand_textarea.html" %}
+//Save cursor position
+    {% include "includes/save_position.html" %}
 
-// 2. Auto-expanding textareas
-        {% include "includes/script_auto_expand_textarea.html" %}
+    {% if not readonly %}
+        {% include "includes/edit_protection.html" %}
+        {% include "includes/form_reload_modal.html" %}
+    {% endif %}
 
+<script>
 
-//3. Show US State only if the chosen country is US
+        document.addEventListener("DOMContentLoaded", function () {
 
-    function toggleStateField() {
-        var countrySelect = document.getElementById("id_country");
-        var stateField = document.getElementById("state-field");
+            function toggleStateField() {
+                const countrySelect = document.getElementById("id_country");
+                const stateField = document.getElementById("state-field");
 
-        if (countrySelect.options[countrySelect.selectedIndex].text === "United States") {
-          stateField.style.display = "block";
-        } else {
-          stateField.style.display = "none";
-        }
-      }
+                if (!countrySelect || !stateField) return;
 
-      document.getElementById("id_country").addEventListener("change", toggleStateField);
+                stateField.style.display =
+                    countrySelect.options[countrySelect.selectedIndex].text === "United States"
+                        ? "block"
+                        : "none";
+            }
 
-    // Run on page load in case the United States is preselected
-      toggleStateField();
+            document
+                .getElementById("id_country")
+                .addEventListener("change", toggleStateField);
 
-    </script>
+            toggleStateField();
+
+            {% if not readonly %}
+            window.initializeEditProtectionFramework([
+                {
+                    divs: ["content-div"],
+                    buttons: ["floating-save-btn", "end-save-btn"],
+                    formId: "{{ form_id|escapejs }}"
+                }
+            ]);
+            {% endif %}
+
+        });
+
+</script>
+
 {% endblock %}
