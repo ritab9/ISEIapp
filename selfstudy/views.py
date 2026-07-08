@@ -422,6 +422,12 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
             # --- Edit Protection---
             form_state = validate_edit_version(request, form_id)
             if not form_state:
+                messages.warning(
+                    request,
+                    "You already saved a newer version of this page in another browser tab or window. "
+                    "To prevent overwriting those changes, the edits made in this tab were not saved. "
+                    "The latest version of the page has been loaded."
+                )
                 return redirect(request.path)
 
             # Save Forms

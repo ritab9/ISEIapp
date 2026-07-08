@@ -49,8 +49,7 @@ def validate_edit_version(request, form_id):
         )
         messages.error(
             request,
-            f"This form has been modified by {username} since you opened it. "
-            "Please reload the page."
+                "Your changes could not be saved because a newer version of this form already exists."
         )
         return None
     return form_state

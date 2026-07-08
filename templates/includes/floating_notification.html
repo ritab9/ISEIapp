@@ -1,0 +1,85 @@
+<!-- { % include "includes/floating_notification.html" %} -->
+
+<div id="floatingNotification"
+     class="floating-box d-none"
+     style="width: 360px; cursor: pointer;">
+
+    <div id="floatingNotificationCard" class="card shadow">
+
+        <div class="card-body">
+
+            <i id="floatingNotificationIcon" class="fas mr-2"></i>
+
+            <span id="floatingNotificationText"></span>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const stored = sessionStorage.getItem("floatingMessage");
+
+    if (!stored) {
+        return;
+    }
+
+    sessionStorage.removeItem("floatingMessage");
+
+    const message = JSON.parse(stored);
+
+    const box = document.getElementById("floatingNotification");
+    const card = document.getElementById("floatingNotificationCard");
+    const icon = document.getElementById("floatingNotificationIcon");
+    const text = document.getElementById("floatingNotificationText");
+
+    text.textContent = message.text;
+
+    card.classList.remove(
+        "border-success",
+        "border-warning",
+        "border-danger",
+        "border-info"
+    );
+
+    icon.className = "fas mr-2";
+
+    switch (message.type) {
+
+        case "success":
+            card.classList.add("border-success");
+            icon.classList.add("fa-check-circle", "text-success");
+            break;
+
+        case "warning":
+            card.classList.add("border-warning");
+            icon.classList.add("fa-exclamation-triangle", "text-warning");
+            break;
+
+        case "error":
+            card.classList.add("border-danger");
+            icon.classList.add("fa-times-circle", "text-danger");
+            break;
+
+        default:
+            card.classList.add("border-info");
+            icon.classList.add("fa-info-circle", "text-info");
+    }
+
+    function hideNotification() {
+        box.classList.add("d-none");
+    }
+
+    box.classList.remove("d-none");
+
+    // Hide if the user clicks the notification
+    box.addEventListener("click", hideNotification, { once: true });
+
+    // Hide automatically after 10 seconds
+    setTimeout(hideNotification, 10000);
+
+});
+</script>

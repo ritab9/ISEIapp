@@ -44,19 +44,19 @@ window.divsButtonMapping = [
     // • Unsaved changes warning
     // • Automatic lock release
     // =========================================================================
-        
-        
+
+
 // Configuration
         const CONFIG = {POLLING_INTERVAL: 15000, LOCK_TIMEOUT_MINUTES: 60,};
-     
+
 // Current Editing Session
         let editorId = sessionStorage.getItem("editorId");
-        
+
         if (!editorId) {
             editorId = crypto.randomUUID();
             sessionStorage.setItem("editorId", editorId);
         }
-        
+
         const session = {
             editorId: editorId,
             currentFormId: null,
@@ -64,11 +64,11 @@ window.divsButtonMapping = [
             saving: false,
             reloading:false,
         };
-        
+
  // =========================================================================
 // Utilities
 // =========================================================================
-        
+
         function getCookie(name) {
             let cookieValue = null;
     
@@ -87,37 +87,37 @@ window.divsButtonMapping = [
     
             return cookieValue;
         }
-        
+
 // ============================================================================
 // UI Helpers
 // ============================================================================
-        
+
         function removeMessages() {
                 document.querySelectorAll(".messages").forEach(message => message.remove());
             }
-    
+
         function toggleButtons(buttons, show) {
             buttons.forEach(button => {
                 button.style.display = show ? "inline-block" : "none";
             });
         }
-        
+
         function showReloadModal(username){
-            
+
                 const message = document.getElementById("formUpdatedMessage");
                 const box = document.getElementById("formUpdatedBox");
-                
+
                 if (!message || !box) {
                     return;
                 }
                 message.textContent = `${username} has finished editing this form.`;
                 box.classList.remove("d-none");
-                
+
                 document
                     .getElementById("formUpdatedBox")
                     .classList.remove("d-none");
             }
-        
+
         function setInputsEnabled(divs, enabled) {
                     divs.forEach(div => {
                         div.querySelectorAll("input, textarea, select")
@@ -126,21 +126,21 @@ window.divsButtonMapping = [
                             });
                     });
                 }
-        
+
         function showLockMessage(message) {
             const lockMessageDiv = document.querySelector("#lock-message");
             if (!lockMessageDiv) return;
             lockMessageDiv.innerHTML = `${message}<hr>`;
             lockMessageDiv.style.display = "block";
         }
-        
+
         function hideLockMessage() {
             const lockMessageDiv = document.querySelector("#lock-message");
             if (lockMessageDiv) {
                 lockMessageDiv.style.display = "none";
             }
         }
-        
+
         function setEditingEnabled(divs, saveButtons, enabled) {
             setInputsEnabled(divs, enabled);
             toggleButtons(saveButtons, enabled);
@@ -148,7 +148,7 @@ window.divsButtonMapping = [
                 hideLockMessage();
             }
         }
-        
+
 // =========================================================================
 // Edit Protection Initialization
 // =========================================================================
@@ -157,18 +157,19 @@ window.divsButtonMapping = [
     
             let divs = divIds.map(id => document.querySelector(`#${id}`)).filter(div => div !== null);
             let saveButtons = buttonIds.map(id => document.querySelector(`#${id}`)).filter(btn => btn !== null);
-    
+
             const versionField = document.getElementById("form_version");
             if (!versionField) {
                     console.error("ISEI Edit Protection: #form_version not found.");
                     return;
                 }
-            
+
             const state = {
                     lockAcquired: false,
                     checkingLock: false,
                     pollTimer: null,
                     originalVersion: Number(versionField.value),
+                    waitingForSameUser: false,
                 };
     
             if (divs.length === 0 || saveButtons.length === 0) return;
@@ -182,9 +183,9 @@ window.divsButtonMapping = [
             });
     
             function handleChange() {
-                
+
                 session.dirty= true;
-                
+
                 removeMessages();
     
                 if (!state.checkingLock && !state.lockAcquired) {
@@ -192,41 +193,59 @@ window.divsButtonMapping = [
                     checkFormLock(formId);
                 }
             }
-    
+
             function startPolling() {
                 if (state.pollTimer) return;
                 state.pollTimer = setInterval(checkIfUnlocked, CONFIG.POLLING_INTERVAL);
             }
-            
+
             function stopPolling() {
                 if (state.pollTimer) {
                     clearInterval(state.pollTimer);
                     state.pollTimer = null;
                 }
             }
-            
+
             function checkIfUnlocked() {
                 fetch(`/check-lock/${formId}/`)
                     .then(response => response.json())
                     .then(data => {
-            
+
                         if (data.locked) {
                             return;
                         }
-            
+
                         stopPolling();
-            
+
                         if (data.version != state.originalVersion) {
-                            showReloadModal(data.last_modified_by);
-                        } else {
-                            setEditingEnabled(divs, saveButtons, true);
-                        }
+
+                                if (state.waitingForSameUser) {
+                            
+                                    // Another one of my sessions saved.
+                                    // Don't show the reload message.
+                            
+                                    session.reloading = true;
+                                    sessionStorage.setItem("scrollPosition", window.scrollY);
+                                    window.location.reload();
+                            
+                                } else {
+                            
+                                    // Someone else edited the page.
+                                    showReloadModal(data.last_modified_by);
+                            
+                                }
+                            
+                            } else {
+                            
+                                setEditingEnabled(divs, saveButtons, true);
+                            
+                            }
                     })
                     .catch(error => {
                         console.error("Error checking lock:", error);
                     });
             }
-            
+
             function checkFormLock(formId) {
     
                 fetch(`/check-lock/${formId}/`)
@@ -234,7 +253,7 @@ window.divsButtonMapping = [
                     .then(data => {
     
                         state.checkingLock = false;
-                        
+
                         if (data.locked) {
     
                             let message =
@@ -246,9 +265,9 @@ window.divsButtonMapping = [
                             showLockMessage(message);
 
                             setEditingEnabled(divs, saveButtons, false);
-                        
+
                             startPolling();
-                            
+
                         } else {
                             setEditingEnabled(divs, saveButtons, true);
                             acquireLock(formId);
@@ -262,7 +281,7 @@ window.divsButtonMapping = [
             }
     
             function acquireLock(formId) {
-                
+
                 fetch(`/acquire-lock/${formId}/`, {
                     method: "POST",
                     headers: {
@@ -280,20 +299,22 @@ window.divsButtonMapping = [
                 .then(data => {
     
                     if (data.status === "stale") {
-    
-                        alert(`This form has been modified by ${data.username} since you opened it.\n\n` + 
+
+                        alert(`This form has been modified by ${data.username} since you opened it.\n\n` +
                             `To prevent conflicting changes, the page will now reload so you can review the latest information.\n\n` +
                             `Depending on your browser, you may be asked to confirm that the page should be reloaded or that the form should be resubmitted.`
                                 );
                         session.reloading = true;
                         sessionStorage.setItem("scrollPosition", window.scrollY);
-                        window.location.reload();
+                        window.location.replace(window.location.pathname + window.location.search);
                         return;
                     }
     
                     if (data.status === "locked_by_other") {
     
                         let message;
+                        
+                        state.waitingForSameUser = data.same_user;
 
                         if (data.same_user) {
                             if (confirm(
@@ -306,7 +327,7 @@ window.divsButtonMapping = [
                             )) {
                                 takeOverLock(formId);
                             }
-                            
+
                             return;
                              } else {
                             message =
@@ -317,12 +338,15 @@ window.divsButtonMapping = [
                         alert(message);
                         showLockMessage(message);
                         setEditingEnabled(divs, saveButtons, false);
-                        
+
                         return;
                     }
     
                     if (data.status === "locked") {
                         stopPolling();
+                        
+                        state.waitingForSameUser = false;
+
                         state.lockAcquired = true;
                         session.currentFormId = formId;
                         setEditingEnabled(divs, saveButtons, true);
@@ -364,9 +388,9 @@ window.divsButtonMapping = [
     
                 .catch(error => console.error("Error releasing lock:", error));
             }
-            
+
             function takeOverLock(formId) {
-                
+
                 fetch(`/take-over-lock/${formId}/`, {
                     method: "POST",
                     headers: {
@@ -377,21 +401,24 @@ window.divsButtonMapping = [
                         editor_id: session.editorId
                     })
                 })
-            
+
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "taken_over") {
                         state.lockAcquired = true;
+                        
+                        state.waitingForSameUser = false;
+                        
                         session.currentFormId = formId;
                         session.dirty = true;
                         setEditingEnabled(divs, saveButtons, true);
                     }
                 });
             }
-            
-            
+
+
             const form = saveButtons[0].closest("form");
-            
+
             if (form) {
                 form.addEventListener("submit", function () {
                     session.saving = true;
@@ -399,15 +426,15 @@ window.divsButtonMapping = [
                     releaseLock(formId);
                 });
             }
-    
+
         }
-        
-        
+
+
 
 // =========================================================================
 // Framework Initialization
 // =========================================================================
-        
+
         window.initializeEditProtectionFramework = function (mapping) {
                 mapping.forEach(item => {
                     initializeEditProtection(
@@ -417,10 +444,10 @@ window.divsButtonMapping = [
                     );
                 });
             };
-        
+
 // =========================================================================
 // Global Event Handlers
-// =========================================================================  
+// =========================================================================
         document
             const reloadButton = document.getElementById("reloadPageButton");
             if(reloadButton) {
@@ -428,7 +455,7 @@ window.divsButtonMapping = [
                 session.reloading = true;
                 sessionStorage.setItem("scrollPosition", window.scrollY);
                 window.location.reload();
-        
+
             });
                 }
     
@@ -437,7 +464,7 @@ window.divsButtonMapping = [
                     event.preventDefault();
                     event.returnValue = "";
                 }
-            
+
             if (session.currentFormId) {
                 const data = new Blob(
                     [JSON.stringify({ editor_id: session.editorId })],
@@ -445,9 +472,9 @@ window.divsButtonMapping = [
                 );
                 navigator.sendBeacon(`/release-lock/${session.currentFormId}/`, data);
             }
-            
+
         });
-        
+
     });
 </script>
 
@@ -483,7 +510,7 @@ window.divsButtonMapping = [
 //
 //     <input type="hidden"
 //            id="form_version"
-//            value="{{ form.version }}">
+//            value="{ { form.version }}">
 //
 //
 // =============================================================================
@@ -552,7 +579,7 @@ window.divsButtonMapping = [
 //
 // window.divButtonMapping = [
 //     {
-//         formId: "{{ formId|escapejs }}",
+//         formId: "{ { formId|escapejs }}",
 //         divs: [
 //             "standard-form"
 //         ],

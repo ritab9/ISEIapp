@@ -1,24 +1,19 @@
 {% if messages %}
-    <div class="card card-body messages">
+    
+     {% if messages %}
         {% for message in messages %}
-            <div class="
-                {% if message.tags == 'success' %}success
-                {% elif message.tags == 'error' %}danger
-                {% elif message.tags == 'warning' %}warning
-                {% else %}alert-info
-                {% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-
-    {% for message in messages %}
-        {% if message.tags == "success" %}
             <script>
-                sessionStorage.setItem("showSavedNotification", "true");
+                sessionStorage.setItem(
+                    "floatingMessage",
+                    JSON.stringify({
+                        type: "{{ message.tags }}",
+                        text: "{{ message|escapejs }}"
+                    })
+                );
             </script>
-        {% endif %}
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
+    
 {% endif %}
 
 <div id="lock-message"
