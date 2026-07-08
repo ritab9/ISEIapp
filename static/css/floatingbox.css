@@ -5,7 +5,7 @@
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    font-size: inherit;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,6 +22,7 @@
 .floating-box {
     /* bottom: 60px; */
     top: 250px;
+    font-size: 0.9rem;
 }
 
 #formUpdatedBox {
