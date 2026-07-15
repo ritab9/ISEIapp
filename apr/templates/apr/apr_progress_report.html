@@ -144,10 +144,11 @@
 
 
 {% block script %}
+<!-- Auto Expand Text Area -->
+    {% include "includes/script_auto_expand_textarea.html" %}
+
 
 <script>
-//Auto Expand Text Area
-    {% include "includes/script_auto_expand_textarea.html" %}
 
 //update yearly  Progress
     function saveProgress(progressId, newDescription) {
