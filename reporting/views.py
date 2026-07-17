@@ -2176,35 +2176,39 @@ def download_NCPSA_directory(request, schoolyearID):
             accreditation_status = "Accredited"
             accreditation_end_date = current_accreditation_info.term_end_date.strftime(
                 '%m/%d/%Y') if current_accreditation_info.term_end_date else None
-            initial_accreditation_date = school.initial_accreditation_date.strftime(
-                '%m/%d/%Y') if school.initial_accreditation_date else None
+            accreditation_start_date = current_accreditation_info.term_start_date.strftime(
+                '%m/%d/%Y') if current_accreditation_info.term_start_date else None
+            #initial_accreditation_date = school.initial_accreditation_date.strftime(
+            #    '%m/%d/%Y') if school.initial_accreditation_date else None
+
+            current_other = school.otheragencyaccreditationinfo_set.filter(current_accreditation=True).select_related('agency')
+            accreditors = ["ISEI-EA"]
+            accreditors.extend(current_other.values_list('agency__abbreviation', flat=True))
+            accreditors = ", ".join(accreditors)
+
         else:
             accreditation_status = "Candidate"
             accreditation_end_date = None
             initial_accreditation_date = None
 
-        if school.abbreviation == "AIS":
-            representative = school.president + ",Director"
-        else:
-            representative = school.principal + ", Principal"
-
         data.append({
-            'Institution': school.name,
-            'Representative': representative,
-            'Address': school.street_address.address_1,
+            'School ame': school.name,
+            'Street Address': school.street_address.address_1,
             'City': school.street_address.city,
-            'Zip code': school.street_address.zip_code,
             'State': school.street_address.state_us,
+            'Zip code': school.street_address.zip_code,
             'Country':school.street_address.country,
-            'Phone': school.phone_number,
-            'E-mail': school.email,
-            'Website': school.website,
-            'Public/Private': "Private",
-            'Grades': school.grade_levels,
+            'Head of School/Principal': school.principal,
+            'Grade Levels Served': school.grade_levels,
             'Enrollment': enrollment,
-            'Accreditation Status':accreditation_status,
-            'Initial Accreditation Date': initial_accreditation_date,
-            'Accreditation Expiration Date': accreditation_end_date,
+            'Accreditation Status': accreditation_status,
+            'Accreditor(s)': accreditors,
+            'Date Last Reviewed': accreditation_start_date,
+            'Next Review Due': accreditation_end_date,
+            'Contact Email': school.email,
+            'Phone': school.phone_number,
+            'Website': school.website,
+            #'Initial Accreditation Date': initial_accreditation_date,
         })
 
     df = pd.DataFrame(data)
