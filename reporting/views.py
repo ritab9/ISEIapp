@@ -2191,6 +2191,11 @@ def download_NCPSA_directory(request, schoolyearID):
             accreditation_end_date = None
             initial_accreditation_date = None
 
+        if school.email:
+            schoool_email = school.email
+        else:
+            school_email = school.principal_email
+
         data.append({
             'School ame': school.name,
             'Street Address': school.street_address.address_1,
