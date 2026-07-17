@@ -2190,6 +2190,7 @@ def download_NCPSA_directory(request, schoolyearID):
             accreditation_status = "Candidate"
             accreditation_end_date = None
             initial_accreditation_date = None
+            accreditors = None
 
         if school.email:
             schoool_email = school.email
