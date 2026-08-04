@@ -77,7 +77,7 @@ def student_report(request, arID):
 
         StudentFormSet = my_formset_factory(
             Student, form=StudentForm,
-            extra=1, can_delete=True,
+            extra=1, can_delete=False,
             exclude=exclude_fields,
             is_us_school=is_us_school,
             is_tn_school=is_tn_school,
