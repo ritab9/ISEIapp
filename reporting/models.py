@@ -308,9 +308,12 @@ class Student(models.Model):
     STATUS_CHOICES = [
         ('enrolled', 'Enrolled'),
         ('part-time', 'Part Time'),
+        ('accepted', 'Accepted'),
         ('graduated', 'Graduated'),
         ('did_not_return', 'Did Not Return'),
         ('withdrawn', "Withdrawn"),
+        ('no-show', 'No Show'),
+
     ]
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='enrolled')
 
@@ -337,7 +340,7 @@ class Student(models.Model):
     ]
     grade_level =  models.IntegerField(choices=GRADE_LEVEL_CHOICES)
 
-    registration_date = models.DateField(null=True)
+    registration_date = models.DateField(null=True, blank=True)
     withdraw_date = models.DateField(null=True, blank=True)
 
     LOCATION_CHOICES = [

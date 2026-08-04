@@ -38,7 +38,7 @@ class StudentForm(forms.ModelForm):
         self.fields['parent_sda'].choices = [('Y', 'Yes, SDA'),('N', 'No'), ('U', '-'),]
 
         # Force registration_date to be required
-        self.fields['registration_date'].required = True
+        #self.fields['registration_date'].required = True
 
     class Meta:
         model = Student
@@ -80,13 +80,21 @@ class StudentForm(forms.ModelForm):
                 "Student must have either their age at registration or a birth date entered."
             )
 
+        status = cleaned_data.get("status")
+
+        if status in {"enrolled", "part-time", "withdrawn"} and not registration_date:
+            self.add_error(
+                "registration_date",
+                ValidationError("Registration date is required for enrolled students.")
+            )
+
         gender = cleaned_data.get('gender')
         if gender == 'U':
             self.add_error('gender', ValidationError("Select Gender."))
 
         if cleaned_data.get('status') == 'withdrawn':
             if not cleaned_data.get('withdraw_date'):
-                self.add_error('withdraw_date', ValidationError("Select Withdraw Date."))
+                self.add_error('withdraw_date', ValidationError("Add Withdraw Date."))
 
 
         if self.is_us_school:

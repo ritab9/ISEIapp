@@ -192,6 +192,11 @@
 
 <!-- Teacher Cert and Safety Form Link -->
     <div class = "col col-auto card">
+        <div class="card-body card mt-2">
+            {% if school.id %}
+                <h6><a class="nav-link clickable" href="{% url 'test_order_dashboard' school.id %}" > IOWA Test Ordering </a></h6>
+            {% endif %}
+        </div>
     <!-- Safety form link-->
         <div class="card-body card">
             <h6><a href="{{ safety_form_link }}" target="_blank" rel="noopener noreferrer">Safety &amp; Maintenance Inspection Form</a></h6>
@@ -200,11 +205,11 @@
 
         <div class="card-body card">
 <!-- Teacher Certification Status-->
-            <h6 class="mb-3">
+            <h6 class="">
                 <a href="{% url 'principal_teachercert' %}">Teacher Certification </a>
             </h6>
     <!-- Percent of registered teachers -->
-            <div class="mb-3">
+            <div class="">
                 <p>Number of registered teachers: {{ number_of_teachers }}</p>
                 <!--p>Registered academic teachers: { { number_of_academic_teachers }}</p -->
                 <p> Percent of registered teachers certified:

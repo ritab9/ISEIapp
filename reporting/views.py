@@ -185,10 +185,12 @@ def student_report(request, arID):
             status_order = Case(
                 When(status='enrolled', then=Value(1)),
                 When(status='part-time', then=Value(2)),
-                When(status='withdrawn', then=Value(3)),
-                When(status='graduated', then=Value(4)),
-                When(status='did_not_return', then=Value(5)),
-                default=Value(6),
+                When(status='accepted', then=Value(3)),
+                When(status='withdrawn', then=Value(4)),
+                When(status='graduated', then=Value(5)),
+                When(status='did_not_return', then=Value(6)),
+                When(status='no-show', then=Value(7)),
+                default=Value(8),
                 output_field=IntegerField()
             )
 
@@ -196,7 +198,7 @@ def student_report(request, arID):
             if not show_all:
                 students_qs = Student.objects.filter(
                     annual_report=annual_report,
-                    status__in=['enrolled', 'withdrawn', 'part-time']
+                    status__in=['enrolled', 'withdrawn', 'part-time', 'accepted']
                 ).select_related('country', 'TN_county').order_by(status_order, 'grade_level', 'name')
             else:
                 students_qs = Student.objects.filter(
