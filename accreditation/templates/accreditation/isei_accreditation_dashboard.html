@@ -33,7 +33,7 @@
                     <th colspan="2" style="background-color: whitesmoke"></th>
                     <th colspan="1" class="orange-header">SelfStudy</th>
                     <th colspan="4" class="blue-header">Accreditation</th>
-                    <th colspan="2" class="orange-header">AAPR</th>
+                    <th colspan="2" class="orange-header">APR</th>
                 </tr>
 <!-- Row two of Table Head-->
                 <tr >
@@ -152,12 +152,12 @@
 
                         <td class="orange-column">
                             <a href="{% url 'manage_apr' accreditation.id %}">
-                                {% if accreditation.apr %} Edit AAPR {% elif accreditation.term_end_date %} Add AAPR {% endif %}
+                                {% if accreditation.apr %} Edit APR {% elif accreditation.term_end_date %} Add APR {% endif %}
                             </a>
                         </td>
                         <td class="orange-column">
                             {% if accreditation.apr %}
-                                <a href="{% url 'apr_progress_report' accreditation.apr.id %}">AAPR Progress</a>
+                                <a href="{% url 'apr_progress_report' accreditation.apr.id %}">APR Progress</a>
                                 <div class="small">{{ accreditation.apr.updated_at|default_if_none:"" }}</div>
                             {% endif %}
                         </td>
@@ -202,7 +202,7 @@
                                 <small>{{ accreditation.term_start_date }}-{{ accreditation.term_end_date }}</small></td>
                             <td class="orange-column" colspan="2">
                                 {% if accreditation.apr %}
-                                    <a href="{% url 'apr_progress_report' accreditation.apr.id %}"> View AAPR</a>
+                                    <a href="{% url 'apr_progress_report' accreditation.apr.id %}"> View APR</a>
                                     <div class="small">{{ accreditation.apr.updated_at|default_if_none:"" }}</div>
                                 {% endif %}
                             </td>
