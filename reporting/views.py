@@ -53,7 +53,7 @@ def report_dashboard(request, schoolID, school_yearID):
 @login_required(login_url='login')
 def student_report(request, arID):
     redirect_to_school_dashboard = False
-    show_all = None
+    selected_statuses = request.GET.getlist('status') or ['enrolled']
     annual_report = None
     formset = None
     saved_count = 0
@@ -194,16 +194,22 @@ def student_report(request, arID):
                 output_field=IntegerField()
             )
 
-            show_all = request.GET.get("show") == "all"
-            if not show_all:
-                students_qs = Student.objects.filter(
-                    annual_report=annual_report,
-                    status__in=['enrolled', 'withdrawn', 'part-time', 'accepted']
-                ).select_related('country', 'TN_county').order_by(status_order, 'grade_level', 'name')
-            else:
-                students_qs = Student.objects.filter(
-                    annual_report=annual_report
-                ).select_related('country', 'TN_county').order_by(status_order, 'grade_level', 'name')
+            #Filter by status
+
+            #selected_statuses = request.GET.getlist('status')
+
+            students_qs = Student.objects.filter(
+                annual_report=annual_report
+            )
+
+            if selected_statuses:
+                students_qs = students_qs.filter(status__in=selected_statuses)
+
+            students_qs = students_qs.select_related(
+                'country', 'TN_county'
+            ).order_by(
+                status_order, 'grade_level', 'name'
+            )
 
             formset = StudentFormSet(queryset=students_qs)
 
@@ -220,11 +226,15 @@ def student_report(request, arID):
         if not redirect_to_school_dashboard:
             if saved_count:
                 messages.success(request, f"{saved_count} student(s) saved successfully.")
-            return render(request, 'student_report.html', {
-                'formset': formset,
-                'annual_report': annual_report,
-                'show_all': show_all
-            })
+
+            context = dict(
+                formset=formset,
+                annual_report=annual_report,
+                selected_statuses=selected_statuses,
+                status_choices=Student.STATUS_CHOICES,
+            )
+
+            return render(request, 'student_report.html', context)
         else:
             if saved_count:
                 messages.success(request, f"{saved_count} student(s) saved successfully.")

@@ -8,77 +8,217 @@
 
 
 <!-- General Info-->
-    <div class="row">
-        <div class="col" style="display: inline-block;">
-            <div class="mt-3 ml-3 col text-left mt-1">
-                <h6>{{ annual_report }}</h6>
+    <div class="card">
+        <div class="row mt-2 mb-2 ml-2 mr-2 align-items-center">
+            <div class="col-auto">
+                <h6 class="mb-0">{{ annual_report }}</h6>
+            </div>
+
+            <div class="col-auto ml-auto">
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-sm btn-ISEIyellow"
+                       href="{% url 'import_students_prev_year' annual_report.id %}">
+                        Import Students from {{ annual_report.school_year.get_previous_school_year }}
+                    </a>
+
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="{% url 'student_import_dashboard' arID=annual_report.id %}">
+                        Import from Excel
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="col-5 mt-3 ml-auto" style="display: inline-block;">
-            <div class="col text-right mt-1">
-                <a href="{% url 'student_import_dashboard' arID=annual_report.id %}">Import Data</a>
-            </div>
+
+        <div class="row">
+            {% for message in messages %}
+                <div {% if message.tags %}class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </div>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="card mt-3">
-            <div class="row mt-1 mb-2 ml-2 ">
-<!-- Global registration date -->
-                 <div class="col col-auto">
-                    <a class="btn btn-sm btn-ISEIyellow mt-4" href="{% url 'import_students_prev_year' annual_report.id %}">Import Students from {{ annual_report.school_year.get_previous_school_year }}</a>
-                    {% for message in messages %}
-                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-                     {% endfor %}
-                 </div>
-                <div class="col col-auto">
-                    <div class="text-left"><label for="common-registration-date"><b>Global Registration Date</b></label></div>
-                    <div><input type="date" id="common-registration-date" style="width: 150px"/></div>
-                    <button class="btn btn-ISEIblue2 btn-sm mt-1" id="add-date-button">Apply</button>
-                    <button class="btn btn-ISEIblue2 btn-sm mt-1" id="rewrite-date-button">Rewrite</button>
+
+<div class="mt-1">
+
+    <!-- Global Student Updates -->
+    <div class="card shadow-sm mb-1">
+
+        <div class="card-body py-1">
+            <div class="row align-items-end">
+                <div class="col-md-auto mb-2 card-header bg-light py-2">
+                    <strong>Global Student Updates</strong>
                 </div>
- <!-- Global Location -->
-                <div class="col col-auto align-right">
-                    <div class=""><label for="global-location"><b>Global Location</b></label></div>
-                    <select id="global_location">
+
+    <!-- Global Registration Date -->
+                <div class="col-md-auto mb-2">
+                    <label for="common-registration-date" class="font-weight-bold d-block">
+                        Global Registration Date
+                    </label>
+
+                    <div class="form-inline">
+                        <input type="date"
+                               id="common-registration-date"
+                               class="form-control form-control-sm mr-2"
+                               style="width: 150px;">
+
+                        <button class="btn btn-sm btn-ISEIblue2 mr-1"
+                                id="add-date-button">
+                            Apply
+                        </button>
+
+                        <button class="btn btn-sm btn-outline-ISEIblue1"
+                                id="rewrite-date-button">
+                            Rewrite
+                        </button>
+                    </div>
+                </div>
+
+
+    <!-- Global Location -->
+                <div class="col-md-auto mb-2">
+                    <label for="global_location" class="font-weight-bold d-block">
+                        Global Location
+                    </label>
+
+                    <select id="global_location"
+                            class="form-control form-control-sm">
                         <option value="on-site">On-Site</option>
-                        <option value="satelite">Satelite</option>
+                        <option value="satelite">Satellite</option>
                         <option value="distance-learning">Distance-Learning</option>
                     </select>
                 </div>
-<!-- Global Boarding/or no -->
-                 <div class="col col-auto align-right">
-                     <div class=""><label for="global-location"><b>Boarding</b></label></div>
 
-                     <input type="checkbox" id="markAllBoarding">
-                 </div>
 
-                <div class="col col-auto ml-auto">
-                    {% if show_all %}
-                        <a href="?" class="btn btn-outline-ISEIblue4 btn-sm">Do Not Show Graduated/Not Returning Students</a>
-                    {% else %}
-                        <a href="?show=all" class="btn btn-outline-ISEIblue4 btn-sm">Show Graduated/Not Returning Students </a>
-                    {% endif %}
-                 </div>
+    <!-- Global Boarding -->
+                <div class="col-md-auto mb-2">
+                    <label class="font-weight-bold d-block">
+                        Boarding
+                    </label>
 
-            </div>
-<!-- Comments and instructions -->
-            <hr>
-                <div>
-                    <ul>
-                        <li class="error">Be sure to check data for all previous students for accuracy: enrollment status, grade level, address, baptismal status, etc. (If you have students in Pre-K & K ensure they are marked for the correct grade level for this school year!)</li>
-                        <li> Depending on your screen size, in order to view all columns you may need to horizontally scroll through the table.</li>
-                    </ul>
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               id="markAllBoarding">
+
+                        <label class="form-check-label"
+                               for="markAllBoarding">
+                            Apply to all students
+                        </label>
+                    </div>
                 </div>
-            <div>
-                <ul>
-                    <li><strong>Withdrawn:</strong> Left during the school year. Marked in the report whenever a student is withdrawn,</li>
-                    <li><strong>Did Not Return:</strong> Completed last school year but did not return this year. <span class="error">Mark at the start of a new year.</span></li>
-                </ul>
-            </div>
 
+    <!-- Accepted → Enrolled -->
+                <div class="col-md-auto mb-2">
+                    <label class="font-weight-bold d-block">
+                        Enrollment Status
+                    </label>
+
+                    <button type="button"
+                            class="btn btn-sm btn-ISEIblue2"
+                            id="accepted-to-enrolled">
+                        Accepted → Enrolled
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </div>
 
 
+
+    <!-- Status Filter -->
+    <div class="card shadow-sm mb-1">
+
+        <div class="card-body py-1">
+
+            <form method="get">
+
+                <div class="row">
+
+                    <div class="col-auto card-header bg-light py-2">
+                        <strong>Filter Students</strong>
+                    </div>
+
+                    <div class="col-auto">
+                        <div class="row">
+                              {% for value, label in status_choices %}
+                            <div class="col-auto mb-2">
+                                <div class="form-check">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="status"
+                                           value="{{ value }}"
+                                           id="status-{{ value }}"
+                                           {% if value in selected_statuses %}checked{% endif %}>
+
+                                    <label class="form-check-label"
+                                           for="status-{{ value }}">
+                                        {{ label }}
+                                    </label>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                            <div class="">
+                            <button type="submit"
+                                    class="btn btn-sm btn-ISEIblue4">
+                                Apply Filter
+                            </button>
+
+                            {% if selected_statuses %}
+                                <a href="?status=enrolled"
+                                   class="btn btn-sm btn-outline-secondary ml-2">
+                                    Reset
+                                </a>
+                            {% endif %}
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+
+    <!-- Instructions -->
+    <div class="card shadow-sm mb-1">
+        <div class="card-body">
+
+            <div class="alert alert-warning mb-1">
+                <strong>Please review carefully:</strong>
+                Check data for all previous students for accuracy:
+                enrollment status, grade level, address, baptismal status, etc.
+                If you have students in Pre-K & K, ensure they are marked for
+                the correct grade level for this school year.
+            </div>
+
+            <ul class="mb-0">
+                <li>
+                    <strong>Withdrawn:</strong>
+                    Left during the school year. Mark this status whenever a
+                    student withdraws.
+                </li>
+
+                <li>
+                    <strong>Did Not Return:</strong>
+                    Completed last school year but did not return this year.
+                    <span class="text-danger">
+                        Mark this at the start of a new school year.
+                    </span>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+</div>
 
 
 <!-- Student Report -->
@@ -165,17 +305,19 @@
         </form>
     </div>
 
-    <div class="card">
+    <!--div class="card">
         <span class="spanred ml-2">
             If there are blank student records that don't allow submission, please ensure that ALL fields are blank (including Registration Date, Boarding, etc.) before attempting to Save or Submit the report.
         </span>
-    </div>
+    </div-->
 
-    <!-- Loading spinner -->
-<div id="loading" style="display: none;">
-    <img id="loading-image" src="{% static 'appfiles/Atom.gif' %}" alt="Loading..."/>
-    <p id="loading-text">Please wait, saving your data...</p>
-</div>
+
+<!-- Loading spinner -->
+
+        <div id="loading" style="display: none;">
+            <img id="loading-image" src="{% static 'appfiles/Atom.gif' %}" alt="Loading..."/>
+            <p id="loading-text">Please wait, saving your data...</p>
+        </div>
 
 <script>
 
@@ -333,8 +475,46 @@
         observer.observe(formset, {childList: true});
     });
 
-//apply global location for all records
+
+  // Change all Accepted students to Enrolled
+        document.getElementById('accepted-to-enrolled').addEventListener('click', function () {
+
+    const acceptedStatuses = document.querySelectorAll(
+        'select[name$="-status"]'
+    );
+
+    let count = 0;
+
+    acceptedStatuses.forEach(function (statusField) {
+        if (statusField.value === 'accepted') {
+            count++;
+        }
+    });
+
+    if (count === 0) {
+        alert('There are no Accepted students to change.');
+        return;
+    }
+
+    const message = count === 1
+        ? 'Change 1 Accepted student to Enrolled?'
+        : 'Change ' + count + ' Accepted students to Enrolled?';
+
+    if (!confirm(message)) {
+        return;
+    }
+
+    acceptedStatuses.forEach(function (statusField) {
+        if (statusField.value === 'accepted') {
+            statusField.value = 'enrolled';
+            $(statusField).trigger('change');
+        }
+    });
+});
+
+
     $(document).ready(function(){
+        //apply global location for all records
         $(document).on('change', '#global_location', function(){
             var location = $(this).val();
             var confirmation = confirm("Are you sure you want to apply this change to all forms?");
@@ -348,6 +528,14 @@
                  $(this).val(this.defaultValue);
             };
         });
+
+  //select status filter
+         $('#status-filter').select2({
+            placeholder: 'Select statuses',
+            allowClear: true,
+            closeOnSelect: false
+        });
+
     });
 
 //apply boarding or not for all students
@@ -384,6 +572,7 @@
               e.returnValue = ''; // Triggers the browser's built-in confirmation
             }
           });
+
 
 </script>
 
