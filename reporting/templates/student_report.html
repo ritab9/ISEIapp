@@ -7,7 +7,7 @@
 {% block content %}
 
 
-<!-- General Info-->
+<!-- Imports-->
     <div class="card">
         <div class="row mt-2 mb-2 ml-2 mr-2 align-items-center">
             <div class="col-auto">
@@ -41,12 +41,217 @@
 
 <div class="mt-1">
 
+     <!-- Please Read / Instructions -->
+        <div class="card shadow-sm mb-1">
+            <div class="card-header bg-light py-2 d-flex align-items-left">
+
+                <div>
+                    <button type="button"
+                            class="btn btn-sm mr-2 btn-outline-ISEIblue1"
+                            data-toggle="collapse"
+                            data-target="#studentReportInstructions"
+                            aria-expanded="true"
+                            aria-controls="studentReportInstructions">
+                        Hide/Show Important Information about Completing the Student Report
+                    </button>
+                </div>
+
+                <strong class="mt-1">
+
+                </strong>
+
+            </div>
+
+    <div id="studentReportInstructions" class="collapse">
+        <div class="card-body">
+
+<!-- Student Status Definitions -->
+                <div class="mb-3">
+
+                    <table class="table table-sm mb-0" style="table-layout: fixed;">
+
+                        <colgroup>
+                            <col style="width: 55px;">
+                            <col style="width: 140px;">
+                            <col>
+                        </colgroup>
+
+                        <tbody>
+
+                            <tr>
+                                <td rowspan="7"
+                                    class="p-0 bg-light align-middle text-center text-ISEIblue4"
+                                    style="width: 55px; position: relative;">
+
+                                    <div style="
+                                        position: absolute;
+                                        top: 50%;
+                                        left: 50%;
+                                        transform: translate(-50%, -50%) rotate(-90deg);
+                                        white-space: nowrap;
+                                        font-weight: lighter;
+                                        letter-spacing: 1px;
+                                    ">
+                                        Student Status Definitions
+                                    </div>
+
+                                </td>
+
+                                <th>Enrolled</th>
+                                <td>
+                                    Currently enrolled and attending the school.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Part Time</th>
+                                <td>
+                                    Currently enrolled but attending on a part-time basis.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Accepted</th>
+                                <td>
+                                    Accepted for enrollment but has not yet begun attending.
+                                    Change to <strong>Enrolled</strong> once the student begins attending.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Withdrawn</th>
+                                <td>
+                                    Attended during the current school year but subsequently
+                                    left the school. A <strong>Withdraw Date</strong> is required.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Did Not Return</th>
+                                <td>
+                                    Completed the previous school year but did not return
+                                    for the current school year. Use this at the beginning
+                                    of the new school year rather than <strong>Withdrawn</strong>.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Graduated</th>
+                                <td>
+                                    Completed the school's graduation requirements and graduated.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>No Show</th>
+                                <td>
+                                    Expected or registered to attend but never actually
+                                    began attending during the school year.
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+           <!-- Bulk Actions -->
+                <div class="mb-3">
+
+                    <table class="table table-sm mb-0" style="table-layout: fixed;">
+
+                        <colgroup>
+                            <col style="width: 55px;">
+                            <col style="width: 180px;">
+                            <col>
+                        </colgroup>
+
+                        <tbody>
+
+                            <tr>
+                                <td rowspan="3"
+                                    class="p-0 bg-light align-middle text-center text-ISEIblue4"
+                                    style="width: 55px; position: relative;">
+
+                                    <div style="
+                                        position: absolute;
+                                        top: 50%;
+                                        left: 50%;
+                                        transform: translate(-50%, -50%) rotate(-90deg);
+                                        white-space: nowrap;
+                                        font-weight: lighter;
+                                        letter-spacing: 1px;
+                                    ">
+                                        Bulk Actions
+                                    </div>
+
+                                </td>
+
+                                <th>Accepted → Enrolled</th>
+                                <td>
+                                    Changes all students currently marked
+                                    <strong>Accepted</strong> to <strong>Enrolled</strong>.
+                                    Use only after confirming that those students have
+                                    actually begun attending.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Global Registration Date</th>
+                                <td>
+                                    <strong>Apply</strong> adds the selected date only where
+                                    the registration date is blank.
+                                    <strong>Rewrite</strong> replaces existing registration
+                                    dates, so use it only when intentionally changing them.
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Global Location &amp; Boarding</th>
+                                <td>
+                                    These controls apply the selected value to all student
+                                    records currently displayed in the form.
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+            <!-- Other Important Information -->
+
+            <ul class="mb-0">
+                <li>
+                    Please review all student records carefully before
+                submitting the report. Check enrollment status, grade level,
+                registration date, address, baptismal status, boarding status,
+                and other information for accuracy.
+                </li>
+
+                <li>
+                    <strong>The report remains active throughout the school year:</strong>
+                    “Report Complete” does not lock the report. Update it whenever students
+                    withdraw or new students enroll so that it always reflects the school's
+                    current enrollment. At the end of the school year, the report must reflect
+                    the school's actual closing enrollment.
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+
     <!-- Global Student Updates -->
     <div class="card shadow-sm mb-1">
 
         <div class="card-body py-1">
             <div class="row align-items-end">
-                <div class="col-md-auto mb-2 card-header bg-light py-2">
+                <div class="col-md-auto mb-2 card-header bg-light py-2 text-ISEIblue3">
                     <strong>Global Student Updates</strong>
                 </div>
 
@@ -126,7 +331,6 @@
     </div>
 
 
-
     <!-- Status Filter -->
     <div class="card shadow-sm mb-1">
 
@@ -136,7 +340,7 @@
 
                 <div class="row">
 
-                    <div class="col-auto card-header bg-light py-2">
+                    <div class="col-auto card-header bg-light py-2 text-ISEIblue3">
                         <strong>Filter Students</strong>
                     </div>
 
@@ -186,38 +390,6 @@
     </div>
 
 
-
-    <!-- Instructions -->
-    <div class="card shadow-sm mb-1">
-        <div class="card-body">
-
-            <div class="alert alert-warning mb-1">
-                <strong>Please review carefully:</strong>
-                Check data for all previous students for accuracy:
-                enrollment status, grade level, address, baptismal status, etc.
-                If you have students in Pre-K & K, ensure they are marked for
-                the correct grade level for this school year.
-            </div>
-
-            <ul class="mb-0">
-                <li>
-                    <strong>Withdrawn:</strong>
-                    Left during the school year. Mark this status whenever a
-                    student withdraws.
-                </li>
-
-                <li>
-                    <strong>Did Not Return:</strong>
-                    Completed last school year but did not return this year.
-                    <span class="text-danger">
-                        Mark this at the start of a new school year.
-                    </span>
-                </li>
-            </ul>
-
-        </div>
-    </div>
-
 </div>
 
 
@@ -232,8 +404,8 @@
               </div>
             {% endfor %}
 <!-- table with student data -->
-            <div class="scrollable-table scrollable-table2 mb-5">
-                <table class="table table-light">
+            <div class="scrollable-table scrollable-table2 mb-1">
+                <table id="student-table" class="table table-light">
                     <thead class="thead table-ISEIblue4 sticky_head">
                         <tr><th>#</th>
                             {% for field in formset.forms.0.visible_fields %}
@@ -278,18 +450,8 @@
                 </table>
             </div>
 
-<!-- empty form template -->
-            <template id="empty_form_template">
-                <tr class="form">
-                    <td></td>
-                    {% for field in formset.empty_form %}
-                        <td style="text-align: center;">{{ field }}</td>
-                    {% endfor %}
-                </tr>
-             </template>
-
 <!--buttons-->
-            <div class="row mb-2 mt-2">
+            <div class="row mb-2">
                 <div class="col d-flex justify-content-center">
                     <button class="btn btn-sm btn-ISEIblue4" type="button" id="add_more">Add Rows</button></div>
                 <div class="col d-flex justify-content-center">
@@ -302,14 +464,19 @@
                 <div class="col d-flex justify-content-center">
                     <a class="btn btn-sm btn-danger" href="{% url 'school_dashboard' annual_report.school.id %}" onclick="return confirm('Any changes made will not be saved. Do you want to continue?');">Exit without saving</a></div>
             </div>
+
+<!-- empty form template -->
+            <template id="empty_form_template">
+                <tr class="form">
+                    <td></td>
+                    {% for field in formset.empty_form %}
+                        <td style="text-align: center;">{{ field }}</td>
+                    {% endfor %}
+                </tr>
+             </template>
+
         </form>
     </div>
-
-    <!--div class="card">
-        <span class="spanred ml-2">
-            If there are blank student records that don't allow submission, please ensure that ALL fields are blank (including Registration Date, Boarding, etc.) before attempting to Save or Submit the report.
-        </span>
-    </div-->
 
 
 <!-- Loading spinner -->
@@ -334,7 +501,11 @@
 
 
     window.onload = function () {
-        var table = document.querySelector('.table');
+        var table = document.getElementById('student-table');
+
+            if (!table) {
+                return;
+            }
         var headerRow = table.querySelector('thead').rows[0];
         var stickyCell = headerRow.cells[1]; // Change to the index of your sticky cell
         var bgColor = window.getComputedStyle(headerRow, null).getPropertyValue('background-color');
