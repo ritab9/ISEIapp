@@ -16,14 +16,14 @@
 
             <div class="col-auto ml-auto">
                 <div class="d-flex align-items-center gap-2">
-                    <a class="btn btn-sm btn-ISEIyellow"
+                    <a class="btn btn-sm btn-ISEIyellow1 btn-outline-ISEIyellow4 mr-3"
                        href="{% url 'import_students_prev_year' annual_report.id %}">
-                        Import Students from {{ annual_report.school_year.get_previous_school_year }}
+                        Import Students from {{ annual_report.school_year.get_previous_school_year }} Report
                     </a>
 
-                    <a class="btn btn-sm btn-outline-primary"
+                    <a class="btn btn-sm btn-outline-ISEIyellow4"
                        href="{% url 'student_import_dashboard' arID=annual_report.id %}">
-                        Import from Excel
+                        Import Students from Excel
                     </a>
                 </div>
             </div>
@@ -42,7 +42,7 @@
 <div class="mt-1">
 
      <!-- Please Read / Instructions -->
-        <div class="card shadow-sm mb-1">
+        <div class="card shadow-sm mb-2">
             <div class="card-header bg-light py-2 d-flex align-items-left">
 
                 <div>
@@ -198,7 +198,7 @@
                             </tr>
 
                             <tr>
-                                <th>Global Registration Date</th>
+                                <th>Registration Date</th>
                                 <td>
                                     <strong>Apply</strong> adds the selected date only where
                                     the registration date is blank.
@@ -208,7 +208,7 @@
                             </tr>
 
                             <tr>
-                                <th>Global Location &amp; Boarding</th>
+                                <th>Location &amp; Boarding</th>
                                 <td>
                                     These controls apply the selected value to all student
                                     records currently displayed in the form.
@@ -246,19 +246,19 @@
 </div>
 
 
-    <!-- Global Student Updates -->
-    <div class="card shadow-sm mb-1">
+    <!-- Bulk Student Updates -->
+    <div class="card shadow-sm mb-2">
 
         <div class="card-body py-1">
             <div class="row align-items-end">
-                <div class="col-md-auto mb-2 card-header bg-light py-2 text-ISEIblue3">
-                    <strong>Global Student Updates</strong>
+                <div class="col-md-auto mb-2 card-header bg-light py-2 text-ISEIblue1">
+                    <strong>Bulk Student Updates</strong>
                 </div>
 
-    <!-- Global Registration Date -->
+    <!-- Bulk Registration Date -->
                 <div class="col-md-auto mb-2">
                     <label for="common-registration-date" class="font-weight-bold d-block">
-                        Global Registration Date
+                        Registration Date
                     </label>
 
                     <div class="form-inline">
@@ -267,7 +267,7 @@
                                class="form-control form-control-sm mr-2"
                                style="width: 150px;">
 
-                        <button class="btn btn-sm btn-ISEIblue2 mr-1"
+                        <button class="btn btn-sm btn-ISEIblue1 mr-1"
                                 id="add-date-button">
                             Apply
                         </button>
@@ -280,13 +280,13 @@
                 </div>
 
 
-    <!-- Global Location -->
+    <!-- Bulk Location -->
                 <div class="col-md-auto mb-2">
-                    <label for="global_location" class="font-weight-bold d-block">
-                        Global Location
+                    <label for="bulk_location" class="font-weight-bold d-block">
+                        Location
                     </label>
 
-                    <select id="global_location"
+                    <select id="bulk_location"
                             class="form-control form-control-sm">
                         <option value="on-site">On-Site</option>
                         <option value="satelite">Satellite</option>
@@ -295,7 +295,7 @@
                 </div>
 
 
-    <!-- Global Boarding -->
+    <!-- Bulk Boarding -->
                 <div class="col-md-auto mb-2">
                     <label class="font-weight-bold d-block">
                         Boarding
@@ -320,7 +320,7 @@
                     </label>
 
                     <button type="button"
-                            class="btn btn-sm btn-ISEIblue2"
+                            class="btn btn-sm btn-ISEIblue1"
                             id="accepted-to-enrolled">
                         Accepted → Enrolled
                     </button>
@@ -332,7 +332,7 @@
 
 
     <!-- Status Filter -->
-    <div class="card shadow-sm mb-1">
+    <div class="card shadow-sm mb-2">
 
         <div class="card-body py-1">
 
@@ -340,7 +340,7 @@
 
                 <div class="row">
 
-                    <div class="col-auto card-header bg-light py-2 text-ISEIblue3">
+                    <div class="col-auto card-header bg-light py-2 text-ISEIblue1">
                         <strong>Filter Students</strong>
                     </div>
 
@@ -368,7 +368,7 @@
 
                             <div class="">
                             <button type="submit"
-                                    class="btn btn-sm btn-ISEIblue4">
+                                    class="btn btn-sm btn-ISEIblue1">
                                 Apply Filter
                             </button>
 
@@ -685,8 +685,8 @@
 
 
     $(document).ready(function(){
-        //apply global location for all records
-        $(document).on('change', '#global_location', function(){
+        //apply bulk location for all records
+        $(document).on('change', '#bulk_location', function(){
             var location = $(this).val();
             var confirmation = confirm("Are you sure you want to apply this change to all forms?");
             if(confirmation) {
@@ -695,7 +695,7 @@
                     $(this).val(location);
                 });
             } else {
-                // If 'Cancel' is clicked, reset the global select to its previous value
+                // If 'Cancel' is clicked, reset the bulk select to its previous value
                  $(this).val(this.defaultValue);
             };
         });
