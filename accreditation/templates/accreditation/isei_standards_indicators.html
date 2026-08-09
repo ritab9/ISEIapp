@@ -4,162 +4,249 @@
 {% block title %} ISEI Standards {% endblock title %}
 
 
-    {% block header %}
-        {% if guest %}
-            {# hide header for guest → leave empty #}
-        {% else %}
-            {{ block.super }}
-        {% endif %}
-    {% endblock %}
-
-    {% block secondary_navbar %}
-        {% if guest %}
-            {# hide navbar for guest → leave empty #}
-        {% else %}
-            {{ block.super }}
-        {% endif %}
-    {% endblock %}
-
-    {% block content %}
-
-    <div class="row">
-
-        <div class="my-4 col-auto noprint" style="position: sticky; top: 1rem; align-self: flex-start;">
-            {% if not school %}
-
-                <form method="get" class="mb-3">
-                    <div class="d-flex flex-column">
-                        {% for st in school_types %}
-                            <div class="form-check">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       name="school_type"
-                                       value="{{ st.id }}"
-                                       id="st{{ st.id }}"
-                                       {% if st.id|stringformat:"s" in selected_school_type_ids %}checked{% endif %}>
-                                <label class="form-check-label" for="st{{ st.id }}">
-                                    {{ st.name }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-ISEIblue2 mt-2">Apply Filter</button>
-                    {% if selected_school_type_ids %}
-                        <a href="{% url 'isei_standards_indicators' %}" class="btn btn-sm btn-outline-secondary mt-2">Clear</a>
-                    {% endif %}
-                </form>
-                <hr>
-                <button type="button" class="btn btn-sm btn-outline-ISEIblue4 mb-2"
-                        onclick="toggleSchoolTypes()">
-                    Show/Hide School Types
-                </button>
-
-            {% endif %} <hr>
-
-            <button type="button" onclick="window.print()" class="btn btn-sm btn-ISEIblue4 mb-2">
-              Print to PDF
-            </button>
-
-            <!--a href="{ % url 'isei_standards_indicator' %}" class="btn btn-sm btn-success">
-              Download PDF
-            </a-->
-        </div>
-
-        <div class="col">
-            <div class="cover-page page">
-                <!-- Vertical title -->
-                  <div class="vertical-title">ISEI EDUCATION ASSOCIATION</div>
-
-                  <!-- Double vertical lines -->
-                  <div class="vertical-lines">
-                    <div class="dark"></div>
-                    <div class="light"></div>
-                  </div>
-
-                  <!-- Logo -->
-                  <img src="{% static 'appfiles/ISEIcolored.png' %}"
-                       alt="ISEI Logo"
-                       class="cover-logo">
-
-                <!-- Main centered content -->
-              <div class="content">
-                <h1 class="">
-                  ISEI Education Association
-                </h1>
-                <br> <br><br>
-
-                <h1>    Standards<br>
-                            &<br>
-                        Indicators
-                </h1>
-
-              </div>
-
-                <div class="footer">
-                    <div class="version align-content-end">Version 2.1</div>
-                    P.O. Box 946 • Dayton, TN 37321, USA
-                </div>
-            </div>
-
-            <div class=" page card card-body mx-auto" style="max-width: 1000px;">
-
-                    {% for standard in standards %}
-                        <hr class="page-break-before">
-                        <hr>
-                        <h5>{{ standard.number|floatformat:"0"  }}. {{ standard.name }}</h5>
-                        <hr>
-                        <p class="text-ISEIblue4"> {{ standard.description }}</p>
-                        <hr>
-                        {% for substandard in standard.substandards.all %}
-                            <hr>
-                            <br> <br>
-                                <h7 style="margin-left: 20px;">{{ substandard.number }}. {{ substandard.name }}</h7>
-                                <hr>
-                                <p class="text-ISEIblue4"> {{ substandard.description }}</p>
-                                <hr>
+{% block header %}
+    {% if guest %}
+        {# hide header for guest → leave empty #}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
 
 
-                            {% for indicator in substandard.filtered_indicators %}
-                                <div class="keep-together">
-                                    <p>{{ substandard.number }}.{{ forloop.counter }}. {{ indicator.description }}
-                                        {% if not school %}
-                                            <span class="school-type small">({{ indicator.school_type }})</span>
-                                        {% endif %}
-                                    </p>
-                                    <p class="mr-5 text-muted">{{ indicator.met_description }}</p>
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
+{% block secondary_navbar %}
+    {% if guest %}
+        {# hide navbar for guest → leave empty #}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
 
-                        {% for indicator in standard.filtered_indicators %}
-                            <div class="keep-together">
-                                <p>{{ standard.number|floatformat:"0"  }}.{{ forloop.counter }}. {{ indicator.description }}
-                                        {% if not school %}
-                                            <span class="school-type small">({{ indicator.school_type }})</span>
-                                        {% endif %}
-                                </p>
-                                <p class="mr-5 col text-muted">{{ indicator.met_description|safe }}</p>
-                            </div>
-                        {% endfor %}
 
+{% block content %}
+
+<div class="row">
+
+    <div class="my-4 col-auto noprint"
+         style="position: sticky; top: 1rem; align-self: flex-start;">
+
+        {% if not school %}
+
+            <form method="get" class="mb-3">
+                <div class="d-flex flex-column">
+
+                    {% for st in school_types %}
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="school_type"
+                                   value="{{ st.id }}"
+                                   id="st{{ st.id }}"
+                                   {% if st.id|stringformat:"s" in selected_school_type_ids %}checked{% endif %}>
+
+                            <label class="form-check-label" for="st{{ st.id }}">
+                                {{ st.name }}
+                            </label>
+                        </div>
                     {% endfor %}
 
+                </div>
 
-            <!--p class="text-center"> As of April, 2025</p -->
-        </div>
-        </div>
+                <button type="submit"
+                        class="btn btn-sm btn-ISEIblue2 mt-2">
+                    Apply Filter
+                </button>
+
+                {% if selected_school_type_ids %}
+                    <a href="{% url 'isei_standards_indicators' %}"
+                       class="btn btn-sm btn-outline-secondary mt-2">
+                        Clear
+                    </a>
+                {% endif %}
+            </form>
+
+            <hr>
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-ISEIblue4 mb-2"
+                    onclick="toggleSchoolTypes()">
+                Show/Hide School Types
+            </button>
+
+        {% endif %}
+
+        <hr>
+
+        <button type="button"
+                onclick="window.print()"
+                class="btn btn-sm btn-ISEIblue4 mb-2">
+            Print to PDF
+        </button>
+
+        <!--
+        <a href="{ % url 'isei_standards_indicators' %}"
+           class="btn btn-sm btn-success">
+            Download PDF
+        </a>
+        -->
+
     </div>
 
 
+    <div class="col">
 
-    <script>
-        function toggleSchoolTypes() {
-            document.querySelectorAll('.school-type').forEach(el => {
-                el.classList.toggle('hidden');
-            });
-        }
+        <!-- =========================
+             COVER PAGE
+        ========================== -->
 
-    </script>
+        <div class="cover-page page">
 
+            <!-- Vertical title -->
+            <div class="vertical-title">
+                ISEI EDUCATION ASSOCIATION
+            </div>
+
+            <!-- Double vertical lines -->
+            <div class="vertical-lines">
+                <div class="dark"></div>
+                <div class="light"></div>
+            </div>
+
+            <!-- Logo -->
+            <img src="{% static 'appfiles/ISEIcolored.png' %}"
+                 alt="ISEI Logo"
+                 class="cover-logo">
+
+            <!-- Main centered content -->
+            <div class="content">
+
+                <h1>
+                    ISEI Education Association
+                </h1>
+
+                <br><br><br>
+
+                <h1>
+                    Standards<br>
+                    &<br>
+                    Indicators
+                </h1>
+
+            </div>
+
+            <div class="footer">
+                <div class="version align-content-end">
+                    Version 2.1
+                </div>
+
+                P.O. Box 946 • Dayton, TN 37321, USA
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             STANDARDS AND INDICATORS
+        ========================== -->
+
+        <div class="page card card-body mx-auto"
+             style="max-width: 1000px;">
+
+            {% for standard in standards %}
+
+                <!-- =========================
+                     STANDARD
+                ========================== -->
+
+                <hr class="page-break-before">
+                <hr>
+
+                <h5>
+                    {{ standard.number|floatformat:"0" }}. {{ standard.name }}
+                </h5>
+
+                <hr>
+
+                <p class="text-ISEIblue4">
+                    {{ standard.description }}
+                </p>
+
+                <hr>
+
+
+                <!-- =========================
+                     SUBSTANDARDS
+                     (number intentionally hidden)
+                ========================== -->
+
+                {% for substandard in standard.substandards.all %}
+
+                    <hr>
+                    <br>
+
+                    <h7 style="margin-left: 20px;">
+                        {{ substandard.name }}
+                    </h7>
+
+                    <hr>
+
+                    {% if substandard.description %}
+                        <p class="text-ISEIblue4">
+                            {{ substandard.description }}
+                        </p>
+
+                        <hr>
+                    {% endif %}
+
+
+                    <!-- =========================
+                         INDICATORS UNDER SUBSTANDARD
+                         ========================== -->
+
+                    {% for indicator in substandard.filtered_indicators %}
+
+                        {% include "accreditation/includes/_indicator.html" %}
+
+                    {% endfor %}
+
+                {% endfor %}
+
+
+                <!-- =========================
+                     INDICATORS DIRECTLY UNDER STANDARD
+                     ========================== -->
+
+                {% for indicator in standard.filtered_indicators %}
+
+                    {% include "accreditation/includes/_indicator.html" %}
+
+                {% endfor %}
+
+            {% endfor %}
+
+
+            <!--
+            <p class="text-center">
+                As of April, 2025
+            </p>
+            -->
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function toggleSchoolTypes() {
+
+        document.querySelectorAll('.school-type').forEach(el => {
+            el.classList.toggle('hidden');
+        });
+
+    }
+
+</script>
 
 {% endblock %}

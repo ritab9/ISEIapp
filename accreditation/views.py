@@ -40,7 +40,6 @@ def isei_standards_indicators(request, school_id=None):
         else:
             indicators_qs = Indicator.objects.filter(active=True)
 
-
     indicator_prefetch = Prefetch(
         'indicator_set',
         queryset=indicators_qs,
@@ -57,6 +56,20 @@ def isei_standards_indicators(request, school_id=None):
             )
         )
     )
+
+    # Assign continuous display numbers to indicators
+    # within each top-level Standard.
+    for standard in standards:
+        indicator_number = 0
+
+        for substandard in standard.substandards.all():
+            for indicator in substandard.filtered_indicators:
+                indicator_number += 1
+                indicator.display_number = indicator_number
+
+        for indicator in standard.filtered_indicators:
+            indicator_number += 1
+            indicator.display_number = indicator_number
 
 
     context = dict(standards=standards, school=school, guest=guest,

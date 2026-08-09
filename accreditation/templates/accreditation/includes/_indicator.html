@@ -1,0 +1,23 @@
+<div class="keep-together">
+
+    <p>
+        {% if not school %}
+            {{ indicator.code }}.
+        {% else %}
+            {{ standard.number|floatformat:"0" }}.{{ indicator.display_number }}.
+        {% endif %}
+
+        {{ indicator.description }}
+
+        {% if not school %}
+            <span class="school-type small">
+                ({{ indicator.school_type }})
+            </span>
+        {% endif %}
+    </p>
+
+    <p class="mr-5 text-muted">
+        {{ indicator.met_description|safe }}
+    </p>
+
+</div>

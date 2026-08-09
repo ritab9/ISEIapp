@@ -2,48 +2,80 @@
 
 @media print {
 
-  /* =========================
-     Reset layout for print
-  ========================== */
+    /* =========================
+       PAGE SETUP
+       ========================= */
 
-    html, body {
+    @page {
+        size: letter;
+        margin: 0.5in;
+    }
+
+    html,
+    body {
         margin: 0 !important;
         padding: 0 !important;
-        background: white;
+        background: white !important;
     }
 
-  .container, .row, [class*="col-"] {
-      display: block !important;   /* ignore flex/grid */
-      float: none !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }
 
-  /* Remove shadows, padding is controlled in document.css */
-  .page {
-      width: 100%;
-      min-height: unset !important;
-      margin: 0 !important;
-      padding: 0.75in;
-      box-shadow: none;
-      page-break-after: always;
-      break-after: page;
-      box-sizing: border-box;
-      background: white;
-      position:relative; !important;
-  }
-   @page {
-        size: letter;
-        margin: 0.75in;        /* ✅ browser handles margins cleanly */
-        background: #fff;
+    /* =========================
+       RESET BOOTSTRAP LAYOUT
+       ========================= */
+
+    .container,
+    .row,
+    [class*="col-"] {
+        display: block !important;
+        float: none !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
-  /* ✅ in-flow, static, no absolute */
+
+    /* =========================
+       PAGE CONTAINER
+       ========================= */
+
+    .page {
+        width: 100% !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        background: white !important;
+        box-shadow: none !important;
+        position: relative !important;
+
+        page-break-after: always;
+        break-after: page;
+    }
+
+    .page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+    }
+
+
+    /* Bootstrap card/card-body should not
+       add additional print spacing */
+
+    .page.card {
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+    }
+
+
+    /* =========================
+       BACK TO TOC
+       ========================= */
+
     .back-to-toc {
         display: block !important;
-        position: static !important;    /* ✅ override document.css if needed */
+        position: static !important;
         width: 100%;
         text-align: center;
         font-size: 9pt;
@@ -53,75 +85,152 @@
         border-top: 1px solid #ccc;
     }
 
-  /* Keep sections together if possible */
-  .keep-together {
-      page-break-inside: avoid;
-      break-inside: avoid;
-      display: block;
-      padding-top: 0; !important   /* no extra padding needed in print */
-  }
 
-  /* Hide UI-only elements */
-  .noprint, button {
-      display: none !important;
-  }
+    /* =========================
+       KEEP SECTIONS TOGETHER
+       ========================= */
 
-  /* Font sizing for print */
-  body {
-      font-size: 12pt;
-  }
-
-  table {
-      width: 100%;
-      border-collapse: collapse;
-  }
-
-  table th, table td {
-      font-size: 10pt;
-  }
-
-  /* Ensure page breaks for helpers if needed */
-  .page-break-before {
-      break-before: page;
-      page-break-before: always;
-      /* padding-top: 1.5rem */
-  }
-  .page-break-after  {
-      break-after: page;
-  }
-
-  /* Optional: TOC lists print-friendly */
-  .toc-page ul {
-      page-break-inside: auto;
-      page-break-after: always;
-  }
-
-  .toc-page li {
-      page-break-inside: avoid;
-  }
-
-   /* ✅ Cover page needs special handling */
-    .cover-page {
-        width: 100% !important;
-        height: 100vh !important;        /* ✅ fills exactly one printed page */
-        padding-left: 1.4in !important; /* ✅ keep the vertical strip */
-        padding-right: 1.7in !important;
-        padding-top: 0 !important;
-        padding-right: 0 !important;
-        padding-bottom: 0 !important;
-        position: relative !important;   /* ✅ anchor for absolute children */
-        page-break-after: always !important;
-        break-after: page !important;
-        overflow: hidden !important;     /* ✅ nothing spills out */
+    .keep-together {
+        display: block;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        padding-top: 0;
     }
 
-    .cover-page .content {
-        padding-left: 0 !important;        /* ✅ remove the extra offset — padding-left on parent handles it */
-        padding-right: 0 !important;
-        text-align: center !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-top: 3.5in !important;
+
+    /* =========================
+       HIDE SCREEN-ONLY ELEMENTS
+       ========================= */
+
+    .noprint,
+    button {
+        display: none !important;
     }
+
+
+    /* =========================
+       FONT SIZING
+       ========================= */
+
+    body {
+        font-size: 12pt;
+    }
+
+
+    /* =========================
+       TABLES
+       ========================= */
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th,
+    table td {
+        font-size: 10pt;
+    }
+
+
+    /* =========================
+       PAGE BREAK HELPERS
+       ========================= */
+
+    .page-break-before {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .page-break-after {
+        break-after: page;
+        page-break-after: always;
+    }
+
+
+    /* =========================
+       TOC
+       ========================= */
+
+    .toc-page ul {
+        page-break-inside: auto;
+        page-break-after: always;
+    }
+
+    .toc-page li {
+        page-break-inside: avoid;
+    }
+
+
+/* =========================
+   COVER PAGE
+   ========================= */
+
+.cover-page {
+    width: 100% !important;
+    height: 10in !important;
+    min-height: 10in !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    box-sizing: border-box !important;
+    position: relative !important;
+
+    page-break-after: always !important;
+    break-after: page !important;
+
+    overflow: hidden !important;
 }
 
+
+/* =========================
+   VERTICAL TITLE
+   ========================= */
+
+.cover-page .vertical-title {
+    left: 0.00in !important;
+}
+
+
+/* =========================
+   VERTICAL LINES
+   ========================= */
+
+    .cover-page .vertical-lines {
+        left: 0.55in !important;
+    }
+
+
+    /* =========================
+       LOGO
+       ========================= */
+
+    .cover-page .cover-logo {
+        left: 1.5in !important;
+    }
+
+
+    /* =========================
+       COVER CONTENT
+       ========================= */
+
+    .cover-page .content {
+        padding: 0 !important;
+
+        text-align: center !important;
+
+        margin-left: 0.25in !important;
+        margin-right: 0 !important;
+
+        margin-top: 3.5in !important;
+    }
+
+
+    /* =========================
+       FOOTER
+       ========================= */
+
+    .cover-page .footer {
+        bottom: 0.5in !important;
+    }
+}
