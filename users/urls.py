@@ -6,6 +6,8 @@ from . import views
 urlpatterns = [
 # authentication urls + landing page url (landing is by default the login-page)
     path('', views.logoutuser, name='logout'),
+    path('register_user/', views.register_user, name='register_user'),
+
     path('register_teacher/', views.register_teacher, name='register_teacher'),
     path('register_teacher_from_employee_report/<str:personnelID>/', views.register_teacher_from_employee_report, name='register_teacher_from_employee_report'),
 

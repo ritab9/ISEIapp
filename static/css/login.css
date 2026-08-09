@@ -17,6 +17,11 @@
 
     }
 
+.register_user_card {
+    width: 600px;
+    max-width: 95%;
+}
+
 .form_container {
       margin-top: 20px;
     }

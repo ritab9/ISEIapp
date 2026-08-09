@@ -1,10 +1,11 @@
 from django.forms import ModelForm, modelformset_factory, ClearableFileInput
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group, User
+
 from django.core.exceptions import ValidationError
 from django import forms
 # from captcha.fields import CaptchaField
 from django.forms.models import inlineformset_factory
-from django.contrib.auth.models import User
 # from crispy_forms.helper import FormHelper
 # from crispy_forms.layout import Layout
 from django.forms.models import BaseInlineFormSet
@@ -20,17 +21,47 @@ class SchoolYearForm(forms.Form):
                                    'onchange': 'this.form.submit();'}),
     )
 
+
+
 class CreateUserForm(UserCreationForm):
-    #captcha = CaptchaField()
+
+    school = forms.ModelChoiceField(
+        queryset=School.objects.filter(active=True).order_by("name"),
+        empty_label="------ Select School ------",
+        required=True
+    )
+
+    groups = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all().order_by("name"),
+        required=True,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "role-checkbox-list"})
+    )
+
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', ]
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password1",
+            "password2",
+        ]
 
     def clean(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        cleaned_data = super().clean()
+
+        email = cleaned_data.get("email")
+
+        if email and User.objects.filter(email=email).exists():
             raise ValidationError("Email exists")
-        return self.cleaned_data
+
+        if not cleaned_data.get("groups"):
+            raise ValidationError("Please select at least one role.")
+
+        return cleaned_data
+
+
 
 class UserForm(ModelForm):
     class Meta:

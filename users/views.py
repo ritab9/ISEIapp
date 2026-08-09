@@ -30,7 +30,74 @@ from accreditation.models import Accreditation
 from apr.models import APR
 from services.models import Resource
 
+from django.db import transaction
+
 # authentication functions
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff'])
+def register_user(request):
+
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+
+        if form.is_valid():
+
+            with transaction.atomic():
+
+                # Create the Django User
+                new_user = form.save()
+
+                school = form.cleaned_data["school"]
+                groups = form.cleaned_data["groups"]
+
+                # Assign all selected groups
+                new_user.groups.set(groups)
+
+                # Every registered user gets a UserProfile
+                UserProfile.objects.create(
+                    user=new_user,
+                    school=school
+                )
+
+                # Only users with the Teacher group
+                # get a Teacher record.
+                if groups.filter(name="teacher").exists():
+
+                    teacher = Teacher.objects.create(
+                        user=new_user,
+                        first_name=new_user.first_name,
+                        last_name=new_user.last_name,
+                    )
+
+                    email_registered_user(teacher)
+
+                username = form.cleaned_data["username"]
+
+                messages.success(
+                    request,
+                    "Account was created for " + username
+                )
+
+            return redirect("register_user")
+
+    else:
+        form = CreateUserForm()
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "users/register_user.html",
+        context
+    )
+
+
+
+
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def register_teacher(request):

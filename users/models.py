@@ -278,7 +278,7 @@ class UserSchoolMembership(models.Model):
 #Teacher Models
 class Teacher(models.Model):
 
-    joined_at = models.DateField(auto_now_add=True, blank=True)
+    joined_at = models.DateField(auto_now_add=True)
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     middle_name = models.CharField(max_length=20, null=True, blank=True)

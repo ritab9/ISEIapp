@@ -4,6 +4,8 @@ from django.conf import settings
 
 # Django Utilities
 #from django.contrib import messages
+from django.contrib.auth.models import User
+
 from django.contrib.auth.decorators import login_required
 from django.core import mail
 from django.core.mail import send_mail, EmailMessage
@@ -12,6 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import linebreaksbr
 #from django.utils.html import format_html, escape
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 
 # Project-specific Decorators
 from users.decorators import allowed_users
@@ -29,6 +32,11 @@ from accreditation.models import Standard
 # Functions
 #from .functions import format_text_html
 from .teacher_cert_functions import email_registered_user
+
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 #not used
@@ -164,55 +172,251 @@ def ContactISEI(request, userID):
 #view that sends an email using a form on a website filtering options for email addresses
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
-def SendEmailsAttachments(request):
+def send_emails_attachments(request):
     form_used = EmailFormNoAddress
-    users = User.objects.filter(is_active = True)
 
-    #filter
-    user_filter =UserFilter(request.GET, queryset=users)
+    # ---------------------------------------------------------
+    # Get users and apply filter
+    # ---------------------------------------------------------
+
+    users = User.objects.filter(is_active=True)
+
+    user_filter = UserFilter(request.GET, queryset=users)
     users = user_filter.qs
 
-    user_emails = users.values_list('email', flat=True)
+
+    # ---------------------------------------------------------
+    # GET
+    # ---------------------------------------------------------
 
     if request.method == "GET":
-        form = form_used
-        return render(request, 'sendemailsattachments.html',
-                      {'email_form': form, 'user_emails':user_emails,
-                       'user_filter': user_filter})
+        form = form_used()
 
-    if request.method == "POST":
-        form = form_used(request.POST, request.FILES)
-        if form.is_valid():
-            subject = form.cleaned_data['subject']
-            message = form.cleaned_data['message']
-            files = request.FILES.getlist('attach')
+        return render(
+            request,
+            'sendemailsattachments.html',
+            {
+                'email_form': form,
+                'users': users,
+                'user_filter': user_filter,
+            }
+        )
+
+    # ---------------------------------------------------------
+    # POST
+    # ---------------------------------------------------------
+
+    form = form_used(request.POST, request.FILES)
+
+    if not form.is_valid():
+        return render(
+            request,
+            'sendemailsattachments.html',
+            {
+                'email_form': form,
+                'usera': users,
+                'user_filter': user_filter,
+            }
+        )
+
+    subject = form.cleaned_data['subject']
+    message_body = form.cleaned_data['message']
+    files = request.FILES.getlist('attach')
+
+    signature = (
+        "\n\n"
+        "Rita Burjan\n"
+        "ISEI Teacher Certification\n"
+        "isei1.org"
+    )
+
+    sent_users = []
+    failed_users = []
+    skipped_users = []
+
+    connection = None
+
+    try:
+        connection = mail.get_connection()
+        connection.open()
+
+        # -----------------------------------------------------
+        # Send individual emails
+        # -----------------------------------------------------
+
+        for user in users:
+
+            # No email address
+            if not user.email:
+                skipped_users.append(user)
+                continue
+
+            personalized_message = (
+                f"Dear {user.first_name},\n\n"
+                f"{message_body}"
+                f"{signature}"
+            )
+
             try:
-                connection = mail.get_connection()
-                connection.open()
-                for e in user_emails:
-                    email = mail.EmailMessage(subject, message, settings.EMAIL_HOST_USER, [e], connection=connection)
-                    for f in files:
-                        email.attach(f.name, f.read(), f.content_type)
-                    email.send()
+                email = mail.EmailMessage(
+                    subject=subject,
+                    body=personalized_message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=[user.email],
+                    connection=connection,
+                )
 
-                #send a copy to ISEI
-                message = message + "\n" + "Sent to " + str(list(user_emails))
-
-                email = mail.EmailMessage(subject, message, settings.EMAIL_HOST_USER, [settings.EMAIL_HOST_USER], connection=connection)
+                # Attach files
                 for f in files:
-                    email.attach(f.name, f.read(), f.content_type)
+                    f.seek(0)
+                    email.attach(
+                        f.name,
+                        f.read(),
+                        f.content_type
+                    )
+
                 email.send()
 
-                connection.close()
-                return render(request, 'sendemailsattachments.html',
-                              {'error_message': 'Sent email to %s' %list(user_emails)})
-            except:
-                return render(request, 'sendemailsattachments.html',
-                              {'email_form': form, 'error_message': 'Unable to send email. Please contact the website administrator'})
+                sent_users.append(user)
 
-        return render(request, 'sendemailsattachments.html',
-                      {'email_form': form,
-                       'error_message': 'Attachment too big or corrupt', })
+            except Exception:
+                failed_users.append(user)
+
+        # -----------------------------------------------------
+        # Send copy to ISEI
+        # -----------------------------------------------------
+
+        copy_message = (
+            f"{message_body}"
+            f"{signature}\n\n"
+            "--------------------------------------------------\n"
+            f"Sent to {len(sent_users)} recipient(s).\n"
+        )
+
+        if failed_users:
+            copy_message += "\nFailed recipients:\n"
+
+            for user in failed_users:
+                name = user.get_full_name() or user.username
+                copy_message += f"{name} <{user.email}>\n"
+
+        if skipped_users:
+            copy_message += "\nSkipped users:\n"
+
+            for user in skipped_users:
+                name = user.get_full_name() or user.username
+                copy_message += f"{name} (no email address)\n"
+
+        copy_email = mail.EmailMessage(
+            subject=subject,
+            body=copy_message,
+            from_email=settings.EMAIL_HOST_USER,
+            to=[settings.EMAIL_HOST_USER],
+            connection=connection,
+        )
+
+        for f in files:
+            f.seek(0)
+            copy_email.attach(
+                f.name,
+                f.read(),
+                f.content_type
+            )
+
+        copy_email.send()
+
+        # -----------------------------------------------------
+        # Close connection
+        # -----------------------------------------------------
+
+        connection.close()
+        connection = None
+
+        # -----------------------------------------------------
+        # Display result in the application
+        # -----------------------------------------------------
+
+        sent_count = len(sent_users)
+        failed_count = len(failed_users)
+        skipped_count = len(skipped_users)
+
+        if failed_count == 0 and skipped_count == 0:
+
+            messages.success(
+                request,
+                f"Email sent successfully to {sent_count} recipient(s)."
+            )
+
+        else:
+
+            messages.warning(
+                request,
+                f"Email sent to {sent_count} recipient(s). "
+                f"{failed_count} email(s) failed. "
+                f"{skipped_count} user(s) were skipped."
+            )
+
+            if failed_users:
+                failed_names = ", ".join(
+                    user.get_full_name() or user.email
+                    for user in failed_users
+                )
+
+                messages.error(
+                    request,
+                    f"Failed recipients: {failed_names}"
+                )
+
+            if skipped_users:
+                skipped_names = ", ".join(
+                    user.get_full_name() or user.username
+                    for user in skipped_users
+                )
+
+                messages.info(
+                    request,
+                    f"Skipped users: {skipped_names}"
+                )
+
+        # -----------------------------------------------------
+        # Reload page with the SAME filter
+        # -----------------------------------------------------
+
+        return render(
+            request,
+            'sendemailsattachments.html',
+            {
+                'email_form': form_used(),
+                'users': users,
+                'user_filter': user_filter,
+            }
+        )
+
+    except Exception as e:
+
+        if connection:
+            try:
+                connection.close()
+            except Exception:
+                pass
+
+        messages.error(
+            request,
+            "Unable to complete the email process. "
+            "Please contact the website administrator."
+        )
+
+        return render(
+            request,
+            'sendemailsattachments.html',
+            {
+                'email_form': form,
+                'users': users,
+                'user_filter': user_filter,
+            }
+        )
+
+
 
 @csrf_exempt
 def email_registered_user_view(request, teacherID):
