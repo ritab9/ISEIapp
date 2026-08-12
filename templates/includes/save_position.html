@@ -2,25 +2,25 @@
 
 
 
-
 <script>
+    const scrollStorageKey = "scrollPosition_" + window.location.pathname;
 
-// Save current scroll position whenever the page is unloaded
+    // Save current scroll position when leaving the page
     window.addEventListener("beforeunload", function () {
-        sessionStorage.setItem("scrollPosition", window.scrollY);
+        sessionStorage.setItem(scrollStorageKey, window.scrollY);
     });
 
-    // Restore after the next page load
+    // Restore position after page loads
     window.addEventListener("load", function () {
-        const savedPosition = sessionStorage.getItem("scrollPosition");
+        const savedPosition = sessionStorage.getItem(scrollStorageKey);
 
         if (savedPosition !== null) {
-            window.scrollTo(0, parseInt(savedPosition));
-            sessionStorage.removeItem("scrollPosition");
+            window.scrollTo(0, parseInt(savedPosition, 10));
+            sessionStorage.removeItem(scrollStorageKey);
         }
     });
 
-    // Saved notification
+    // Show saved notification
     if (sessionStorage.getItem("showSavedNotification") === "true") {
 
         sessionStorage.removeItem("showSavedNotification");

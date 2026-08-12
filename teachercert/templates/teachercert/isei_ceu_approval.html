@@ -169,6 +169,13 @@
     </div>
 {% endif %}
 </div>
+
+{% endblock content %}
+
+{% block scripts %}
+        {% include "includes/save_position.html" %}
+
+
 <!--
 <script>
 
@@ -195,4 +202,4 @@ $(document).ready(function() {
 </script>
 -->
 
-{% endblock content %}
+{% endblock script %}
