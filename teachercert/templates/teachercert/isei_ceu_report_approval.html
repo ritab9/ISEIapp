@@ -216,6 +216,29 @@
 
 {% endblock content %}
 
-{% block scripts %}
-        {% include "includes/save_position.html" %}
+<script>
+    const ceuScrollStorageKey = "ceuApprovalScrollPosition";
+
+    // Save position when any form on this page is submitted
+    document.addEventListener("submit", function () {
+        sessionStorage.setItem(ceuScrollStorageKey, window.scrollY);
+    });
+
+    // Also save position on normal page navigation/reload
+    window.addEventListener("beforeunload", function () {
+        sessionStorage.setItem(ceuScrollStorageKey, window.scrollY);
+    });
+
+    // Restore position after the page loads
+    window.addEventListener("load", function () {
+        const savedPosition = sessionStorage.getItem(ceuScrollStorageKey);
+
+        if (savedPosition !== null) {
+            setTimeout(function () {
+                window.scrollTo(0, parseInt(savedPosition, 10));
+                sessionStorage.removeItem(ceuScrollStorageKey);
+            }, 100);
+        }
+    });
+</script>
 {% endblock scripts %}
