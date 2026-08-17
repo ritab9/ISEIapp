@@ -7,7 +7,7 @@ from .forms import *
 from users.utils import is_in_group
 from users.filters import SchoolFilter
 from .models import *
-from django.db.models import Q, F  # Q is for queries in filters, F is to update a field using an other field from the model
+from django.db.models import Q, F, Sum  # Q is for queries in filters, F is to update a field using an other field from the model
 from django.db.models.functions import Now
 from django.forms import modelformset_factory
 from .myfunctions import *
@@ -313,12 +313,23 @@ def teacherdashboard(request, userID):
     tcertificate = None
 
     academic_classes = AcademicClass.objects.filter(teacher=teacher).order_by('-date_completed')
+    qualifying_academic_classes = academic_classes.none()
+    academic_credits_qualifying = 0
+
+    tcertificate = current_certificates(teacher).first()
+
+    if tcertificate:
+        qualifying_academic_classes = academic_classes.filter(
+            date_completed__gt=tcertificate.issue_date,
+            transcript_received=True)
+        academic_credits_qualifying = (qualifying_academic_classes.aggregate(total=Sum('credits'))['total'] or 0)
 
     if StandardChecklist.objects.filter(teacher=teacher):
         standard_checklist = StandardChecklist.objects.get(teacher=teacher)
     else:
         standard_checklist = None
 
+    approved_ceu_total=None
     # current_certificates
     if never_certified(teacher):
         certification_status = None
@@ -331,7 +342,6 @@ def teacherdashboard(request, userID):
             tcert_application = None
 
     else:
-        tcertificate = current_certificates(teacher).first()
 
         basic = TeacherBasicRequirement.objects.filter(teacher=teacher)
         basic_met = basic.filter(met=True)
@@ -362,6 +372,17 @@ def teacherdashboard(request, userID):
         else:
             tcert_application = None
 
+        approved_ceu_total = (
+                CEUInstance.objects.filter(
+                    ceu_report__teacher=teacher
+                ).filter(
+                    Q(ceu_report__reviewed_at__isnull=True) |
+                    Q(ceu_report__reviewed_at__gt=tcertificate.issue_date)
+                ).aggregate(
+                    total=Sum('approved_ceu')
+                )['total'] or 0
+        )
+
     today = get_today()
     # if tcert_application:
     #     if tcert_application.date > datetime.today() - timedelta(days=183):
@@ -371,11 +392,16 @@ def teacherdashboard(request, userID):
     # else:
     #     expired_application = "N/A"
 
+
+
     context = dict(teacher=teacher, tcertificate=tcertificate, certification_status=certification_status,
                    today=today, basic_met=basic_met, basic_not_met=basic_not_met,
                    tcert_application=tcert_application, highest_degree=highest_degree,
                    checklist=standard_checklist,
                    academic_classes=academic_classes,
+                   qualifying_academic_classes=qualifying_academic_classes,
+                   academic_credits_qualifying=academic_credits_qualifying,
+                   approved_ceu_total=approved_ceu_total,
                   )
     return render(request, 'teachercert/teacher_dashboard.html', context)
 
@@ -393,18 +419,6 @@ def createCEUreport(request, pk, sy):
     email_CEUReport_created(ceu_report.teacher, ceu_report.school_year.name)
     return redirect('create_ceu', recId=ceu_report.id)
 
-
-# Unused - I think
-# def add_instance(request, reportID):
-#     ceu_instance = CEUInstance(ceu_report=CEUReport.objects.get(id=reportID))
-#     form = CEUInstanceForm(instance=ceu_instance)
-#     if request.method == 'POST':
-#         form = CEUInstanceForm(request.POST, instance=ceu_instance)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('create_ceu', recId=reportID)
-#     return render(request, 'teachercert/add_instance.html', {'form': form})
-#
 
 # Ajax
 def load_CEUtypes(request):

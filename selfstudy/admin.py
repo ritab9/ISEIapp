@@ -108,6 +108,41 @@ class IndicatorEvaluationAdmin(admin.ModelAdmin):
 
 admin.site.register(IndicatorEvaluation, IndicatorEvaluationAdmin)
 
+@admin.register(IndicatorEvaluationHistory)
+class IndicatorEvaluationHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        "evaluation",
+        "action",
+        "user",
+        "timestamp",
+        "score_value",
+    )
+
+    list_filter = (
+        "action",
+        "timestamp",
+    )
+
+    search_fields = (
+        "evaluation__indicator__name",
+        "evaluation__indicator__code",
+        "reference_documents",
+        "explanation",
+        "user__username",
+    )
+
+    readonly_fields = (
+        "evaluation",
+        "user",
+        "timestamp",
+        "action",
+        "score_value",
+        "reference_documents",
+        "explanation",
+    )
+
+    ordering = ("-timestamp",)
+
 
 class ActionPlanInstructionSectionAdmin(admin.ModelAdmin):
     list_display = ['number', 'content']  # Show order number and truncated content
