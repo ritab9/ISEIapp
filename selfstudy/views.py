@@ -353,6 +353,26 @@ def selfstudy(request, selfstudy_id, readonly=False):
         accreditation = get_object_or_404(Accreditation, id=selfstudy_id)  # Assuming the selfstudy_id matches accreditation_id
         return setup_selfstudy(request, accreditation_id=accreditation.id)
 
+
+def record_indicator_evaluation_history( evaluation, user, action,):
+    score_value = None
+
+    if evaluation.indicator_score:
+        score_value = evaluation.indicator_score.score
+
+    IndicatorEvaluationHistory.objects.create(
+        evaluation=evaluation,
+        selfstudy=evaluation.selfstudy,
+        standard=evaluation.standard,
+        indicator=evaluation.indicator,
+        user=user,
+        action=action,
+        indicator_score=evaluation.indicator_score,
+        score_value=score_value,
+        reference_documents=evaluation.reference_documents,
+        explanation=evaluation.explanation,
+    )
+
 @login_required(login_url='login')
 @never_cache
 def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
@@ -382,7 +402,16 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
         selfstudy=selfstudy,
         standard__in=all_standards,
         indicator__school_type__in=school.school_type.all()
-    ).select_related("indicator", "indicator_score")
+    ).select_related("indicator", "indicator_score"
+    ).prefetch_related(
+        "history__user",
+        "history__indicator_score",
+    )
+
+    for evaluation in evaluations_qs:
+        evaluation.history_list = list(
+            evaluation.history.all()
+        )
 
     # --- Build grouped_data ---
     grouped_data = []
@@ -432,12 +461,55 @@ def selfstudy_standard(request, selfstudy_id, standard_id, readonly=False):
 
             # Save Forms
             if formset.is_valid() and standard_form.is_valid():
-                # Save indicator scores from POST
+
+                # Save indicator info from POST and save history
                 for form in formset:
-                    indicator_score_id = request.POST.get(f'{form.prefix}-indicator_score')
-                    if indicator_score_id:
-                        form.instance.indicator_score = IndicatorScore.objects.get(id=indicator_score_id)
-                    form.save()
+                    if not form.has_changed():
+                        continue
+                    # Get the current database version BEFORE the form modifies/saves it
+                    old_evaluation = IndicatorEvaluation.objects.get(pk=form.instance.pk)
+
+                    # Did this evaluation contain any meaningful data before?
+                    had_previous_data = (
+                            old_evaluation.indicator_score_id is not None or bool(old_evaluation.reference_documents) or bool(old_evaluation.explanation))
+
+                    # Set indicator_score from POST
+                    #indicator_score_id = request.POST.get(f'{form.prefix}-indicator_score')
+
+                    #if indicator_score_id:
+                    #    form.instance.indicator_score = IndicatorScore.objects.get(id=indicator_score_id)
+                    #else:
+                    #    form.instance.indicator_score = None
+
+                    # Save the form normally
+                    evaluation = form.save()
+
+                    # Determine whether one of our critical fields changed
+                    critical_fields_changed = (
+                            old_evaluation is None
+                            or old_evaluation.score != evaluation.score
+                            or old_evaluation.reference_documents != evaluation.reference_documents
+                            or old_evaluation.explanation != evaluation.explanation
+                    )
+
+                    if critical_fields_changed:
+                        has_new_data = (
+                                evaluation.indicator_score_id is not None
+                                or bool(evaluation.reference_documents)
+                                or bool(evaluation.explanation)
+                        )
+
+                        if not had_previous_data and has_new_data:
+                            action = "created"
+                        else:
+                            action = "changed"
+
+                        record_indicator_evaluation_history(
+                            evaluation=evaluation,
+                            user=request.user,
+                            action=action,
+                        )
+
 
                 # Save standard narrative
                 standard_form.save()

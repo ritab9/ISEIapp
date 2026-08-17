@@ -420,6 +420,95 @@ class IndicatorEvaluation(models.Model):
         score = self.indicator_score or 'Not Scored'
         return f"Evaluation for {self.indicator} (Score: {score})"
 
+class IndicatorEvaluationHistory(models.Model):
+    ACTION_CHOICES = (
+        ("created", "Created"),
+        ("changed", "Changed"),
+    )
+
+    evaluation = models.ForeignKey(
+        IndicatorEvaluation,
+        on_delete=models.CASCADE,
+        null=True,
+        blank = True,
+        related_name="history",
+    )
+
+    # Keep identifying information even if the evaluation is later deleted
+    selfstudy = models.ForeignKey(
+        SelfStudy,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    standard = models.ForeignKey(
+        Standard,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    indicator = models.ForeignKey(
+        Indicator,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="indicator_evaluation_changes",
+    )
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    action = models.CharField(
+        max_length=20,
+        choices=ACTION_CHOICES,
+    )
+
+    # Snapshot of the selected score
+    indicator_score = models.ForeignKey(
+        IndicatorScore,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    # Snapshot of the numeric score at that time
+    score_value = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    reference_documents = models.TextField(
+        null=True,
+        blank=True,
+    )
+
+    explanation = models.TextField(
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ["-timestamp"]
+        indexes = [
+            models.Index(fields=["evaluation", "-timestamp"]),
+            models.Index(fields=["selfstudy", "indicator"]),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.selfstudy} -" 
+            f"{self.evaluation} - "
+            f"{self.action} - "
+            f"{self.timestamp:%Y-%m-%d %H:%M}"
+        )
 
 class MissionAndObjectives(models.Model):
     selfstudy=models.ForeignKey(SelfStudy, on_delete=models.CASCADE, related_name='objectives')

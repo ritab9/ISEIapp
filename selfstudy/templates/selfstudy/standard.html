@@ -151,6 +151,19 @@
                                                 {% if staff or user.has_active_visiting_team %}
                                                     <br><span class="span80">({{ form.instance.indicator.code }})</span>
                                                 {% endif %}
+
+                                                {% if form.instance.history_list %}
+                                                    <br>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-link p-0 mt-1"
+                                                            data-toggle="modal"
+                                                            data-target="#historyModal{{ form.instance.id }}"
+                                                        >
+                                                            <i class="fas fa-history"></i> History
+                                                        </button>
+
+                                                {% endif %}
                                             </td>
                                             <td class="width: 100%">{{ form.instance.indicator.description|linebreaksbr  }}</td>
                                         </tr>
@@ -182,6 +195,20 @@
                                                         {% endfor %}
                                                     </div>
                                                 {% endif %}
+<!-- History Button -->
+                                                {% if form.instance.history_list %}
+                                                    <br>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-link p-0 mt-1"
+                                                            data-toggle="modal"
+                                                            data-target="#historyModal{{ form.instance.id }}"
+                                                        >
+                                                            <i class="fas fa-history"></i> History
+                                                        </button>
+
+                                                {% endif %}
+
                                             </td>
 
                                             <td style="width: 100%">
@@ -217,6 +244,7 @@
 
                                     </tbody>
                                 </table>
+
                                 </div>
                                 <!--
                                     { % if user_on_team %}
@@ -256,6 +284,8 @@
                                 -->
                                 <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
                             </fieldset>
+
+
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -291,9 +321,134 @@
         {% endif %}
 
         </form>
+
     </div>
 
+        <!-- ============================= -->
+        <!-- Indicator Evaluation Histories -->
+        <!-- ============================= -->
+
+        {% for form in formset %}
+            {% if form.instance.history_list %}
+
+                <div
+                    class="modal fade"
+                    id="historyModal{{ form.instance.id }}"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="historyModalLabel{{ form.instance.id }}"
+                    aria-hidden="true"
+                >
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="historyModalLabel{{ form.instance.id }}">
+                                    Evaluation History
+                                </h5>
+
+                                <button type="button" class="close btn btn-sm btn-ISEIblue4" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p>
+                                    <strong>
+                                        Indicator: {{ form.instance.indicator.code }}
+                                    </strong>
+                                </p>
+
+                                {% for history in form.instance.history_list %}
+                                    <div class="card mb-3">
+                                        <div class="card-header">
+                                            <strong>
+                                                {% if history.action == "created" %}
+                                                    Initial Entry
+                                                {% else %}
+                                                    Changed
+                                                {% endif %}
+                                            </strong>
+
+                                            <span class="text-muted">
+                                                —
+                                                {{ history.timestamp|date:"M d, Y g:i A" }}
+                                            </span>
+
+                                            {% if history.user %}
+                                                <br>
+                                                <small class="text-muted">
+                                                    By:
+                                                    {{ history.user.get_full_name|default:history.user.username }}
+                                                </small>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="card-body">
+
+                                            <p>
+                                                <strong>Score:</strong>
+                                                {% if history.score_value %}
+                                                    {{ history.score_value }}
+                                                {% else %}
+                                                    <span class="text-muted">
+                                                        Not scored
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+
+                                            <div>
+                                                <strong>Explanation:</strong>
+
+                                                {% if history.explanation %}
+                                                        {{ history.explanation|linebreaksbr }}
+                                                {% else %}
+                                                    <span class="text-muted">
+                                                        None
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+
+                                            <p>
+                                                <strong>
+                                                    Document Reference(s):
+                                                </strong>
+
+                                                {% if history.reference_documents %}
+                                                    {{ history.reference_documents|linebreaksbr }}
+                                                {% else %}
+                                                    <span class="text-muted">
+                                                        None
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+
+                                        </div>
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-ISEIblue4"
+                                    data-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+        {% endfor %}
+
 {% endblock %}
+
 
 
 {% block script %}
