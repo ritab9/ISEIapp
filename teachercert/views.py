@@ -22,7 +22,7 @@ from django.db import IntegrityError
 from django.http import JsonResponse
 
 from django.core.files.storage import default_storage
-
+from ISEIapp.storage_backends import MediaStorage
 
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
 
@@ -1313,9 +1313,13 @@ def bulk_ceu_entry(request):
 
             if file:
                 current_year = datetime.now().year
-                saved_file_path = default_storage.save(f'Supporting_Files/{current_year}/{file.name}', file)
+                storage = MediaStorage()
+                saved_file_path = storage.save(
+                    f'Supporting_Files/{current_year}/{file.name}',
+                    file
+                )
             else:
-                saved_file_path=None
+                saved_file_path = None
 
             for teacher in teachers:
                 individual_ceu = request.POST.get(f'approved_ceu_{teacher.id}', approved_ceu)
@@ -1343,6 +1347,10 @@ def bulk_ceu_entry(request):
                             'group':True,
                         }
                     )
+
+                    if saved_file_path:
+                        ceu_instance.file.name = saved_file_path
+                        ceu_instance.save(update_fields=['file'])
                     #if created:
                     #    print(teacher)
             return redirect('CEUreports')
@@ -1361,10 +1369,14 @@ def bulk_ceu_entry(request):
 
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
 def bulk_ceu_edit(request, school_year_id, school_id):
 
     if request.method == "POST":
+
         group_desc = request.POST.get("group_desc")
+
         ceu_instances = CEUInstance.objects.filter(
             ceu_report__school_year_id=school_year_id,
             ceu_report__teacher__user__profile__school_id=school_id,
@@ -1377,38 +1389,122 @@ def bulk_ceu_edit(request, school_year_id, school_id):
         date_completed = request.POST.get("date_completed")
         evidence = request.POST.get("evidence")
 
+        # ---------------------------------------------------------
+        # Handle uploaded document
+        # ---------------------------------------------------------
+
+        uploaded_file = request.FILES.get("file")
+        saved_file_path = None
+
+        if uploaded_file:
+
+            storage = MediaStorage()
+
+            current_year = datetime.now().year
+
+            saved_file_path = storage.save(
+                f"Supporting_Files/{current_year}/{uploaded_file.name}",
+                uploaded_file
+            )
+
+            # Verify that the file actually made it to S3
+            if not storage.exists(saved_file_path):
+                messages.error(
+                    request,
+                    "The document upload could not be verified in S3."
+                )
+                saved_file_path = None
+
+        # ---------------------------------------------------------
+        # Update every CEUInstance in the group
+        # ---------------------------------------------------------
+
         for inst in ceu_instances:
-            # update shared info
+
+            # Shared information
             inst.ceu_type_id = ceu_type_id or inst.ceu_type_id
             inst.date_completed = date_completed or inst.date_completed
             inst.evidence = evidence
 
-            # update amount per teacher
+            # Individual amount
             amount_field = f"amount_{inst.id}"
+
             if amount_field in request.POST:
                 inst.amount = request.POST[amount_field]
 
+            # New document
+            if saved_file_path:
+                inst.file.name = saved_file_path
+
             inst.save()
 
-        messages.success(request, f"'{group_desc}' updated successfully!")
+        if uploaded_file and not saved_file_path:
+            messages.warning(
+                request,
+                "The other changes were saved, but the document was not attached."
+            )
+        else:
+            messages.success(
+                request,
+                f"'{group_desc}' updated successfully!"
+            )
 
-        # GET request (normal display)
+    # -------------------------------------------------------------
+    # Load CEU instances for display
+    # -------------------------------------------------------------
+
     ceu_instances = (
         CEUInstance.objects
-        .filter(ceu_report__school_year_id=school_year_id, group=True, ceu_report__teacher__user__profile__school_id=school_id,)
-        .select_related('ceu_category', 'ceu_type', 'ceu_report')
-        .order_by('description', 'date_completed')
+        .filter(
+            ceu_report__school_year_id=school_year_id,
+            group=True,
+            ceu_report__teacher__user__profile__school_id=school_id,
+        )
+        .select_related(
+            'ceu_category',
+            'ceu_type',
+            'ceu_report',
+        )
+        .order_by(
+            'description',
+            'date_completed'
+        )
     )
 
+    # -------------------------------------------------------------
+    # Group them exactly as your original code did
+    # -------------------------------------------------------------
+
     grouped = {}
+
+    storage = MediaStorage()
+
     for instance in ceu_instances:
-        grouped.setdefault(instance.description, []).append(instance)
+
+        # Add temporary information to the model instance for
+        # template display. This does NOT change the database.
+        if instance.file and instance.file.name:
+            instance.file_exists = storage.exists(instance.file.name)
+        else:
+            instance.file_exists = False
+
+        grouped.setdefault(
+            instance.description,
+            []
+        ).append(instance)
 
     context = dict(
         grouped_ceu_instances=grouped,
-        ceu_types=CEUType.objects.filter(ceu_category__name__in = ['Group', 'Collaboration']),
+        ceu_types=CEUType.objects.filter(
+            ceu_category__name__in=['Group', 'Collaboration']
+        ),
     )
-    return render(request, 'teachercert/bulk_ceu_edit.html', context)
+
+    return render(
+        request,
+        "teachercert/bulk_ceu_edit.html",
+        context
+    )
 
 
 
