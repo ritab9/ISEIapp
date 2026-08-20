@@ -366,18 +366,18 @@
                             </div>
                         {% endfor %}
 
-                        <div>|</div>
-                            <div class="border-left ml-3 pl-3"></div>
+                            <div class="border-left border-right ml-3 pl-3 mr-3 pr-3">
 
-                            <div class="col-auto mb-2">
-                                <select name="grade" id="grade" class="">
-                                    <option value="">All Grade Levels</option>
-                                    {% for value, label in grade_choices %}
-                                        <option value="{{ value }}" {% if selected_grade == value|stringformat:"s" %}selected{% endif %}>
-                                            {{ label }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                                <div class="col-auto mb-2">
+                                    <select name="grade" id="grade" class="">
+                                        <option value="">All Grade Levels</option>
+                                        {% for value, label in grade_choices %}
+                                            <option value="{{ value }}" {% if selected_grade == value|stringformat:"s" %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="">
