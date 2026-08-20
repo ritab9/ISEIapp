@@ -53,7 +53,10 @@ def report_dashboard(request, schoolID, school_yearID):
 @login_required(login_url='login')
 def student_report(request, arID):
     redirect_to_school_dashboard = False
+
     selected_statuses = request.GET.getlist('status') or ['enrolled']
+    selected_grade = request.GET.get('grade', '')
+
     annual_report = None
     formset = None
     saved_count = 0
@@ -196,14 +199,22 @@ def student_report(request, arID):
 
             #Filter by status
 
-            #selected_statuses = request.GET.getlist('status')
-
             students_qs = Student.objects.filter(
                 annual_report=annual_report
             )
 
             if selected_statuses:
                 students_qs = students_qs.filter(status__in=selected_statuses)
+
+            grade_values = ( students_qs .values_list('grade_level', flat=True).distinct())
+
+            grade_choices = [
+                choice for choice in Student.GRADE_LEVEL_CHOICES
+                if choice[0] in grade_values
+            ]
+
+            if selected_grade:
+                students_qs = students_qs.filter(grade_level=selected_grade)
 
             students_qs = students_qs.select_related(
                 'country', 'TN_county'
@@ -231,7 +242,9 @@ def student_report(request, arID):
                 formset=formset,
                 annual_report=annual_report,
                 selected_statuses=selected_statuses,
+                selected_grade=selected_grade,
                 status_choices=Student.STATUS_CHOICES,
+                grade_choices = grade_choices,
             )
 
             return render(request, 'student_report.html', context)

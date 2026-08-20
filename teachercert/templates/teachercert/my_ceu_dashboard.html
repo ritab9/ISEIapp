@@ -40,12 +40,13 @@
         <br>
         {% for ar in principal_denied_report%}
             <div class="card card-body">
-                <h6> Additional Information Needed </h6> <br>
+                <h6 class="error font-weight-bolder"> !!! Additional Information Needed for {{ ar.school_year }} School Year Report</h6> <br>
                 <table class="table table-sm">
                     <tr>
                         <th>School Year</th><th>Date Completed</th><th>Description</th><th>Amount</th>
                         <th>Evidence / Supporting documentation</th><th>Review Date</th>
                     </tr>
+
                     {% for p in  ar.ceuinstance_set.all|dictsort:"p.date_completed" %}
                         <tr>
                             <td>{{p.ceu_report.school_year}} </td><td>{{p.date_completed}} </td><td>{{p.description}} </td>

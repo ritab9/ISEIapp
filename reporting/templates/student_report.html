@@ -331,14 +331,14 @@
     </div>
 
 
-    <!-- Status Filter -->
+    <!-- Status + Grade Level Filter -->
     <div class="card shadow-sm mb-2">
 
         <div class="card-body py-1">
 
             <form method="get">
 
-                <div class="row">
+                <div class="row mt-2">
 
                     <div class="col-auto card-header bg-light py-2 text-ISEIblue1">
                         <strong>Filter Students</strong>
@@ -366,13 +366,27 @@
                             </div>
                         {% endfor %}
 
+                        <div>|</div>
+                            <div class="border-left ml-3 pl-3"></div>
+
+                            <div class="col-auto mb-2">
+                                <select name="grade" id="grade" class="">
+                                    <option value="">All Grade Levels</option>
+                                    {% for value, label in grade_choices %}
+                                        <option value="{{ value }}" {% if selected_grade == value|stringformat:"s" %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
                             <div class="">
                             <button type="submit"
                                     class="btn btn-sm btn-ISEIblue1">
                                 Apply Filter
                             </button>
 
-                            {% if selected_statuses %}
+                            {% if selected_statuses or selected_grade %}
                                 <a href="?status=enrolled"
                                    class="btn btn-sm btn-outline-secondary ml-2">
                                     Reset
@@ -403,7 +417,8 @@
                 {{ error }}
               </div>
             {% endfor %}
-<!-- table with student data -->
+<!-- table with student data-->
+
             <div class="scrollable-table scrollable-table2 mb-1">
                 <table id="student-table" class="table table-light">
                     <thead class="thead table-ISEIblue4 sticky_head">
