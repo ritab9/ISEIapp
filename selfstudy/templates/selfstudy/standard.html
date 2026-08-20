@@ -152,18 +152,18 @@
                                                     <br><span class="span80">({{ form.instance.indicator.code }})</span>
                                                 {% endif %}
 
-                                                {% if form.instance.history_list %}
+                                               <!--  { % if form.instance.history_list %}
                                                     <br>
                                                         <button
                                                             type="button"
                                                             class="btn btn-sm btn-link p-0 mt-1"
                                                             data-toggle="modal"
-                                                            data-target="#historyModal{{ form.instance.id }}"
+                                                            data-target="#historyModal{ { form.instance.id }}"
                                                         >
                                                             <i class="fas fa-history"></i> History
                                                         </button>
 
-                                                {% endif %}
+                                                { % endif %} -->
                                             </td>
                                             <td class="width: 100%">{{ form.instance.indicator.description|linebreaksbr  }}</td>
                                         </tr>
