@@ -127,6 +127,16 @@
         font-size: 1.1rem;
     }
 
+    .status-expiring {
+        color: #f1a542;
+        font-weight: 600;
+}
+
+    .renewal-action {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
 
     /* =========================================================
        RENEWAL SECTION
@@ -306,15 +316,14 @@
 
         <div class="col-md-4 text-md-right noprint mt-3 mt-md-0">
 
-            {% if teacher.user.id == request.user.id %}
+            <!-- { % if teacher.user.id == request.user.id %} -->
 
                 <a
                     class="btn btn-sm btn-ISEIblue4 mr-2"
                     href="{% url 'account_settings' teacher.user.id %}">
-                    Account / Renewal
+                    Renewal / Information Update
                 </a>
 
-            {% endif %}
 
             <button
                 class="btn btn-sm btn-ISEIblue2"
@@ -571,22 +580,25 @@
                         <div>
 
                             {{ tcertificate.issue_date }}
+                                –
 
-                            –
+                                {% if expiration_warning == "expired" %}
 
-                            {% if tcertificate.renewal_date < today %}
+                                    <span class="status-expired">
+                                        {{ tcertificate.renewal_date }}
+                                    </span>
 
-                                <span class="status-expired">
+                                {% elif expiration_warning == "expiring" %}
+
+                                    <span class="status-expiring">
+                                        {{ tcertificate.renewal_date }}
+                                    </span>
+
+                                {% else %}
 
                                     {{ tcertificate.renewal_date }}
 
-                                </span>
-
-                            {% else %}
-
-                                {{ tcertificate.renewal_date }}
-
-                            {% endif %}
+                                {% endif %}
 
                         </div>
 
@@ -747,6 +759,28 @@
                             <div>
                                 {{ tcertificate.renewal_requirements }}
                             </div>
+
+                                {% if expiration_warning == "expired" or expiration_warning == "expiring" %}
+
+                                     {% if not tcert_application %}
+                                        <div class="mt-4">
+
+                                            <a
+                                                href="{% url 'account_settings' teacher.user.id %}"
+                                                class="btn btn-sm btn-danger">
+                                                Apply for Renewal
+                                            </a>
+
+                                            <p class="mt-2 mb-0 text-muted">
+                                                Please make sure that you have met all renewal requirements
+                                                and add any additional CEUs or academic credits that may not
+                                                yet be recorded.
+                                            </p>
+
+                                        </div>
+                                     {% endif %}
+
+                                {% endif %}
 
                         </div>
 

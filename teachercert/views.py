@@ -367,10 +367,8 @@ def teacherdashboard(request, userID):
             certification_status = "Expired Certification"
 
         # if an application has been turned in after the latest Certificate was issued
-        if TeacherCertificationApplication.objects.filter(teacher=teacher, date__gte=tcertificate.issue_date):
-            tcert_application = TeacherCertificationApplication.objects.get(teacher=teacher)
-        else:
-            tcert_application = None
+        tcert_application = TeacherCertificationApplication.objects.filter(teacher=teacher,closed=False,).first()
+
 
         approved_ceu_total = (
                 CEUInstance.objects.filter(
@@ -384,13 +382,14 @@ def teacherdashboard(request, userID):
         )
 
     today = get_today()
-    # if tcert_application:
-    #     if tcert_application.date > datetime.today() - timedelta(days=183):
-    #         expired_application = True
-    #     else:
-    #         expired_application = False
-    # else:
-    #     expired_application = "N/A"
+
+    expiration_warning = None
+
+    if tcertificate:
+        if tcertificate.renewal_date < today:
+            expiration_warning = "expired"
+        elif tcertificate.renewal_date <= today + timedelta(days=45):
+            expiration_warning = "expiring"
 
 
 
@@ -402,6 +401,7 @@ def teacherdashboard(request, userID):
                    qualifying_academic_classes=qualifying_academic_classes,
                    academic_credits_qualifying=academic_credits_qualifying,
                    approved_ceu_total=approved_ceu_total,
+                   expiration_warning = expiration_warning,
                   )
     return render(request, 'teachercert/teacher_dashboard.html', context)
 
