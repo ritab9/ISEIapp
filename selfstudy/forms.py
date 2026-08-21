@@ -52,6 +52,7 @@ class SchoolProfileForm(forms.ModelForm):
         fields = [
             "school_name", "address", "city", "state_us", "zip_code",
             "country", "principal", "board_chair", "last_evaluation", "last_interim"
+
         ]
         widgets = {
             'address': forms.TextInput(attrs={'style': 'width: 250px;'}),
@@ -63,6 +64,12 @@ class SchoolHistoryForm(forms.ModelForm):
     class Meta:
         model = SchoolProfile
         fields = ['school_history']  # Add fields you want to display in the form
+
+class SchoolProfileFinancialForm(forms.ModelForm):
+
+    class Meta:
+        model = SchoolProfile
+        fields = ["financial_currency"]
 
 class FinancialTwoYearDataEntryForm(forms.ModelForm):
     class Meta:

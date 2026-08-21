@@ -164,6 +164,21 @@ class SelfStudy_TeamMember(models.Model):
 
 #School profile Models
 
+class Currency(models.Model):
+    code = models.CharField(
+        max_length=3,
+        unique=True,
+        help_text="ISO 4217 currency code (e.g., USD, TZS, KRW)"
+    )
+    name = models.CharField(max_length=50)
+    symbol = models.CharField(max_length=10, blank=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
 class SchoolProfile(models.Model):
     selfstudy = models.ForeignKey(SelfStudy, on_delete=models.CASCADE)
 #A. General Information
@@ -184,6 +199,13 @@ class SchoolProfile(models.Model):
     #this belongs to D
     fte_student_ratio = models.CharField(max_length=10, null=True, blank=True)
 
+    financial_currency = models.ForeignKey(
+        Currency,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
+
     #financial comment
     financial_comment = models.TextField(null=True, blank=True)
 
@@ -191,9 +213,9 @@ class SchoolProfile(models.Model):
 class FinancialTwoYearDataEntry(models.Model):
     school_profile = models.ForeignKey(SchoolProfile, on_delete=models.CASCADE, related_name="two_year_financial_data")
     data_key = models.ForeignKey(FinancialTwoYearDataKey, on_delete=models.CASCADE)
-    two_years_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="2 Years Ago")
-    one_year_ago = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="1 Year Ago")
-    current_year = models.DecimalField(max_digits =10, decimal_places=2, null=True, blank=True, verbose_name="Year to date")
+    two_years_ago = models.DecimalField(max_digits =18, decimal_places=2, null=True, blank=True, verbose_name="2 Years Ago")
+    one_year_ago = models.DecimalField(max_digits =18, decimal_places=2, null=True, blank=True, verbose_name="1 Year Ago")
+    current_year = models.DecimalField(max_digits =18, decimal_places=2, null=True, blank=True, verbose_name="Year to date")
     def __str__(self):
         return f"{self.data_key.name}: {self.two_years_ago}, {self.one_year_ago}"
 

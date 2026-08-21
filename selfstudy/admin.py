@@ -78,6 +78,12 @@ class SchoolProfileAdmin(admin.ModelAdmin):
 # Register SchoolProfile admin
 admin.site.register(SchoolProfile, SchoolProfileAdmin)
 
+@admin.register(Currency)
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ("id","code", "name", "symbol")
+    search_fields = ("code", "name")
+    listed_editable = ("code", "name", "symbol")
+
 
 # Inline for SchoolProfile
 class SchoolProfileInline(admin.TabularInline):

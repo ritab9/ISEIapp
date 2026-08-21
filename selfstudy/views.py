@@ -1091,6 +1091,14 @@ def profile_financial(request, selfstudy_id, readonly=False):
             else:
                 messages.error(request, "Some Additional Financial Data was not saved!")
 
+            #Handle currency
+            financial_currency_form = SchoolProfileFinancialForm(request.POST, instance=school_profile)
+
+            if financial_currency_form.is_valid():
+                if financial_currency_form.has_changed():
+                    financial_currency_form.save()
+                    messages.success(request, "Currency updated.")
+
             # Handle the financial_comment
             comment = request.POST.get('financial_comment', '').strip()
             if comment != school_profile.financial_comment:  # only save if changed
@@ -1099,9 +1107,12 @@ def profile_financial(request, selfstudy_id, readonly=False):
                 messages.success(request, "Financial comment has been successfully saved!")
 
     # Initialize formsets
+    financial_currency_form = SchoolProfileFinancialForm(instance=school_profile  )
     two_year_formset = FinancialTwoYearDataFormSet(queryset=two_year_data_queryset, prefix="two_years")
     additional_formset = FinancialAdditionalDataFormSet(queryset=additional_data_queryset, prefix="additional")
     financial_comment=school_profile.financial_comment or ""  # pass existing comment
+
+
 
     if readonly: # Disable all fields in the form when readonly is True
         for subform in two_year_formset:
@@ -1112,8 +1123,9 @@ def profile_financial(request, selfstudy_id, readonly=False):
                 field.disabled = True
 
     context = dict(selfstudy=selfstudy, standards = standards, active_sublink="financial", active_link="profile",
+                    school_profile=school_profile,
                     two_year_formset = two_year_formset, additional_formset = additional_formset,
-                   financial_comment=financial_comment,
+                   financial_comment=financial_comment, financial_currency_form=financial_currency_form,
                    **get_edit_context(form_id),
                    readonly=readonly,
                    show_profile_submenu=True)

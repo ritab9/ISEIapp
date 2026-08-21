@@ -17,6 +17,15 @@
         {% csrf_token %}
            <input type="hidden" name="form_version" id="form_version" value="{{ form_version }}">
 
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>
+                        Reporting Currency
+                    </label>
+                    {{ financial_currency_form.financial_currency }}
+                </div>
+            </div>
+
         <!-- Add the ManagementForm for each formset -->
         {{ two_year_formset.management_form }}
         {{ additional_formset.management_form }}
@@ -51,7 +60,7 @@
                         {% for form in two_year_formset %}
                             <tr>
                                 <td class="blue-column"> {{ form.id }}
-                                    {{ form.instance.data_key.symbol }}{{ form.two_years_ago }}
+                                    {{ school_profile.financial_currency.symbol }}{{ form.two_years_ago }}
                                     {% if form.two_years_ago.errors %}
                                         <div class="errors">
                                             {% for error in form.two_years_ago.errors %}
@@ -61,7 +70,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="blue-column">
-                                    {{ form.instance.data_key.symbol }}{{ form.one_year_ago }}
+                                    {{ school_profile.financial_currency.symbol }}{{ form.one_year_ago }}
                                     {% if form.one_year_ago.errors %}
                                         <div class="errors">
                                             {% for error in form.one_year_ago.errors %}
@@ -71,7 +80,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="blue-column">
-                                    {{ form.instance.data_key.symbol }}{{ form.current_year }}
+                                    {{ school_profile.financial_currency.symbol }}{{ form.current_year }}
                                     {% if form.current_year.errors %}
                                         <div class="errors">
                                             {% for error in form.current_year.errors %}
