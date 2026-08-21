@@ -2257,7 +2257,7 @@ def download_NCPSA_directory(request, schoolyearID):
 
 class PersonnelListView(ListView):
     model = Personnel
-    template_name = 'personnel_directory.html'  # change this to your desired template name
+    template_name = 'personnel_directory.html'
     filter_form=EmployeeFilterForm
 
     def get_form(self):

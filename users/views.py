@@ -96,8 +96,6 @@ def register_user(request):
     )
 
 
-
-
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def register_teacher(request):
@@ -126,52 +124,8 @@ def register_teacher(request):
     return render(request, 'users/register_teacher.html', context)
 
 
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
-def register_teacher_from_employee_report(request, personnelID):
-    personnel = Personnel.objects.get(id=personnelID)
-    school = personnel.annual_report.school
 
-    username = f"{personnel.first_name}.{personnel.last_name}"
 
-    # Check if username already exists
-    if User.objects.filter(username=username).exists():
-        messages.error(request, "A user with this username already exists. This might be a returning teacher, and their account needs to be reactivated. Please contact ISEI, and we will sort this out.")
-        return redirect('employee_report', personnel.annual_report.id)  # Replace with your actual redirect
-
-    # Generate a random password
-    password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
-
-    new_user = User.objects.create_user(
-        username=username,
-        password=password,
-        email=personnel.email_address,
-        first_name=personnel.first_name,
-        last_name=personnel.last_name
-    )
-    group = Group.objects.get(name='teacher')
-    new_user.groups.add(group)
-
-    profile=UserProfile.objects.create(user=new_user, school=school)
-
-    teacher = Teacher.objects.create(
-        user=new_user,
-        first_name=personnel.first_name,
-        last_name=personnel.last_name,
-        school=school,
-        phone_number=personnel.phone_number,
-        joined_at=timezone.now()  # make sure `joined_at` attribute is available in the `Personnel` model
-    )
-    personnel.teacher = teacher
-    personnel.save()
-
-    email_registered_user(teacher)
-
-    messages.success(request, 'Account was created for ' + username)
-
-    return redirect('employee_report', personnel.annual_report.id)
-
-    #return redirect('personnel_directory', schoolID=school.id)
 
 @unauthenticated_user
 def loginpage(request):
@@ -437,15 +391,6 @@ def school_dashboard(request, schoolID=None):
     return render(request, 'users/school_dashboard.html', context)
 
 
-#@login_required(login_url='login')
-#@allowed_users(allowed_roles=['staff'])
-#def transcript_status(request):
-#    unprocessed_transcripts = CollegeAttended.objects.filter(teacher__user__is_active=True, transcript_processed= False)
-
-#    context = dict(unprocessed_transcripts = unprocessed_transcripts)
-
-#    return render(request, 'users/transcript_status.html', context)
-
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['staff'])
 def isei_dashboard(request):
@@ -548,3 +493,280 @@ def change_active_school(request):
         return redirect("school_dashboard", school_id or fallback_school_id)
 
     return redirect("school_dashboard")
+
+
+
+# Registrar level of dealing with teacher account creation and removal
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['staff', 'principal', 'registrar'])
+def register_teacher_from_employee_report(request, personnelID):
+    personnel = Personnel.objects.get(id=personnelID)
+    school = personnel.annual_report.school
+
+    username = f"{personnel.first_name}.{personnel.last_name}"
+
+    # Check if username already exists
+    if User.objects.filter(username=username).exists():
+        messages.error(request, "A user with this username already exists. This might be a returning teacher, and their account needs to be reactivated. Please contact ISEI, and we will sort this out.")
+        return redirect('employee_report', personnel.annual_report.id)  # Replace with your actual redirect
+
+    # Generate a random password
+    password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+
+    new_user = User.objects.create_user(
+        username=username,
+        password=password,
+        email=personnel.email_address,
+        first_name=personnel.first_name,
+        last_name=personnel.last_name
+    )
+    group = Group.objects.get(name='teacher')
+    new_user.groups.add(group)
+
+    profile=UserProfile.objects.create(user=new_user, school=school)
+
+    teacher = Teacher.objects.create(
+        user=new_user,
+        first_name=personnel.first_name,
+        last_name=personnel.last_name,
+        school=school,
+        phone_number=personnel.phone_number,
+        joined_at=timezone.now()  # make sure `joined_at` attribute is available in the `Personnel` model
+    )
+    personnel.teacher = teacher
+    personnel.save()
+
+    email_registered_user(teacher)
+
+    messages.success(request, 'Account was created for ' + username)
+
+    return redirect('employee_report', personnel.annual_report.id)
+
+    #return redirect('personnel_directory', schoolID=school.id)
+
+
+@login_required
+@transaction.atomic
+def activate_teacher(request, personnelID):
+    personnel = get_object_or_404(Personnel, id=personnelID)
+
+    if request.method != "POST":
+        return redirect('employee_report', personnel.annual_report.id)
+
+    school = personnel.annual_report.school
+    teacher_group = get_object_or_404(Group, name="teacher")
+
+
+    # ---------------------------------------------
+    # Case 1: Teacher record already exists
+    # ---------------------------------------------
+
+    if personnel.teacher:
+
+        teacher = personnel.teacher
+        user = teacher.user
+
+        if teacher_group in user.groups.all():
+            messages.info(
+                request,
+                f"{user.get_full_name()} already has teacher access."
+            )
+        else:
+            user.groups.add(teacher_group)
+
+            messages.success(
+                request,
+                f"Teacher access restored for {user.get_full_name()}."
+            )
+
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    # ---------------------------------------------
+    # Case 2: Existing user account
+    # (staff member becoming teacher)
+    # ---------------------------------------------
+
+    username = f"{personnel.first_name}.{personnel.last_name}"
+
+    user = User.objects.filter(username=username).first()
+
+    if user:
+
+        teacher = Teacher.objects.create(
+            user=user,
+            first_name=personnel.first_name,
+            last_name=personnel.last_name,
+            school=school,
+            phone_number=personnel.phone_number,
+            joined_at=timezone.now()
+        )
+
+        personnel.teacher = teacher
+        personnel.save(update_fields=["teacher"])
+
+        user.groups.add(teacher_group)
+
+        messages.success(
+            request,
+            f"{user.get_full_name()} was added as a teacher."
+        )
+
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    # ---------------------------------------------
+    # Case 3: Completely new account
+    # ---------------------------------------------
+
+    password = ''.join(
+        random.choice(string.ascii_letters + string.digits)
+        for _ in range(10)
+    )
+
+    user = User.objects.create_user(
+        username=username,
+        password=password,
+        email=personnel.email_address,
+        first_name=personnel.first_name,
+        last_name=personnel.last_name
+    )
+
+
+    UserProfile.objects.create(
+        user=user,
+        school=school
+    )
+
+
+    user.groups.add(teacher_group)
+
+
+    teacher = Teacher.objects.create(
+        user=user,
+        first_name=personnel.first_name,
+        last_name=personnel.last_name,
+        school=school,
+        phone_number=personnel.phone_number,
+        joined_at=timezone.now()
+    )
+
+
+    personnel.teacher = teacher
+    personnel.save(update_fields=["teacher"])
+
+
+    email_registered_user(teacher)
+
+
+    messages.success(
+        request,
+        f"Teacher account created for {username}."
+    )
+
+
+    return redirect('employee_report', personnel.annual_report.id)
+
+
+
+@login_required
+def remove_teacher_role(request, personnelID):
+
+    personnel = get_object_or_404(Personnel, id=personnelID)
+
+    if request.method != "POST":
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    if not personnel.teacher:
+        messages.error(
+            request,
+            "This person does not have a teacher record."
+        )
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    user = personnel.teacher.user
+
+    teacher_group = get_object_or_404(Group, name="teacher")
+
+    user.groups.remove(teacher_group)
+
+
+    messages.success(
+        request,
+        f"Teacher access removed for {user.get_full_name()}. "
+        "The account and teacher information were preserved."
+    )
+
+
+    return redirect('employee_report', personnel.annual_report.id)
+
+
+
+@login_required
+@transaction.atomic
+def delete_accidental_teacher(request, personnelID):
+
+    personnel = get_object_or_404(Personnel, id=personnelID)
+
+
+    if request.method != "POST":
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    teacher = personnel.teacher
+
+
+    if not teacher:
+        messages.error(
+            request,
+            "No teacher account exists."
+        )
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    user = teacher.user
+
+
+    # Safety checks
+
+    if user.last_login:
+        messages.error(
+            request,
+            "This account has been used. Remove teacher access instead."
+        )
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+    if user.groups.exclude(name="teacher").exists():
+
+        messages.error(
+            request,
+            "This user has other roles and cannot be deleted."
+        )
+        return redirect('employee_report', personnel.annual_report.id)
+
+
+
+    # Remove Personnel reference
+
+    personnel.teacher = None
+    personnel.save(update_fields=["teacher"])
+
+
+    # Deletes:
+    # User
+    # UserProfile
+    # Teacher
+
+    user.delete()
+
+
+    messages.success(
+        request,
+        "The accidentally created teacher account was deleted."
+    )
+
+
+    return redirect('employee_report', personnel.annual_report.id)

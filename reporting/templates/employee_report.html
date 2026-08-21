@@ -1,181 +1,715 @@
 {% extends 'reporting_base.html' %}
 
 {% load static %}
+{% load group_tags %}
 
-{% block title %} Employee Report {% endblock title %}
+
+{% block title %}
+    Employee Report
+{% endblock title %}
 
 
 {% block content %}
 
-    {% if 'employee_report_display' not in request.path %}
-         <h6 style="text-align:left">Employee Report {{ school}} ({{ school_year }})</h6>
 
-        <div class="card card-body">
+<!-- Title, Import buttons and Instructions -->
+    {% if 'employee_report_display' not in request.path %}
+
+        <div class="card card-body mb-3">
+
+            <h6>
+                Employee Report {{ school }} ({{ school_year }})
+            </h6>
+
+    <!-- Import/Export Buttons -->
             <form method="post">
                 {% csrf_token %}
-                <div class="row d-flex flex-wrap justify-content-center">
-                    <div class="col-auto my-1">
-                        <a class="btn btn-sm btn-ISEIyellow" href="{% url 'import_employee_prev_year' arID %}">
+
+                <div class="row justify-content-center">
+
+                    <div class="col-auto mb-2">
+                        <a class="btn btn-sm btn-ISEIyellow"
+                           href="{% url 'import_employee_prev_year' arID %}">
                             Import Employees from {{ school_year.get_previous_school_year }}
                         </a>
                     </div>
-                    <div class="col-auto my-1">
-                        <button class="btn btn-sm btn-ISEIblue2" type="submit" name="save">
+
+                    <div class="col-auto mb-2">
+                        <button class="btn btn-sm btn-ISEIblue2"
+                                type="submit"
+                                name="save">
                             Save and Finalize Later
                         </button>
                     </div>
-                    <div class="col-auto my-1">
-                        <button class="btn btn-sm btn-success" type="submit" name="complete">
+
+                    <div class="col-auto mb-2">
+                        <button class="btn btn-sm btn-success"
+                                type="submit"
+                                name="complete">
                             Report Complete
                         </button>
                     </div>
-                    <div class="col-auto my-1">
-                        <a class="btn btn-sm btn-outline-ISEIblue4" href="{% url 'employee_report_all' arID %}">
+
+                    <div class="col-auto mb-2">
+                        <a class="btn btn-sm btn-outline-ISEIblue4"
+                           href="{% url 'employee_report_all' arID %}">
                             Include No Longer Employed
                         </a>
                     </div>
-                    <div class="col-auto my-1">
-                        <a class="btn btn-sm btn-ISEIblue1" href="{% url 'employee_report_export' arID %}">
+
+                    <div class="col-auto mb-2">
+                        <a class="btn btn-sm btn-ISEIblue1"
+                           href="{% url 'employee_report_export' arID %}">
                             Export to Excel
                         </a>
                     </div>
+
                 </div>
+
             </form>
+
+    <!-- Instructions -->
+            <ul class="mb-0 mt-2">
+                <li>
+                    To add new personnel, click <b class="text-ISEIblue4"> Add New Personnel </b> below each group.
+                </li>
+                <li>
+                    To update employee information, click the <b class="text-ISEIblue4"> Edit </b> button next to their name.
+                    To remove an employee from the Employee Report, change their <b>Status</b> and select <b class="error">No Longer Employed </b>.
+                </li>
+                <li>
+                    To manage a teacher's role and account on the platform click the <b class="text-ISEIblue4"> Account</b> dropdown.
+                </li>
+            </ul>
+
         </div>
-        <div class="card card-body">
-            <div class="">
-                <ul>
-                    <li>To add new personnel, click the <b class="text-ISEIblue4">Add New Personnel</b> button below each group.</li>
-                    <li>To update an employee's information, click the <u class="text-ISEIblue4">Edit</u> link next to their name.</li>
-                    <li>To remove an employee from the Employee Report, click the <u class="text-ISEIblue4">Edit</u> link next to their name and change their <b>Status</b> to <b class="error">No Longer Employed</b>.</li> </ul>
-            </div>
-        </div>
-        <div class="row ml-5">
-            {% for message in messages %}
-                <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-            {% endfor %}
-        </div>
+
     {% else %}
-        <h6 style="text-align:right">Employee Report {{ school}} ({{ school_year }})</h6>
+
+    <h6 class="text-right">
+        Employee Report {{ school }} ({{ school_year }})
+    </h6>
+
     {% endif %}
 
+
+<!-- Tables -->
     <div class="card card-body">
 
-     {% for personnel_group in personnel_groups %}
+        {% for personnel_group in personnel_groups %}
+<!-- Group Title and explanation -->
+            <div class="row align-items-center mt-3 mb-2">
 
-         <div class="row mt-2">
-            <div class="col-auto">
-                <h6 class="toggle-table clickable" data-target="#table-{{ forloop.counter }}">{{ personnel_group.group_name }}</h6></div>
-            <div class="col-auto">
-                 {% for key, explanation in map.items %}
-                    {% if key == personnel_group.code %}
-                        {{ explanation }}
-                    {% endif %}
-                {% endfor %}
+                <div class="col-auto">
+                    <h6 class="toggle-table clickable mb-0" data-target="#table-{{ forloop.counter }}">
+                        {{ personnel_group.group_name }}
+                    </h6>
+                </div>
+
+                <div class="col">
+                    {% for key, explanation in map.items %}
+
+                        {% if key == personnel_group.code %}
+                            <small class="text-muted">
+                                {{ explanation }}
+                            </small>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
             </div>
-         </div>
-        <table class="table table-sm table-bordered table-striped" id="table-{{ forloop.counter }}" style="display: table;">
-            <thead class="table-ISEIblue4">
-                <tr>
+
+<!-- Group Table -->
+            <table class="table table-sm table-bordered table-striped" id="table-{{ forloop.counter }}">
+
+                <thead class="table-ISEIblue4">
+                    <tr>
                     {% if 'employee_report_display' not in request.path %}
-                        <th rowspan="2"></th>
+                        <th rowspan="2" style="width:140px;">
+                            Actions
+                        </th>
                     {% endif %}
-                    <th rowspan="2">Name</th>
-                    <th rowspan="2">Status</th>
-                    <th rowspan="2">Positions</th>
-                    <th rowspan="2">Degrees</th>
-                    <th colspan="2" style="text-align: center">Years Experience</th>
-                    <th rowspan="2">Email Address</th>
-                    <th rowspan="2">Phone Number</th>
-                    <th colspan="2" style="text-align: center">ISEI/NAD Certification</th>
-                    <th colspan="2" style="text-align: center">Subjects</th>
-                    <th rowspan ="2">SDA</th>
-                </tr>
-                <tr><th>Total</th>
-                    <th>At {{ school }}</th>
-                    <th>Type<br> Renewal Date</th>
-                    <th>Endorsements</th>
-                    <th>Teaching Now</th>
-                    <th>All Taught</th>
+                        <th rowspan="2">
+                            Name
+                        </th>
+                        <th rowspan="2">
+                            Status
+                        </th>
+                        <th rowspan="2">
+                            Positions
+                        </th>
+                        <th rowspan="2">
+                            Degrees
+                        </th>
+                        <th colspan="2"
+                            class="text-center">
+                            Years Experience
+                        </th>
+                        <th rowspan="2">
+                            Email Address
+                        </th>
+                        <th rowspan="2">
+                            Phone Number
+                        </th>
+                        <th colspan="2"
+                            class="text-center">
+                            ISEI/NAD Certification
+                        </th>
+                        <th colspan="2"
+                            class="text-center">
+                            Subjects
+                        </th>
+                        <th rowspan="2">
+                            SDA
+                        </th>
                 </tr>
 
-            </thead>
-            <tbody>
-            {% for personnel_dict in personnel_group.group_personnel %}
-                 {% with p=personnel_dict.personnel %}
-                <tr>
-                    {% if 'employee_report_display' not in request.path %}
-                        <td>
-                            <a class="clickable" href="{% url 'employee_edit' arID=arID personnelID=p.id %}">
-                                Edit
-                            </a>
-                        </td>
-                    {% endif %}
-                    <td>{% if p.teacher %}
-                                <a href="{% url 'teacher_dashboard' userID=p.teacher.user.id %}">
-                                    {{ p.first_name }} {{ p.last_name }}</a>
-                        {% else %}
-                            {{ p.first_name }} {{ p.last_name }}
-                            {% if personnel_group.code in 'AT' %}
-                                <hr>
-                                 <a class="small error clickable" href="{% url 'register_teacher_from_employee_report' personnelID=p.id %}">Create teacher account</a>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                    <td>{{ p.get_status_display }}</td>
-                    <td>{% for pos in p.positions.all %} {{ pos }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
-                    <td>{% for deg in p.personneldegree_set.all %} {{ deg.degree }} - {{ deg.area_of_study }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
-                    <td>{% if p.years_administrative_experience %}
-                            Administrative: {{ p.years_administrative_experience|default_if_none:""  }}<br>
-                        {% endif %}
-                        {% if p.years_teaching_experience %}
-                            Teaching: {{ p.years_teaching_experience|default_if_none:""  }}<br>
-                        {% endif %}
-                        {% if p.years_work_experience %}
-                            Work: {{ p.years_work_experience|default_if_none:""  }}
-                        {% endif %}
-                    </td>
-                    <td>{{ p.years_at_this_school|default_if_none:""  }}</td>
-                    <td>{{ p.email_address|default_if_none:""  }}</td>
-                    <td>{{ p.phone_number|default_if_none:""  }}</td>
-                    <td>{% if personnel_dict.certification_type %}
-                            {{ personnel_dict.certification_type }}<br>
-                            {{ personnel_dict.renewal_date }}
-                        {% endif %}</td>
-                    <td>{% for endorsement in personnel_dict.endorsements %}
-                            {{ endorsement }}<br>
-                        {% endfor %}
-                    </td>
-                    <td>{% for subj_teach in p.subjects_teaching.all %} {{ subj_teach }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
-                    <td>{% for subj_t in p.subjects_taught.all %} {{ subj_t }} {% if not forloop.last %}<br> {% endif %}{% endfor %}</td>
-                    <td>{% if p.sda %}Yes{% else %}No{% endif %}</td>
-                </tr>
-                {% endwith %}
-            {% endfor %}
-                {% if 'employee_report_display' not in request.path %}
                     <tr>
-                        <td colspan="14" style="text-align: left">
-                            <a href="{% url 'employee_add' arID=arID positionCode=personnel_group.code %}">
-                              <button class="btn-ISEIblue4">Add New Personnel</button>
-                            </a>
-                        </td>
+                        <th>
+                            Total
+                        </th>
+                        <th>
+                            At {{ school }}
+                        </th>
+                        <th>
+                            Type<br>
+                            Renewal Date
+                        </th>
+
+                        <th>
+                            Endorsements
+                        </th>
+
+                        <th>
+                            Teaching Now
+                        </th>
+
+                        <th>
+                            All Taught
+                        </th>
+
                     </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    {% endfor %}
+                </thead>
+
+                <tbody>
+
+                    {% for personnel_dict in personnel_group.group_personnel %}
+                        {% with p=personnel_dict.personnel %}
+
+                        <tr>
+                            {% if 'employee_report_display' not in request.path %}
+
+                             <td class="align-middle">
+                                <a class="btn btn-sm btn-outline-ISEIblue4 mb-2"
+                                   href="{% url 'employee_edit' arID=arID personnelID=p.id %}">
+                                    Edit
+                                </a>
+
+                        <!-- Teacher Account Menu -->
+
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                        type="button"
+                                        id="teacherMenu{{ p.id }}"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <span class="small">Account</span>
+                                </button>
+
+
+                                <div class="dropdown-menu" aria-labelledby="teacherMenu{{ p.id }}">
+
+                                    {% if p.teacher %}
+                                        {% if p.teacher.user|in_group:"teacher" %}
+                                            <span class="dropdown-item-text  small text-success">
+                                                <strong>
+                                                    ✓ Active Teacher
+                                                </strong>
+                                            </span>
+
+                                            <div class="dropdown-divider"></div>
+
+                                            <!-- Remove teacher role -->
+                                            <form method="post"
+                                              action="{% url 'remove_teacher_role' p.id %}"
+                                              onsubmit="return confirm(
+                                              'Remove teacher role? The account and teacher information will be preserved.'
+                                              );">
+
+                                            {% csrf_token %}
+
+                                            <button type="submit"
+                                                    class="dropdown-item error small">
+                                                Remove Teacher Role
+                                            </button>
+
+                                        </form>
+
+                                            <!-- Accidental deletion -->
+                                            <form method="post"
+                                              action="{% url 'delete_accidental_teacher' p.id %}"
+                                              onsubmit="return confirm(
+                                              'Delete this teacher account completely? Only use this if it was created accidentally and never used.'
+                                              );">
+
+                                            {% csrf_token %}
+
+                                            <button type="submit"
+                                                    class="dropdown-item small text-danger">
+                                                Delete Account
+                                            </button>
+
+                                        </form>
+
+                                    {% else %}
+
+                                        <span class="dropdown-item-text small text-secondary">
+                                            <i class="fas fa-history"></i> Former Teacher
+                                        </span>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <form method="post"
+                                              action="{% url 'activate_teacher' p.id %}">
+
+                                            {% csrf_token %}
+
+                                            <button type="submit"
+                                                    class="small dropdown-item text-success">
+                                                Restore Teacher Access
+                                            </button>
+                                        </form>
+
+                                    {% endif %}
+
+                                    {% else %}
+
+                                            <span class="dropdown-item-text small text-secondary">
+                                                <i class="fas fa-user-circle"></i>  No Teacher Account
+                                            </span>
+
+                                            <div class="dropdown-divider"></div>
+
+
+                                            <form method="post" action="{% url 'activate_teacher' p.id %}">
+
+                                                {% csrf_token %}
+
+                                                <button type="submit"
+                                                        class="dropdown-item small text-success">
+                                                    Create Teacher Account
+                                                </button>
+
+                                            </form>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        </div>
+
+
+                    </td>
+
+                    {% endif %}
+
+
+
+
+                    <!-- Name -->
+
+                    <td>
+
+                    {% if p.teacher and p.teacher.user|in_group:"teacher" %}
+
+                        <a href="{% url 'teacher_dashboard' userID=p.teacher.user.id %}">
+
+                            {{ p.first_name }} {{ p.last_name }}
+
+                        </a>
+
+
+                    {% else %}
+
+                        {{ p.first_name }} {{ p.last_name }}
+
+                    {% endif %}
+
+
+                    </td>
+
+
+
+
+
+                    <!-- Status -->
+
+                    <td>
+                        {{ p.get_status_display }}
+                    </td>
+
+
+
+
+
+                    <!-- Positions -->
+
+                    <td>
+
+                    {% for pos in p.positions.all %}
+
+                        {{ pos }}
+
+                        {% if not forloop.last %}
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    </td>
+
+
+
+
+
+                    <!-- Degrees -->
+
+                    <td>
+
+                    {% for deg in p.personneldegree_set.all %}
+
+                        {{ deg.degree }} - {{ deg.area_of_study }}
+
+                        {% if not forloop.last %}
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    </td>
+
+
+
+
+
+                    <!-- Experience -->
+
+                    <td>
+
+                    {% if p.years_administrative_experience %}
+
+                        Administrative:
+                        {{ p.years_administrative_experience }}
+                        <br>
+
+                    {% endif %}
+
+
+                    {% if p.years_teaching_experience %}
+
+                        Teaching:
+                        {{ p.years_teaching_experience }}
+                        <br>
+
+                    {% endif %}
+
+
+                    {% if p.years_work_experience %}
+
+                        Work:
+                        {{ p.years_work_experience }}
+
+                    {% endif %}
+
+
+                    </td>
+
+
+
+                    <td>
+
+                    {{ p.years_at_this_school|default_if_none:"" }}
+
+                    </td>
+
+
+
+
+
+                    <!-- Contact -->
+
+                    <td>
+
+                    {{ p.email_address|default_if_none:"" }}
+
+                    </td>
+
+
+
+                    <td>
+
+                    {{ p.phone_number|default_if_none:"" }}
+
+                    </td>
+
+
+
+
+
+                    <!-- Certification -->
+
+                    <td>
+
+                    {% if personnel_dict.certification_type %}
+
+                        {{ personnel_dict.certification_type }}
+
+                        <br>
+
+                        {{ personnel_dict.renewal_date }}
+
+                    {% endif %}
+
+                    </td>
+
+
+
+
+                    <!-- Endorsements -->
+
+                    <td>
+
+                    {% for endorsement in personnel_dict.endorsements %}
+
+                        {{ endorsement }}
+
+                        <br>
+
+                    {% endfor %}
+
+                    </td>
+
+
+
+
+
+                    <!-- Subjects -->
+
+                    <td>
+
+                    {% for subj_teach in p.subjects_teaching.all %}
+
+                        {{ subj_teach }}
+
+                        {% if not forloop.last %}
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    </td>
+
+
+
+                    <td>
+
+                    {% for subj_t in p.subjects_taught.all %}
+
+                        {{ subj_t }}
+
+                        {% if not forloop.last %}
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    </td>
+
+
+
+
+                    <!-- SDA -->
+
+                    <td>
+
+                    {% if p.sda %}
+
+                    Yes
+
+                    {% else %}
+
+                    No
+
+                    {% endif %}
+
+
+                    </td>
+
+
+
+                    </tr>
+
+
+                    {% endwith %}
+
+                    {% endfor %}
+
+
+
+
+
+                    {% if 'employee_report_display' not in request.path %}
+
+
+                    <tr>
+
+                    <td colspan="14">
+
+                    <a href="{% url 'employee_add' arID=arID positionCode=personnel_group.code %}"
+                       class="btn btn-sm btn-ISEIblue4">
+
+                        Add New Personnel
+
+                    </a>
+
+                    </td>
+
+                    </tr>
+
+
+                    {% endif %}
+
+
+
+                    </tbody>
+
+                </table>
+
+        {% endfor %}
 
     </div>
 
-<script>
-    $(document).ready(function(){
-      $('.toggle-table').click(function(){
-        var target = $(this).data('target');
-        $(target).toggle();
-      });
-    });
-</script>
 
+<!-- Save position / scroll restoration -->
+
+{% include "includes/save_position.html" %}
+
+    {% if messages %}
+        <script>
+        sessionStorage.setItem(
+            "floatingMessage",
+            JSON.stringify({
+                text: "{% for message in messages %}{{ message|escapejs }}{% endfor %}",
+                type: "{% for message in messages %}{{ message.tags }}{% endfor %}"
+            })
+        );
+        </script>
+
+    {% endif %}
+
+    {% include "includes/floating_notification.html" %}
+
+
+
+<script>
+
+
+$(document).ready(function(){
+
+
+    $('.toggle-table').click(function(){
+
+
+        var target = $(this).data('target');
+
+        $(target).toggle();
+
+
+    });
+
+
+});
+
+
+
+
+
+const scrollStorageKey = "scrollPosition_" + window.location.pathname;
+
+
+
+window.addEventListener("beforeunload", function () {
+
+    sessionStorage.setItem(
+        scrollStorageKey,
+        window.scrollY
+    );
+
+});
+
+
+
+
+
+window.addEventListener("load", function () {
+
+
+    const savedPosition = sessionStorage.getItem(scrollStorageKey);
+
+
+    if (savedPosition !== null) {
+
+
+        window.scrollTo(
+            0,
+            parseInt(savedPosition, 10)
+        );
+
+
+        sessionStorage.removeItem(scrollStorageKey);
+
+
+    }
+
+
+});
+
+
+
+
+
+if (sessionStorage.getItem("showSavedNotification") === "true") {
+
+
+    sessionStorage.removeItem("showSavedNotification");
+
+
+    const box = document.getElementById("savedNotification");
+
+
+    if (box) {
+
+
+        box.classList.remove("d-none");
+
+
+        setTimeout(function () {
+
+
+            box.classList.add("d-none");
+
+
+        }, 3500);
+
+
+    }
+
+}
+
+
+</script>
 
 
 {% endblock %}

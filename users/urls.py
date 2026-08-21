@@ -11,6 +11,10 @@ urlpatterns = [
     path('register_teacher/', views.register_teacher, name='register_teacher'),
     path('register_teacher_from_employee_report/<str:personnelID>/', views.register_teacher_from_employee_report, name='register_teacher_from_employee_report'),
 
+    path( "activate-teacher/<int:personnelID>/", views.activate_teacher, name="activate_teacher"),
+    path("remove-teacher-role/<int:personnelID>/", views.remove_teacher_role, name="remove_teacher_role"),
+    path( "delete-accidental-teacher/<int:personnelID>/", views.delete_accidental_teacher,name="delete_accidental_teacher"),
+
     path('login/', views.loginpage, name='login'),
     path('logout/', views.logoutuser, name='logout'),
 
