@@ -7,11 +7,13 @@ def unauthenticated_user(view_func):
         if request.user.is_authenticated:
             if request.user.groups.filter(name="admin").exists():
                 return redirect('isei_teachercert_dashboard')
-            if request.user.groups.filter(name='teacher').exists():
+            elif request.user.groups.filter(name="teacher").exists():
                 return redirect('teacher_dashboard')
-        else:
-            return view_func(request, *args, **kwargs)
+
+        return view_func(request, *args, **kwargs)
+
     return wrapper_func
+
 
 
 def allowed_users(allowed_roles=[]):
