@@ -74,11 +74,11 @@
                     To add new personnel, click <b class="text-ISEIblue4"> Add New Personnel </b> below each group.
                 </li>
                 <li>
-                    To update employee information, click the <b class="text-ISEIblue4"> Edit information </b> button.
+                    To update employee information, click the <b class="text-ISEIblue4"> Edit </b> button.
                     To remove an employee from the Employee Report, change their <b>Status</b> and select <b class="error">No Longer Employed </b>.
                 </li>
                 <li>
-                    To manage a teacher's role and account on the platform click the <b class="text-ISEIblue4"> Teacher Account</b> dropdown.
+                    To manage a teacher's role and account on the platform click the dropdown under Edit.
                 </li>
             </ul>
 
@@ -205,110 +205,187 @@
                                     Edit Information
                                 </a>
 
-                        <!-- Teacher Account Menu -->
 
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                        type="button"
-                                        id="teacherMenu{{ p.id }}"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                    <span class="small">Teacher Account</span>
-                                </button>
-
-
-                                <div class="dropdown-menu" aria-labelledby="teacherMenu{{ p.id }}">
+                                <div>
+                                    <!-- Teacher Account Menu -->
 
                                     {% if p.teacher %}
+
                                         {% if p.teacher.user|in_group:"teacher" %}
-                                            <span class="dropdown-item-text  small text-success">
-                                                <strong>
-                                                    ✓ Active Teacher
-                                                </strong>
-                                            </span>
 
-                                            <div class="dropdown-divider"></div>
+                                            <!-- ACTIVE TEACHER -->
+                                            <div class="dropdown">
 
-                                            <!-- Remove teacher role -->
-                                            <form method="post"
-                                              action="{% url 'remove_teacher_role' p.id %}"
-                                              onsubmit="return confirm(
-                                              'Remove teacher role? The account and teacher information will be preserved.'
-                                              );">
+                                                <button class="btn btn-sm btn-outline-white dropdown-toggle"
+                                                        type="button"
+                                                        id="teacherMenu{{ p.id }}"
+                                                        data-toggle="dropdown"
+                                                        aria-haspopup="true"
+                                                        aria-expanded="false">
 
-                                            {% csrf_token %}
+                                                    <span class="small success">
+                                                        <i class="fas fa-user-check mr-1"></i>
+                                                        Active Teacher
+                                                    </span>
 
-                                            <button type="submit"
-                                                    class="dropdown-item error small">
-                                                Remove Teacher Role
-                                            </button>
+                                                </button>
 
-                                        </form>
+                                                <div class="dropdown-menu"
+                                                     aria-labelledby="teacherMenu{{ p.id }}">
 
-                                            <!-- Accidental deletion -->
-                                            <form method="post"
-                                              action="{% url 'delete_accidental_teacher' p.id %}"
-                                              onsubmit="return confirm(
-                                              'Delete this teacher account completely? Only use this if it was created accidentally and never used.'
-                                              );">
+                                                    <!-- span class="dropdown-item-text small text-success">
+                                                        <strong>
+                                                            <i class="fas fa-user-check mr-1"></i>
+                                                            Active Teacher
+                                                        </strong>
+                                                    </span -->
 
-                                            {% csrf_token %}
+                                                    <div class="dropdown-divider"></div>
 
-                                            <button type="submit"
-                                                    class="dropdown-item small text-danger">
-                                                Delete Account
-                                            </button>
+                                                    <!-- Remove teacher role -->
+                                                    <form method="post"
+                                                          action="{% url 'remove_teacher_role' p.id %}"
+                                                          onsubmit="return confirm(
+                                                              'Remove teacher role? The account and teacher information will be preserved.'
+                                                          );">
 
-                                        </form>
+                                                        {% csrf_token %}
+
+                                                        <button type="submit"
+                                                                class="dropdown-item small">
+                                                            <i class="fas fa-user-minus mr-2 text-warning"></i>
+                                                            Remove Teacher Role
+                                                        </button>
+
+                                                    </form>
+
+                                                    <!-- Accidental deletion -->
+                                                    <form method="post"
+                                                          action="{% url 'delete_accidental_teacher' p.id %}"
+                                                          onsubmit="return confirm(
+                                                              'Delete this teacher account completely? Only use this if it was created accidentally and never used.'
+                                                          );">
+
+                                                        {% csrf_token %}
+
+                                                        <button type="submit"
+                                                                class="dropdown-item small text-danger">
+                                                            <i class="fas fa-user-times mr-2"></i>
+                                                            Delete Account
+                                                        </button>
+
+                                                    </form>
+
+                                                </div>
+                                            </div>
+
+
+                                        {% else %}
+
+                                            <!-- FORMER TEACHER -->
+                                            <div class="dropdown">
+
+                                                <button class="btn btn-sm btn-outline-white dropdown-toggle"
+                                                        type="button"
+                                                        id="teacherMenu{{ p.id }}"
+                                                        data-toggle="dropdown"
+                                                        aria-haspopup="true"
+                                                        aria-expanded="false">
+
+                                                    <span class="small">
+                                                        <i class="fas fa-user-clock mr-1"></i>
+                                                        Former Teacher
+                                                    </span>
+
+                                                </button>
+
+                                                <div class="dropdown-menu"
+                                                     aria-labelledby="teacherMenu{{ p.id }}">
+
+                                                    <!-- span class="dropdown-item-text small text-secondary">
+                                                        <strong>
+                                                            <i class="fas fa-user-clock mr-1"></i>
+                                                            Former Teacher
+                                                        </strong>
+                                                    </span-->
+
+                                                    <div class="dropdown-divider"></div>
+
+                                                    <!-- Restore teacher role -->
+                                                    <form method="post"
+                                                          action="{% url 'activate_teacher' p.id %}">
+
+                                                        {% csrf_token %}
+
+                                                        <button type="submit"
+                                                                class="dropdown-item small text-success">
+
+                                                            <i class="fas fa-user-check mr-2"></i>
+                                                            Restore Teacher Role
+
+                                                        </button>
+
+                                                    </form>
+
+                                                </div>
+                                            </div>
+
+
+                                        {% endif %}
 
                                     {% else %}
 
-                                        <span class="dropdown-item-text small text-secondary">
-                                            <i class="fas fa-history"></i> Former Teacher
-                                        </span>
+                                        <!-- NO TEACHER ACCOUNT -->
+                                        <div class="dropdown">
 
-                                        <div class="dropdown-divider"></div>
+                                            <button class="btn btn-sm btn-outline-white dropdown-toggle"
+                                                    type="button"
+                                                    id="teacherMenu{{ p.id }}"
+                                                    data-toggle="dropdown"
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false">
 
-                                        <form method="post"
-                                              action="{% url 'activate_teacher' p.id %}">
+                                                <span class="small">
+                                                    <i class="fas fa-user-plus mr-1"></i>
+                                                    No Account
+                                                </span>
 
-                                            {% csrf_token %}
-
-                                            <button type="submit"
-                                                    class="small dropdown-item text-success">
-                                                Restore Teacher Role
                                             </button>
-                                        </form>
+
+                                            <div class="dropdown-menu"
+                                                 aria-labelledby="teacherMenu{{ p.id }}">
+
+                                                <!-- span class="dropdown-item-text small text-secondary">
+                                                    <strong>
+                                                        <i class="fas fa-user-plus mr-1"></i>
+                                                        No Teacher Account
+                                                    </strong>
+                                                </span-->
+
+                                                <div class="dropdown-divider"></div>
+
+                                                <!-- Create teacher account -->
+                                                <form method="post"
+                                                      action="{% url 'activate_teacher' p.id %}">
+
+                                                    {% csrf_token %}
+
+                                                    <button type="submit"
+                                                            class="dropdown-item small text-success">
+
+                                                        <i class="fas fa-user-plus mr-2"></i>
+                                                        Create Teacher Account
+
+                                                    </button>
+
+                                                </form>
+
+                                            </div>
+                                        </div>
 
                                     {% endif %}
 
-                                    {% else %}
-
-                                            <span class="dropdown-item-text small text-secondary">
-                                                <i class="fas fa-user-circle"></i>  No Teacher Account
-                                            </span>
-
-                                            <div class="dropdown-divider"></div>
-
-
-                                            <form method="post" action="{% url 'activate_teacher' p.id %}">
-
-                                                {% csrf_token %}
-
-                                                <button type="submit"
-                                                        class="dropdown-item small text-success">
-                                                    Create Teacher Account
-                                                </button>
-
-                                            </form>
-
-                                {% endif %}
-
-
-                            </div>
-
-                        </div>
+                                </div>
 
 
                     </td>
