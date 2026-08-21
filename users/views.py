@@ -569,14 +569,14 @@ def activate_teacher(request, personnelID):
         if teacher_group in user.groups.all():
             messages.info(
                 request,
-                f"{user.get_full_name()} already has teacher access."
+                f"{user.get_full_name()} already has teacher role."
             )
         else:
             user.groups.add(teacher_group)
 
             messages.success(
                 request,
-                f"Teacher access restored for {user.get_full_name()}."
+                f"Teacher role restored for {user.get_full_name()}."
             )
 
         return redirect('employee_report', personnel.annual_report.id)
@@ -695,7 +695,7 @@ def remove_teacher_role(request, personnelID):
 
     messages.success(
         request,
-        f"Teacher access removed for {user.get_full_name()}. "
+        f"Teacher role removed for {user.get_full_name()}. "
         "The account and teacher information were preserved."
     )
 
@@ -734,7 +734,7 @@ def delete_accidental_teacher(request, personnelID):
     if user.last_login:
         messages.error(
             request,
-            "This account has been used. Remove teacher access instead."
+            "This account is active and can't be deleted. Remove teacher role instead."
         )
         return redirect('employee_report', personnel.annual_report.id)
 
