@@ -1,19 +1,22 @@
 {% if messages %}
-    
-     {% if messages %}
+    <script>
+        const floatingMessages = [];
+
         {% for message in messages %}
-            <script>
-                sessionStorage.setItem(
-                    "floatingMessage",
-                    JSON.stringify({
-                        type: "{{ message.tags }}",
-                        text: "{{ message|escapejs }}"
-                    })
-                );
-            </script>
+            floatingMessages.push({
+                type: "{{ message.tags }}",
+                text: "{{ message|escapejs }}"
+            });
         {% endfor %}
-    {% endif %}
-    
+
+        sessionStorage.setItem(
+            "floatingMessage",
+            JSON.stringify({
+                type: floatingMessages[0].type,
+                text: floatingMessages.map(message => message.text).join("\n")
+            })
+        );
+    </script>
 {% endif %}
 
 <div id="lock-message"
