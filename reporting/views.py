@@ -60,6 +60,7 @@ def student_report(request, arID):
     annual_report = None
     formset = None
     saved_count = 0
+    grade_choices = []
 
     try:
         annual_report = AnnualReport.objects.select_related('school__street_address__country').get(id=arID)
