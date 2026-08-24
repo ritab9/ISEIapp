@@ -74,6 +74,17 @@ class BulkCEUForm(forms.Form):
     evidence = forms.CharField(required=False)
     file = forms.FileField(required=False)
 
+#Fields to add the activity to In-service
+    add_to_inservice = forms.BooleanField(
+        required=False,
+        label="Also add this activity to the school's In-Service Report"
+    )
+
+    inservice_presenter = forms.CharField(required=False, label="Presenter")
+
+    inservice_hours = forms.IntegerField( required=False,  min_value=1, label="Actual In-Service Hours" )
+
+#
     def __init__(self, *args, **kwargs):
         self.teachers = kwargs.pop('teachers', [])
         is_principal = kwargs.pop('is_principal', False)  # Pass this from the view

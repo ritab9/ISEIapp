@@ -24,6 +24,8 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from ISEIapp.storage_backends import MediaStorage
 
+from reporting.models import ReportType, AnnualReport, Inservice
+
 # PROFESSIONAL DEVELOPMENT ACTIVITY REPORT - CEUs
 
 # just an info page about the CEU activities
@@ -1294,9 +1296,10 @@ def bulk_ceu_entry(request):
 
 
     if request.method == 'POST':
-        form = BulkCEUForm(request.POST, request.FILES)
+        form = BulkCEUForm(request.POST, request.FILES, teachers=teachers, is_principal=is_principal_or_registrar)
         if form.is_valid():
-            school = form.cleaned_data.get('school') if not is_principal_or_registrar else request.user.profile.school
+            school = (request.user.profile.school if is_principal_or_registrar
+                else form.cleaned_data.get('school'))
             school_year = form.cleaned_data['school_year']
             ceu_type = form.cleaned_data['ceu_type']
             description = form.cleaned_data['description']
@@ -1304,7 +1307,6 @@ def bulk_ceu_entry(request):
             approved_ceu = form.cleaned_data['approved_ceu']
             date_completed = form.cleaned_data['date_completed']
             file = form.cleaned_data['file']
-
 
             ceu_category = ceu_type.ceu_category
 
@@ -1321,6 +1323,7 @@ def bulk_ceu_entry(request):
             else:
                 saved_file_path = None
 
+            # Create CEU instances for the selected teachers
             for teacher in teachers:
                 individual_ceu = request.POST.get(f'approved_ceu_{teacher.id}', approved_ceu)
                 try:
@@ -1351,8 +1354,25 @@ def bulk_ceu_entry(request):
                     if saved_file_path:
                         ceu_instance.file.name = saved_file_path
                         ceu_instance.save(update_fields=['file'])
-                    #if created:
-                    #    print(teacher)
+
+            # Create one school-level In-Service if requested
+            if form.cleaned_data['add_to_inservice']:
+                report_type_ir = ReportType.objects.get(code='IR')
+
+                annual_report, _ = AnnualReport.objects.get_or_create(
+                    school=school,
+                    school_year=school_year,
+                    report_type=report_type_ir
+                )
+
+                Inservice.objects.create(
+                    annual_report=annual_report,
+                    dates=date_completed.strftime('%m/%d/%Y'),
+                    topic=description,
+                    presenter=form.cleaned_data['inservice_presenter'],
+                    hours=form.cleaned_data['inservice_hours'],
+                )
+
             return redirect('CEUreports')
     else:
         form = BulkCEUForm(teachers=teachers)

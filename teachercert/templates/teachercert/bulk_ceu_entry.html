@@ -1,169 +1,436 @@
-{%  extends 'teachercert_base.html' %}
+{% extends 'teachercert_base.html' %}
 {% load crispy_forms_tags %}
-{%  load group_tags %}
+{% load group_tags %}
 {% load static %}
 
 {% block title %}
-   Add Bulk CEUs
+    Add Bulk CEUs
 {% endblock %}
 
 {% block content %}
-    <div class="card card-body align-content-end">
-        <div class="col ">
-            {% if school_year.id and school.id %}
-        <a href="{% url 'bulk_ceu_edit' school_year.id school.id %}" class="btn btn-sm btn-outline-ISEIblue4">
-          View/Edit Existing Group CEUs
-        </a>
-            {% endif %}
-        </div>
+
+<div class="card card-body mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <h6 class="mb-0">Group CEU Entry</h6>
+
+        {% if school_year.id and school.id %}
+            <a href="{% url 'bulk_ceu_edit' school_year.id school.id %}"
+               class="btn btn-sm btn-outline-ISEIblue4">
+                View/Edit Existing Group CEUs
+            </a>
+        {% endif %}
     </div>
-    <div class="card card-body">
-        <h6>Group CEU Entry</h6>
-        <hr>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-               {% if not is_principal %}
-                    <div class="col-auto">
-                      <label for="school">School:</label> {{ form.school }}
-                    </div>
-                {% endif %}
-                <div class="col-auto">
-                  <label for="school_year">School Year:</label>
-                  {{ form.school_year }}
-                </div>
-                <div class="col-auto">
-                  <label for="ceu_type">CEU Type:</label>
-                  {{ form.ceu_type }}
-                </div>
-            </div> <br>
+</div>
 
-            <div class="row">
-                <div class="col-auto">
-                    <label for="{{ form.description.id_for_label }}">Description:</label>
-                    {{ form.description }}
-                </div>
+<div class="card card-body">
 
-                <div class="col-auto">
-                  <label for="approved_ceu">CEUs:</label>
-                  {{ form.approved_ceu }}
-                </div>
-                <div class="col-auto">
-                  <label for="date_completed">Date Completed:</label>
-                  {{ form.date_completed }}
-                </div>
-                <div class="col-auto">
-                  <label for="evidence">Evidence:</label>
-                  {{ form.evidence }}
-                    <br>
-                  <label for="file">Supporting File (Optional):</label>
-                  {{ form.file }}
-                </div>
-            </div>
-        <hr>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
         <div class="row">
-            <div class="col-auto">
-                <h6>Teachers</h6>
-                <table>
-              <thead>
-                <tr>
-                  <th>Teacher Name</th>
-                  <th>CEUs</th>
-                </tr>
-              </thead>
-              <tbody id="teacher-list-container">
-                {% for teacher in teachers %}
-                  <tr>
-                    <td>{{ teacher.name }}</td>
-                    <td>
-                        <input type="number"  step="0.1" name="approved_ceu_{{ teacher.id }}" value=""
-                        id="approved_ceu_{{ teacher.id }}" class="teacher-approved-ceu"/>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            </div>
-            <div class="col-auto" >
-                <button class = "btn btn-sm btn-ISEIblue4" type="submit">Submit</button>
-            </div>
-          </form>
 
-    </div>
+            <!-- ================================================== -->
+            <!-- LEFT COLUMN - CEU / IN-SERVICE INFORMATION -->
+            <!-- ================================================== -->
+
+            <div class="col">
+
+                <!-- CEU Information -->
+                <div class="mb-4">
+                    <h6 class="mb-2">CEU Information</h6>
+                    <hr class="mt-0">
+
+                    <div class="row">
+
+                        {% if not is_principal %}
+                            <div class="col-md-auto mb-3">
+                                <label for="{{ form.school.id_for_label }}">
+                                    School:
+                                </label>
+                                {{ form.school }}
+
+                                {% if form.school.errors %}
+                                    <div class="text-danger small">
+                                        {{ form.school.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="col-md-auto mb-3">
+                            <label for="{{ form.school_year.id_for_label }}">
+                                School Year:
+                            </label>
+                            {{ form.school_year }}
+
+                            {% if form.school_year.errors %}
+                                <div class="text-danger small">
+                                    {{ form.school_year.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-auto mb-3">
+                            <label for="{{ form.ceu_type.id_for_label }}">
+                                CEU Type:
+                            </label>
+                            {{ form.ceu_type }}
+
+                            {% if form.ceu_type.errors %}
+                                <div class="text-danger small">
+                                    {{ form.ceu_type.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-auto mb-3">
+                            <label for="{{ form.description.id_for_label }}">
+                                Description:
+                            </label>
+                            {{ form.description }}
+
+                            {% if form.description.errors %}
+                                <div class="text-danger small">
+                                    {{ form.description.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-auto mb-3">
+                            <label for="{{ form.approved_ceu.id_for_label }}">
+                                CEUs:
+                            </label>
+                            {{ form.approved_ceu }}
+
+                            {% if form.approved_ceu.errors %}
+                                <div class="text-danger small">
+                                    {{ form.approved_ceu.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-auto mb-3">
+                            <div class="d-flex align-items-center">
+                                <label for="{{ form.date_completed.id_for_label }}"
+                                       class="mb-0 mr-2">
+                                    Date Completed:
+                                </label>
+                                {{ form.date_completed }}
+                            </div>
+
+                            {% if form.date_completed.errors %}
+                                <div class="text-danger small">
+                                    {{ form.date_completed.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-auto mb-3">
+                            <label for="{{ form.evidence.id_for_label }}">
+                                Evidence:
+                            </label>
+                            {{ form.evidence }}
+
+                            {% if form.evidence.errors %}
+                                <div class="text-danger small">
+                                    {{ form.evidence.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-auto mb-3">
+                            <label for="{{ form.file.id_for_label }}">
+                                Supporting File
+                                <span class="text-muted">(Optional)</span>:
+                            </label>
+                            {{ form.file }}
+
+                            {% if form.file.errors %}
+                                <div class="text-danger small">
+                                    {{ form.file.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Add to In-Service -->
+                <div class="card border mb-4">
+                    <div class="card-body">
+
+                        <div class="d-flex align-items-start">
+
+                            <div>
+                                <div class="form-check">
+                                    {{ form.add_to_inservice }}
+                                    <label class="form-check-label font-weight-bold"
+                                           for="{{ form.add_to_inservice.id_for_label }}">
+                                        Also add this activity to the school's
+                                        In-Service Report
+                                    </label>
+                                </div>
+
+                                <div class="text-muted small mt-1">
+                                    The activity description and completion date
+                                    will be used automatically for the In-Service entry.
+                                </div>
+                            </div>
+
+                            <div id="inservice-fields"
+                                 class="ml-4"
+                                 style="display: none;">
+
+                                <div class="d-flex align-items-center">
+
+                                    <div class="mr-3">
+                                        <label for="{{ form.inservice_presenter.id_for_label }}"
+                                               class="mr-2">
+                                            Presenter:
+                                        </label>
+                                        {{ form.inservice_presenter }}
+
+                                        {% if form.inservice_presenter.errors %}
+                                            <div class="text-danger small">
+                                                {{ form.inservice_presenter.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div>
+                                        <label for="{{ form.inservice_hours.id_for_label }}"
+                                               class="mr-2">
+                                            Actual Hours:
+                                        </label>
+                                        {{ form.inservice_hours }}
+
+                                        {% if form.inservice_hours.errors %}
+                                            <div class="text-danger small">
+                                                {{ form.inservice_hours.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Submit -->
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-sm btn-ISEIblue4" type="submit">
+                        Submit
+                    </button>
+                </div>
+
+            </div>
+
+
+            <!-- ================================================== -->
+            <!-- RIGHT COLUMN - TEACHERS -->
+            <!-- ================================================== -->
+
+            <div class="col-auto">
+
+                <div class="mb-4">
+
+                    <h6 class="mb-2">Teachers</h6>
+                    <hr class="mt-0">
+
+                    <table class="table table-sm table-hover"
+                           style="width: auto;">
+
+                        <thead>
+                            <tr>
+                                <th>Teacher Name</th>
+                                <th style="width: 100px;">CEUs</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="teacher-list-container">
+
+                            {% for teacher in teachers %}
+                                <tr>
+                                    <td>{{ teacher.name }}</td>
+                                    <td>
+                                        <input type="number"
+                                               step="0.1"
+                                               name="approved_ceu_{{ teacher.id }}"
+                                               value=""
+                                               id="approved_ceu_{{ teacher.id }}"
+                                               class="teacher-approved-ceu form-control form-control-sm">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
 {% endblock %}
 
 
 {% block script %}
-    <script>
+<script>
 
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-        //Add CEU value to all teachers
-            // Get the global 'approved_ceu' field
-            const globalApprovedCEU = document.getElementById("id_approved_ceu");
-            if (globalApprovedCEU) {
-                const globalValue = globalApprovedCEU.value;
-                document.querySelectorAll('.teacher-approved-ceu').forEach(function(input) {
-                    input.value = globalValue;
-                });
+    /*
+     * ------------------------------------------------------------
+     * In-Service fields
+     * ------------------------------------------------------------
+     */
 
-                // Update all teachers' CEU fields when the global 'approved_ceu' field changes
-                globalApprovedCEU.addEventListener("input", function() {
-                    const newValue = this.value;
+    const inserviceCheckbox =
+        document.getElementById("id_add_to_inservice");
 
-                    // Immediately update all teachers' CEU fields with the new value
-                    document.querySelectorAll('.teacher-approved-ceu').forEach(function(input) {
-                        input.value = newValue;
-                    });
-                });
-            }
+    const inserviceFields =
+        document.getElementById("inservice-fields");
 
-// Filter Teacher by changes to the school dropdown
-        const schoolSelect = document.getElementById('id_school');
-        const teacherListContainer = document.getElementById('teacher-list-container');
+    function toggleInserviceFields() {
 
-        function fetchTeachers(schoolId) {
-            //if (!schoolId) return;
-
-            fetch(`/bulk_ceu_entry/?school=${schoolId}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                teacherListContainer.innerHTML = '';  // Clear previous teacher list
-
-                data.teachers.forEach(teacher => {
-                    const teacherRow = document.createElement('tr');
-                    teacherRow.innerHTML = `
-                       <td>${teacher.name}</td>
-                        <td>
-                            <input type="number" step="0.1" name="approved_ceu_${teacher.id}" value=""
-                            id="approved_ceu_${teacher.id}" class="teacher-approved-ceu">
-                        </td>
-                    `;
-                    teacherListContainer.appendChild(teacherRow);
-                });
-            })
-            .catch(error => console.error('Error fetching teachers:', error));
+        if (!inserviceCheckbox || !inserviceFields) {
+            return;
         }
 
-        // ✅ Call fetchTeachers if a school is already selected on page load
+        inserviceFields.style.display =
+            inserviceCheckbox.checked ? "block" : "none";
+    }
+
+    if (inserviceCheckbox) {
+        inserviceCheckbox.addEventListener(
+            "change",
+            toggleInserviceFields
+        );
+
+        toggleInserviceFields();
+    }
+
+
+    /*
+     * ------------------------------------------------------------
+     * Add CEU value to all teachers
+     * ------------------------------------------------------------
+     */
+
+    const globalApprovedCEU =
+        document.getElementById("id_approved_ceu");
+
+    function updateTeacherCEUs(value) {
+
+        document.querySelectorAll(".teacher-approved-ceu")
+            .forEach(function (input) {
+                input.value = value;
+            });
+    }
+
+    if (globalApprovedCEU) {
+
+        updateTeacherCEUs(globalApprovedCEU.value);
+
+        globalApprovedCEU.addEventListener(
+            "input",
+            function () {
+                updateTeacherCEUs(this.value);
+            }
+        );
+    }
+
+
+    /*
+     * ------------------------------------------------------------
+     * Filter teachers by school
+     * ------------------------------------------------------------
+     */
+
+    const schoolSelect =
+        document.getElementById("id_school");
+
+    const teacherListContainer =
+        document.getElementById("teacher-list-container");
+
+    function fetchTeachers(schoolId) {
+
+        if (!teacherListContainer || !schoolId) {
+            return;
+        }
+
+        fetch(`/bulk_ceu_entry/?school=${schoolId}`, {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            teacherListContainer.innerHTML = "";
+
+            data.teachers.forEach(function (teacher) {
+
+                const teacherRow =
+                    document.createElement("tr");
+
+                teacherRow.innerHTML = `
+                    <td>${teacher.name}</td>
+                    <td>
+                        <input type="number"
+                               step="0.1"
+                               name="approved_ceu_${teacher.id}"
+                               value=""
+                               id="approved_ceu_${teacher.id}"
+                               class="teacher-approved-ceu form-control form-control-sm">
+                    </td>
+                `;
+
+                teacherListContainer.appendChild(teacherRow);
+            });
+
+            if (globalApprovedCEU) {
+                updateTeacherCEUs(globalApprovedCEU.value);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching teachers:", error);
+        });
+    }
+
+
+    /*
+     * Only ISEI users have a school selector.
+     */
+
+    if (schoolSelect) {
+
         if (schoolSelect.value) {
             fetchTeachers(schoolSelect.value);
         }
 
-        // ✅ Fetch teachers when the school dropdown changes
-        schoolSelect.addEventListener('change', function() {
-            fetchTeachers(schoolSelect.value);
-        });
+        schoolSelect.addEventListener(
+            "change",
+            function () {
+                fetchTeachers(this.value);
+            }
+        );
+    }
 
-    });
+});
 
-
-    </script>
-
+</script>
 {% endblock %}

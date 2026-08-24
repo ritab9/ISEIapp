@@ -315,7 +315,16 @@ def school_dashboard(request, schoolID=None):
     other_agency_accreditation_info = OtherAgencyAccreditationInfo.objects.filter(school=school, current_accreditation=True)
 
     # Teacher Certificates Section
-    teachers = Teacher.objects.filter(user__profile__school=school, user__is_active=True, user__groups__name__in=['teacher'])
+    #teachers = Teacher.objects.filter(user__profile__school=school, user__is_active=True, user__groups__name__in=['teacher'])
+    teachers = Teacher.objects.filter(
+        user__is_active=True,
+        user__groups__name='teacher'
+    ).filter(
+        Q(user__profile__school_id=schoolID) |
+        Q(user__memberships__school_id=schoolID)
+    ).distinct()
+
+
     number_of_teachers = teachers.count()
     tcertificates = TCertificate.objects.filter(teacher__in=teachers, archived=False, renewal_date__gte=date.today())
     certified_teachers = teachers.filter(tcertificate__in=tcertificates).distinct()
