@@ -91,7 +91,7 @@ class CEUReport(models.Model):
     principal_comment = models.CharField(max_length=500, null=True, blank=True)
 
     isei_reviewed = models.CharField(max_length= 1, choices= CHOICES, null=False, default='n')
-    isei_comment = models.CharField(max_length=500, null=True, blank=True)
+    isei_comment = models.CharField(max_length=1500, null=True, blank=True)
     class Meta:
         unique_together = ('teacher', 'school_year',)
         ordering = ['school_year']
