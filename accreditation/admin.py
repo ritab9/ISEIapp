@@ -73,12 +73,16 @@ class AccreditationApplicationAdmin(admin.ModelAdmin):
     list_filter = ('school_year', 'date')
     search_fields = ('school__name',)
 
-
-class RequiredEvidenceInLine(admin.StackedInline):
+class RequiredEvidenceInLine(admin.TabularInline):
     model = RequiredEvidence
     extra = 1
+    fields = ('order_number', 'name')
+    ordering = ('order_number',)
 
 class RequiredEvidenceCategoryAdmin(admin.ModelAdmin):
     inlines = [RequiredEvidenceInLine]
+    list_display = ('name','order_number')
+    list_editable = ('order_number', )
+    ordering = ('order_number', 'name')
 
 admin.site.register(RequiredEvidenceCategory, RequiredEvidenceCategoryAdmin)

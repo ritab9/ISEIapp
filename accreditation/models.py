@@ -212,12 +212,20 @@ class Level(models.Model):
 
 class RequiredEvidenceCategory(models.Model):
     name = models.CharField(max_length=255)
+
+    order_number = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order_number', 'name']
     def __str__(self):
         return self.name
 
 class RequiredEvidence(models.Model):
     category = models.ForeignKey(RequiredEvidenceCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    order_number = models.PositiveIntegerField(default=0)
+    class Meta:
+        ordering = ['order_number', 'name']
 
     def __str__(self):
         return self.name
