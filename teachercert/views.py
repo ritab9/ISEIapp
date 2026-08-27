@@ -30,11 +30,19 @@ from reporting.models import ReportType, AnnualReport, Inservice
 
 # just an info page about the CEU activities
 def ceu_info(request):
-    info = CEUType.objects.all()
-    # first = CEUType.objects.first()
-    # info = CEUType.objects.filter(~Q(id= first.id))
-    list = [1, 2, 6, 7, 8, 9, 10]
-    context = dict(info=info, list=list)
+    info = CEUType.objects.all().order_by('ceu_category', 'id')
+
+    previous_category = None
+    color_group = 0
+
+    for item in info:
+        if item.ceu_category != previous_category:
+            color_group += 1
+            previous_category = item.ceu_category
+
+        item.color_group = color_group
+
+    context = {'info': info}
     return render(request, 'teachercert/ceu_info.html', context)
 
 

@@ -318,11 +318,12 @@ def school_dashboard(request, schoolID=None):
     #teachers = Teacher.objects.filter(user__profile__school=school, user__is_active=True, user__groups__name__in=['teacher'])
     teachers = Teacher.objects.filter(
         user__is_active=True,
-        user__groups__name='teacher'
+        user__groups__name='teacher',
     ).filter(
-        Q(user__profile__school_id=schoolID) |
-        Q(user__memberships__school_id=schoolID)
+        Q(user__profile__school_id=school.id) |
+        Q(user__memberships__school_id=school.id)
     ).distinct()
+
 
 
     number_of_teachers = teachers.count()
