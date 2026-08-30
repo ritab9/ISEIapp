@@ -1843,76 +1843,53 @@
     <!-- =====================================================
          CEU REPORTS TAB
          ===================================================== -->
-
     {% if tcertificate and not tcertificate.nad %}
 
+        <div
+            class="tab-pane fade"
+            id="ceu-tab">
 
-    <div
-        class="tab-pane fade"
-        id="ceu-tab">
+            <div class="content-card">
 
-
-        <div class="content-card">
-
-
-            <h5>
-                CEU Reports Submitted
-            </h5>
+                <h5>
+                    CEU Reports Submitted
+                </h5>
 
 
-            {% with reports=tcertificate.teacher.ceureport_set.all %}
+                {% if ceu_reports %}
+
+                    <div class="table-responsive">
+
+                        <table class="table table-sm table-bordered">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        School Year
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Additional Information
+                                    </th>
+
+                                </tr>
+
+                            </thead>
 
 
-                {% for p in reports %}
+                            <tbody>
 
-
-                    {% if not p.reviewed_at or p.reviewed_at > tcertificate.issue_date %}
-
-
-                        {% if forloop.first %}
-
-
-                        <div class="table-responsive">
-
-
-                            <table class="table table-sm table-bordered">
-
-
-                                <thead>
-
-
-                                    <tr>
-
-                                        <th>
-                                            School Year
-                                        </th>
-
-                                        <th>
-                                            Status
-                                        </th>
-
-                                        <th>
-                                            Additional Information
-                                        </th>
-
-                                    </tr>
-
-
-                                </thead>
-
-
-                                <tbody>
-
-
-                        {% endif %}
-
-
+                                {% for p in ceu_reports %}
 
                                     <tr>
-
 
                                         {% if p.isei_reviewed == 'a' %}
-
 
                                             <td>
 
@@ -1925,7 +1902,6 @@
 
                                             </td>
 
-
                                             <td>
 
                                                 {{ p.approved_ceu }}
@@ -1933,13 +1909,10 @@
 
                                             </td>
 
-
                                             <td></td>
 
 
-
                                         {% elif p.principal_reviewed == 'a' %}
-
 
                                             <td>
 
@@ -1952,16 +1925,13 @@
 
                                             </td>
 
-
                                             <td>
 
                                                 ISEI approval pending
 
                                             </td>
 
-
                                             <td>
-
 
                                                 {% if p.approved_ceu > 0 %}
 
@@ -1971,13 +1941,10 @@
 
                                                 {% endif %}
 
-
                                             </td>
 
 
-
                                         {% elif p.date_submitted %}
-
 
                                             <td>
 
@@ -1990,16 +1957,13 @@
 
                                             </td>
 
-
                                             <td>
 
                                                 Principal Approval Pending
 
                                             </td>
 
-
                                             <td>
-
 
                                                 {% if p.approved_ceu > 0 %}
 
@@ -2009,13 +1973,10 @@
 
                                                 {% endif %}
 
-
                                             </td>
 
 
-
                                         {% elif p.isei_reviewed == 'd' %}
-
 
                                             <td>
 
@@ -2027,7 +1988,6 @@
                                                 </a>
 
                                             </td>
-
 
                                             <td>
 
@@ -2041,9 +2001,7 @@
 
                                             </td>
 
-
                                             <td>
-
 
                                                 {% if p.approved_ceu > 0 %}
 
@@ -2053,13 +2011,10 @@
 
                                                 {% endif %}
 
-
                                             </td>
 
 
-
                                         {% elif p.principal_reviewed == 'd' %}
-
 
                                             <td>
 
@@ -2071,7 +2026,6 @@
                                                 </a>
 
                                             </td>
-
 
                                             <td>
 
@@ -2085,9 +2039,7 @@
 
                                             </td>
 
-
                                             <td>
-
 
                                                 {% if p.approved_ceu > 0 %}
 
@@ -2097,13 +2049,10 @@
 
                                                 {% endif %}
 
-
                                             </td>
 
 
-
                                         {% else %}
-
 
                                             <td>
 
@@ -2116,16 +2065,13 @@
 
                                             </td>
 
-
                                             <td>
 
                                                 Not submitted
 
                                             </td>
 
-
                                             <td>
-
 
                                                 {% if p.approved_ceu > 0 %}
 
@@ -2135,37 +2081,21 @@
 
                                                 {% endif %}
 
-
                                             </td>
-
 
                                         {% endif %}
 
-
                                     </tr>
 
+                                {% endfor %}
 
+                            </tbody>
 
-                        {% if forloop.last %}
+                        </table>
 
+                    </div>
 
-                                </tbody>
-
-
-                            </table>
-
-
-                        </div>
-
-
-                        {% endif %}
-
-
-                    {% endif %}
-
-
-                {% empty %}
-
+                {% else %}
 
                     <p class="empty-message mb-0">
 
@@ -2174,43 +2104,16 @@
 
                     </p>
 
+                {% endif %}
 
-                {% endfor %}
-
-
-            {% endwith %}
-
+            </div>
 
         </div>
 
-
-    </div>
-
-
-    {% endif %}
-
+        {% endif %}
 
 </div>
 
-
-
-<!-- =========================================================
-     BACK TO TOP
-     ========================================================= -->
-
-<div class="text-right noprint mb-4">
-
-
-    <a
-        href="#"
-        class="btn btn-sm btn-outline-ISEIblue4">
-
-        Back to Top
-
-    </a>
-
-
-</div>
 
 
 

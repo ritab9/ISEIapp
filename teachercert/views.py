@@ -401,13 +401,21 @@ def teacherdashboard(request, userID):
         elif tcertificate.renewal_date <= today + timedelta(days=45):
             expiration_warning = "expiring"
 
+    ceu_reports = CEUReport.objects.none()
 
+    if tcertificate:
+        ceu_reports = CEUReport.objects.filter(
+            teacher=teacher
+        ).filter(
+            Q(reviewed_at__isnull=True) |
+            Q(reviewed_at__gt=tcertificate.issue_date)
+        ).order_by('-school_year')
 
     context = dict(teacher=teacher, tcertificate=tcertificate, certification_status=certification_status,
                    today=today, basic_met=basic_met, basic_not_met=basic_not_met,
                    tcert_application=tcert_application, highest_degree=highest_degree,
                    checklist=standard_checklist,
-                   academic_classes=academic_classes,
+                   academic_classes=academic_classes, ceu_reports=ceu_reports,
                    qualifying_academic_classes=qualifying_academic_classes,
                    academic_credits_qualifying=academic_credits_qualifying,
                    approved_ceu_total=approved_ceu_total,

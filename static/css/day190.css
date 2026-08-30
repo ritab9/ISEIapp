@@ -1,0 +1,147 @@
+/* =========================================================
+   190-DAY REPORT
+   VISUAL STYLING
+   ========================================================= */
+
+/* Page title */
+.day190-title {
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   SECTION SEPARATORS
+   ========================================================= */
+
+.day190-section {
+    display: flex;
+    align-items: center;
+    margin: 18px 0 12px 0;
+}
+
+.day190-section h6 {
+    margin: 0;
+    padding: 5px 10px;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.day190-section-line {
+    flex: 1;
+    height: 2px;
+    margin-left: 12px;
+    background-color: #2E74AA;
+}
+
+
+/* =========================================================
+   CARDS
+   Keep Bootstrap's natural col-auto sizing.
+   ========================================================= */
+
+.day190-card {
+    margin-bottom: 15px;
+    border: 1px solid #d9dfe5;
+    border-top: 4px solid #2E74AA;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Don't allow the contents to force the card wider
+   than its available space. */
+.day190-card table {
+    max-width: 100%;
+}
+
+
+/* Keep headings compact */
+.day190-card h6 {
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CARD TYPES
+   ========================================================= */
+
+.day190-overall-card {
+    border-top-color: #053A64;
+}
+
+.day190-vacation-card {
+    border-top-color: #2E74AA;
+}
+
+.day190-sunday-card {
+    border-top-color: #2E74AA;
+}
+
+.day190-inservice-card {
+    border-top-color: #053A64;
+}
+
+.day190-enrichment-card {
+    border-top-color: #fcfcb7;
+}
+
+.day190-abbreviated-card {
+    border-top-color: #2E74AA;
+}
+
+
+/* =========================================================
+   WARNING / VALIDATION
+   ========================================================= */
+
+#enough_days {
+    border-left: 4px solid #D78F48;
+    padding: 10px 15px;
+    margin-bottom: 12px;
+    background-color: rgba(215, 143, 72, 0.10);
+}
+
+
+/* =========================================================
+   CALCULATED VALUES
+   ========================================================= */
+
+#id_number_of_days,
+#total_days {
+    font-weight: 700;
+}
+
+#number_of_weekdays,
+#total_vacation_days,
+#total_sunday_school_days,
+#enrichment_days {
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   IN-SERVICE INFO
+   ========================================================= */
+
+#inservice_discretionary_info {
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   SMALL SCREEN PROTECTION
+   ========================================================= */
+
+/*
+   We are NOT changing the Bootstrap card layout.
+   We only allow wide tables to scroll rather than forcing
+   the card itself to become wider than the screen.
+*/
+
+.day190-table-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
