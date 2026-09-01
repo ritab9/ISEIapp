@@ -28,7 +28,9 @@ def school_annual_visit(request, school_id=None):
     documents = school.school_documents.first()
     #documents = SchoolDocument.objects.filter(school=school).first()
 
-    documents_to_upload=Resource.objects.filter(name="Annual Visit Documentation").first()
+    #documents_to_upload=Resource.objects.filter(name="Annual Visit Documentation").first()
+    documents_to_upload = Resource.objects.filter(type__name='Accreditation').order_by('order').first()
+
 
     visits = AnnualVisit.objects.filter(school=school).order_by("-school_year__name", "-visit_date")
 

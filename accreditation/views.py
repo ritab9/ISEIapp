@@ -99,8 +99,10 @@ def isei_accreditation_dashboard(request):
     months_ahead_6 = now + relativedelta(months=6)
     months_ahead_18 = now + relativedelta(months=19)
 
+    required_evidence = Resource.objects.filter(type__name='Accreditation').order_by('order').first()
+
     context = dict(accreditation_groups=accreditation_groups,
-                   current_sort_by=sort_by, current_order=order,
+                   current_sort_by=sort_by, current_order=order, required_evidence = required_evidence,
                    months_ahead_6=months_ahead_6, months_ahead_18=months_ahead_18)
 
     # Check if the "past" category was clicked
@@ -108,7 +110,6 @@ def isei_accreditation_dashboard(request):
         past_accreditations = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST).order_by(ordering)
         context['past_accreditations'] = past_accreditations
         context['include_past'] = True
-
 
     return render(request, 'accreditation/isei_accreditation_dashboard.html', context)
 
@@ -210,7 +211,9 @@ def school_accreditation_dashboard(request, school_id):
     #accreditation_active = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.ACTIVE).first()
     #accreditation_past = Accreditation.objects.filter(status=Accreditation.AccreditationStatus.PAST)
 
-    evidence_list=Resource.objects.filter(name="Required Evidence List").first()
+    #evidence_list=Resource.objects.filter(name="Required Evidence List").first()
+    required_evidence = Resource.objects.filter(type__name='Accreditation').order_by('order').first()
+
 
     accreditation_groups = {
         "scheduled": Accreditation.objects.filter(school=school, status=Accreditation.AccreditationStatus.SCHEDULED),
@@ -222,7 +225,7 @@ def school_accreditation_dashboard(request, school_id):
                    return_context = "school_accreditation_dashboard",
                    application_status = application_status, current_selfstudy=current_selfstudy,
                    new_school=new_school, school_doc=school_doc,
-                   evidence_list=evidence_list)
+                   required_evidence = required_evidence)
 
     return render(request, 'accreditation/school_accreditation_dashboard.html', context)
 

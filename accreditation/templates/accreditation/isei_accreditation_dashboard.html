@@ -18,9 +18,11 @@
 
 
         <div class="d-flex justify-content-end">
-        <a href="{% url 'required_evidence_list' %}" class="btn btn-sm btn-outline-ISEIblue4" target="_blank" rel="noopener noreferrer">
-            Required Evidence List
-        </a>
+
+            <a href="{{ required_evidence.link }}" target="_blank">{{ required_evidence.name }}</a>
+            <!--a href="{   % url 'required_evidence_list' %}" class="btn btn-sm btn-outline-ISEIblue4" target="_blank" rel="noopener noreferrer">
+                Required Evidence List
+            </a-->
         </div>
     </div>
 
