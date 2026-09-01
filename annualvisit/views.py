@@ -57,7 +57,9 @@ def isei_annual_visit(request):
         document = SchoolDocumentLink.objects.filter(school=visit.school).first()
         visit.document_link = document.link if document else None
 
-    context = dict(visits=visits, current_year=current_year)
+    required_evidence = Resource.objects.filter(type__name='Accreditation').order_by('order').first()
+
+    context = dict(visits=visits, current_year=current_year, required_evidence=required_evidence)
     return render(request, "annualvisit/isei_annual_visit.html", context)
 
 
