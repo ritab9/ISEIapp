@@ -8,7 +8,7 @@
 
     @page {
         size: letter;
-        margin: 0.5in;
+        margin: 0.5in 0in;
     }
 
     html,
@@ -21,7 +21,7 @@
 
     /* =========================
        RESET BOOTSTRAP LAYOUT
-       ========================= */
+       =========================
 
     .container,
     .row,
@@ -33,12 +33,14 @@
         margin: 0 !important;
         padding: 0 !important;
     }
+     */
 
 
     /* =========================
        PAGE CONTAINER
        ========================= */
 
+    /*
     .page {
         width: 100% !important;
         min-height: auto !important;
@@ -53,6 +55,19 @@
         break-after: page;
     }
 
+     */
+
+    .page {
+        width: 8.5in !important;
+        min-height: 11in !important;
+        margin: 0 !important;
+        padding: 0.75in !important;
+        box-sizing: border-box !important;
+        background: white !important;
+        box-shadow: none !important;
+        position: relative !important;
+    }
+
     .page:last-child {
         page-break-after: auto;
         break-after: auto;
@@ -65,7 +80,7 @@
     .page.card {
         border: none !important;
         border-radius: 0 !important;
-        padding: 0 !important;
+        padding: 0.5in !important;
     }
 
 
@@ -134,8 +149,8 @@
 
     /* =========================
        PAGE BREAK HELPERS
-       ========================= */
-
+       =========================
+    */
     .page-break-before {
         break-before: page;
         page-break-before: always;
@@ -144,6 +159,11 @@
     .page-break-after {
         break-after: page;
         page-break-after: always;
+    }
+
+    .page-break {
+        break-before: page;
+        page-break-before: always;
     }
 
 
@@ -161,40 +181,40 @@
     }
 
 
-/* =========================
-   COVER PAGE
-   ========================= */
+    /* =========================
+       COVER PAGE
+       ========================= */
 
-.cover-page {
-    width: 100% !important;
-    height: 10in !important;
-    min-height: 10in !important;
+    .cover-page {
+        width: 8.5in !important;
+        height: 10in !important;
+        min-height: 10in !important;
 
-    padding: 0 !important;
-    margin: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
 
-    box-sizing: border-box !important;
-    position: relative !important;
+        box-sizing: border-box !important;
+        position: relative !important;
 
-    page-break-after: always !important;
-    break-after: page !important;
+        page-break-after: always !important;
+        break-after: page !important;
 
-    overflow: hidden !important;
-}
-
-
-/* =========================
-   VERTICAL TITLE
-   ========================= */
-
-.cover-page .vertical-title {
-    left: 0.00in !important;
-}
+        overflow: hidden !important;
+    }
 
 
-/* =========================
-   VERTICAL LINES
-   ========================= */
+    /* =========================
+       VERTICAL TITLE
+       ========================= */
+
+    .cover-page .vertical-title {
+        left: 0.00in !important;
+    }
+
+
+    /* =========================
+       VERTICAL LINES
+       ========================= */
 
     .cover-page .vertical-lines {
         left: 0.55in !important;
@@ -233,4 +253,5 @@
     .cover-page .footer {
         bottom: 0.5in !important;
     }
+
 }

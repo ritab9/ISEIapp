@@ -18,10 +18,11 @@
 
         {# Mission & Objectives only under that standard #}
         {% if standards_report.mission and block.standard.name == "Mission, Philosophy, Goals, & Objectives" %}
-            <div class="keep-together">
+            <div class="">
                 <h7>Mission Statement:</h7>{{ standards_report.mission.mission_statement|linebreaks|default_if_none:"-" }}
 
                 <h7>Vision Statement:</h7>{{ standards_report.mission.vision_statement|linebreaks|default_if_none:"-" }}
+
 
                 <h7>School Philosophy:</h7>{{ standards_report.mission.philosophy_statement|linebreaks|default_if_none:"-" }}
 
